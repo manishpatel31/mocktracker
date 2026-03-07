@@ -2151,7 +2151,7 @@ Respond ONLY in this exact JSON format (no markdown, no backticks):
                 if (thinkEl) thinkEl.remove();
 
                 // Show coach note in chat
-                addDebriefMessage('ai', '✅ ' + (parsed.coach_note || 'Great reflection! Here's your debrief summary:'));
+                addDebriefMessage('ai', '✅ ' + (parsed.coach_note || 'Great reflection! Here is your debrief summary:'));
 
                 // Show summary section
                 renderDebriefSummary(parsed);
@@ -2160,7 +2160,7 @@ Respond ONLY in this exact JSON format (no markdown, no backticks):
             } catch(err) {
                 const thinkEl = document.getElementById(thinkId);
                 if (thinkEl) thinkEl.remove();
-                addDebriefMessage('ai', 'Sorry, couldn't generate summary. Please check your API key. You can still close and add notes manually.');
+                addDebriefMessage('ai', 'Sorry, could not generate summary. Please check your API key. You can still close and add notes manually.');
                 if (statusText) statusText.textContent = 'Error generating summary';
             }
             debriefState.waitingForAI = false;
@@ -2317,8 +2317,7 @@ Respond ONLY in this exact JSON format (no markdown, no backticks):
                 if (m.sillyDesc) s += ' | Error notes: ' + m.sillyDesc;
                 if (m.weak) s += ' | Weak areas: ' + m.weak;
                 return s;
-            }).join('
-');
+            }).join('\n');
 
             const avgScore = (sorted.reduce((a,m) => a+m.score,0)/sorted.length).toFixed(1);
             const totalSilly = sorted.reduce((a,m) => a+(m.sillyMarks||0), 0).toFixed(1);
