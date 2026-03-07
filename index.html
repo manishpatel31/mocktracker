@@ -1927,56 +1927,80 @@ Respond in this EXACT JSON format (no markdown, no backticks, just pure JSON):
 
 
         // ═══════════════════════════════════════════════════
-        //  AI DEBRIEF CHAT SYSTEM
+        //  AI DEBRIEF CHAT SYSTEM — Conversational with follow-ups
         // ═══════════════════════════════════════════════════
-        const DEBRIEF_KEY = 'mockpro_last_debrief';
+        const DEBRIEF_KEY = 'mockpro_debriefs'; // stores array of all debriefs
         let debriefState = {
-            entry: null, mockId: null, messages: [], questionIndex: 0,
-            answers: {}, summary: null, waitingForAI: false
+            entry: null, mockId: null,
+            chatHistory: [],   // [{role:'user'/'assistant', content:'...'}]
+            summary: null, waitingForAI: false, questionCount: 0
         };
 
-        const DEBRIEF_QUESTIONS = [
-            "overall",
-            "silly_errors",
-            "hard_subjects",
-            "time_management",
-            "done"
-        ];
+        // Add a message bubble to the chat UI
+        function addDebriefMessage(role, text, loadingId) {
+            const msgs = document.getElementById('debrief-messages');
+            if (!msgs) return null;
+            const isAI = role === 'ai';
+            const id = loadingId || ('dmsg-' + Date.now() + Math.random().toString(36).slice(2));
+            const isDark = document.documentElement.classList.contains('dark');
+            const formatted = (text || '').replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>').replace(/\n/g, '<br>');
 
-        function getDebriefQuestion(qKey, entry) {
-            const examName = EXAM_GROUPS[entry.examGroup]?.name || entry.exam || 'the exam';
-            const score = entry.score, max = entry.max || 200;
-            const pct = max > 0 ? ((score/max)*100).toFixed(0) : '?';
-            switch(qKey) {
-                case 'overall':
-                    return `Hi! 👋 I see you scored **${score}/${max} (${pct}%)** on **${entry.name || examName}**. Let's do a quick debrief so you can improve next time.
+            const div = document.createElement('div');
+            div.id = id;
+            div.style.cssText = 'display:flex;gap:8px;align-items:flex-start;animation:fadeIn 0.25s ease;' + (isAI ? '' : 'flex-direction:row-reverse;');
 
-How did this mock feel overall? Were you confident going in, or did something catch you off guard?`;
-                case 'silly_errors':
-                    return `Got it! Now let's talk about silly errors — these are the easiest marks to recover. 🎯
+            const avatar = isAI
+                ? '<div style="width:30px;height:30px;border-radius:10px;background:linear-gradient(135deg,#6366f1,#a855f7);display:flex;align-items:center;justify-content:center;flex-shrink:0;"><i class="fa-solid fa-robot" style="font-size:13px;color:white;"></i></div>'
+                : '<div style="width:30px;height:30px;border-radius:10px;background:linear-gradient(135deg,#10b981,#059669);display:flex;align-items:center;justify-content:center;flex-shrink:0;"><i class="fa-solid fa-user" style="font-size:13px;color:white;"></i></div>';
 
-Did you make any silly mistakes? (like misreading a question, wrong calculation, ticking the wrong option, rushing at the end?) Be specific if you can!`;
-                case 'hard_subjects':
-                    return `Thanks for sharing that. Now — which subject or topic felt the **hardest** in this mock? And do you think it was a knowledge gap, or just nervousness/time pressure?`;
-                case 'time_management':
-                    return `One last thing — how was your **time management**? Did you finish on time, run out of time, or finish early? Which section took the most time?`;
-                case 'done':
-                    return null;
-                default: return null;
-            }
+            const bubble = '<div style="max-width:82%;padding:10px 14px;border-radius:' +
+                (isAI ? '4px 16px 16px 16px' : '16px 4px 16px 16px') +
+                ';font-size:13px;line-height:1.65;font-weight:500;' +
+                (isAI
+                    ? 'background:' + (isDark ? 'rgba(99,102,241,0.15)' : 'rgba(99,102,241,0.08)') + ';color:' + (isDark ? '#c7d2fe' : '#3730a3') + ';'
+                    : 'background:' + (isDark ? 'rgba(16,185,129,0.15)' : 'rgba(16,185,129,0.08)') + ';color:' + (isDark ? '#a7f3d0' : '#065f46') + ';'
+                ) + '">' + (text === '__loading__'
+                    ? '<span style="display:flex;gap:4px;align-items:center;"><span style="animation:blink 1s infinite 0s;opacity:0.4;">●</span><span style="animation:blink 1s infinite 0.2s;opacity:0.4;">●</span><span style="animation:blink 1s infinite 0.4s;opacity:0.4;">●</span></span>'
+                    : formatted
+                ) + '</div>';
+
+            // Skip button only on AI messages (not loading)
+            const skipBtn = (isAI && text !== '__loading__')
+                ? '<div style="margin-top:4px;' + (isAI ? 'padding-left:38px;' : 'padding-right:38px;text-align:right;') + '"><button onclick="skipDebriefQuestion()" style="font-size:10px;color:#94a3b8;background:none;border:none;cursor:pointer;font-weight:700;padding:2px 0;">skip →</button></div>'
+                : '';
+
+            div.innerHTML = avatar + '<div style="display:flex;flex-direction:column;gap:2px;max-width:82%;">' + bubble + skipBtn + '</div>';
+            msgs.appendChild(div);
+            msgs.scrollTop = msgs.scrollHeight;
+            return id;
         }
+
+        // Replace loading bubble with real text
+        function replaceLoadingMessage(id, text) {
+            const el = document.getElementById(id);
+            if (!el) return;
+            el.remove();
+            addDebriefMessage('ai', text);
+        }
+
+        window.skipDebriefQuestion = function() {
+            if (debriefState.waitingForAI) return;
+            // Log skip in history
+            debriefState.chatHistory.push({ role: 'user', content: '[skipped]' });
+            debriefState.questionCount++;
+            askNextDebriefQuestion();
+        };
 
         window.openAIDebrief = function(entry, mockId) {
             const apiKey = localStorage.getItem(AI_KEY_STORAGE);
-            if (!apiKey) return; // silently skip if no key set
+            if (!apiKey) return;
 
             debriefState = {
                 entry, mockId,
-                messages: [], questionIndex: 0,
-                answers: {}, summary: null, waitingForAI: false
+                chatHistory: [],
+                summary: null, waitingForAI: false, questionCount: 0
             };
 
-            // Reset UI
             const modal = document.getElementById('ai-debrief-modal');
             const msgs  = document.getElementById('debrief-messages');
             const sumSec = document.getElementById('debrief-summary-section');
@@ -1990,190 +2014,208 @@ Did you make any silly mistakes? (like misreading a question, wrong calculation,
             if (inp) inp.value = '';
 
             modal.style.display = 'block';
-            requestAnimationFrame(() => requestAnimationFrame(() => {
-                modal.style.opacity = '1';
-            }));
 
-            // Ask first question
-            const firstQ = getDebriefQuestion(DEBRIEF_QUESTIONS[0], entry);
-            setTimeout(() => addDebriefMessage('ai', firstQ), 400);
+            // Bind buttons (clean re-bind each open)
+            function bindBtn(id, fn) {
+                const b = document.getElementById(id);
+                if (!b) return;
+                const nb = b.cloneNode(true);
+                b.parentNode.replaceChild(nb, b);
+                nb.addEventListener('click', fn);
+                nb.addEventListener('touchend', function(e){ e.preventDefault(); fn(); }, { passive: false });
+            }
+            bindBtn('debrief-send-btn', sendDebriefMessage);
+            bindBtn('debrief-skip-btn', function(){ closeAIDebrief(false); });
+            bindBtn('debrief-save-btn', saveDebriefSummary);
+            bindBtn('debrief-close-btn', function(){ closeAIDebrief(true); });
 
-            // Bind send button
-            const sendBtn = document.getElementById('debrief-send-btn');
-            const skipBtn = document.getElementById('debrief-skip-btn');
-            if (sendBtn) {
-                sendBtn.onclick = null;
-                sendBtn.ontouchend = null;
-                sendBtn.addEventListener('click', sendDebriefMessage);
-                sendBtn.addEventListener('touchend', function(e){ e.preventDefault(); sendDebriefMessage(); }, { passive: false });
-            }
-            if (skipBtn) {
-                skipBtn.onclick = null;
-                skipBtn.addEventListener('click', function(){ closeAIDebrief(false); });
-                skipBtn.addEventListener('touchend', function(e){ e.preventDefault(); closeAIDebrief(false); }, { passive: false });
-            }
             if (inp) {
                 inp.onkeydown = function(e) {
                     if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendDebriefMessage(); }
                 };
             }
 
-            // Save & Close buttons
-            const saveBtn = document.getElementById('debrief-save-btn');
-            const closeBtn = document.getElementById('debrief-close-btn');
-            if (saveBtn) {
-                saveBtn.onclick = null;
-                saveBtn.addEventListener('click', saveDebriefSummary);
-                saveBtn.addEventListener('touchend', function(e){ e.preventDefault(); saveDebriefSummary(); }, { passive: false });
-            }
-            if (closeBtn) {
-                closeBtn.onclick = null;
-                closeBtn.addEventListener('click', function(){ closeAIDebrief(true); });
-                closeBtn.addEventListener('touchend', function(e){ e.preventDefault(); closeAIDebrief(true); }, { passive: false });
-            }
+            // Start the conversation with opening message + first question
+            setTimeout(() => askNextDebriefQuestion(true), 400);
         };
 
-        function addDebriefMessage(role, text, isLoading) {
-            const msgs = document.getElementById('debrief-messages');
-            if (!msgs) return;
-            const isAI = role === 'ai';
-            const id = 'dmsg-' + Date.now();
-            const isDark = document.documentElement.classList.contains('dark');
+        async function askNextDebriefQuestion(isOpening) {
+            if (debriefState.waitingForAI) return;
+            debriefState.waitingForAI = true;
 
-            // Parse bold markdown
-            const formatted = (text || '').replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+            const entry = debriefState.entry;
+            const examName = EXAM_GROUPS[entry.examGroup]?.name || entry.exam || 'the exam';
+            const score = entry.score, max = entry.max || 200;
+            const pct = max > 0 ? ((score/max)*100).toFixed(0) : 0;
+            const target = state.targetScore || max;
+            const gap = target - score;
 
-            const div = document.createElement('div');
-            div.id = id;
-            div.style.cssText = 'display:flex;gap:8px;align-items:flex-start;' + (isAI ? '' : 'flex-direction:row-reverse;');
-            div.innerHTML = (isAI
-                ? '<div style="width:30px;height:30px;border-radius:10px;background:linear-gradient(135deg,#6366f1,#a855f7);display:flex;align-items:center;justify-content:center;flex-shrink:0;"><i class="fa-solid fa-robot" style="font-size:13px;color:white;"></i></div>'
-                : '<div style="width:30px;height:30px;border-radius:10px;background:linear-gradient(135deg,#10b981,#059669);display:flex;align-items:center;justify-content:center;flex-shrink:0;"><i class="fa-solid fa-user" style="font-size:13px;color:white;"></i></div>'
-            ) + '<div style="max-width:82%;padding:10px 14px;border-radius:' +
-            (isAI ? '4px 16px 16px 16px' : '16px 4px 16px 16px') +
-            ';font-size:13px;line-height:1.6;font-weight:500;' +
-            (isAI
-                ? 'background:' + (isDark ? 'rgba(99,102,241,0.15)' : 'rgba(99,102,241,0.08)') + ';color:' + (isDark ? '#c7d2fe' : '#3730a3') + ';'
-                : 'background:' + (isDark ? 'rgba(16,185,129,0.15)' : 'rgba(16,185,129,0.08)') + ';color:' + (isDark ? '#a7f3d0' : '#065f46') + ';'
-            ) + '">' + (isLoading ? '<span class="typing-dots">thinking<span>.</span><span>.</span><span>.</span></span>' : formatted) + '</div>';
+            // Build subject info
+            const subInfo = entry.subjects && entry.subjects.length
+                ? entry.subjects.map(s => s.name + ': ' + s.c + ' correct, ' + s.w + ' wrong, ' + s.s + ' silly').join(' | ')
+                : 'No subject breakdown';
 
-            msgs.appendChild(div);
-            msgs.scrollTop = msgs.scrollHeight;
-            return id;
+            const statusEl = document.getElementById('debrief-status-text');
+
+            // Show loading bubble
+            const loadId = 'loading-' + Date.now();
+            addDebriefMessage('ai', '__loading__', loadId);
+
+            const systemPrompt = `You are a sharp, caring exam coach doing a post-mock debrief with an Indian competitive exam student.
+
+MOCK DATA:
+- Exam: ${examName} | Score: ${score}/${max} (${pct}%) | Target: ${target} | Gap: ${gap > 0 ? '-' + gap : 'Target met!'}
+- Silly marks lost: ${entry.sillyMarks || 0}
+- Subjects: ${subInfo}
+- Mock name: ${entry.name || 'this mock'}
+
+YOUR GOAL: Through natural conversation, extract details about:
+1. Overall feeling and confidence
+2. Specific silly errors (exactly which questions, which subjects, what type of mistake)
+3. Topics/concepts where knowledge was weak
+4. Time management issues (which section, how many attempted/left)
+5. Mindset/stress factors
+6. What they would do differently
+
+RULES:
+- Ask ONE focused question at a time. Short and direct.
+- If their answer is vague, ask ONE follow-up to get specifics (e.g. if they say "quant was hard", ask WHICH topic in quant)
+- After ${debriefState.questionCount >= 6 ? 'THIS' : 'about 6-8'} exchanges, if you have enough detail, end with exactly: "DEBRIEF_COMPLETE"
+- Be encouraging but push for specifics
+- Keep messages short (2-3 lines max)
+- If they skip a question, move on gracefully
+- ${isOpening ? 'This is the opening message. Greet them warmly, mention their score, and ask your first question.' : 'Continue the debrief conversation naturally.'}`;
+
+            const messages = [
+                { role: 'system', content: systemPrompt },
+                ...debriefState.chatHistory.map(m => ({ role: m.role === 'ai' ? 'assistant' : 'user', content: m.content }))
+            ];
+
+            if (!isOpening && debriefState.chatHistory.length === 0) {
+                debriefState.waitingForAI = false;
+                return;
+            }
+
+            try {
+                const apiKey = localStorage.getItem(AI_KEY_STORAGE);
+                const resp = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + apiKey },
+                    body: JSON.stringify({
+                        model: 'llama-3.3-70b-versatile',
+                        messages,
+                        temperature: 0.7,
+                        max_tokens: 200
+                    })
+                });
+                const data = await resp.json();
+                const reply = data?.choices?.[0]?.message?.content?.trim() || '';
+
+                // Remove loading bubble
+                const loadEl = document.getElementById(loadId);
+                if (loadEl) loadEl.remove();
+
+                if (reply.includes('DEBRIEF_COMPLETE') || debriefState.questionCount >= 8) {
+                    // Done — generate summary
+                    const finalMsg = reply.replace('DEBRIEF_COMPLETE', '').trim();
+                    if (finalMsg) addDebriefMessage('ai', finalMsg);
+                    debriefState.chatHistory.push({ role: 'ai', content: reply });
+                    if (statusEl) statusEl.textContent = 'Building your debrief summary...';
+                    setTimeout(() => generateDebriefSummary(), 800);
+                } else {
+                    addDebriefMessage('ai', reply);
+                    debriefState.chatHistory.push({ role: 'ai', content: reply });
+                    if (statusEl) statusEl.textContent = 'Question ' + (debriefState.questionCount + 1) + ' of ~7';
+                }
+            } catch(err) {
+                const loadEl = document.getElementById(loadId);
+                if (loadEl) loadEl.remove();
+                addDebriefMessage('ai', 'Having trouble connecting. Check your API key or try again.');
+            }
+            debriefState.waitingForAI = false;
         }
 
         function sendDebriefMessage() {
             if (debriefState.waitingForAI) return;
             const inp = document.getElementById('debrief-user-input');
-            const text = inp ? inp.value.trim() : '';
+            const text = (inp ? inp.value : '').trim();
             if (!text) return;
 
             addDebriefMessage('user', text);
+            debriefState.chatHistory.push({ role: 'user', content: text });
+            debriefState.questionCount++;
             if (inp) inp.value = '';
 
-            // Store answer
-            const qKey = DEBRIEF_QUESTIONS[debriefState.questionIndex];
-            debriefState.answers[qKey] = text;
-            debriefState.questionIndex++;
-
-            const nextKey = DEBRIEF_QUESTIONS[debriefState.questionIndex];
-
-            if (nextKey === 'done' || !nextKey) {
-                // All questions answered — generate summary
-                generateDebriefSummary();
-            } else {
-                // Ask next question
-                setTimeout(() => {
-                    const nextQ = getDebriefQuestion(nextKey, debriefState.entry);
-                    addDebriefMessage('ai', nextQ);
-                }, 500);
-            }
+            askNextDebriefQuestion(false);
         }
 
         async function generateDebriefSummary() {
-            debriefState.waitingForAI = true;
             const inputArea = document.getElementById('debrief-input-area');
             if (inputArea) inputArea.style.display = 'none';
 
-            const statusText = document.getElementById('debrief-status-text');
-            if (statusText) statusText.textContent = 'Generating your debrief...';
-
-            // Show thinking message
-            const thinkId = addDebriefMessage('ai', '', true);
+            const loadId = 'sum-loading-' + Date.now();
+            addDebriefMessage('ai', '__loading__', loadId);
 
             const entry = debriefState.entry;
-            const answers = debriefState.answers;
             const examName = EXAM_GROUPS[entry.examGroup]?.name || entry.exam || 'exam';
             const total = EXAM_GROUPS[entry.examGroup]?.total || entry.max || 200;
+            const chatText = debriefState.chatHistory
+                .map(m => (m.role === 'ai' ? 'Coach: ' : 'Student: ') + m.content)
+                .join('\n');
 
-            const prompt = `You are an expert Indian competitive exam coach doing a mock debrief session. Based on the student's answers below, generate a structured debrief summary.
+            const prompt = `Based on this debrief conversation between a coach and student, extract a structured summary.
 
-MOCK DATA:
-- Exam: ${examName}, Score: ${entry.score}/${total}, Mock name: ${entry.name || 'Mock'}
-- Silly marks lost: ${entry.sillyMarks || 0}
-- Subjects: ${entry.subjects ? entry.subjects.map(s => s.name + ':' + s.c + 'C/' + s.w + 'W').join(', ') : 'N/A'}
+MOCK: ${examName} | Score: ${entry.score}/${total} | Silly marks lost: ${entry.sillyMarks || 0}
+CONVERSATION:
+${chatText}
 
-STUDENT ANSWERS:
-- Overall feeling: ${answers.overall || 'N/A'}
-- Silly errors: ${answers.silly_errors || 'N/A'}
-- Hard subjects/topics: ${answers.hard_subjects || 'N/A'}
-- Time management: ${answers.time_management || 'N/A'}
-
-Respond ONLY in this exact JSON format (no markdown, no backticks):
+Respond ONLY in this exact JSON (no markdown, no backticks):
 {
-  "silly_errors_summary": "2-3 specific sentences about their silly error patterns and how to fix them",
-  "weak_topics": "comma-separated list of specific topics/areas to focus on",
-  "key_reminders": ["reminder 1 for next mock", "reminder 2 for next mock", "reminder 3 for next mock"],
-  "before_next_mock": "One paragraph of specific advice to read before their next mock attempt",
-  "coach_note": "One encouraging sentence acknowledging their self-awareness"
+  "silly_errors_summary": "2 sentences max: specific errors made and exact fix strategy",
+  "weak_topics": "comma-separated specific topics only (e.g. Percentage, Direction Sense, Reading Comprehension)",
+  "key_reminders": ["max 3 short specific reminders for next mock"],
+  "before_next_mock": "3 sentences max: most important things to do/remember before next attempt",
+  "coach_note": "one short encouraging line"
 }`;
 
-            const apiKey = localStorage.getItem(AI_KEY_STORAGE);
             try {
+                const apiKey = localStorage.getItem(AI_KEY_STORAGE);
                 const resp = await fetch('https://api.groq.com/openai/v1/chat/completions', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + apiKey },
                     body: JSON.stringify({
                         model: 'llama-3.3-70b-versatile',
                         messages: [{ role: 'user', content: prompt }],
-                        temperature: 0.6, max_tokens: 800
+                        temperature: 0.4, max_tokens: 600
                     })
                 });
-
                 const data = await resp.json();
                 const text = data?.choices?.[0]?.message?.content || '';
-                const clean = text.replace(/```json|```/g, '').trim();
-                const parsed = JSON.parse(clean);
+                const parsed = JSON.parse(text.replace(/```json|```/g,'').trim());
                 debriefState.summary = parsed;
 
-                // Remove thinking bubble
-                const thinkEl = document.getElementById(thinkId);
-                if (thinkEl) thinkEl.remove();
+                const loadEl = document.getElementById(loadId);
+                if (loadEl) loadEl.remove();
 
-                // Show coach note in chat
-                addDebriefMessage('ai', '✅ ' + (parsed.coach_note || 'Great reflection! Here is your debrief summary:'));
-
-                // Show summary section
+                addDebriefMessage('ai', '✅ ' + (parsed.coach_note || 'Debrief complete! Here is your summary:'));
                 renderDebriefSummary(parsed);
-                if (statusText) statusText.textContent = 'Debrief ready to save ✓';
+
+                const statusEl = document.getElementById('debrief-status-text');
+                if (statusEl) statusEl.textContent = 'Debrief ready ✓';
 
             } catch(err) {
-                const thinkEl = document.getElementById(thinkId);
-                if (thinkEl) thinkEl.remove();
-                addDebriefMessage('ai', 'Sorry, could not generate summary. Please check your API key. You can still close and add notes manually.');
-                if (statusText) statusText.textContent = 'Error generating summary';
+                const loadEl = document.getElementById(loadId);
+                if (loadEl) loadEl.remove();
+                addDebriefMessage('ai', 'Could not generate summary. You can close and add notes manually.');
             }
-            debriefState.waitingForAI = false;
         }
 
         function renderDebriefSummary(parsed) {
             const sec = document.getElementById('debrief-summary-section');
             const content = document.getElementById('debrief-summary-content');
             if (!sec || !content) return;
-
             const isDark = document.documentElement.classList.contains('dark');
             const tc = isDark ? '#cbd5e1' : '#334155';
-            const tc2 = isDark ? '#94a3b8' : '#64748b';
 
             content.innerHTML =
                 '<div style="margin-bottom:10px;">' +
@@ -2181,16 +2223,15 @@ Respond ONLY in this exact JSON format (no markdown, no backticks):
                     '<p style="font-size:12px;color:' + tc + ';line-height:1.6;">' + (parsed.silly_errors_summary || '-') + '</p>' +
                 '</div>' +
                 '<div style="margin-bottom:10px;">' +
-                    '<div style="font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:0.07em;color:#f59e0b;margin-bottom:4px;">📚 Topics to Revise</div>' +
+                    '<div style="font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:0.07em;color:#f59e0b;margin-bottom:4px;">📚 Weak Topics</div>' +
                     '<p style="font-size:12px;color:' + tc + ';line-height:1.6;">' + (parsed.weak_topics || '-') + '</p>' +
                 '</div>' +
                 '<div style="margin-bottom:10px;">' +
-                    '<div style="font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:0.07em;color:#6366f1;margin-bottom:6px;">📌 Key Reminders for Next Mock</div>' +
+                    '<div style="font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:0.07em;color:#6366f1;margin-bottom:6px;">📌 Reminders for Next Mock</div>' +
                     (parsed.key_reminders || []).map((r, i) =>
                         '<div style="display:flex;gap:8px;align-items:flex-start;margin-bottom:4px;">' +
-                            '<span style="min-width:18px;height:18px;border-radius:50%;background:#6366f1;color:white;font-size:10px;font-weight:900;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;">' + (i+1) + '</span>' +
-                            '<p style="font-size:12px;color:' + tc + ';line-height:1.5;">' + r + '</p>' +
-                        '</div>'
+                        '<span style="min-width:18px;height:18px;border-radius:50%;background:#6366f1;color:white;font-size:10px;font-weight:900;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;">' + (i+1) + '</span>' +
+                        '<p style="font-size:12px;color:' + tc + ';line-height:1.5;">' + r + '</p></div>'
                     ).join('') +
                 '</div>' +
                 '<div style="padding:10px 12px;border-radius:12px;background:' + (isDark ? 'rgba(99,102,241,0.12)' : 'rgba(99,102,241,0.06)') + ';border:1px solid rgba(99,102,241,0.2);">' +
@@ -2205,27 +2246,31 @@ Respond ONLY in this exact JSON format (no markdown, no backticks):
             if (!debriefState.summary) { closeAIDebrief(true); return; }
             const s = debriefState.summary;
 
-            // Auto-fill the log form fields (for current editing session)
+            // Auto-fill log form
             const sillyInp = document.getElementById('inp-silly-desc');
             const weakInp  = document.getElementById('inp-weak');
             if (sillyInp) sillyInp.value = s.silly_errors_summary || '';
             if (weakInp)  weakInp.value  = s.weak_topics || '';
 
-            // Save debrief to localStorage as "last debrief" for pre-mock card
+            // Save to array of all debriefs in localStorage
             const debriefData = {
                 mockName: debriefState.entry?.name || 'Mock',
                 score: debriefState.entry?.score,
                 max: debriefState.entry?.max || 200,
+                examGroup: debriefState.entry?.examGroup,
                 date: debriefState.entry?.date || new Date().toISOString().slice(0,10),
                 summary: s,
                 savedAt: Date.now()
             };
-            localStorage.setItem(DEBRIEF_KEY, JSON.stringify(debriefData));
+            try {
+                const existing = JSON.parse(localStorage.getItem(DEBRIEF_KEY) || '[]');
+                existing.unshift(debriefData); // newest first
+                localStorage.setItem(DEBRIEF_KEY, JSON.stringify(existing.slice(0, 20))); // keep last 20
+            } catch(e) {
+                localStorage.setItem(DEBRIEF_KEY, JSON.stringify([debriefData]));
+            }
 
-            // Update pre-mock card
-            renderPreMockCard();
-
-            // Save aiDebrief field back to Firestore if user is signed in
+            // Save to Firestore
             if (state.user && debriefState.mockId) {
                 try {
                     await updateDoc(doc(db,'artifacts',appId,'users',state.user.uid,'mocks',debriefState.mockId), {
@@ -2233,113 +2278,72 @@ Respond ONLY in this exact JSON format (no markdown, no backticks):
                         weak: s.weak_topics || '',
                         aiDebrief: JSON.stringify(s)
                     });
-                } catch(e) { console.warn('Could not update debrief in Firestore:', e); }
+                } catch(e) { console.warn('Firestore debrief update failed:', e); }
             }
 
+            // Refresh pre-mock card
+            await refreshPreMockCard();
             closeAIDebrief(true);
-            alert('✅ Debrief saved! Check your Home tab for pre-mock reminders.');
+            alert('Debrief saved! Check the Home tab for your pre-mock reminders.');
         }
 
         function closeAIDebrief(saved) {
             const modal = document.getElementById('ai-debrief-modal');
             if (modal) modal.style.display = 'none';
-            if (!saved) {
-                // Reset form and nav even on skip
-            }
         }
 
-        function renderPreMockCard() {
-            const raw = localStorage.getItem(DEBRIEF_KEY);
+        // ── Pre-Mock Card: AI-generated from ALL mocks + ALL debriefs ──
+        async function refreshPreMockCard() {
+            const apiKey = localStorage.getItem(AI_KEY_STORAGE);
             const card = document.getElementById('premock-card');
             const content = document.getElementById('premock-content');
             if (!card || !content) return;
 
-            if (!raw) { card.style.display = 'none'; return; }
+            const mocks = getFilteredMocks ? getFilteredMocks() : state.mocks;
+            const debriefs = JSON.parse(localStorage.getItem(DEBRIEF_KEY) || '[]');
 
-            try {
-                const d = JSON.parse(raw);
-                const s = d.summary;
-                const isDark = document.documentElement.classList.contains('dark');
-                const tc = isDark ? '#cbd5e1' : '#334155';
+            if (!mocks || mocks.length === 0) { card.style.display = 'none'; return; }
 
-                card.style.display = 'block';
-                content.innerHTML =
-                    '<div style="margin-bottom:10px;">' +
-                        '<div style="font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:0.07em;color:#ef4444;margin-bottom:3px;">Watch out for</div>' +
-                        '<p style="font-size:12px;color:' + tc + ';line-height:1.55;">' + (s.silly_errors_summary || '-') + '</p>' +
-                    '</div>' +
-                    '<div style="margin-bottom:12px;">' +
-                        '<div style="font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:0.07em;color:#f59e0b;margin-bottom:3px;">Revise before starting</div>' +
-                        '<p style="font-size:12px;color:' + tc + ';line-height:1.55;">' + (s.weak_topics || '-') + '</p>' +
-                    '</div>' +
-                    '<div style="display:flex;flex-direction:column;gap:5px;">' +
-                        '<div style="font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:0.07em;color:#6366f1;margin-bottom:2px;">📌 Key reminders</div>' +
-                        (s.key_reminders || []).map(r =>
-                            '<div style="display:flex;gap:6px;align-items:flex-start;">' +
-                            '<i class="fa-solid fa-circle-check" style="font-size:11px;color:#6366f1;margin-top:2px;flex-shrink:0;"></i>' +
-                            '<span style="font-size:12px;color:' + tc + ';line-height:1.5;">' + r + '</span></div>'
-                        ).join('') +
-                    '</div>' +
-                    '<div style="margin-top:8px;font-size:10px;color:#94a3b8;">From: ' + (d.mockName || 'Last mock') + ' — ' + (d.score || '?') + '/' + (d.max || 200) + ' on ' + (d.date || '') + '</div>';
-            } catch(e) {
-                card.style.display = 'none';
-            }
-        }
+            card.style.display = 'block';
 
-        // Cross-mock AI Insights
-        window.runAIInsights = async function() {
-            const apiKey = localStorage.getItem(AI_KEY_STORAGE);
-            if (!apiKey) {
-                alert('Please add your Groq API key in the Home tab → AI Coach → API Key button first.');
-                return;
-            }
-            const mocks = getFilteredMocks();
-            if (!mocks || mocks.length < 2) {
-                alert('Log at least 2 mocks to get pattern insights!');
+            // Show loading state
+            content.innerHTML = '<p style="font-size:12px;color:#94a3b8;text-align:center;padding:8px;">Updating reminders...</p>';
+
+            if (!apiKey || debriefs.length === 0) {
+                // No API or no debriefs — show basic stats-based reminders
+                renderPreMockCardBasic(mocks, content);
                 return;
             }
 
-            const btn = document.getElementById('run-insights-btn');
-            const btnText = document.getElementById('insights-btn-text');
-            const output = document.getElementById('ai-insights-output');
-            if (btn) btn.disabled = true;
-            if (btnText) btnText.textContent = 'Analysing...';
-            if (output) output.innerHTML = '<div style="text-align:center;padding:20px;"><div style="display:inline-block;width:20px;height:20px;border:3px solid #e0e7ff;border-top-color:#6366f1;border-radius:50%;animation:spin 0.7s linear infinite;"></div><p style="font-size:12px;color:#94a3b8;margin-top:10px;">Analysing all mocks and debriefs...</p></div>';
-
+            // Build data for AI
             const sorted = mocks.slice().sort((a,b) => new Date(a.date)-new Date(b.date));
+            const avgScore = (sorted.reduce((a,m) => a+m.score,0)/sorted.length).toFixed(1);
             const examName = EXAM_GROUPS[state.selectedExamGroup]?.name || 'exam';
             const total = EXAM_GROUPS[state.selectedExamGroup]?.total || 200;
-
-            // Build summary of all mocks including debriefs
-            const mockSummaries = sorted.map((m, i) => {
-                let s = (i+1) + '. ' + (m.name||'Mock') + ' | Score: ' + m.score + '/' + total + ' | Date: ' + (m.date||'');
-                if (m.sillyMarks) s += ' | Silly marks lost: ' + m.sillyMarks;
-                if (m.sillyDesc) s += ' | Error notes: ' + m.sillyDesc;
-                if (m.weak) s += ' | Weak areas: ' + m.weak;
-                return s;
-            }).join('\n');
-
-            const avgScore = (sorted.reduce((a,m) => a+m.score,0)/sorted.length).toFixed(1);
+            const last3 = sorted.slice(-3).map(m => m.score).join(', ');
             const totalSilly = sorted.reduce((a,m) => a+(m.sillyMarks||0), 0).toFixed(1);
 
-            const prompt = `You are an expert Indian competitive exam coach. Analyze this student's complete mock test history for ${examName} and find patterns.
+            // Compile all debrief weak topics and errors
+            const allWeakTopics = debriefs.map(d => d.summary?.weak_topics).filter(Boolean).join('; ');
+            const allErrors = debriefs.map(d => d.summary?.silly_errors_summary).filter(Boolean).join(' | ');
+            const allReminders = debriefs.flatMap(d => d.summary?.key_reminders || []).slice(0, 10).join(' | ');
 
-COMPLETE MOCK HISTORY (${sorted.length} mocks):
-${mockSummaries}
+            const prompt = `Student is about to start a new ${examName} mock test. Give them a sharp pre-mock briefing.
 
-SUMMARY STATS:
-- Average score: ${avgScore}/${total}
+PERFORMANCE DATA:
+- Total mocks: ${sorted.length}, Average: ${avgScore}/${total}, Target: ${state.targetScore}
+- Last 3 scores: ${last3}
 - Total silly marks lost across all mocks: ${totalSilly}
-- Target score: ${state.targetScore}
+- Recurring weak topics from all debriefs: ${allWeakTopics || 'none recorded'}
+- Common error patterns: ${allErrors || 'none recorded'}
+- Past reminders: ${allReminders || 'none recorded'}
 
-Respond ONLY in this exact JSON format (no markdown, no backticks):
+Give a concise pre-mock briefing in this EXACT JSON (no markdown, no backticks):
 {
-  "recurring_mistakes": "2-3 sentences about the most common mistake patterns you see repeating across mocks",
-  "improvement_trend": "Analysis of their score trend — are they improving, plateauing, or inconsistent? Be specific with numbers.",
-  "top_3_fixes": ["Most impactful fix #1 with specific action", "Fix #2", "Fix #3"],
-  "silly_mistake_strategy": "Specific 3-4 sentence strategy to reduce silly errors based on their patterns",
-  "strength_to_leverage": "One specific strength they consistently show that they should use as an anchor",
-  "exam_readiness": "Honest assessment of exam readiness based on current performance vs target"
+  "headline": "One punchy line about their current state (e.g. 'You are 12 marks from your target')",
+  "watch_out": "One sentence: the single most important mistake to avoid in this mock",
+  "focus_topics": "3-4 specific topics to be careful about (comma-separated)",
+  "mindset": "One short motivational line specific to their data"
 }`;
 
             try {
@@ -2349,69 +2353,90 @@ Respond ONLY in this exact JSON format (no markdown, no backticks):
                     body: JSON.stringify({
                         model: 'llama-3.3-70b-versatile',
                         messages: [{ role: 'user', content: prompt }],
-                        temperature: 0.65, max_tokens: 1000
+                        temperature: 0.5, max_tokens: 300
                     })
                 });
                 const data = await resp.json();
                 const text = data?.choices?.[0]?.message?.content || '';
                 const parsed = JSON.parse(text.replace(/```json|```/g,'').trim());
-                renderAIInsights(parsed, sorted.length);
-            } catch(err) {
-                if (output) output.innerHTML = '<p style="color:#ef4444;font-size:12px;padding:8px;">Error: ' + (err.message||'Something went wrong') + '</p>';
+                renderPreMockCardAI(parsed, content, sorted.length, avgScore, total);
+            } catch(e) {
+                renderPreMockCardBasic(mocks, content);
             }
-
-            if (btn) btn.disabled = false;
-            if (btnText) btnText.textContent = 'Refresh Insights';
-        };
-
-        function renderAIInsights(d, mockCount) {
-            const output = document.getElementById('ai-insights-output');
-            if (!output) return;
-            const isDark = document.documentElement.classList.contains('dark');
-            const tc = isDark ? '#cbd5e1' : '#334155';
-
-            output.innerHTML =
-                '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;">' +
-                    '<div style="padding:12px 14px;border-radius:14px;background:rgba(239,68,68,0.07);border:1px solid rgba(239,68,68,0.18);">' +
-                        '<div style="font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:0.06em;color:#ef4444;margin-bottom:5px;">🔁 Recurring Mistakes</div>' +
-                        '<p style="font-size:11px;color:' + tc + ';line-height:1.6;">' + (d.recurring_mistakes||'-') + '</p>' +
-                    '</div>' +
-                    '<div style="padding:12px 14px;border-radius:14px;background:rgba(16,185,129,0.07);border:1px solid rgba(16,185,129,0.18);">' +
-                        '<div style="font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:0.06em;color:#059669;margin-bottom:5px;">📈 Trend Analysis</div>' +
-                        '<p style="font-size:11px;color:' + tc + ';line-height:1.6;">' + (d.improvement_trend||'-') + '</p>' +
-                    '</div>' +
-                '</div>' +
-                '<div style="padding:12px 14px;border-radius:14px;background:rgba(245,158,11,0.07);border:1px solid rgba(245,158,11,0.18);margin-bottom:10px;">' +
-                    '<div style="font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:0.06em;color:#d97706;margin-bottom:7px;">🎯 Top 3 Fixes Right Now</div>' +
-                    (d.top_3_fixes||[]).map((f,i) =>
-                        '<div style="display:flex;gap:8px;align-items:flex-start;margin-bottom:5px;">' +
-                        '<span style="min-width:20px;height:20px;border-radius:50%;background:#f59e0b;color:white;font-size:10px;font-weight:900;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;">' + (i+1) + '</span>' +
-                        '<p style="font-size:11px;color:' + tc + ';line-height:1.5;">' + f + '</p></div>'
-                    ).join('') +
-                '</div>' +
-                '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;">' +
-                    '<div style="padding:12px 14px;border-radius:14px;background:rgba(99,102,241,0.07);border:1px solid rgba(99,102,241,0.18);">' +
-                        '<div style="font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:0.06em;color:#6366f1;margin-bottom:5px;">🛡️ Silly Mistake Fix</div>' +
-                        '<p style="font-size:11px;color:' + tc + ';line-height:1.6;">' + (d.silly_mistake_strategy||'-') + '</p>' +
-                    '</div>' +
-                    '<div style="padding:12px 14px;border-radius:14px;background:rgba(236,72,153,0.07);border:1px solid rgba(236,72,153,0.15);">' +
-                        '<div style="font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:0.06em;color:#db2777;margin-bottom:5px;">💪 Your Strength</div>' +
-                        '<p style="font-size:11px;color:' + tc + ';line-height:1.6;">' + (d.strength_to_leverage||'-') + '</p>' +
-                    '</div>' +
-                '</div>' +
-                '<div style="padding:12px 14px;border-radius:14px;background:linear-gradient(135deg,rgba(99,102,241,0.08),rgba(168,85,247,0.06));border:1px solid rgba(99,102,241,0.2);">' +
-                    '<div style="font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:0.06em;color:#6366f1;margin-bottom:5px;">🏁 Exam Readiness</div>' +
-                    '<p style="font-size:12px;color:' + tc + ';line-height:1.6;font-weight:500;">' + (d.exam_readiness||'-') + '</p>' +
-                '</div>' +
-                '<div style="text-align:right;margin-top:6px;"><span style="font-size:10px;color:#94a3b8;">Based on ' + mockCount + ' mocks</span></div>';
         }
 
-        // CSS for typing dots
+        function renderPreMockCardAI(d, content, mockCount, avgScore, total) {
+            const isDark = document.documentElement.classList.contains('dark');
+            const tc = isDark ? '#e2e8f0' : '#1e293b';
+            const tc2 = isDark ? '#94a3b8' : '#64748b';
+
+            content.innerHTML =
+                '<p style="font-size:13px;font-weight:800;color:' + tc + ';margin-bottom:10px;line-height:1.4;">' + (d.headline || '') + '</p>' +
+                '<div style="display:flex;flex-direction:column;gap:6px;">' +
+                    '<div style="display:flex;gap:8px;align-items:flex-start;">' +
+                        '<span style="font-size:14px;flex-shrink:0;margin-top:1px;">⚠️</span>' +
+                        '<p style="font-size:12px;color:' + tc + ';line-height:1.5;font-weight:500;">' + (d.watch_out || '') + '</p>' +
+                    '</div>' +
+                    '<div style="display:flex;gap:8px;align-items:flex-start;">' +
+                        '<span style="font-size:14px;flex-shrink:0;margin-top:1px;">📚</span>' +
+                        '<p style="font-size:12px;color:' + tc + ';line-height:1.5;font-weight:500;">Stay sharp on: <strong>' + (d.focus_topics || '') + '</strong></p>' +
+                    '</div>' +
+                    '<div style="display:flex;gap:8px;align-items:flex-start;">' +
+                        '<span style="font-size:14px;flex-shrink:0;margin-top:1px;">💪</span>' +
+                        '<p style="font-size:12px;color:#6366f1;line-height:1.5;font-weight:600;font-style:italic;">' + (d.mindset || '') + '</p>' +
+                    '</div>' +
+                '</div>' +
+                '<p style="font-size:10px;color:' + tc2 + ';margin-top:8px;">Based on ' + mockCount + ' mocks · avg ' + avgScore + '/' + total + '</p>';
+        }
+
+        function renderPreMockCardBasic(mocks, content) {
+            const sorted = mocks.slice().sort((a,b) => new Date(a.date)-new Date(b.date));
+            const avg = (sorted.reduce((a,m) => a+m.score,0)/sorted.length).toFixed(1);
+            const total = EXAM_GROUPS[state.selectedExamGroup]?.total || 200;
+            const target = state.targetScore || total;
+            const gap = (target - avg).toFixed(1);
+            const isDark = document.documentElement.classList.contains('dark');
+            const tc = isDark ? '#e2e8f0' : '#1e293b';
+
+            const debriefs = JSON.parse(localStorage.getItem(DEBRIEF_KEY) || '[]');
+            const weakTopics = debriefs[0]?.summary?.weak_topics || '';
+            const watchOut = debriefs[0]?.summary?.silly_errors_summary || 'Watch out for silly calculation errors.';
+
+            content.innerHTML =
+                '<p style="font-size:13px;font-weight:800;color:' + tc + ';margin-bottom:10px;">' +
+                    (parseFloat(gap) > 0 ? 'You are ' + gap + ' marks from your target of ' + target : 'You are meeting your target! Maintain focus.') +
+                '</p>' +
+                '<div style="display:flex;flex-direction:column;gap:6px;">' +
+                    '<div style="display:flex;gap:8px;"><span>⚠️</span><p style="font-size:12px;color:' + tc + ';line-height:1.5;">' + watchOut.slice(0,120) + '</p></div>' +
+                    (weakTopics ? '<div style="display:flex;gap:8px;"><span>📚</span><p style="font-size:12px;color:' + tc + ';line-height:1.5;">Revise: <strong>' + weakTopics.slice(0,80) + '</strong></p></div>' : '') +
+                    '<div style="display:flex;gap:8px;"><span>💪</span><p style="font-size:12px;color:#6366f1;font-weight:600;font-style:italic;line-height:1.5;">Stay consistent, one mock at a time.</p></div>' +
+                '</div>';
+        }
+
+        function renderPreMockCard() {
+            const mocks = getFilteredMocks ? getFilteredMocks() : state.mocks;
+            const card = document.getElementById('premock-card');
+            const content = document.getElementById('premock-content');
+            if (!card || !content) return;
+            if (!mocks || mocks.length === 0) { card.style.display = 'none'; return; }
+
+            const debriefs = JSON.parse(localStorage.getItem(DEBRIEF_KEY) || '[]');
+            const apiKey = localStorage.getItem(AI_KEY_STORAGE);
+
+            if (apiKey && debriefs.length > 0) {
+                // Do async AI refresh
+                card.style.display = 'block';
+                content.innerHTML = '<p style="font-size:12px;color:#94a3b8;text-align:center;padding:8px 0;">Loading reminders...</p>';
+                refreshPreMockCard();
+            } else {
+                card.style.display = 'block';
+                renderPreMockCardBasic(mocks, content);
+            }
+        }
+
+        // Add blink keyframe for chat loading dots
         const debriefStyle = document.createElement('style');
         debriefStyle.textContent = `
-            .typing-dots span { animation: blink 1.2s infinite; display:inline-block; }
-            .typing-dots span:nth-child(2) { animation-delay: 0.2s; }
-            .typing-dots span:nth-child(3) { animation-delay: 0.4s; }
             @keyframes blink { 0%,80%,100%{opacity:0.2} 40%{opacity:1} }
         `;
         document.head.appendChild(debriefStyle);
@@ -2424,12 +2449,12 @@ Respond ONLY in this exact JSON format (no markdown, no backticks):
             btn.addEventListener('touchend', function(e){ e.preventDefault(); e.stopPropagation(); window.runAIInsights(); }, { passive: false });
         })();
 
-        // Bind refresh pre-mock card button
+        // Bind refresh pre-mock button
         (function bindPreMockRefresh() {
             var btn = document.getElementById('refresh-premock-btn');
             if (!btn) return;
-            btn.addEventListener('click', function(){ renderPreMockCard(); });
-            btn.addEventListener('touchend', function(e){ e.preventDefault(); renderPreMockCard(); }, { passive: false });
+            btn.addEventListener('click', function(){ refreshPreMockCard(); });
+            btn.addEventListener('touchend', function(e){ e.preventDefault(); refreshPreMockCard(); }, { passive: false });
         })();
 
         // Load pre-mock card on startup
