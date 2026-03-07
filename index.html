@@ -743,6 +743,60 @@
                     <button onclick="openModal('modal-task')" class="btn-gradient text-white px-5 py-2.5 rounded-xl font-black text-sm mt-1">+ Add First Task</button>
                 </div>
             </div>
+
+            <!-- AI PERFORMANCE COACH -->
+            <div class="glass-card rounded-[2rem] overflow-hidden" id="ai-coach-card">
+                <!-- Header -->
+                <div class="p-6 pb-4" style="background:linear-gradient(135deg,rgba(99,102,241,0.12),rgba(168,85,247,0.08));">
+                    <div class="flex items-center justify-between flex-wrap gap-3">
+                        <div class="flex items-center gap-3">
+                            <div class="w-11 h-11 rounded-2xl flex items-center justify-center text-xl flex-shrink-0" style="background:linear-gradient(135deg,#6366f1,#a855f7);"><i class="fa-solid fa-robot text-white" style="font-size:18px;"></i></div>
+                            <div>
+                                <h3 class="text-base font-black text-slate-900 dark:text-white leading-tight">AI Performance Coach</h3>
+                                <p class="text-xs text-slate-400 font-medium">Powered by Google Gemini · Free</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-2 flex-wrap">
+                            <button id="ai-settings-btn" onclick="toggleAISettings()" class="px-3 py-1.5 rounded-xl btn-glass text-xs font-bold flex items-center gap-1.5 transition hover:scale-105">
+                                <i class="fa-solid fa-key" style="font-size:11px;"></i> API Key
+                            </button>
+                            <button id="ai-analyze-btn" onclick="runAICoach()" class="px-4 py-1.5 rounded-xl text-white text-xs font-black flex items-center gap-1.5 transition hover:scale-105 shadow-md" style="background:linear-gradient(135deg,#6366f1,#a855f7);">
+                                <i class="fa-solid fa-wand-magic-sparkles" style="font-size:11px;pointer-events:none;"></i>
+                                <span id="ai-btn-text" style="pointer-events:none;">Analyze My Performance</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- API Key Input (hidden by default) -->
+                    <div id="ai-settings-panel" class="hidden mt-4 p-4 rounded-2xl" style="background:rgba(0,0,0,0.05);">
+                        <p class="text-xs text-slate-500 dark:text-slate-400 mb-2 font-medium">Enter your free Gemini API key from <strong>aistudio.google.com</strong></p>
+                        <div class="flex gap-2">
+                            <input id="ai-key-input" type="password" placeholder="AIza..." class="flex-1 px-3 py-2 rounded-xl text-sm font-mono border border-white/30 dark:border-white/10 bg-white/60 dark:bg-white/5 text-slate-800 dark:text-white outline-none focus:ring-2 focus:ring-brand-400" />
+                            <button onclick="saveAIKey()" class="px-4 py-2 rounded-xl btn-gradient text-white text-xs font-black hover:scale-105 transition">Save</button>
+                        </div>
+                        <p class="text-[10px] text-slate-400 mt-2">🔒 Stored only in your browser. Never sent anywhere except Google's API.</p>
+                    </div>
+                </div>
+
+                <!-- Output area -->
+                <div id="ai-output" class="px-6 py-4">
+                    <div id="ai-placeholder" class="text-center py-6">
+                        <div class="text-4xl mb-3">🤖</div>
+                        <p class="text-sm font-bold text-slate-400">Click "Analyze My Performance" to get</p>
+                        <p class="text-sm text-slate-400">personalized AI coaching based on your mock data</p>
+                        <p class="text-xs text-slate-300 dark:text-slate-600 mt-2">Need a free API key? Get one at <strong class="text-brand-400">aistudio.google.com</strong></p>
+                    </div>
+                    <div id="ai-loading" class="hidden text-center py-8">
+                        <div class="inline-flex items-center gap-3">
+                            <div style="width:20px;height:20px;border:3px solid #e0e7ff;border-top-color:#6366f1;border-radius:50%;animation:spin 0.7s linear infinite;"></div>
+                            <span class="text-sm font-bold text-slate-400" id="ai-loading-text">Analyzing your performance...</span>
+                        </div>
+                    </div>
+                    <div id="ai-result" class="hidden space-y-4"></div>
+                    <div id="ai-error" class="hidden p-4 rounded-2xl text-sm font-medium" style="background:rgba(239,68,68,0.08);color:#ef4444;border:1px solid rgba(239,68,68,0.2);"></div>
+                </div>
+            </div>
+
         </div>
 
         <!-- LOG TAB -->
@@ -1543,6 +1597,280 @@
         }
 
         // ── App Nav + Theme ──
+
+        // ═══════════════════════════════════════════════════
+        //  AI PERFORMANCE COACH — Powered by Google Gemini
+        // ═══════════════════════════════════════════════════
+        const AI_KEY_STORAGE = 'mockpro_gemini_key';
+
+        function toggleAISettings() {
+            const panel = document.getElementById('ai-settings-panel');
+            if (!panel) return;
+            const hidden = panel.classList.toggle('hidden');
+            if (!hidden) {
+                const saved = localStorage.getItem(AI_KEY_STORAGE) || '';
+                const inp = document.getElementById('ai-key-input');
+                if (inp && saved) inp.value = saved;
+                setTimeout(() => { if (inp) inp.focus(); }, 50);
+            }
+        }
+
+        function saveAIKey() {
+            const inp = document.getElementById('ai-key-input');
+            if (!inp || !inp.value.trim()) return;
+            localStorage.setItem(AI_KEY_STORAGE, inp.value.trim());
+            const panel = document.getElementById('ai-settings-panel');
+            if (panel) panel.classList.add('hidden');
+            showAISuccess('API key saved! Click "Analyze My Performance" to get started.');
+        }
+
+        function showAISuccess(msg) {
+            const out = document.getElementById('ai-result');
+            if (!out) return;
+            hideAllAIStates();
+            out.classList.remove('hidden');
+            out.innerHTML = '<div style="padding:16px 20px;border-radius:16px;background:rgba(16,185,129,0.08);border:1px solid rgba(16,185,129,0.2);color:#059669;font-size:13px;font-weight:600;">' +
+                '<i class="fa-solid fa-check-circle" style="margin-right:8px;"></i>' + msg + '</div>';
+        }
+
+        function hideAllAIStates() {
+            ['ai-placeholder','ai-loading','ai-result','ai-error'].forEach(id => {
+                const el2 = document.getElementById(id);
+                if (el2) el2.classList.add('hidden');
+            });
+        }
+
+        function buildAIPrompt(mocks, examGroup) {
+            if (!mocks || mocks.length === 0) return null;
+            const sorted = mocks.slice().sort((a,b) => new Date(a.date)-new Date(b.date));
+            const scores = sorted.map(m => m.score);
+            const avg = (scores.reduce((a,b)=>a+b,0)/scores.length).toFixed(1);
+            const best = Math.max(...scores);
+            const worst = Math.min(...scores);
+            const last5 = scores.slice(-5);
+            const last5avg = (last5.reduce((a,b)=>a+b,0)/last5.length).toFixed(1);
+            const trend = scores.length >= 2 ? (scores[scores.length-1] - scores[0]).toFixed(1) : 0;
+            const total = EXAM_GROUPS[examGroup]?.total || 200;
+            const examName = EXAM_GROUPS[examGroup]?.name || examGroup;
+
+            // Subject breakdown
+            let subjectSummary = '';
+            const subjectScores = {};
+            sorted.forEach(m => {
+                if (m.subjects && m.subjects.length) {
+                    m.subjects.forEach(s => {
+                        if (!subjectScores[s.name]) subjectScores[s.name] = [];
+                        subjectScores[s.name].push(s.c - (s.w * (EXAM_GROUPS[examGroup]?.w || 0.5)));
+                    });
+                }
+            });
+            if (Object.keys(subjectScores).length > 0) {
+                subjectSummary = Object.entries(subjectScores).map(([name, vals]) => {
+                    const savg = (vals.reduce((a,b)=>a+b,0)/vals.length).toFixed(1);
+                    return name + ': avg ' + savg;
+                }).join(', ');
+            }
+
+            // Silly errors
+            const sillyData = sorted.filter(m => m.subjects).map(m =>
+                m.subjects.reduce((a,s) => a + (s.s||0), 0)
+            );
+            const avgSilly = sillyData.length ? (sillyData.reduce((a,b)=>a+b,0)/sillyData.length).toFixed(1) : 0;
+
+            // Day analysis
+            const dayNames = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+            const dayGroups = {};
+            sorted.forEach(m => {
+                const day = dayNames[new Date(m.date).getDay()];
+                if (!dayGroups[day]) dayGroups[day] = [];
+                dayGroups[day].push(m.score);
+            });
+            const bestDay = Object.entries(dayGroups).sort((a,b) => {
+                const avgA = a[1].reduce((x,y)=>x+y,0)/a[1].length;
+                const avgB = b[1].reduce((x,y)=>x+y,0)/b[1].length;
+                return avgB - avgA;
+            })[0];
+
+            return `You are an expert Indian competitive exam coach. Analyze this student's mock test performance for ${examName} (max score: ${total}) and give highly specific, actionable advice.
+
+PERFORMANCE DATA:
+- Total mocks attempted: ${sorted.length}
+- Overall average: ${avg}/${total} (${((avg/total)*100).toFixed(1)}%)
+- Best score: ${best} | Worst: ${worst}
+- Last 5 mocks average: ${last5avg}
+- Last 5 scores: ${last5.join(', ')}
+- Overall trend: ${trend > 0 ? '+'+trend : trend} points from first to last mock
+- Average silly errors per mock: ${avgSilly}
+${subjectSummary ? '- Subject averages: ' + subjectSummary : ''}
+${bestDay ? '- Best performing day: ' + bestDay[0] + ' (avg ' + (bestDay[1].reduce((a,b)=>a+b,0)/bestDay[1].length).toFixed(1) + ')' : ''}
+- Target score: ${state.targetScore}/${total}
+
+Respond in this EXACT JSON format (no markdown, no backticks, just pure JSON):
+{
+  "overall": "2-3 sentence honest assessment of current performance level and trajectory",
+  "strengths": ["specific strength 1", "specific strength 2"],
+  "weaknesses": ["specific weakness 1", "specific weakness 2"],
+  "this_week": ["Action 1 - specific and measurable", "Action 2 - specific and measurable", "Action 3 - specific and measurable"],
+  "score_prediction": "Predicted score range in next 5 mocks based on current trend",
+  "motivation": "One powerful motivational line personalized to their data"
+}`;
+        }
+
+        async function runAICoach() {
+            const apiKey = localStorage.getItem(AI_KEY_STORAGE);
+            if (!apiKey) {
+                toggleAISettings();
+                const err = document.getElementById('ai-error');
+                if (err) {
+                    hideAllAIStates();
+                    err.classList.remove('hidden');
+                    err.innerHTML = '<i class="fa-solid fa-key" style="margin-right:8px;"></i>Please enter your Gemini API key first (click "API Key" button above)';
+                }
+                return;
+            }
+
+            const mocks = getFilteredMocks();
+            if (!mocks || mocks.length < 2) {
+                const err = document.getElementById('ai-error');
+                hideAllAIStates();
+                if (err) {
+                    err.classList.remove('hidden');
+                    err.innerHTML = '<i class="fa-solid fa-chart-line" style="margin-right:8px;"></i>Log at least 2 mocks to get AI coaching!';
+                }
+                return;
+            }
+
+            const prompt = buildAIPrompt(mocks, state.selectedExamGroup);
+            if (!prompt) return;
+
+            // Show loading
+            hideAllAIStates();
+            const loading = document.getElementById('ai-loading');
+            const btn = document.getElementById('ai-analyze-btn');
+            const btnText = document.getElementById('ai-btn-text');
+            if (loading) loading.classList.remove('hidden');
+            if (btn) btn.disabled = true;
+            if (btnText) btnText.textContent = 'Analyzing...';
+
+            const loadingMessages = ['Analyzing your performance...','Looking at score trends...','Identifying weak areas...','Generating personalized advice...'];
+            let msgIdx = 0;
+            const msgInterval = setInterval(() => {
+                const lt = document.getElementById('ai-loading-text');
+                if (lt) lt.textContent = loadingMessages[msgIdx % loadingMessages.length];
+                msgIdx++;
+            }, 1500);
+
+            try {
+                const response = await fetch(
+                    'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=' + apiKey,
+                    {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            contents: [{ parts: [{ text: prompt }] }],
+                            generationConfig: { temperature: 0.7, maxOutputTokens: 1024 }
+                        })
+                    }
+                );
+
+                clearInterval(msgInterval);
+
+                if (!response.ok) {
+                    const errData = await response.json().catch(() => ({}));
+                    throw new Error(errData?.error?.message || 'API request failed (status ' + response.status + ')');
+                }
+
+                const data = await response.json();
+                const text = data?.candidates?.[0]?.content?.parts?.[0]?.text || '';
+                if (!text) throw new Error('Empty response from Gemini');
+
+                // Parse JSON — strip any accidental markdown fences
+                let parsed;
+                try {
+                    const clean = text.replace(/```json|```/g, '').trim();
+                    parsed = JSON.parse(clean);
+                } catch(e) {
+                    throw new Error('Could not parse AI response. Try again.');
+                }
+
+                renderAIResult(parsed, mocks.length);
+
+            } catch(err) {
+                clearInterval(msgInterval);
+                hideAllAIStates();
+                const errEl = document.getElementById('ai-error');
+                if (errEl) {
+                    errEl.classList.remove('hidden');
+                    let msg = err.message || 'Something went wrong.';
+                    if (msg.includes('API_KEY_INVALID') || msg.includes('400')) msg = 'Invalid API key. Please check your Gemini API key and try again.';
+                    if (msg.includes('429')) msg = 'Rate limit reached. Wait a minute and try again (free tier limit).';
+                    if (msg.includes('403')) msg = 'API key not authorized. Make sure you enabled the Gemini API in Google AI Studio.';
+                    errEl.innerHTML = '<i class="fa-solid fa-circle-exclamation" style="margin-right:8px;"></i>' + msg;
+                }
+            } finally {
+                if (btn) btn.disabled = false;
+                if (btnText) btnText.textContent = 'Analyze My Performance';
+            }
+        }
+
+        function renderAIResult(data, mockCount) {
+            hideAllAIStates();
+            const out = document.getElementById('ai-result');
+            if (!out) return;
+            out.classList.remove('hidden');
+
+            const isDark = document.documentElement.classList.contains('dark');
+
+            out.innerHTML = `
+                <!-- Overall Assessment -->
+                <div style="padding:16px 18px;border-radius:16px;background:linear-gradient(135deg,rgba(99,102,241,0.1),rgba(168,85,247,0.07));border:1px solid rgba(99,102,241,0.2);">
+                    <p style="font-size:11px;font-weight:900;letter-spacing:0.08em;text-transform:uppercase;color:#6366f1;margin-bottom:6px;">📊 Overall Assessment</p>
+                    <p style="font-size:13px;color:${isDark?'#cbd5e1':'#334155'};line-height:1.6;font-weight:500;">${data.overall || ''}</p>
+                </div>
+
+                <!-- Strengths + Weaknesses -->
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+                    <div style="padding:14px 16px;border-radius:16px;background:rgba(16,185,129,0.07);border:1px solid rgba(16,185,129,0.2);">
+                        <p style="font-size:11px;font-weight:900;letter-spacing:0.08em;text-transform:uppercase;color:#059669;margin-bottom:8px;">✅ Strengths</p>
+                        ${(data.strengths||[]).map(s=>`<p style="font-size:12px;color:${isDark?'#a7f3d0':'#065f46'};margin-bottom:4px;line-height:1.5;">• ${s}</p>`).join('')}
+                    </div>
+                    <div style="padding:14px 16px;border-radius:16px;background:rgba(239,68,68,0.06);border:1px solid rgba(239,68,68,0.18);">
+                        <p style="font-size:11px;font-weight:900;letter-spacing:0.08em;text-transform:uppercase;color:#ef4444;margin-bottom:8px;">⚠️ Focus Areas</p>
+                        ${(data.weaknesses||[]).map(w=>`<p style="font-size:12px;color:${isDark?'#fca5a5':'#7f1d1d'};margin-bottom:4px;line-height:1.5;">• ${w}</p>`).join('')}
+                    </div>
+                </div>
+
+                <!-- This Week Actions -->
+                <div style="padding:14px 18px;border-radius:16px;background:rgba(245,158,11,0.07);border:1px solid rgba(245,158,11,0.2);">
+                    <p style="font-size:11px;font-weight:900;letter-spacing:0.08em;text-transform:uppercase;color:#d97706;margin-bottom:8px;">🎯 This Week's Action Plan</p>
+                    ${(data.this_week||[]).map((a,i)=>`
+                        <div style="display:flex;align-items:flex-start;gap:10px;margin-bottom:8px;">
+                            <span style="min-width:22px;height:22px;border-radius:50%;background:#f59e0b;color:white;font-size:11px;font-weight:900;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;">${i+1}</span>
+                            <p style="font-size:12px;color:${isDark?'#fde68a':'#78350f'};line-height:1.5;font-weight:500;">${a}</p>
+                        </div>`).join('')}
+                </div>
+
+                <!-- Prediction + Motivation -->
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+                    <div style="padding:14px 16px;border-radius:16px;background:rgba(99,102,241,0.07);border:1px solid rgba(99,102,241,0.18);text-align:center;">
+                        <p style="font-size:10px;font-weight:900;letter-spacing:0.08em;text-transform:uppercase;color:#6366f1;margin-bottom:6px;">📈 Score Prediction</p>
+                        <p style="font-size:12px;color:${isDark?'#c7d2fe':'#3730a3'};font-weight:600;line-height:1.5;">${data.score_prediction || '-'}</p>
+                    </div>
+                    <div style="padding:14px 16px;border-radius:16px;background:linear-gradient(135deg,rgba(236,72,153,0.07),rgba(168,85,247,0.06));border:1px solid rgba(236,72,153,0.18);text-align:center;">
+                        <p style="font-size:10px;font-weight:900;letter-spacing:0.08em;text-transform:uppercase;color:#db2777;margin-bottom:6px;">💪 Coach Says</p>
+                        <p style="font-size:11px;color:${isDark?'#fbcfe8':'#831843'};font-weight:600;line-height:1.5;font-style:italic;">"${data.motivation || ''}"</p>
+                    </div>
+                </div>
+
+                <!-- Footer -->
+                <div style="text-align:right;">
+                    <button onclick="runAICoach()" style="font-size:11px;color:#94a3b8;background:none;border:none;cursor:pointer;font-weight:700;">
+                        <i class="fa-solid fa-rotate-right" style="margin-right:4px;font-size:10px;"></i>Refresh Analysis
+                    </button>
+                </div>
+            `;
+        }
+
         window.app = {
             nav: (tabId) => {
                 document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
