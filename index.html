@@ -1602,8 +1602,9 @@
         //  AI PERFORMANCE COACH — Powered by Google Gemini
         // ═══════════════════════════════════════════════════
         const AI_KEY_STORAGE = 'mockpro_gemini_key';
+        // Clear any previously hardcoded key
+        (function(){ const k=localStorage.getItem(AI_KEY_STORAGE); if(k==='AIzaSyDcl8CHJ-5DCMymGiNZFrXib5IJRonxtsw') localStorage.removeItem(AI_KEY_STORAGE); })();
         // Default API key (pre-loaded)
-        (function(){ if(!localStorage.getItem(AI_KEY_STORAGE)) localStorage.setItem(AI_KEY_STORAGE,'AIzaSyDcl8CHJ-5DCMymGiNZFrXib5IJRonxtsw'); })();
 
         window.toggleAISettings = function() {
             const panel = document.getElementById('ai-settings-panel');
@@ -2927,6 +2928,28 @@ Respond in this EXACT JSON format (no markdown, no backticks, just pure JSON):
         // Patch window.app.nav to also sync mobile nav highlight
         const _baseNav = window.app.nav;
         window.app.nav = function(tabId) { _baseNav(tabId); syncMnavActive(); };
+
+        // Bind AI Coach buttons programmatically (needed for mobile)
+        (function bindAIButtons() {
+            var pairs = [
+                ['ai-settings-btn',  function(){ window.toggleAISettings(); }],
+                ['ai-analyze-btn',   function(){ window.runAICoach(); }]
+            ];
+            pairs.forEach(function(p) {
+                var btn = document.getElementById(p[0]);
+                if (!btn) return;
+                var fn = function(e) { e.preventDefault(); e.stopPropagation(); p[1](); };
+                btn.addEventListener('touchend', fn, { passive: false });
+                btn.addEventListener('click',    fn, { passive: false });
+            });
+            // Save button inside settings panel
+            var saveBtn = document.querySelector('#ai-settings-panel button');
+            if (saveBtn) {
+                var sfn = function(e) { e.preventDefault(); e.stopPropagation(); window.saveAIKey(); };
+                saveBtn.addEventListener('touchend', sfn, { passive: false });
+                saveBtn.addEventListener('click',    sfn, { passive: false });
+            }
+        })();
 
                 window.app.nav('home');
 
