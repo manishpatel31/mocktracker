@@ -2418,18 +2418,23 @@ Give a concise pre-mock briefing in this EXACT JSON (no markdown, no backticks):
             const card = document.getElementById('premock-card');
             const content = document.getElementById('premock-content');
             if (!card || !content) return;
+
+            // Always show card if there are mocks logged
             if (!mocks || mocks.length === 0) { card.style.display = 'none'; return; }
+            card.style.display = 'block';
 
             const debriefs = JSON.parse(localStorage.getItem(DEBRIEF_KEY) || '[]');
             const apiKey = localStorage.getItem(AI_KEY_STORAGE);
 
+            // If we already have AI content loaded, don't re-fetch on every renderHome call
+            // Only re-fetch if content is empty or shows "Loading..."
+            const alreadyLoaded = content.innerHTML && !content.innerHTML.includes('Loading reminders');
+            if (alreadyLoaded) return;
+
             if (apiKey && debriefs.length > 0) {
-                // Do async AI refresh
-                card.style.display = 'block';
                 content.innerHTML = '<p style="font-size:12px;color:#94a3b8;text-align:center;padding:8px 0;">Loading reminders...</p>';
                 refreshPreMockCard();
             } else {
-                card.style.display = 'block';
                 renderPreMockCardBasic(mocks, content);
             }
         }
@@ -3011,6 +3016,7 @@ Give a concise pre-mock briefing in this EXACT JSON (no markdown, no backticks):
         function renderHome() {
             const tabHome = el('tab-home');
             if (!tabHome || !tabHome.classList.contains('active')) return;
+            renderPreMockCard(); // refresh pre-mock card whenever home renders
             const subset = getFilteredMocks(); const total = subset.length;
             const sorted = subset.slice().sort((a,b) => new Date(a.date)-new Date(b.date));
             const avgScoreNum = total ? sorted.reduce((acc,m) => acc+m.score, 0)/total : 0;
