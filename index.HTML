@@ -1,0 +1,2605 @@
+<!DOCTYPE html>
+<html lang="en" class="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MockTracker Pro | Ultimate Performance Hub</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        dark: { bg: '#06040f', card: '#0e0a1f', text: '#f1f5f9', border: '#1e1535' },
+                        brand: { 500: '#6366f1', 600: '#4f46e5', 400: '#818cf8', 100: '#e0e7ff' },
+                        accent: { 500: '#d946ef', 600: '#c026d3' }
+                    },
+                    borderRadius: { '4xl': '2rem' },
+                    boxShadow: {
+                        'glass': '0 8px 32px rgba(99,102,241,0.12), inset 0 1px 0 rgba(255,255,255,0.6)',
+                        'glass-dark': '0 8px 32px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.04)',
+                        'glow': '0 0 24px rgba(99,102,241,0.4)',
+                        'premium': '0 10px 40px -10px rgba(0,0,0,0.1)'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+        * { -webkit-font-smoothing: antialiased; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+
+        /* ═══════════════════════════════════════
+           GLASS MORPHISM BACKGROUND
+        ═══════════════════════════════════════ */
+        .app-bg {
+            background-color: #eef0ff;
+            background-image:
+                radial-gradient(ellipse 90% 70% at 0% 0%, rgba(99,102,241,0.28) 0%, transparent 55%),
+                radial-gradient(ellipse 80% 60% at 100% 100%, rgba(217,70,239,0.22) 0%, transparent 55%),
+                radial-gradient(ellipse 60% 40% at 60% 20%, rgba(139,92,246,0.15) 0%, transparent 50%),
+                radial-gradient(ellipse 50% 40% at 20% 80%, rgba(99,102,241,0.1) 0%, transparent 45%);
+            background-attachment: fixed;
+        }
+        .dark .app-bg {
+            background-color: #06040f;
+            background-image:
+                radial-gradient(ellipse 90% 70% at 0% 0%, rgba(79,70,229,0.45) 0%, transparent 50%),
+                radial-gradient(ellipse 80% 60% at 100% 100%, rgba(192,38,211,0.35) 0%, transparent 50%),
+                radial-gradient(ellipse 60% 50% at 50% 50%, rgba(109,40,217,0.2) 0%, transparent 55%),
+                radial-gradient(ellipse 40% 30% at 80% 10%, rgba(99,102,241,0.25) 0%, transparent 40%);
+        }
+
+        /* ═══════════════════════════════════════
+           GLASS CARD — CORE COMPONENT
+        ═══════════════════════════════════════ */
+        .glass-card {
+            background: rgba(255,255,255,0.55);
+            backdrop-filter: blur(24px) saturate(180%);
+            -webkit-backdrop-filter: blur(24px) saturate(180%);
+            border: 1px solid rgba(255,255,255,0.7);
+            box-shadow: 0 8px 32px rgba(99,102,241,0.1), inset 0 1px 0 rgba(255,255,255,0.8);
+            transition: all 0.3s ease;
+        }
+        .dark .glass-card {
+            background: rgba(14,10,31,0.55);
+            border: 1px solid rgba(139,92,246,0.18);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.05);
+        }
+        .glass-card:hover {
+            box-shadow: 0 12px 40px rgba(99,102,241,0.18), inset 0 1px 0 rgba(255,255,255,0.9);
+        }
+        .dark .glass-card:hover {
+            box-shadow: 0 12px 40px rgba(99,102,241,0.25), inset 0 1px 0 rgba(255,255,255,0.07);
+        }
+
+        /* Glass Modals */
+        .glass-modal {
+            background: rgba(255,255,255,0.75);
+            backdrop-filter: blur(40px) saturate(200%);
+            -webkit-backdrop-filter: blur(40px) saturate(200%);
+            border: 1px solid rgba(255,255,255,0.8);
+            box-shadow: 0 24px 80px rgba(99,102,241,0.2), inset 0 1px 0 rgba(255,255,255,0.9);
+        }
+        .dark .glass-modal {
+            background: rgba(10,7,25,0.82);
+            border: 1px solid rgba(139,92,246,0.25);
+            box-shadow: 0 24px 80px rgba(0,0,0,0.7), inset 0 1px 0 rgba(255,255,255,0.06);
+        }
+
+        /* Glass Inputs */
+        .glass-input {
+            background: rgba(255,255,255,0.5);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255,255,255,0.7);
+            transition: all 0.2s;
+        }
+        .dark .glass-input {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(139,92,246,0.2);
+            color: #f1f5f9;
+        }
+        .glass-input:focus {
+            background: rgba(255,255,255,0.75);
+            border-color: rgba(99,102,241,0.5);
+            box-shadow: 0 0 0 3px rgba(99,102,241,0.12);
+            outline: none;
+        }
+        .dark .glass-input:focus {
+            background: rgba(99,102,241,0.08);
+            border-color: rgba(99,102,241,0.5);
+        }
+
+        /* Glass Nav */
+        .glass-nav {
+            background: rgba(255,255,255,0.65);
+            backdrop-filter: blur(24px) saturate(200%);
+            -webkit-backdrop-filter: blur(24px) saturate(200%);
+            border-bottom: 1px solid rgba(255,255,255,0.6);
+            box-shadow: 0 4px 24px rgba(99,102,241,0.08);
+        }
+        .dark .glass-nav {
+            background: rgba(6,4,15,0.7);
+            border-bottom: 1px solid rgba(139,92,246,0.15);
+            box-shadow: 0 4px 24px rgba(0,0,0,0.4);
+        }
+
+        /* ═══════════════════════════════════════
+           TAB ANIMATION
+        ═══════════════════════════════════════ */
+        .tab-content { display: none; animation: scaleUp 0.35s cubic-bezier(0.16, 1, 0.3, 1); }
+        .tab-content.active { display: block; }
+        @keyframes scaleUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* ═══════════════════════════════════════
+           NAV LINKS
+        ═══════════════════════════════════════ */
+        .nav-link { color: #64748b; font-weight: 700; font-size: 11px; letter-spacing: 0.04em; }
+        .dark .nav-link { color: #94a3b8; }
+        .nav-link.active {
+            background: linear-gradient(135deg, #6366f1, #d946ef);
+            color: white !important;
+            box-shadow: 0 4px 16px rgba(99,102,241,0.4);
+        }
+
+        /* ═══════════════════════════════════════
+           TYPOGRAPHY HELPERS
+        ═══════════════════════════════════════ */
+        .text-gradient { background: linear-gradient(135deg, #6366f1, #d946ef); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+        .text-gradient-green { background: linear-gradient(135deg, #10b981, #06b6d4); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+
+        /* ═══════════════════════════════════════
+           BUTTONS
+        ═══════════════════════════════════════ */
+        .btn-gradient { background: linear-gradient(135deg, #6366f1, #d946ef); color: white; transition: all 0.3s; }
+        .btn-gradient:hover { filter: brightness(1.12); transform: translateY(-1px); box-shadow: 0 8px 24px rgba(99,102,241,0.4); }
+        .btn-glass {
+            background: rgba(255,255,255,0.4);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.6);
+            color: #475569;
+            transition: all 0.2s;
+        }
+        .dark .btn-glass {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(139,92,246,0.2);
+            color: #94a3b8;
+        }
+        .btn-glass:hover { background: rgba(255,255,255,0.65); transform: scale(1.04); }
+        .dark .btn-glass:hover { background: rgba(99,102,241,0.12); }
+
+        /* ═══════════════════════════════════════
+           SCORE CARD INPUTS
+        ═══════════════════════════════════════ */
+        .score-inp { background: transparent; text-align: center; width: 100%; outline: none; font-weight: 800; }
+        .score-inp:focus { filter: brightness(1.05); }
+        /* Hide spinners on number inputs in score cards */
+        .score-inp::-webkit-outer-spin-button,
+        .score-inp::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+        .score-inp[type=number] { -moz-appearance: textfield; }
+
+        /* ═══════════════════════════════════════
+           EXAM CARDS
+        ═══════════════════════════════════════ */
+        .exam-card { cursor: pointer; transition: all 0.3s ease; }
+        .exam-card:hover { transform: scale(1.04); box-shadow: 0 20px 40px rgba(99,102,241,0.2); }
+        .exam-card.selected { border-color: #6366f1 !important; box-shadow: 0 0 0 3px rgba(99,102,241,0.3), 0 20px 40px rgba(99,102,241,0.2) !important; }
+
+        /* ═══════════════════════════════════════
+           SCROLLBAR
+        ═══════════════════════════════════════ */
+        .custom-scroll::-webkit-scrollbar { width: 5px; }
+        .custom-scroll::-webkit-scrollbar-thumb { background: rgba(99,102,241,0.3); border-radius: 10px; }
+        .dark .custom-scroll::-webkit-scrollbar-thumb { background: rgba(139,92,246,0.3); }
+
+        /* ═══════════════════════════════════════
+           MODERN SELECT
+        ═══════════════════════════════════════ */
+        .modern-select {
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236366f1' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+            background-position: right 0.75rem center;
+            background-repeat: no-repeat;
+            background-size: 1.2em 1.2em;
+            padding-right: 2.5rem;
+            appearance: none;
+        }
+
+        /* ═══════════════════════════════════════
+           DEMO MODE STYLES
+        ═══════════════════════════════════════ */
+        .demo-mode-active .demo-badge { display: inline-flex !important; }
+        .demo-badge {
+            display: none;
+            align-items: center;
+            gap: 4px;
+            font-size: 9px;
+            font-weight: 900;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            padding: 2px 8px;
+            border-radius: 6px;
+            background: linear-gradient(135deg, #f59e0b, #ef4444);
+            color: white;
+        }
+
+        /* Demo watermark — subtle diagonal text */
+        .demo-mode-active #demo-watermark { display: block !important; }
+        #demo-watermark {
+            display: none;
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 10;
+            overflow: hidden;
+        }
+        #demo-watermark::before {
+            content: 'DEMO DEMO DEMO DEMO DEMO DEMO DEMO DEMO DEMO DEMO DEMO DEMO DEMO DEMO';
+            position: absolute;
+            top: 50%;
+            left: -20%;
+            width: 140%;
+            font-size: 13px;
+            font-weight: 900;
+            letter-spacing: 2rem;
+            color: rgba(99,102,241,0.06);
+            transform: rotate(-30deg);
+            white-space: nowrap;
+            word-spacing: 3rem;
+        }
+        .dark #demo-watermark::before { color: rgba(139,92,246,0.08); }
+
+        /* ═══════════════════════════════════════
+           TABLE GLASS ROWS
+        ═══════════════════════════════════════ */
+        tbody tr:hover td { background: rgba(99,102,241,0.04); }
+        .dark tbody tr:hover td { background: rgba(99,102,241,0.08); }
+
+        /* ═══════════════════════════════════════
+           HOVER GLOW
+        ═══════════════════════════════════════ */
+        .hover-glow:hover { box-shadow: 0 0 20px rgba(99,102,241,0.35); border-color: rgba(99,102,241,0.4) !important; }
+
+        /* ═══════════════════════════════════════
+           MINI PILL TAGS
+        ═══════════════════════════════════════ */
+        .pill { padding: 2px 10px; border-radius: 100px; font-size: 10px; font-weight: 800; letter-spacing: 0.05em; text-transform: uppercase; }
+
+        /* ═══════════════════════════════════════
+           TARGET SCORE RING  (Feature #1)
+        ═══════════════════════════════════════ */
+        .target-ring { position:relative; width:80px; height:80px; flex-shrink:0; }
+        .target-ring svg { transform:rotate(-90deg); }
+        .ring-bg  { fill:none; stroke:rgba(99,102,241,0.13); stroke-width:7; }
+        .ring-fill{ fill:none; stroke:url(#ringGrad); stroke-width:7; stroke-linecap:round; transition:stroke-dashoffset 0.85s cubic-bezier(0.34,1,0.64,1); }
+        .ring-label{ position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; }
+
+        /* ═══════════════════════════════════════
+           AUTO-TAG BADGES  (Feature #9)
+        ═══════════════════════════════════════ */
+        .tag-pb     { background:linear-gradient(135deg,#f59e0b,#fcd34d); color:#78350f; }
+        .tag-up     { background:rgba(16,185,129,0.15);  color:#065f46; }
+        .tag-down   { background:rgba(239,68,68,0.13);   color:#991b1b; }
+        .tag-steady { background:rgba(99,102,241,0.13);  color:#3730a3; }
+        .dark .tag-up     { background:rgba(16,185,129,0.22);  color:#6ee7b7; }
+        .dark .tag-down   { background:rgba(239,68,68,0.22);   color:#fca5a5; }
+        .dark .tag-steady { background:rgba(99,102,241,0.22);  color:#a5b4fc; }
+        .dark .tag-pb     { background:linear-gradient(135deg,#d97706,#fcd34d); color:#1c1917; }
+
+        /* ═══════════════════════════════════════
+           THEME TOGGLE ANIMATION  (Feature #14)
+        ═══════════════════════════════════════ */
+        .theme-icon { position:absolute; transition: transform 0.45s cubic-bezier(0.34,1.56,0.64,1), opacity 0.35s ease; }
+        .theme-sun  { opacity:1;  transform: rotate(0deg)   scale(1); }
+        .theme-moon { opacity:0;  transform: rotate(90deg)  scale(0.4); }
+        .dark .theme-sun  { opacity:0;  transform: rotate(-90deg) scale(0.4); }
+        .dark .theme-moon { opacity:1;  transform: rotate(0deg)   scale(1); }
+
+        /* ═══════════════════════════════════════
+           SWIPE INDICATOR  (Feature #15)
+        ═══════════════════════════════════════ */
+        #swipe-hint { position:fixed; bottom:76px; left:50%; transform:translateX(-50%); pointer-events:none; z-index:60;
+            opacity:0; transition:opacity 0.4s; font-size:11px; font-weight:800; padding:6px 14px;
+            background:rgba(99,102,241,0.85); color:white; border-radius:20px; backdrop-filter:blur(10px); white-space:nowrap; }
+        #swipe-hint.show { opacity:1; }
+
+        /* ═══════════════════════════════════════
+           COLLAPSIBLE WEAK AREAS  (Feature #16)
+        ═══════════════════════════════════════ */
+        .weak-item-body { max-height:0; overflow:hidden; transition:max-height 0.32s ease, padding 0.2s ease; }
+        .weak-item-body.open { max-height:160px; }
+        .weak-chevron { transition: transform 0.3s ease; display:inline-block; }
+        .weak-chevron.open { transform: rotate(180deg); }
+
+        /* ═══════════════════════════════════════
+           EMPTY STATE ART  (Feature #17)
+        ═══════════════════════════════════════ */
+        .empty-state { display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:3.5rem 2rem; gap:0.75rem; }
+        .empty-icon { font-size:3.5rem; animation: floatBob 2.8s ease-in-out infinite; }
+        @keyframes floatBob { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-10px)} }
+
+        /* ═══════════════════════════════════════
+           OFFLINE QUEUE  (Feature #19)
+        ═══════════════════════════════════════ */
+        #offline-banner { display:none; background:linear-gradient(135deg,#1e293b,#334155); color:#fbbf24;
+            padding:8px 24px; text-align:center; font-size:11px; font-weight:800; letter-spacing:0.05em;
+            z-index:290; flex-shrink:0; align-items:center; justify-content:center; gap:10px; }
+        .offline-pulse { animation:pulse-dot 1.4s ease-in-out infinite; }
+        @keyframes pulse-dot { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+        /* ═══════════════════════════════════════
+           MOBILE NAV DARK MODE
+        ═══════════════════════════════════════ */
+        .dark #mobile-nav { background: rgba(6,4,15,0.96) !important; border-color: rgba(139,92,246,0.25) !important; }
+        .dark .mnav-btn { color: #475569 !important; }
+        .mnav-btn.mnav-active { color: #6366f1 !important; }
+        .dark .mnav-btn.mnav-active { color: #818cf8 !important; }
+        .dark #hamburger-drawer { background: rgba(10,8,24,0.98) !important; }
+        .hmenu-item:active { background:rgba(0,0,0,0.05); border-radius:14px; }
+        .dark .hmenu-item:active { background:rgba(255,255,255,0.07); border-radius:14px; }
+        .dark .hmenu-item > div > div:first-child { color: #e2e8f0 !important; }
+        .dark .hmenu-item > div > div:last-child  { color: #64748b !important; }
+        #hamburger-drawer { transition: transform 0.3s cubic-bezier(0.32,0.72,0,1); transform: translateY(100%); }
+        #hamburger-drawer.drawer-open { transform: translateY(0) !important; }
+        #hamburger-overlay { transition: opacity 0.25s; opacity: 0; }
+        #hamburger-overlay.overlay-open { opacity: 1; }
+
+        /* ═══════════════════════════════════════
+           SHARE CARD MODAL  (New Feature)
+        ═══════════════════════════════════════ */
+        #share-card-modal { position:fixed; inset:0; z-index:500; background:rgba(6,4,15,0.88); backdrop-filter:blur(20px);
+            display:none; align-items:flex-start; justify-content:center; padding:1.25rem;
+            overflow-y:auto; }
+        #share-card-modal.open { display:flex; }
+        #share-card-modal > div { width:400px; max-width:100%; margin:auto; padding-bottom:1rem; }
+        #share-card { width:100%; border-radius:1.5rem; overflow:hidden; position:relative; }
+        .share-card-bg { background:linear-gradient(135deg,#0f0c29,#302b63,#24243e); padding:2rem 1.75rem 1.75rem; }
+        .share-stat-grid { display:grid; grid-template-columns:1fr 1fr; gap:0.625rem; margin:1rem 0; }
+        .share-stat { background:rgba(255,255,255,0.07); border:1px solid rgba(255,255,255,0.12);
+            border-radius:0.875rem; padding:0.75rem 0.875rem; text-align:center; }
+        .share-bar { height:6px; background:rgba(255,255,255,0.12); border-radius:3px; margin-top:0.5rem; overflow:hidden; }
+        .share-bar-fill { height:100%; background:linear-gradient(90deg,#6366f1,#d946ef); border-radius:3px; transition:width 0.8s ease; }
+        .share-actions { position:sticky; bottom:0; background:rgba(6,4,15,0.75); backdrop-filter:blur(12px);
+            padding:0.75rem 0 0.25rem; margin-top:0.75rem; }
+    </style>
+    <!-- SVG gradient defs for ring -->
+    <svg width="0" height="0" style="position:absolute">
+      <defs>
+        <linearGradient id="ringGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%" stop-color="#6366f1"/>
+          <stop offset="100%" stop-color="#d946ef"/>
+        </linearGradient>
+      </defs>
+    </svg>
+</head>
+<body class="app-bg text-slate-800 dark:text-dark-text h-screen flex flex-col transition-colors duration-500">
+
+    <!-- DEMO WATERMARK (CSS overlay) -->
+    <div id="demo-watermark"></div>
+
+    <!-- DEMO BANNER -->
+    <div id="demo-banner" style="display:none;" class="bg-gradient-to-r from-amber-500 via-orange-500 to-rose-500 text-white px-6 py-2.5 text-center text-xs font-black uppercase tracking-widest flex items-center justify-center gap-3 z-[300] flex-shrink-0">
+        <i class="fa-solid fa-flask-vial animate-bounce"></i>
+        <span>⚡ DEMO MODE — You're viewing sample data. No real account needed.</span>
+        <button onclick="clearDemoMode()" class="ml-3 px-3 py-1 bg-white/25 rounded-lg hover:bg-white/40 transition font-black text-xs border border-white/30">✕ Exit Demo</button>
+    </div>
+
+    <!-- OFFLINE QUEUE BANNER (Feature #19) -->
+    <div id="offline-banner" class="flex items-center justify-center gap-3">
+        <span class="offline-pulse w-2 h-2 rounded-full bg-amber-400 inline-block"></span>
+        <span><span id="offline-queue-count">0</span> mock(s) queued offline — <button onclick="window.app.nav('tools')" class="underline font-black">View queue</button> · Sign in to sync</span>
+    </div>
+
+    <!-- SWIPE HINT (Feature #15) -->
+    <div id="swipe-hint">← swipe to navigate →</div>
+
+    <!-- SHARE CARD MODAL (New Feature) -->
+    <div id="share-card-modal" onclick="if(event.target===this)closeShareCard()">
+        <div style="width:460px;max-width:100%">
+            <!-- The card that gets captured -->
+            <div id="share-card">
+                <div class="share-card-bg">
+                    <!-- Header -->
+                    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem">
+                        <div style="display:flex;align-items:center;gap:0.75rem">
+                            <div style="width:40px;height:40px;border-radius:12px;background:linear-gradient(135deg,#6366f1,#d946ef);display:flex;align-items:center;justify-content:center;font-size:18px">📊</div>
+                            <div>
+                                <div style="font-size:13px;font-weight:900;color:white;letter-spacing:0.05em">MOCKTRACKER PRO</div>
+                                <div id="sc-exam" style="font-size:9px;font-weight:700;color:rgba(255,255,255,0.45);text-transform:uppercase;letter-spacing:0.1em">SSC CGL/CHSL</div>
+                            </div>
+                        </div>
+                        <div style="font-size:9px;font-weight:800;color:rgba(255,255,255,0.35);text-transform:uppercase;letter-spacing:0.08em" id="sc-date"></div>
+                    </div>
+                    <!-- Big score — solid gradient block (html2canvas compatible) -->
+                    <div style="background:linear-gradient(135deg,#6366f1,#a855f7,#d946ef);border-radius:1.25rem;padding:1.25rem 1.5rem 1rem;text-align:center;margin-bottom:1.25rem;position:relative;overflow:hidden;box-shadow:0 8px 32px rgba(99,102,241,0.35)">
+                        <div style="position:absolute;inset:0;background:rgba(0,0,0,0.08);border-radius:inherit"></div>
+                        <div style="position:relative">
+                            <div style="font-size:10px;font-weight:900;color:rgba(255,255,255,0.75);text-transform:uppercase;letter-spacing:0.18em;margin-bottom:0.4rem">Average Score</div>
+                            <div id="sc-avg" style="font-size:3.25rem;font-weight:900;color:white;line-height:1;text-shadow:0 2px 16px rgba(0,0,0,0.25)">—</div>
+                            <div id="sc-max-label" style="font-size:12px;font-weight:700;color:rgba(255,255,255,0.6);margin-top:0.3rem">/ 200</div>
+                        </div>
+                    </div>
+                    <!-- Stat grid -->
+                    <div class="share-stat-grid">
+                        <div class="share-stat">
+                            <div style="font-size:10px;font-weight:800;color:rgba(255,255,255,0.5);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:4px">Mocks</div>
+                            <div id="sc-total" style="font-size:1.75rem;font-weight:900;color:white">—</div>
+                        </div>
+                        <div class="share-stat">
+                            <div style="font-size:10px;font-weight:800;color:rgba(255,255,255,0.5);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:4px">Best Score</div>
+                            <div id="sc-high" style="font-size:1.75rem;font-weight:900;color:#fbbf24">—</div>
+                        </div>
+                        <div class="share-stat">
+                            <div style="font-size:10px;font-weight:800;color:rgba(255,255,255,0.5);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:4px">Avg Percentile</div>
+                            <div id="sc-perc" style="font-size:1.4rem;font-weight:900;color:#a78bfa">—%ile</div>
+                        </div>
+                        <div class="share-stat">
+                            <div style="font-size:10px;font-weight:800;color:rgba(255,255,255,0.5);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:4px">Improvement</div>
+                            <div id="sc-delta" style="font-size:1.75rem;font-weight:900;color:#34d399">—</div>
+                        </div>
+                    </div>
+                    <!-- Progress bar toward target -->
+                    <div id="sc-target-row" style="display:none;margin-top:1rem">
+                        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+                            <span style="font-size:10px;font-weight:800;color:rgba(255,255,255,0.5);text-transform:uppercase;letter-spacing:0.08em">Target Progress</span>
+                            <span id="sc-target-pct" style="font-size:11px;font-weight:900;color:#818cf8"></span>
+                        </div>
+                        <div class="share-bar"><div id="sc-bar-fill" class="share-bar-fill" style="width:0%"></div></div>
+                    </div>
+                    <!-- Footer -->
+                    <div style="margin-top:1.25rem;padding-top:0.875rem;border-top:1px solid rgba(255,255,255,0.08);display:flex;align-items:center;justify-content:space-between">
+                        <div id="sc-best-subject" style="font-size:11px;font-weight:700;color:rgba(255,255,255,0.45)"></div>
+                        <div style="font-size:10px;font-weight:800;color:rgba(255,255,255,0.2);text-transform:uppercase;letter-spacing:0.1em">mocktracker.pro</div>
+                    </div>
+                </div>
+            </div>
+            <!-- Actions — sticky so always visible when scrolling -->
+            <div class="share-actions">
+                <div style="display:flex;gap:0.625rem;">
+                    <button onclick="downloadShareCard()" class="btn-gradient flex-1 py-2.5 rounded-2xl text-white font-black text-sm flex items-center justify-center gap-2 shadow-xl">
+                        <i class="fa-solid fa-download"></i> Download Card
+                    </button>
+                    <button onclick="closeShareCard()" class="btn-glass flex-1 py-2.5 rounded-2xl font-black text-sm">
+                        Close
+                    </button>
+                </div>
+                <p class="text-center" style="font-size:10px;color:#64748b;margin-top:6px;font-weight:700;">Screenshot or download to share 🚀</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- EXAM SELECTION MODAL -->
+    <div id="modal-exam-select" class="fixed inset-0 z-[200] bg-slate-900/80 backdrop-blur-xl hidden items-start justify-center overflow-y-auto" style="padding:16px 16px 96px;">
+        <div class="glass-modal rounded-[2rem] w-full max-w-lg shadow-2xl" style="margin:auto;">
+            <!-- Compact header -->
+            <div class="px-6 pt-6 pb-4 text-center border-b border-white/20 dark:border-white/5">
+                <div class="w-12 h-12 mx-auto rounded-2xl bg-gradient-to-tr from-brand-600 to-accent-500 text-white flex items-center justify-center shadow-lg mb-3">
+                    <i class="fa-solid fa-graduation-cap text-xl"></i>
+                </div>
+                <h2 class="text-xl font-black text-gradient">Choose Your Exam</h2>
+                <p class="text-slate-500 dark:text-slate-400 text-xs mt-1">Select the exam you're preparing for</p>
+            </div>
+
+            <!-- Compact 2x2 grid -->
+            <div class="p-4 grid grid-cols-2 gap-3">
+                <div onclick="selectExam('SSC_CGL_CHSL')" class="exam-card glass-card p-4 rounded-[1.25rem] border-2 border-transparent cursor-pointer" data-exam="SSC_CGL_CHSL">
+                    <div class="flex items-center justify-between mb-2">
+                        <div class="w-8 h-8 rounded-xl bg-blue-100 dark:bg-blue-900/30 text-blue-600 flex items-center justify-center text-sm"><i class="fa-solid fa-briefcase"></i></div>
+                        <i class="fa-solid fa-check-circle text-lg text-brand-600 opacity-0 check-icon transition"></i>
+                    </div>
+                    <h3 class="text-sm font-black text-slate-900 dark:text-white leading-tight">SSC CGL / CHSL</h3>
+                    <div class="flex gap-1 mt-1.5 flex-wrap"><span class="pill bg-blue-100 dark:bg-blue-900/30 text-blue-600">+2 / -0.5</span><span class="pill bg-blue-100 dark:bg-blue-900/30 text-blue-600">200 marks</span></div>
+                </div>
+                <div onclick="selectExam('RRB_NTPC')" class="exam-card glass-card p-4 rounded-[1.25rem] border-2 border-transparent cursor-pointer" data-exam="RRB_NTPC">
+                    <div class="flex items-center justify-between mb-2">
+                        <div class="w-8 h-8 rounded-xl bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 flex items-center justify-center text-sm"><i class="fa-solid fa-train"></i></div>
+                        <i class="fa-solid fa-check-circle text-lg text-brand-600 opacity-0 check-icon transition"></i>
+                    </div>
+                    <h3 class="text-sm font-black text-slate-900 dark:text-white leading-tight">RRB NTPC</h3>
+                    <div class="flex gap-1 mt-1.5 flex-wrap"><span class="pill bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600">+1 / -0.33</span><span class="pill bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600">100 marks</span></div>
+                </div>
+                <div onclick="selectExam('SSC_MTS')" class="exam-card glass-card p-4 rounded-[1.25rem] border-2 border-transparent cursor-pointer" data-exam="SSC_MTS">
+                    <div class="flex items-center justify-between mb-2">
+                        <div class="w-8 h-8 rounded-xl bg-purple-100 dark:bg-purple-900/30 text-purple-600 flex items-center justify-center text-sm"><i class="fa-solid fa-building"></i></div>
+                        <i class="fa-solid fa-check-circle text-lg text-brand-600 opacity-0 check-icon transition"></i>
+                    </div>
+                    <h3 class="text-sm font-black text-slate-900 dark:text-white leading-tight">SSC MTS</h3>
+                    <div class="flex gap-1 mt-1.5 flex-wrap"><span class="pill bg-purple-100 dark:bg-purple-900/30 text-purple-600">+3 / -1</span><span class="pill bg-purple-100 dark:bg-purple-900/30 text-purple-600">270 marks</span></div>
+                </div>
+                <div onclick="selectExam('BANK_PO')" class="exam-card glass-card p-4 rounded-[1.25rem] border-2 border-transparent cursor-pointer" data-exam="BANK_PO">
+                    <div class="flex items-center justify-between mb-2">
+                        <div class="w-8 h-8 rounded-xl bg-amber-100 dark:bg-amber-900/30 text-amber-600 flex items-center justify-center text-sm"><i class="fa-solid fa-landmark"></i></div>
+                        <i class="fa-solid fa-check-circle text-lg text-brand-600 opacity-0 check-icon transition"></i>
+                    </div>
+                    <h3 class="text-sm font-black text-slate-900 dark:text-white leading-tight">Bank PO</h3>
+                    <div class="flex gap-1 mt-1.5 flex-wrap"><span class="pill bg-amber-100 dark:bg-amber-900/30 text-amber-600">+1 / -0.25</span><span class="pill bg-amber-100 dark:bg-amber-900/30 text-amber-600">100 marks</span></div>
+                </div>
+            </div>
+
+            <div class="px-4 pb-5 flex gap-3" style="position:sticky;bottom:0;background:rgba(255,255,255,0.92);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);padding-top:10px;border-top:1px solid rgba(0,0,0,0.06);">
+                <button id="confirm-exam-btn" onclick="confirmExamSelection()" disabled class="flex-1 py-3 rounded-xl btn-gradient text-white text-sm font-black shadow-lg transition opacity-50 cursor-not-allowed">
+                    Continue →
+                </button>
+                <button onclick="loadDemoMode()" class="px-5 py-3 rounded-xl text-white font-black text-sm transition flex items-center justify-center gap-2 shadow-lg flex-shrink-0" style="background:linear-gradient(135deg,#f59e0b,#ef4444);">
+                    <i class="fa-solid fa-flask-vial"></i> Demo
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- GLOBAL MODAL BACKDROP -->
+    <div id="modal-backdrop" class="fixed inset-0 z-[100] bg-slate-900/60 backdrop-blur-lg hidden items-center justify-center p-4 overflow-y-auto">
+        <!-- Mock Details Modal -->
+        <div id="modal-details" class="glass-modal rounded-[2.5rem] w-full max-w-xl hidden shadow-2xl overflow-hidden">
+            <div id="details-content"></div>
+            <div class="p-6 border-t border-white/30 dark:border-white/5 flex justify-end">
+                <button onclick="closeModal()" class="px-8 py-3 rounded-2xl btn-glass font-bold">Close Preview</button>
+            </div>
+        </div>
+        <!-- Quick Link Modal -->
+        <div id="modal-link" class="glass-modal rounded-[2rem] p-8 w-full max-w-sm hidden shadow-2xl">
+            <h3 class="text-2xl font-extrabold mb-6 text-gradient text-center">New Quick Link</h3>
+            <div class="space-y-4">
+                <input type="text" id="link-name" placeholder="Website Name" class="glass-input w-full p-4 rounded-2xl font-bold">
+                <input type="url" id="link-url" placeholder="https://..." class="glass-input w-full p-4 rounded-2xl font-bold">
+                <div class="flex gap-3 pt-4">
+                    <button onclick="closeModal()" class="flex-1 py-4 btn-glass rounded-2xl font-bold">Cancel</button>
+                    <button onclick="app.saveLink()" class="flex-1 py-4 rounded-2xl btn-gradient text-white font-black shadow-lg">Save Link</button>
+                </div>
+            </div>
+        </div>
+        <!-- Task Modal -->
+        <div id="modal-task" class="glass-modal rounded-[2rem] p-8 w-full max-w-sm hidden shadow-2xl">
+            <h3 class="text-2xl font-extrabold mb-6 text-gradient text-center">Add Daily Task</h3>
+            <form id="form-task" class="space-y-4">
+                <input type="text" id="task-name-inp" placeholder="Task Name" required class="glass-input w-full p-4 rounded-2xl font-bold">
+                <div class="grid grid-cols-4 gap-2" id="task-days"></div>
+                <div class="flex gap-3 pt-4">
+                    <button type="button" onclick="closeModal()" class="flex-1 py-4 btn-glass rounded-2xl font-bold">Cancel</button>
+                    <button type="submit" class="flex-1 py-4 rounded-2xl btn-gradient text-white font-black shadow-lg">Add Task</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- NAVBAR -->
+    <header class="glass-nav h-20 flex-none px-6 flex items-center justify-between z-50 flex-shrink-0">
+        <div class="flex items-center gap-3 min-w-0">
+            <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-brand-600 to-accent-500 text-white flex items-center justify-center shadow-xl shadow-brand-500/30 flex-shrink-0">
+                <i class="fa-solid fa-chart-pie text-xl"></i>
+            </div>
+            <div class="min-w-0">
+                <div class="flex items-center gap-2">
+                    <h1 class="text-xl font-extrabold tracking-tight text-slate-900 dark:text-white leading-none whitespace-nowrap">MockTracker <span class="text-brand-500">Pro</span></h1>
+                    <span class="demo-badge flex-shrink-0">Demo</span>
+                </div>
+                <div class="flex items-center gap-1.5 mt-0.5 min-w-0">
+                    <span id="selected-exam-badge" style="font-size:9px" class="font-black uppercase tracking-wider px-2 py-0.5 rounded bg-brand-100 dark:bg-brand-900/30 text-brand-600 dark:text-brand-400 truncate max-w-[120px]">-</span>
+                    <span id="status-indicator" class="w-2 h-2 rounded-full bg-gray-400 ml-0.5 flex-shrink-0"></span>
+                    <span id="status-text" style="font-size:9px" class="font-bold uppercase text-gray-400 tracking-wide hidden sm:inline">Offline</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Desktop Nav -->
+        <nav class="hidden md:flex items-center glass-card rounded-2xl p-1">
+            <button onclick="window.app.nav('home')" id="nav-home" class="nav-link active px-5 py-2.5 rounded-xl transition-all duration-300">Overview</button>
+            <button onclick="window.app.nav('log')" id="nav-log" class="nav-link px-5 py-2.5 rounded-xl transition-all duration-300">Log Score</button>
+            <button onclick="window.app.nav('history')" id="nav-history" class="nav-link px-5 py-2.5 rounded-xl transition-all duration-300">Mock Vault</button>
+            <button onclick="window.app.nav('analysis')" id="nav-analysis" class="nav-link px-5 py-2.5 rounded-xl transition-all duration-300">Deep Analysis</button>
+            <button onclick="window.app.nav('tools')" id="nav-tools" class="nav-link px-5 py-2.5 rounded-xl transition-all duration-300">Tools</button>
+        </nav>
+
+        <div class="flex items-center gap-2">
+            <!-- Theme Toggle (Feature #14 — animated) -->
+            <button onclick="window.app.toggleTheme()" class="w-10 h-10 rounded-xl btn-glass flex items-center justify-center relative overflow-hidden hover:scale-105 transition" title="Toggle theme">
+                <i class="fa-solid fa-sun theme-icon theme-sun text-amber-400"></i>
+                <i class="fa-solid fa-moon theme-icon theme-moon text-indigo-400"></i>
+            </button>
+            <!-- Auth -->
+            <div id="auth-box">
+                <button id="btn-login" onclick="app.login()" class="btn-glass rounded-xl transition flex items-center gap-2 px-3 py-2.5 md:px-5">
+                    <i class="fa-brands fa-google text-base text-red-500"></i>
+                    <span class="hidden md:inline text-xs font-bold">Sign in</span>
+                </button>
+                <div id="user-profile" class="hidden flex items-center gap-3 border-l border-white/30 dark:border-white/10 pl-3">
+                    <img id="user-avatar" class="w-9 h-9 rounded-full border-2 border-white/50 shadow-lg">
+                    <button onclick="app.logout()" class="text-slate-400 hover:text-red-500 transition"><i class="fa-solid fa-power-off"></i></button>
+                </div>
+            </div>
+            <button onclick="showExamSelector()" class="hidden md:flex items-center gap-1.5 px-3 py-2.5 rounded-xl btn-glass text-xs font-bold hover:scale-105 transition"><i class="fa-solid fa-exchange-alt"></i><span class="ml-1.5">Switch</span></button>
+        </div>
+    </header>
+
+    <!-- MAIN CONTENT -->
+    <main class="flex-1 overflow-y-auto custom-scroll px-5 pb-24">
+
+        <!-- HOME TAB -->
+        <div id="tab-home" class="tab-content active space-y-6 max-w-7xl mx-auto pt-5">
+
+            <!-- Primary Stat Cards -->
+            <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                <div class="glass-card p-6 rounded-[2rem] relative overflow-hidden group hover:scale-[1.02] transition-transform">
+                    <div class="absolute -right-4 -bottom-4 text-brand-500/8 text-7xl group-hover:scale-110 transition duration-500"><i class="fa-solid fa-layer-group"></i></div>
+                    <p class="text-xs font-black text-slate-400 uppercase tracking-widest mb-1 flex items-center gap-1">Mocks Attempted <span class="demo-badge">demo</span></p>
+                    <h3 id="h-total" class="text-4xl font-black text-slate-900 dark:text-white">-</h3>
+                </div>
+                <div class="glass-card p-6 rounded-[2rem] relative overflow-hidden group hover:scale-[1.02] transition-transform">
+                    <div class="absolute -right-4 -bottom-4 text-emerald-500/8 text-7xl group-hover:scale-110 transition duration-500"><i class="fa-solid fa-bolt"></i></div>
+                    <p class="text-xs font-black text-slate-400 uppercase tracking-widest mb-1 flex items-center gap-1">Avg Score <span class="demo-badge">demo</span></p>
+                    <div class="flex items-end gap-2">
+                        <h3 id="h-avg" class="text-4xl font-black text-gradient">-</h3>
+                        <span id="h-delta" class="text-xs font-black pb-1 hidden"></span>
+                    </div>
+                </div>
+                <div class="glass-card p-6 rounded-[2rem] relative overflow-hidden group hover:scale-[1.02] transition-transform border-l-4 border-accent-500">
+                    <p class="text-xs font-black text-slate-400 uppercase tracking-widest mb-1 flex items-center gap-1">Mean Percentile <span class="demo-badge">demo</span></p>
+                    <h3 id="h-perc" class="text-4xl font-black text-accent-500">-</h3>
+                </div>
+                <div class="glass-card p-6 rounded-[2rem] relative overflow-hidden group hover:scale-[1.02] transition-transform border-l-4 border-amber-500">
+                    <p class="text-xs font-black text-slate-400 uppercase tracking-widest mb-1 flex items-center gap-1">High Score <span class="demo-badge">demo</span></p>
+                    <h3 id="h-high" class="text-4xl font-black text-amber-500">-</h3>
+                    <p id="h-high-sub" class="text-xs font-black text-amber-400/60 uppercase tracking-widest mt-1 truncate max-w-full">-</p>
+                </div>
+            </div>
+
+            <!-- Secondary Mini Stats -->
+            <div class="grid grid-cols-2 lg:grid-cols-4 gap-3">
+                <div class="glass-card p-4 rounded-[1.5rem] flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-orange-100 dark:bg-orange-900/30 flex items-center justify-center text-lg">🔥</div>
+                    <div><p class="text-xs font-black text-slate-400 uppercase tracking-widest">Streak</p><h4 id="h-streak" class="text-xl font-black text-orange-500">- days</h4></div>
+                </div>
+                <div class="glass-card p-4 rounded-[1.5rem] flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center text-lg">📈</div>
+                    <div><p class="text-xs font-black text-slate-400 uppercase tracking-widest">Last Score</p><h4 id="h-last" class="text-xl font-black text-emerald-600">-</h4></div>
+                </div>
+                <div class="glass-card p-4 rounded-[1.5rem] flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-rose-100 dark:bg-rose-900/30 flex items-center justify-center text-lg">🎯</div>
+                    <div><p class="text-xs font-black text-slate-400 uppercase tracking-widest">Lowest</p><h4 id="h-low" class="text-xl font-black text-rose-500">-</h4></div>
+                </div>
+                <div class="glass-card p-4 rounded-[1.5rem] flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-brand-100 dark:bg-brand-900/30 flex items-center justify-center text-lg">📅</div>
+                    <div><p class="text-xs font-black text-slate-400 uppercase tracking-widest">This Month</p><h4 id="h-month" class="text-xl font-black text-brand-500">- mocks</h4></div>
+                </div>
+            </div>
+
+            <!-- TARGET SCORE WIDGET + PROJECTION (Features #1 & #4) -->
+            <div class="glass-card p-5 rounded-[2rem] flex flex-col md:flex-row items-center gap-5">
+                <!-- Ring -->
+                <div class="target-ring">
+                    <svg viewBox="0 0 80 80" width="80" height="80">
+                        <circle class="ring-bg" cx="40" cy="40" r="34"/>
+                        <circle id="target-ring-fill" class="ring-fill" cx="40" cy="40" r="34"
+                            stroke-dasharray="213.6" stroke-dashoffset="213.6"/>
+                    </svg>
+                    <div class="ring-label">
+                        <span id="target-pct" class="text-sm font-black text-gradient leading-none">0%</span>
+                        <span style="font-size:8px" class="font-black text-slate-400 uppercase tracking-wide leading-tight mt-0.5">of goal</span>
+                    </div>
+                </div>
+                <!-- Controls -->
+                <div class="flex-1 min-w-0">
+                    <div class="flex items-center gap-2 mb-1">
+                        <span class="text-sm font-black text-slate-700 dark:text-slate-200 uppercase tracking-wider">🎯 Target Score</span>
+                        <span class="demo-badge">demo</span>
+                    </div>
+                    <p class="text-xs text-slate-400 mb-3">Set your cutoff goal — shown as a line on the chart</p>
+                    <div class="flex items-center gap-3 flex-wrap">
+                        <input type="number" id="target-input" class="glass-input w-28 px-3 py-2 rounded-xl font-black text-xl text-brand-600 dark:text-brand-400 text-center" placeholder="160">
+                        <span id="target-max-label" class="text-slate-400 font-bold text-sm">/ 200</span>
+                        <button onclick="saveTargetScore()" class="btn-gradient px-4 py-2 rounded-xl text-white text-xs font-black shadow-lg">Set Goal</button>
+                        <span id="target-above-count" class="text-xs font-black text-emerald-600 hidden"></span>
+                    </div>
+                </div>
+                <!-- Projection (Feature #4) -->
+                <div class="flex-shrink-0 text-center px-5 border-l border-white/30 dark:border-white/5">
+                    <p class="text-xs font-black text-slate-400 uppercase tracking-widest mb-1">📊 Projected</p>
+                    <h4 id="h-projected" class="text-3xl font-black text-gradient">-</h4>
+                    <p class="text-xs text-slate-400 font-bold mt-1">Next Mock Est.</p>
+                </div>
+            </div>
+
+            <!-- Chart + Resources Row -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <div class="lg:col-span-2 glass-card p-7 rounded-[2rem]">
+                    <h3 class="font-extrabold text-base mb-6 flex items-center gap-3 text-slate-900 dark:text-white">
+                        <span class="w-1.5 h-5 bg-gradient-to-b from-brand-500 to-accent-500 rounded-full"></span>
+                        Performance Index
+                        <span class="demo-badge">demo</span>
+                    </h3>
+                    <div class="h-72"><canvas id="chart-home"></canvas></div>
+                </div>
+                <div class="space-y-4">
+                    <div class="glass-card p-6 rounded-[2rem]">
+                        <div class="flex justify-between items-center mb-5">
+                            <h3 class="font-extrabold text-base text-slate-900 dark:text-white flex items-center gap-2">Resources <span class="demo-badge">demo</span></h3>
+                            <button onclick="openModal('modal-link')" class="text-xs font-black text-brand-600 uppercase hover:underline">+ Add</button>
+                        </div>
+                        <div id="links-grid" class="grid grid-cols-1 gap-2.5 max-h-[280px] overflow-y-auto custom-scroll pr-1"></div>
+                    </div>
+                    <div class="glass-card p-5 rounded-[2rem]">
+                        <h3 id="week-chart-title" class="text-xs font-black uppercase text-slate-400 tracking-widest mb-3 text-center flex items-center justify-center gap-1">Consistency <span class="demo-badge">demo</span></h3>
+                        <div class="h-28"><canvas id="chart-week"></canvas></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Active Roadmap -->
+            <div class="glass-card p-7 rounded-[2rem]">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-lg font-extrabold text-slate-900 dark:text-white flex items-center gap-2">Active Roadmap <span class="demo-badge">demo</span></h3>
+                    <button onclick="openModal('modal-task')" class="btn-gradient text-white px-5 py-2 rounded-xl text-xs font-black shadow-lg hover:scale-105 transition">+ Create Task</button>
+                </div>
+                <div id="task-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+                <div id="empty-tasks" class="hidden empty-state">
+                    <div class="empty-icon">📋</div>
+                    <p class="font-black text-slate-600 dark:text-slate-300 text-lg">No tasks yet</p>
+                    <p class="text-sm text-slate-400 max-w-xs">Build a study routine — add daily tasks to stay on track</p>
+                    <button onclick="openModal('modal-task')" class="btn-gradient text-white px-5 py-2.5 rounded-xl font-black text-sm mt-1">+ Add First Task</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- LOG TAB -->
+        <div id="tab-log" class="tab-content max-w-3xl mx-auto pt-5 pb-10">
+
+            <!-- Page header -->
+            <div class="flex items-center justify-between mb-6">
+                <div>
+                    <h2 class="text-2xl font-black text-gradient" id="log-title">Log a Mock</h2>
+                    <p class="text-xs text-slate-400 font-semibold mt-0.5">Fill in the details of your attempt below</p>
+                </div>
+                <button onclick="app.resetForm()" class="flex items-center gap-2 px-4 py-2 rounded-xl btn-glass text-xs font-black text-rose-500 hover:bg-rose-50/50 transition">
+                    <i class="fa-solid fa-rotate-left"></i> Reset
+                </button>
+            </div>
+
+            <form id="form-score" class="space-y-4">
+
+                <!-- ── CARD 1: Mock Identity ── -->
+                <div class="glass-card rounded-[1.8rem] overflow-hidden">
+                    <div class="px-6 py-4 border-b border-white/30 dark:border-white/5 flex items-center gap-3">
+                        <span class="w-7 h-7 rounded-xl bg-gradient-to-br from-brand-500 to-accent-500 text-white flex items-center justify-center text-xs font-black shadow-lg">1</span>
+                        <span class="text-sm font-black text-slate-700 dark:text-slate-200 uppercase tracking-wider">Mock Identity</span>
+                    </div>
+                    <div class="p-6 grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="space-y-1.5">
+                            <label class="text-xs font-black text-slate-400 uppercase tracking-widest flex items-center gap-1.5"><i class="fa-solid fa-building-columns text-brand-400 text-xs"></i> Platform</label>
+                            <input list="platforms" id="inp-platform" class="glass-input w-full px-4 py-3 rounded-xl font-bold text-sm" placeholder="Testbook, Oliveboard…" required>
+                            <datalist id="platforms"><option value="The Pundits"><option value="Testbook"><option value="Oliveboard"><option value="RBE Mocks"><option value="e1 coaching"><option value="Byjus"><option value="Adda247"></datalist>
+                        </div>
+                        <div class="space-y-1.5">
+                            <label class="text-xs font-black text-slate-400 uppercase tracking-widest flex items-center gap-1.5"><i class="fa-solid fa-file-signature text-brand-400 text-xs"></i> Mock Name</label>
+                            <input type="text" id="inp-name" placeholder="e.g. Tier-1 Full Mock #22" class="glass-input w-full px-4 py-3 rounded-xl font-bold text-sm" required>
+                        </div>
+                        <div class="space-y-1.5">
+                            <label class="text-xs font-black text-slate-400 uppercase tracking-widest flex items-center gap-1.5"><i class="fa-solid fa-calendar-day text-brand-400 text-xs"></i> Date</label>
+                            <input type="date" id="inp-date" class="glass-input w-full px-4 py-3 rounded-xl font-bold text-sm">
+                        </div>
+                        <div class="space-y-1.5">
+                            <label class="text-xs font-black text-slate-400 uppercase tracking-widest flex items-center gap-1.5"><i class="fa-solid fa-layer-group text-brand-400 text-xs"></i> Test Scale</label>
+                            <select id="inp-cat" class="glass-input w-full px-4 py-3 rounded-xl font-bold text-sm modern-select"><option value="Full">Full Length</option><option value="Sectional">Sectional</option></select>
+                        </div>
+                    </div>
+                    <!-- Sectional picker -->
+                    <div id="div-sec-select" class="hidden mx-6 mb-5 p-4 rounded-2xl border border-brand-200/40 dark:border-brand-800/30" style="background:rgba(99,102,241,0.06)">
+                        <p class="text-xs font-black text-brand-600 dark:text-brand-400 uppercase tracking-widest mb-3">Select Subjects Included</p>
+                        <div id="sec-checkboxes" class="flex flex-wrap gap-2"></div>
+                    </div>
+                </div>
+
+                <!-- ── CARD 2: Scores ── -->
+                <div class="glass-card rounded-[1.8rem] overflow-hidden">
+                    <div class="px-6 py-4 border-b border-white/30 dark:border-white/5 flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <span class="w-7 h-7 rounded-xl bg-gradient-to-br from-emerald-500 to-cyan-500 text-white flex items-center justify-center text-xs font-black shadow-lg">2</span>
+                            <span class="text-sm font-black text-slate-700 dark:text-slate-200 uppercase tracking-wider">Subject Scores</span>
+                        </div>
+                        <!-- Quick entry toggle (RRB only) -->
+                        <div id="quick-entry-toggle" class="hidden">
+                            <label class="flex items-center gap-2 cursor-pointer select-none">
+                                <span class="text-xs font-black text-emerald-600 uppercase">Quick Mode</span>
+                                <div class="relative">
+                                    <input type="checkbox" id="use-quick-entry" onchange="toggleQuickEntry()" class="sr-only peer">
+                                    <div class="w-10 h-5 bg-slate-200 dark:bg-slate-700 rounded-full peer-checked:bg-emerald-500 transition"></div>
+                                    <div class="absolute top-0.5 left-0.5 w-4 h-4 bg-white rounded-full shadow transition peer-checked:translate-x-5"></div>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Quick Entry fields -->
+                    <div id="quick-entry-section" class="hidden p-6">
+                        <div class="grid grid-cols-4 gap-3 mb-4">
+                            <div class="glass-card rounded-2xl p-4 text-center border border-emerald-200/40 dark:border-emerald-800/30">
+                                <p class="text-xs font-black text-emerald-600 uppercase tracking-widest mb-2">✓ Right</p>
+                                <input type="number" id="quick-correct" min="0" class="w-full bg-transparent text-center text-2xl font-black text-emerald-600 outline-none" placeholder="0" oninput="calcQuickScore()">
+                            </div>
+                            <div class="glass-card rounded-2xl p-4 text-center border border-rose-200/40 dark:border-rose-800/30">
+                                <p class="text-xs font-black text-rose-600 uppercase tracking-widest mb-2">✗ Wrong</p>
+                                <input type="number" id="quick-wrong" min="0" class="w-full bg-transparent text-center text-2xl font-black text-rose-500 outline-none" placeholder="0" oninput="calcQuickScore()">
+                            </div>
+                            <div class="glass-card rounded-2xl p-4 text-center">
+                                <p class="text-xs font-black text-slate-400 uppercase tracking-widest mb-2">– Skip</p>
+                                <input type="number" id="quick-skip" min="0" class="w-full bg-transparent text-center text-2xl font-black text-slate-400 outline-none" placeholder="0">
+                            </div>
+                            <div class="glass-card rounded-2xl p-4 text-center border border-orange-200/40 dark:border-orange-800/30">
+                                <p class="text-xs font-black text-orange-500 uppercase tracking-widest mb-2">⚠ Silly</p>
+                                <input type="number" id="quick-silly" min="0" class="w-full bg-transparent text-center text-2xl font-black text-orange-500 outline-none" placeholder="0">
+                            </div>
+                        </div>
+                        <div class="rounded-2xl p-4 flex items-center justify-between" style="background:linear-gradient(135deg,rgba(99,102,241,0.12),rgba(217,70,239,0.08));border:1px solid rgba(99,102,241,0.2)">
+                            <span class="text-xs font-black text-slate-500 uppercase tracking-widest">Calculated Score</span>
+                            <span class="text-3xl font-black text-gradient" id="quick-calc-score">0.0</span>
+                        </div>
+                    </div>
+
+                    <!-- Normal subject-wise entry -->
+                    <div id="normal-entry-section" class="p-6">
+                        <div id="subject-cards-grid" class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
+                            <!-- Subject cards rendered by JS -->
+                        </div>
+                        <!-- Hidden table for legacy compat -->
+                        <table class="hidden"><tbody id="inp-subs-body"></tbody></table>
+                        <!-- Score bar -->
+                        <div class="rounded-2xl px-5 py-4 flex items-center justify-between mt-2" style="background:linear-gradient(135deg,#6366f1,#d946ef)">
+                            <div>
+                                <p class="text-xs font-black text-white/70 uppercase tracking-widest">Total Score</p>
+                                <span id="calc-score" class="text-4xl font-black text-white">0.0</span>
+                            </div>
+                            <div class="text-right">
+                                <p class="text-xs font-black text-white/70 uppercase tracking-widest mb-0.5">Scheme</p>
+                                <span id="marking-scheme" class="text-sm font-black text-white/90">-</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ── CARD 3: Performance Metrics ── -->
+                <div class="glass-card rounded-[1.8rem] overflow-hidden">
+                    <div class="px-6 py-4 border-b border-white/30 dark:border-white/5 flex items-center gap-3">
+                        <span class="w-7 h-7 rounded-xl bg-gradient-to-br from-accent-500 to-purple-500 text-white flex items-center justify-center text-xs font-black shadow-lg">3</span>
+                        <span class="text-sm font-black text-slate-700 dark:text-slate-200 uppercase tracking-wider">Performance Metrics</span>
+                    </div>
+                    <div class="p-6 grid grid-cols-2 gap-4">
+                        <div class="glass-card rounded-2xl p-4 border border-accent-500/20">
+                            <p class="text-xs font-black text-accent-500 uppercase tracking-widest mb-2 flex items-center gap-1.5"><i class="fa-solid fa-ranking-star text-xs"></i> Percentile</p>
+                            <input type="number" id="inp-perc" step="0.01" min="0" max="100" class="w-full bg-transparent text-2xl font-black text-slate-800 dark:text-white outline-none placeholder:text-slate-300 dark:placeholder:text-slate-600" placeholder="98.42">
+                        </div>
+                        <div class="glass-card rounded-2xl p-4 border border-cyan-500/20">
+                            <p class="text-xs font-black text-cyan-600 uppercase tracking-widest mb-2 flex items-center gap-1.5"><i class="fa-solid fa-clock text-xs"></i> Duration (min)</p>
+                            <input type="number" id="inp-time" min="0" class="w-full bg-transparent text-2xl font-black text-slate-800 dark:text-white outline-none placeholder:text-slate-300 dark:placeholder:text-slate-600" placeholder="60">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ── CARD 4: Error Debrief ── -->
+                <div class="glass-card rounded-[1.8rem] overflow-hidden">
+                    <div class="px-6 py-4 border-b border-white/30 dark:border-white/5 flex items-center gap-3">
+                        <span class="w-7 h-7 rounded-xl bg-gradient-to-br from-rose-500 to-orange-500 text-white flex items-center justify-center text-xs font-black shadow-lg">4</span>
+                        <span class="text-sm font-black text-slate-700 dark:text-slate-200 uppercase tracking-wider">Error Debrief</span>
+                        <span class="text-xs text-slate-400 font-semibold ml-auto">Optional but valuable</span>
+                    </div>
+                    <div class="p-6 grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="space-y-2">
+                            <label class="text-xs font-black uppercase tracking-widest flex items-center gap-1.5 text-rose-500"><i class="fa-solid fa-triangle-exclamation text-xs"></i> Silly Errors</label>
+                            <textarea id="inp-silly-desc" rows="3" placeholder="What went wrong? Calculation slip, misread question…" class="glass-input w-full px-4 py-3 rounded-xl text-sm font-medium resize-none"></textarea>
+                        </div>
+                        <div class="space-y-2">
+                            <label class="text-xs font-black uppercase tracking-widest flex items-center gap-1.5 text-amber-500"><i class="fa-solid fa-dumbbell text-xs"></i> Weak Topics</label>
+                            <textarea id="inp-weak" rows="3" placeholder="Topics to revise before next mock…" class="glass-input w-full px-4 py-3 rounded-xl text-sm font-medium resize-none"></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ── SAVE BUTTON ── -->
+                <button type="submit" class="w-full py-5 rounded-2xl btn-gradient text-white text-base font-black shadow-xl shadow-brand-500/30 transition active:scale-[0.98] flex items-center justify-center gap-3">
+                    <i class="fa-solid fa-floppy-disk text-lg"></i>
+                    Save Mock to Vault
+                </button>
+
+            </form>
+        </div>
+
+        <!-- HISTORY TAB -->
+        <div id="tab-history" class="tab-content max-w-6xl mx-auto pt-5">
+            <div class="glass-card rounded-[2rem] overflow-hidden">
+                <div class="p-7 border-b border-white/30 dark:border-white/5 flex flex-col md:flex-row gap-4 justify-between items-start md:items-center">
+                    <h2 class="text-xl font-black text-gradient flex items-center gap-2">Mock Performance Vault <span class="demo-badge">demo</span></h2>
+                    <div class="flex gap-3 w-full md:w-auto">
+                        <div class="relative flex-1 md:w-60">
+                            <i class="fa-solid fa-search absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+                            <input type="text" id="hist-search" placeholder="Search mocks..." oninput="filterHistory()" class="glass-input w-full pl-10 pr-4 py-3 rounded-2xl font-bold text-sm">
+                        </div>
+                        <select id="hist-sort" onchange="filterHistory()" class="glass-input px-3 py-3 rounded-2xl font-bold text-sm modern-select">
+                            <option value="date-desc">Newest First</option>
+                            <option value="date-asc">Oldest First</option>
+                            <option value="score-desc">Highest Score</option>
+                            <option value="score-asc">Lowest Score</option>
+                            <option value="perc-desc">Best Percentile</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="overflow-x-auto" id="hist-table-wrap">
+                    <!-- Empty state (Feature #17) -->
+                    <div id="empty-history" class="hidden empty-state py-20">
+                        <div class="empty-icon">📝</div>
+                        <p class="font-black text-slate-600 dark:text-slate-300 text-xl">No mocks recorded yet</p>
+                        <p class="text-sm text-slate-400 max-w-xs">Log your first mock to start tracking progress here</p>
+                        <button onclick="window.app.nav('log')" class="btn-gradient text-white px-6 py-3 rounded-xl font-black text-sm mt-1">Log First Mock →</button>
+                    </div>
+                    <table class="w-full text-left text-sm" id="hist-table">
+                        <thead class="text-xs font-black text-slate-400 uppercase tracking-wide" style="background:rgba(255,255,255,0.3)">
+                            <tr>
+                                <th class="px-6 py-4 whitespace-nowrap">Date</th>
+                                <th class="px-6 py-4">Mock Title</th>
+                                <th class="px-6 py-4 text-center whitespace-nowrap">Score</th>
+                                <th class="px-6 py-4 text-center">Tag</th>
+                                <th class="px-6 py-4 text-center whitespace-nowrap">% Score</th>
+                                <th class="px-6 py-4 text-right whitespace-nowrap">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="hist-body" class="divide-y divide-white/20 dark:divide-white/5" style="background:rgba(255,255,255,0.15)"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- ANALYSIS TAB -->
+        <div id="tab-analysis" class="tab-content pt-5 space-y-6 max-w-7xl mx-auto pb-28">
+
+            <!-- Empty state (Feature #17) -->
+            <div id="empty-analysis" class="hidden glass-card rounded-[2rem] empty-state py-24">
+                <div class="empty-icon">📊</div>
+                <p class="font-black text-slate-600 dark:text-slate-300 text-xl">Nothing to analyse yet</p>
+                <p class="text-sm text-slate-400 max-w-xs">Log at least 2 mocks to unlock charts, radar, scatter, and best-day insights</p>
+                <button onclick="window.app.nav('log')" class="btn-gradient text-white px-6 py-3 rounded-xl font-black text-sm mt-1">Log Mocks →</button>
+            </div>
+
+            <div id="analysis-content">
+                <div class="flex items-center justify-between mb-5 flex-wrap gap-3">
+                    <h3 class="text-base font-black text-slate-800 dark:text-white uppercase tracking-widest flex items-center gap-2">
+                        <i class="fa-solid fa-bolt text-amber-500"></i> Potential Score Analysis
+                        <span class="demo-badge">demo</span>
+                    </h3>
+                    <button onclick="openShareCard()" class="btn-gradient px-5 py-2.5 rounded-xl text-white text-xs font-black shadow-lg flex items-center gap-2 hover:scale-105 transition">
+                        <i class="fa-solid fa-share-nodes"></i> Share Performance Card
+                    </button>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="text-center p-5 rounded-2xl glass-card"><p class="text-xs font-black text-slate-400 uppercase tracking-widest mb-1">Real Average</p><h2 id="ana-real-avg" class="text-3xl font-black text-slate-800 dark:text-white">-</h2></div>
+                    <div class="text-center p-5 rounded-2xl glass-card border border-emerald-200/40 dark:border-emerald-900/30"><p class="text-xs font-black text-emerald-500 uppercase tracking-widest mb-1">Potential Average</p><h2 id="ana-pot-avg" class="text-3xl font-black text-emerald-600">-</h2><p class="text-xs text-emerald-400 mt-1 font-bold">If 0 Silly Errors</p></div>
+                    <div class="text-center p-5 rounded-2xl glass-card border border-rose-200/40 dark:border-rose-900/30"><p class="text-xs font-black text-rose-500 uppercase tracking-widest mb-1">Avg Marks Lost</p><h2 id="ana-silly-loss-avg" class="text-3xl font-black text-rose-500">-</h2><p class="text-xs text-rose-400 mt-1 font-bold">Due to Mistakes</p></div>
+                </div>
+            </div>
+
+            <!-- RADAR + SCATTER row (Features #5 & #7) -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="glass-card p-7 rounded-[2rem]">
+                    <h3 class="text-sm font-black text-slate-800 dark:text-white mb-4 uppercase tracking-widest flex items-center gap-2">
+                        <i class="fa-solid fa-chart-simple text-brand-500"></i> Subject Radar
+                        <span class="demo-badge">demo</span>
+                    </h3>
+                    <div class="h-56 relative"><canvas id="chart-radar"></canvas></div>
+                </div>
+                <div class="glass-card p-7 rounded-[2rem]">
+                    <h3 class="text-sm font-black text-slate-800 dark:text-white mb-4 uppercase tracking-widest flex items-center gap-2">
+                        <i class="fa-solid fa-braille text-accent-500"></i> Score vs Percentile
+                        <span class="demo-badge">demo</span>
+                    </h3>
+                    <div class="h-56 relative"><canvas id="chart-scatter"></canvas></div>
+                </div>
+            </div>
+
+            <!-- SCORE DISTRIBUTION HISTOGRAM (New) -->
+            <div class="glass-card p-7 rounded-[2rem]">
+                <h3 class="text-sm font-black text-slate-800 dark:text-white mb-4 uppercase tracking-widest flex items-center gap-2">
+                    <i class="fa-solid fa-chart-column text-indigo-500"></i> Score Distribution
+                    <span class="demo-badge">demo</span>
+                    <span class="ml-auto text-xs font-normal text-slate-400 normal-case">How your scores cluster</span>
+                </h3>
+                <div class="h-52 relative"><canvas id="chart-histogram"></canvas></div>
+                <div id="histogram-insight" class="mt-3 text-center text-xs font-black text-brand-600 dark:text-brand-400"></div>
+            </div>
+
+            <!-- NEGATIVE MARKING DAMAGE (New) -->
+            <div class="glass-card p-7 rounded-[2rem]">
+                <h3 class="text-sm font-black text-slate-800 dark:text-white mb-4 uppercase tracking-widest flex items-center gap-2">
+                    <i class="fa-solid fa-skull text-rose-500"></i> Negative Marking Damage
+                    <span class="demo-badge">demo</span>
+                    <span class="ml-auto text-xs font-normal text-slate-400 normal-case">Earned vs Bled per mock</span>
+                </h3>
+                <div class="h-60 relative"><canvas id="chart-damage"></canvas></div>
+                <div id="damage-insight" class="mt-3 text-center text-xs font-black text-rose-500 dark:text-rose-400"></div>
+            </div>
+
+            <!-- BEST DAY OF WEEK (Feature #8) -->
+            <div class="glass-card p-7 rounded-[2rem]">
+                <h3 class="text-sm font-black text-slate-800 dark:text-white mb-5 uppercase tracking-widest flex items-center gap-2">
+                    <i class="fa-solid fa-calendar-star text-amber-500"></i> Best Day of Week
+                    <span class="demo-badge">demo</span>
+                </h3>
+                <div id="best-day-grid" class="grid grid-cols-7 gap-2"></div>
+                <p id="best-day-insight" class="text-xs text-brand-600 dark:text-brand-400 font-black mt-4 text-center"></p>
+            </div>
+
+            <div class="glass-card rounded-[2rem] overflow-hidden">
+                <div class="p-5 border-b border-white/30 dark:border-white/5" style="background:rgba(255,255,255,0.2)">
+                    <h3 class="text-base font-bold text-gray-900 dark:text-white flex items-center gap-2">
+                        <i class="fa-solid fa-table-cells text-brand-500"></i> Subject Mastery Matrix
+                        <span class="demo-badge">demo</span>
+                    </h3>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-sm">
+                        <thead class="text-xs font-black text-slate-400 uppercase tracking-widest" style="background:rgba(255,255,255,0.25)">
+                            <tr>
+                                <th class="px-6 py-4">Subject</th>
+                                <th class="px-6 py-4">Avg Score</th>
+                                <th class="px-6 py-4">Avg Correct</th>
+                                <th class="px-6 py-4">Accuracy</th>
+                                <th class="px-6 py-4">Avg Last 5</th>
+                                <th class="px-6 py-4">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="matrix-body" class="divide-y divide-white/20 dark:divide-white/5" style="background:rgba(255,255,255,0.1)"></tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="glass-card p-7 rounded-[2rem] border-t-4 border-rose-500">
+                    <h3 class="text-base font-bold text-rose-500 mb-5 flex items-center gap-2 uppercase tracking-widest">
+                        <i class="fa-solid fa-bug"></i> Silly Error Audit <span class="demo-badge">demo</span>
+                    </h3>
+                    <div id="ana-silly-log-body" class="space-y-3"></div>
+                </div>
+                <div class="glass-card p-7 rounded-[2rem] border-t-4 border-brand-500">
+                    <h3 class="text-base font-bold text-brand-600 dark:text-brand-400 mb-5 uppercase tracking-widest flex items-center gap-2">
+                        <i class="fa-solid fa-scale-balanced"></i> Platform Performance <span class="demo-badge">demo</span>
+                    </h3>
+                    <div class="h-60 relative"><canvas id="chart-plat"></canvas></div>
+                </div>
+            </div>
+            <div class="glass-card p-7 rounded-[2rem]">
+                <h3 class="text-lg font-bold mb-4 flex items-center gap-3 text-amber-500">
+                    <i class="fa-solid fa-dumbbell"></i> Weak Areas Manager <span class="demo-badge">demo</span>
+                    <span class="ml-auto text-xs text-slate-400 font-normal normal-case">Tap to expand</span>
+                </h3>
+                <div id="ana-weak-list" class="space-y-2"></div>
+            </div>
+            </div><!-- /analysis-content -->
+        </div>
+
+        <!-- TOOLS TAB -->
+        <div id="tab-tools" class="tab-content max-w-4xl mx-auto space-y-6 pt-5 pb-28">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="glass-card p-9 rounded-[2.5rem] text-center hover:scale-[1.02] transition group">
+                    <div class="w-14 h-14 rounded-2xl bg-indigo-100/60 dark:bg-indigo-950/60 text-indigo-600 mx-auto mb-5 flex items-center justify-center text-2xl group-hover:scale-110 transition"><i class="fa-solid fa-download"></i></div>
+                    <h3 class="text-lg font-bold mb-2 text-slate-900 dark:text-white">Export Data</h3>
+                    <p class="text-sm text-slate-500 mb-7">Save all your records to a JSON file.</p>
+                    <button onclick="app.backup()" class="w-full py-4 rounded-2xl btn-gradient text-white font-black shadow-lg">Download JSON</button>
+                </div>
+                <div class="glass-card p-9 rounded-[2.5rem] text-center hover:scale-[1.02] transition group">
+                    <div class="w-14 h-14 rounded-2xl bg-purple-100/60 dark:bg-purple-900/30 text-purple-600 mx-auto mb-5 flex items-center justify-center text-2xl group-hover:scale-110 transition"><i class="fa-solid fa-upload"></i></div>
+                    <h3 class="text-lg font-bold mb-2 text-slate-900 dark:text-white">Restore Data</h3>
+                    <p class="text-sm text-slate-500 mb-7">Load records from a previously saved file.</p>
+                    <input type="file" id="restore-input" class="hidden" accept=".json" onchange="app.restore(event)">
+                    <button onclick="document.getElementById('restore-input').click()" class="w-full py-4 rounded-2xl btn-gradient text-white font-black shadow-lg">Upload JSON</button>
+                </div>
+            </div>
+            <!-- DEMO MODE CARD -->
+            <div class="glass-card p-9 rounded-[2.5rem] hover:scale-[1.01] transition group" style="background:linear-gradient(135deg,rgba(254,243,199,0.5),rgba(254,226,226,0.4));">
+                <div class="flex items-start gap-5">
+                    <div class="w-14 h-14 rounded-2xl flex items-center justify-center text-2xl group-hover:scale-110 transition flex-shrink-0" style="background:linear-gradient(135deg,#f59e0b,#ef4444);"><i class="fa-solid fa-flask-vial text-white"></i></div>
+                    <div class="flex-1 min-w-0">
+                        <h3 class="text-lg font-bold mb-1 text-slate-900 dark:text-white">Demo Mode</h3>
+                        <p class="text-sm text-slate-500 dark:text-slate-400 mb-1">Try MockTracker Pro without signing in. Loads <strong>5 sample SSC CGL mocks</strong> with realistic scores so you can explore all features — analytics, charts, target ring, negative marking tracker, and more.</p>
+                        <p class="text-xs text-slate-400 mb-5">Nothing is saved or synced in demo mode. Exit at any time to start tracking your own mocks.</p>
+                        <div class="flex gap-3 flex-wrap">
+                            <button onclick="loadDemoMode()" class="px-6 py-3 rounded-2xl text-white font-black text-sm shadow-lg hover:scale-105 transition" style="background:linear-gradient(135deg,#f59e0b,#ef4444);"><i class="fa-solid fa-flask-vial mr-2"></i>Load Demo</button>
+                            <button onclick="clearDemoMode()" class="px-6 py-3 rounded-2xl font-black text-sm transition btn-glass hover:scale-105"><i class="fa-solid fa-xmark mr-2"></i>Exit Demo</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- OFFLINE QUEUE PANEL (Feature #19) -->
+            <div id="offline-panel" class="glass-card p-7 rounded-[2rem] border border-amber-200/40 dark:border-amber-800/30 hidden">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-base font-bold text-amber-600 dark:text-amber-400 flex items-center gap-2 uppercase tracking-widest">
+                        <span class="offline-pulse w-2 h-2 rounded-full bg-amber-400 inline-block"></span>
+                        Offline Queue
+                        <span id="queue-badge" class="ml-1 px-2 py-0.5 rounded-full bg-amber-500 text-white text-xs font-black">0</span>
+                    </h3>
+                    <button onclick="app.clearOfflineQueue()" class="text-xs text-rose-400 hover:text-rose-600 font-black transition">Clear All</button>
+                </div>
+                <p class="text-xs text-slate-500 dark:text-slate-400 mb-4">These mocks were saved while offline. Sign in to sync them to the cloud automatically.</p>
+                <div id="offline-queue-list" class="space-y-2"></div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- MOBILE BOTTOM NAV -->
+    <nav id="mobile-nav" class="md:hidden fixed bottom-0 left-0 right-0 border-t" style="z-index:9999;background:rgba(255,255,255,0.96);border-color:rgba(0,0,0,0.1);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);">
+        <div style="display:flex;">
+            <button id="mnav-home" class="mnav-btn" style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;padding:10px 4px 8px;border:none;background:none;cursor:pointer;color:#94a3b8;touch-action:manipulation;-webkit-tap-highlight-color:transparent;min-width:0;"><i class="fa-solid fa-house" style="font-size:20px;pointer-events:none;"></i><span style="font-size:10px;font-weight:800;letter-spacing:0.04em;text-transform:uppercase;pointer-events:none;">Home</span></button>
+            <button id="mnav-log" class="mnav-btn" style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;padding:10px 4px 8px;border:none;background:none;cursor:pointer;color:#94a3b8;touch-action:manipulation;-webkit-tap-highlight-color:transparent;min-width:0;"><i class="fa-solid fa-circle-plus" style="font-size:22px;pointer-events:none;"></i><span style="font-size:10px;font-weight:800;letter-spacing:0.04em;text-transform:uppercase;pointer-events:none;">Log</span></button>
+            <button id="mnav-analysis" class="mnav-btn" style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;padding:10px 4px 8px;border:none;background:none;cursor:pointer;color:#94a3b8;touch-action:manipulation;-webkit-tap-highlight-color:transparent;min-width:0;"><i class="fa-solid fa-chart-pie" style="font-size:20px;pointer-events:none;"></i><span style="font-size:10px;font-weight:800;letter-spacing:0.04em;text-transform:uppercase;pointer-events:none;">Stats</span></button>
+            <button id="mnav-menu" class="mnav-btn" style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;padding:10px 4px 8px;border:none;background:none;cursor:pointer;color:#94a3b8;touch-action:manipulation;-webkit-tap-highlight-color:transparent;min-width:0;"><i class="fa-solid fa-bars" style="font-size:20px;pointer-events:none;"></i><span style="font-size:10px;font-weight:800;letter-spacing:0.04em;text-transform:uppercase;pointer-events:none;">Menu</span></button>
+        </div>
+    </nav>
+
+    <!-- HAMBURGER DRAWER -->
+    <div id="hamburger-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.45);z-index:10000;"></div>
+    <div id="hamburger-drawer" style="display:none;position:fixed;bottom:0;left:0;right:0;z-index:10001;border-radius:1.5rem 1.5rem 0 0;max-height:85vh;overflow-y:auto;background:rgba(255,255,255,0.97);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);box-shadow:0 -8px 40px rgba(0,0,0,0.18);">
+        <div style="display:flex;justify-content:center;padding:12px 0 4px;"><div style="width:40px;height:4px;border-radius:99px;background:#e2e8f0;"></div></div>
+        <div style="padding:4px 20px 10px;border-bottom:1px solid rgba(0,0,0,0.06);"><p style="font-size:11px;font-weight:900;letter-spacing:0.1em;text-transform:uppercase;color:#94a3b8;">Navigation</p></div>
+        <div style="padding:8px 12px 20px;">
+            <button id="hmenu-history" class="hmenu-item" style="width:100%;display:flex;align-items:center;gap:14px;padding:13px 12px;border:none;background:none;cursor:pointer;border-radius:14px;text-align:left;touch-action:manipulation;-webkit-tap-highlight-color:transparent;"><span style="width:38px;height:38px;border-radius:11px;background:#e0e7ff;display:flex;align-items:center;justify-content:center;flex-shrink:0;pointer-events:none;"><i class="fa-solid fa-list" style="font-size:16px;color:#6366f1;pointer-events:none;"></i></span><div style="pointer-events:none;"><div style="font-size:14px;font-weight:800;color:#1e293b;">Mock Vault</div><div style="font-size:11px;color:#94a3b8;margin-top:1px;">Browse all your past mocks</div></div></button>
+            <button id="hmenu-tools" class="hmenu-item" style="width:100%;display:flex;align-items:center;gap:14px;padding:13px 12px;border:none;background:none;cursor:pointer;border-radius:14px;text-align:left;touch-action:manipulation;-webkit-tap-highlight-color:transparent;"><span style="width:38px;height:38px;border-radius:11px;background:#ede9fe;display:flex;align-items:center;justify-content:center;flex-shrink:0;pointer-events:none;"><i class="fa-solid fa-wrench" style="font-size:16px;color:#7c3aed;pointer-events:none;"></i></span><div style="pointer-events:none;"><div style="font-size:14px;font-weight:800;color:#1e293b;">Tools</div><div style="font-size:11px;color:#94a3b8;margin-top:1px;">Export, restore &amp; offline queue</div></div></button>
+            <button id="hmenu-switch" class="hmenu-item" style="width:100%;display:flex;align-items:center;gap:14px;padding:13px 12px;border:none;background:none;cursor:pointer;border-radius:14px;text-align:left;touch-action:manipulation;-webkit-tap-highlight-color:transparent;"><span style="width:38px;height:38px;border-radius:11px;background:#e0f2fe;display:flex;align-items:center;justify-content:center;flex-shrink:0;pointer-events:none;"><i class="fa-solid fa-exchange-alt" style="font-size:16px;color:#0284c7;pointer-events:none;"></i></span><div style="pointer-events:none;"><div style="font-size:14px;font-weight:800;color:#1e293b;">Switch Exam</div><div style="font-size:11px;color:#94a3b8;margin-top:1px;">Change exam — SSC, RRB, Bank PO</div></div></button>
+            <div style="height:1px;background:rgba(0,0,0,0.05);margin:6px 12px;"></div>
+            <button id="hmenu-demo" class="hmenu-item" style="width:100%;display:flex;align-items:center;gap:14px;padding:13px 12px;border:none;background:none;cursor:pointer;border-radius:14px;text-align:left;touch-action:manipulation;-webkit-tap-highlight-color:transparent;"><span style="width:38px;height:38px;border-radius:11px;background:linear-gradient(135deg,#fef3c7,#fee2e2);display:flex;align-items:center;justify-content:center;flex-shrink:0;pointer-events:none;"><i class="fa-solid fa-flask-vial" style="font-size:16px;color:#d97706;pointer-events:none;"></i></span><div style="pointer-events:none;"><div style="font-size:14px;font-weight:800;color:#1e293b;">Try Demo Mode</div><div style="font-size:11px;color:#94a3b8;margin-top:1px;">Explore with 5 sample SSC CGL mocks</div></div></button>
+        </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════
+         LOGIC
+    ═══════════════════════════════════════════════════════ -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, collection, addDoc, onSnapshot, deleteDoc, doc, updateDoc, Timestamp, setDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        const firebaseConfig = { apiKey: "AIzaSyCLvZzZ-Hx9LsvuL1zK4xuZcF_1P28h4sI", authDomain: "mock-analysis-aaf4b.firebaseapp.com", projectId: "mock-analysis-aaf4b", storageBucket: "mock-analysis-aaf4b.firebasestorage.app", messagingSenderId: "88057484168", appId: "1:88057484168:web:70e580fe70573a4866a03d" };
+        const appId = 'mock-tracker-pro-final';
+        const TARGET_KEY = 'mockpro_target_score'; // legacy key, now per-exam below
+        const QUEUE_KEY  = 'mockpro_offline_queue';
+        const TABS       = ['home','log','history','analysis','tools'];
+        let   currentTab = 0;
+
+        // Per-exam target score helpers
+        function getTargetKey() { return 'mockpro_target_' + (state?.selectedExamGroup || 'default'); }
+        function loadTargetScore() {
+            const v = parseInt(localStorage.getItem(getTargetKey()) || '0');
+            state.targetScore = v || (EXAM_GROUPS[state.selectedExamGroup]?.total ? Math.round(EXAM_GROUPS[state.selectedExamGroup].total * 0.8) : 160);
+        }
+
+        // ── EXAM CONFIGS ──
+        const EXAM_GROUPS = {
+            "SSC_CGL_CHSL": { name:"SSC CGL/CHSL", exams:["SSC CGL","SSC CHSL"], subjects:["Reasoning","GK","Quant","English"], c:2, w:0.5, total:200, quickEntry:false },
+            "RRB_NTPC":     { name:"RRB NTPC",     exams:["RRB NTPC"],            subjects:["GK/Science","Maths","Reasoning"],    c:1, w:0.33, total:100, quickEntry:true },
+            "SSC_MTS":      { name:"SSC MTS",       exams:["SSC MTS"],             subjects:["Maths","Reasoning","GK","English"],   c:3, w:1,    total:270, quickEntry:false },
+            "BANK_PO":      { name:"Bank PO",        exams:["Bank PO"],             subjects:["English","Quant","Reasoning"],        c:1, w:0.25, total:100, quickEntry:false }
+        };
+
+        // ── HARDCODED DEMO DATA (5 fixed mocks — SSC CGL Tier-1) ──
+        // Marking: +2 correct, -0.5 wrong | 100 questions | Max 200 marks
+        function getDemoData() {
+            const d = (offset) => { const dt = new Date(); dt.setDate(dt.getDate() - offset); return dt.toISOString().slice(0,10); };
+            return {
+                mocks: [
+                    {   // Mock 1 — starting point, avg performer
+                        id:'dm1', platform:'Testbook', exam:'SSC CGL', examGroup:'SSC_CGL_CHSL',
+                        name:'SSC CGL Tier-1 Mock #1', category:'Full', date:d(28),
+                        score:123.0, max:200, perc:72.3, time:65, quickEntry:false,
+                        subjects:[
+                            { name:'Reasoning', c:18, w:5, u:2, s:2 },
+                            { name:'GK',        c:14, w:7, u:4, s:1 },
+                            { name:'Quant',     c:16, w:6, u:3, s:2 },
+                            { name:'English',   c:19, w:4, u:2, s:1 }
+                        ],
+                        // score = (18+14+16+19)*2 - (5+7+6+4)*0.5 = 67*2 - 22*0.5 = 134-11 = 123 ✓
+                        sillyMarks:15.0,
+                        sillyDesc:'Calculation slip in Quant — missed simplification step. Reasoning: misread two direction questions.',
+                        weak:'Trigonometry, Blood Relations, Para Jumbles'
+                    },
+                    {   // Mock 2 — decent improvement
+                        id:'dm2', platform:'Oliveboard', exam:'SSC CGL', examGroup:'SSC_CGL_CHSL',
+                        name:'SSC CGL Tier-1 Mock #2', category:'Full', date:d(21),
+                        score:139.5, max:200, perc:78.9, time:62, quickEntry:false,
+                        subjects:[
+                            { name:'Reasoning', c:20, w:4, u:1, s:1 },
+                            { name:'GK',        c:16, w:5, u:4, s:1 },
+                            { name:'Quant',     c:17, w:5, u:3, s:2 },
+                            { name:'English',   c:21, w:3, u:1, s:0 }
+                        ],
+                        // score = 74*2 - 17*0.5 = 148 - 8.5 = 139.5 ✓
+                        sillyMarks:10.0,
+                        sillyDesc:'Wrong substitution in Algebra. GK: confused dates for two historical events.',
+                        weak:'Mensuration formulas, Synonyms/Antonyms, Modern History dates'
+                    },
+                    {   // Mock 3 — slight dip (bad day)
+                        id:'dm3', platform:'The Pundits', exam:'SSC CGL', examGroup:'SSC_CGL_CHSL',
+                        name:'SSC CGL Tier-1 Mock #3', category:'Full', date:d(14),
+                        score:117.5, max:200, perc:68.4, time:68, quickEntry:false,
+                        subjects:[
+                            { name:'Reasoning', c:17, w:6, u:2, s:3 },
+                            { name:'GK',        c:13, w:8, u:4, s:1 },
+                            { name:'Quant',     c:15, w:7, u:3, s:2 },
+                            { name:'English',   c:20, w:4, u:1, s:1 }
+                        ],
+                        // score = 65*2 - 25*0.5 = 130 - 12.5 = 117.5 ✓
+                        sillyMarks:17.5,
+                        sillyDesc:'Panic rushed last 15 minutes. Multiple silly errors in Reasoning syllogisms. Need to slow down.',
+                        weak:'Syllogisms, Geography GK, Speed Time Distance shortcuts'
+                    },
+                    {   // Mock 4 — strong recovery
+                        id:'dm4', platform:'Adda247', exam:'SSC CGL', examGroup:'SSC_CGL_CHSL',
+                        name:'SSC CGL Tier-1 Mock #4', category:'Full', date:d(7),
+                        score:153.5, max:200, perc:87.2, time:58, quickEntry:false,
+                        subjects:[
+                            { name:'Reasoning', c:21, w:3, u:1, s:1 },
+                            { name:'GK',        c:18, w:4, u:3, s:1 },
+                            { name:'Quant',     c:19, w:4, u:2, s:2 },
+                            { name:'English',   c:22, w:2, u:1, s:0 }
+                        ],
+                        // score = 80*2 - 13*0.5 = 160 - 6.5 = 153.5 ✓
+                        sillyMarks:10.0,
+                        sillyDesc:'Much better! Only 1 silly in Reasoning (coding-decoding). Quant: forgot to convert units in 2 problems.',
+                        weak:'Coding-Decoding advanced patterns, Percentage applications'
+                    },
+                    {   // Mock 5 — best so far (latest)
+                        id:'dm5', platform:'Testbook', exam:'SSC CGL', examGroup:'SSC_CGL_CHSL',
+                        name:'SSC CGL Tier-1 Mock #5', category:'Full', date:d(2),
+                        score:163.0, max:200, perc:93.6, time:55, quickEntry:false,
+                        subjects:[
+                            { name:'Reasoning', c:22, w:2, u:1, s:1 },
+                            { name:'GK',        c:19, w:3, u:3, s:1 },
+                            { name:'Quant',     c:20, w:3, u:2, s:1 },
+                            { name:'English',   c:23, w:2, u:0, s:0 }
+                        ],
+                        // score = 84*2 - 10*0.5 = 168 - 5 = 163 ✓
+                        sillyMarks:7.5,
+                        sillyDesc:'Best attempt so far! Quant: 1 silly in number series. Maintain this focus in next mock.',
+                        weak:'Number series patterns, Static GK (Awards & Honours)'
+                    }
+                ],
+                tasks: [
+                    { id:'dt1', name:'Morning GK Revision (30 min)', days:[1,3,5], done:{} },
+                    { id:'dt2', name:'Quant Practice — 20 Questions', days:[0,2,4,6], done:{} },
+                    { id:'dt3', name:'Full Length Mock Attempt', days:[0], done:{} },
+                    { id:'dt4', name:'English Vocab + RC Passage', days:[1,2,3,4,5], done:{} }
+                ],
+                links: [
+                    { id:'dl1', name:'Testbook Mock Series', url:'https://testbook.com' },
+                    { id:'dl2', name:'Oliveboard Free Mocks', url:'https://oliveboard.in' },
+                    { id:'dl3', name:'SSC Adda247', url:'https://sscadda.com' }
+                ]
+            };
+        }
+
+        const el = (id) => document.getElementById(id);
+        const safeSetText = (id, text) => { const e = el(id); if (e) e.textContent = text; };
+
+        let db, auth, provider;
+        try {
+            const fApp = initializeApp(firebaseConfig);
+            auth = getAuth(fApp);
+            db = getFirestore(fApp);
+            provider = new GoogleAuthProvider();
+        } catch (e) { console.warn("Firebase offline:", e); }
+
+        const state = {
+            user: null,
+            selectedExamGroup: null,
+            mocks: [], tasks: [], links: [],
+            editingId: null,
+            charts: { home: null, week: null, plat: null, radar: null, scatter: null, histogram: null, damage: null },
+            useQuickEntry: false,
+            isDemoMode: false,
+            _realMocks: [], _realTasks: [], _realLinks: [],   // stash real data during demo
+            targetScore: 160  // will be loaded per-exam once exam is selected
+        };
+
+        // ────────────────────────────────────────────────────
+        //  DEMO MODE  (exposed globally BEFORE module loads)
+        // ────────────────────────────────────────────────────
+        window.loadDemoMode = function() {
+            // ⚡ Guard: if already in demo, just ignore — prevents stashing demo data as "real"
+            if (state.isDemoMode) return;
+
+            // Close exam modal if open
+            const examModal = el('modal-exam-select');
+            if (examModal) { examModal.style.display = 'none'; examModal.classList.add('hidden'); }
+
+            // Stash real data BEFORE switching — only done once per session
+            state._realMocks = [...state.mocks];
+            state._realTasks = [...state.tasks];
+            state._realLinks = [...state.links];
+            state._realExamGroup = state.selectedExamGroup; // also stash exam selection
+
+            state.isDemoMode = true;
+            state.selectedExamGroup = 'SSC_CGL_CHSL';
+            updateExamBadge();
+            updateFormForExam();
+
+            const demo = getDemoData();
+            state.mocks = demo.mocks;
+            state.tasks = demo.tasks;
+            state.links = demo.links;
+
+            // Show banner & watermark
+            const banner = el('demo-banner');
+            if (banner) banner.style.display = 'flex';
+            document.body.classList.add('demo-mode-active');
+
+            // Hide demo buttons (already in demo)
+            el('btn-demo')?.classList.add('hidden');
+
+            processData();
+            window.app.nav('home');
+        };
+
+        window.clearDemoMode = function() {
+            if (!state.isDemoMode) return;
+            state.isDemoMode = false;
+
+            state.mocks = [...state._realMocks];
+            state.tasks = [...state._realTasks];
+            state.links = [...state._realLinks];
+            // Restore exam — if user had none before demo, prompt them to pick
+            state.selectedExamGroup = state._realExamGroup || localStorage.getItem('selected_exam_group') || null;
+
+            const banner = el('demo-banner');
+            if (banner) banner.style.display = 'none';
+            document.body.classList.remove('demo-mode-active');
+            el('btn-demo')?.classList.remove('hidden');
+
+            updateExamBadge();
+            updateFormForExam();
+            processData();
+            window.app.nav('home');
+
+            // If no real exam was ever chosen, re-prompt
+            if (!state.selectedExamGroup) setTimeout(showExamSelector, 400);
+        };
+
+        // ── Exam Selection ──
+        window.selectExam = (examGroup) => {
+            document.querySelectorAll('.exam-card').forEach(card => {
+                card.classList.remove('selected');
+                card.querySelector('.check-icon').style.opacity = '0';
+            });
+            const selected = document.querySelector(`[data-exam="${examGroup}"]`);
+            if (selected) {
+                selected.classList.add('selected');
+                selected.querySelector('.check-icon').style.opacity = '1';
+                state.selectedExamGroup = examGroup;
+                const btn = el('confirm-exam-btn');
+                if (btn) { btn.disabled = false; btn.classList.remove('opacity-50','cursor-not-allowed'); }
+            }
+        };
+
+        window.confirmExamSelection = () => {
+            if (!state.selectedExamGroup) return;
+            localStorage.setItem('selected_exam_group', state.selectedExamGroup);
+            if (state.user && db) {
+                setDoc(doc(db,'artifacts',appId,'users',state.user.uid,'settings','exam'),
+                    { selectedExamGroup: state.selectedExamGroup }, { merge: true });
+            }
+            const m = el('modal-exam-select');
+            m.style.display = '';
+            m.classList.add('hidden');
+            m.classList.remove('flex');
+            loadTargetScore();  // load per-exam target
+            updateExamBadge();
+            updateFormForExam();
+            processData();
+        };
+
+        window.showExamSelector = () => {
+            const m = el('modal-exam-select');
+            m.style.display = '';
+            m.classList.remove('hidden');
+            m.classList.add('flex');
+            const btn = el('confirm-exam-btn');
+            if (btn && state.selectedExamGroup) { btn.disabled = false; btn.classList.remove('opacity-50','cursor-not-allowed'); }
+            if (state.selectedExamGroup) selectExam(state.selectedExamGroup);
+        };
+
+        function updateExamBadge() {
+            const badge = el('selected-exam-badge');
+            if (badge && state.selectedExamGroup) badge.textContent = state.isDemoMode ? '⚡ DEMO — ' + EXAM_GROUPS[state.selectedExamGroup].name : EXAM_GROUPS[state.selectedExamGroup].name;
+        }
+
+        function updateFormForExam() {
+            const group = EXAM_GROUPS[state.selectedExamGroup];
+            if (!group) return;
+            loadTargetScore();  // reload target for this exam
+            // reset target input to reflect loaded value
+            const inp = el('target-input');
+            if (inp) inp.value = state.targetScore || '';
+            const qt = el('quick-entry-toggle');
+            if (qt) {
+                if (group.quickEntry) qt.classList.remove('hidden');
+                else { qt.classList.add('hidden'); el('use-quick-entry').checked = false; state.useQuickEntry = false; }
+            }
+            updateForm();
+        }
+
+        function getFilteredMocks() {
+            if (!state.selectedExamGroup) return state.mocks;
+            const allowed = EXAM_GROUPS[state.selectedExamGroup].exams;
+            return state.mocks.filter(m => allowed.includes(m.exam));
+        }
+
+        window.toggleQuickEntry = () => {
+            state.useQuickEntry = el('use-quick-entry').checked;
+            const qs = el('quick-entry-section'), ns = el('normal-entry-section');
+            if (state.useQuickEntry) { qs.classList.remove('hidden'); ns.classList.add('hidden'); }
+            else { qs.classList.add('hidden'); ns.classList.remove('hidden'); }
+        };
+
+        window.calcQuickScore = () => {
+            const group = EXAM_GROUPS[state.selectedExamGroup]; if (!group) return;
+            const c = parseInt(el('quick-correct')?.value||0), w = parseInt(el('quick-wrong')?.value||0);
+            const s = el('quick-calc-score'); if (s) s.textContent = ((c*group.c)-(w*group.w)).toFixed(2);
+        };
+
+        // ─────────────────────────────────────────────────
+        //  CONFETTI — Feature #13
+        // ─────────────────────────────────────────────────
+        function fireConfetti() {
+            if (typeof confetti === 'undefined') return;
+            const end = Date.now() + 2000;
+            const colors = ['#6366f1','#d946ef','#fbbf24','#34d399','#f87171'];
+            (function burst() {
+                confetti({ particleCount:4, angle:60,  spread:55, origin:{x:0}, colors });
+                confetti({ particleCount:4, angle:120, spread:55, origin:{x:1}, colors });
+                if (Date.now() < end) requestAnimationFrame(burst);
+            })();
+        }
+        function checkPersonalBest(newScore) {
+            const existing = getFilteredMocks().map(m => m.score);
+            return existing.length === 0 || newScore > Math.max(...existing);
+        }
+
+        // ─────────────────────────────────────────────────
+        //  SWIPE NAVIGATION — Feature #15
+        // ─────────────────────────────────────────────────
+        (function initSwipe() {
+            const main = document.querySelector('main');
+            if (!main) return;
+            let startX = 0, startY = 0;
+            main.addEventListener('touchstart', e => {
+                // Don't start swipe tracking if the touch originates on the mobile nav bar
+                const mNav = document.getElementById('mobile-nav');
+                if (mNav && mNav.contains(e.target)) return;
+                startX = e.touches[0].clientX;
+                startY = e.touches[0].clientY;
+            }, { passive: true });
+            main.addEventListener('touchend', e => {
+                const dx = e.changedTouches[0].clientX - startX;
+                const dy = e.changedTouches[0].clientY - startY;
+                if (Math.abs(dx) < 40 || Math.abs(dy) > Math.abs(dx) * 1.5) return; // not a horizontal swipe
+                const dir = dx < 0 ? 1 : -1;
+                const next = Math.max(0, Math.min(TABS.length - 1, currentTab + dir));
+                if (next !== currentTab) {
+                    window.app.nav(TABS[next]);
+                    const hint = document.getElementById('swipe-hint');
+                    if (hint) { hint.textContent = dir > 0 ? '→ ' + TABS[next] : '← ' + TABS[next]; hint.classList.add('show'); setTimeout(() => hint.classList.remove('show'), 900); }
+                }
+            }, { passive: true });
+        })();
+
+        // ─────────────────────────────────────────────────
+        //  OFFLINE QUEUE — Feature #19
+        // ─────────────────────────────────────────────────
+        function getQueue()       { try { return JSON.parse(localStorage.getItem(QUEUE_KEY) || '[]'); } catch { return []; } }
+        function saveQueue(q)     { localStorage.setItem(QUEUE_KEY, JSON.stringify(q)); }
+        function addToQueue(entry){ const q = getQueue(); q.push({...entry, _qid: Date.now()}); saveQueue(q); updateOfflineUI(); }
+
+        function updateOfflineUI() {
+            const q = getQueue();
+            const hasItems = q.length > 0 && !state.user;
+            // Banner
+            const banner = document.getElementById('offline-banner');
+            if (banner) banner.style.display = hasItems ? 'flex' : 'none';
+            const countEl = document.getElementById('offline-queue-count');
+            if (countEl) countEl.textContent = q.length;
+            // Tools panel
+            const panel = document.getElementById('offline-panel');
+            if (panel) panel.classList.toggle('hidden', q.length === 0);
+            const badge = document.getElementById('queue-badge');
+            if (badge) badge.textContent = q.length;
+            // List
+            const list = document.getElementById('offline-queue-list');
+            if (list) list.innerHTML = q.map((m, i) => `
+                <div class="glass-card p-4 rounded-2xl flex items-center justify-between">
+                    <div>
+                        <p class="text-sm font-black text-slate-700 dark:text-white">${m.name}</p>
+                        <p class="text-xs font-bold text-slate-400 uppercase">${m.date} · ${m.exam}</p>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <span class="text-brand-600 font-black text-sm">${m.score}</span>
+                        <button onclick="removeQueueItem(${i})" class="text-rose-400 hover:text-rose-600 transition"><i class="fa-solid fa-xmark"></i></button>
+                    </div>
+                </div>`).join('');
+        }
+
+        window.removeQueueItem = (i) => { const q = getQueue(); q.splice(i,1); saveQueue(q); updateOfflineUI(); };
+
+        async function syncOfflineQueue() {
+            if (!state.user || !db) return;
+            const q = getQueue();
+            if (!q.length) return;
+            let synced = 0;
+            for (const m of q) {
+                try {
+                    const d = {...m}; delete d._qid;
+                    d.createdAt = Timestamp.now();
+                    await addDoc(collection(db,'artifacts',appId,'users',state.user.uid,'mocks'), d);
+                    synced++;
+                } catch(e) { console.warn('Queue sync failed:', e); }
+            }
+            if (synced > 0) { saveQueue([]); updateOfflineUI(); alert(`✅ ${synced} offline mock(s) synced to cloud!`); }
+        }
+
+        // ── App Nav + Theme ──
+        window.app = {
+            nav: (tabId) => {
+                document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+                document.querySelectorAll('.nav-link').forEach(n => n.classList.remove('active'));
+                const target = el(`tab-${tabId}`); if (target) target.classList.add('active');
+                const btn = el(`nav-${tabId}`); if (btn) btn.classList.add('active');
+                currentTab = TABS.indexOf(tabId);
+                processData();
+            },
+            toggleTheme: () => {
+                const isDark = document.documentElement.classList.toggle('dark');
+                localStorage.setItem('theme', isDark ? 'dark' : 'light');
+                renderHome();
+            },
+            login: async () => {
+                if (!auth) return;
+                try { await signInWithPopup(auth, provider); }
+                catch(e) {
+                    if (e.code === 'auth/unauthorized-domain' || e.code === 'auth/operation-not-allowed') {
+                        alert("Google Sign-In restricted. Logging in as Guest.");
+                        await signInAnonymously(auth);
+                    } else { alert("Sign-in failed: " + e.message); }
+                }
+            },
+            logout: async () => {
+                if (auth) { await signOut(auth); state.mocks=[]; state.tasks=[]; state.links=[]; processData(); }
+            },
+            resetForm: () => {
+                state.editingId = null;
+                el('form-score').reset();
+                el('inp-date').valueAsDate = new Date();
+                el('use-quick-entry').checked = false;
+                state.useQuickEntry = false;
+                toggleQuickEntry();
+                updateForm();
+            },
+            saveLink: async () => {
+                const name = el('link-name').value.trim(), url = el('link-url').value.trim();
+                if (!name || !url) return alert("Please fill both fields!");
+                if (state.isDemoMode) return alert("Cannot save in Demo Mode — exit demo first.");
+                try {
+                    if (state.user) await addDoc(collection(db,'artifacts',appId,'users',state.user.uid,'links'), { name, url, createdAt: Timestamp.now() });
+                    else { alert("Please sign in to save links!"); return; }
+                } catch(e) { alert("Failed to save: " + e.message); }
+                el('link-name').value = ''; el('link-url').value = ''; closeModal();
+            },
+            deleteLink: async (id) => {
+                if (state.isDemoMode) return alert("Cannot delete in Demo Mode.");
+                if (!confirm("Delete this link?")) return;
+                try { if (state.user) await deleteDoc(doc(db,'artifacts',appId,'users',state.user.uid,'links',id)); }
+                catch(e) { alert("Failed: " + e.message); }
+            },
+            deleteMock: async (id) => {
+                if (state.isDemoMode) return alert("Cannot delete in Demo Mode — this is sample data.");
+                if (!confirm("Delete this mock forever?")) return;
+                try { if (state.user) await deleteDoc(doc(db,'artifacts',appId,'users',state.user.uid,'mocks',id)); }
+                catch(e) { alert("Failed: " + e.message); }
+            },
+            editMock: (id) => {
+                if (state.isDemoMode) return alert("Cannot edit in Demo Mode — exit demo first.");
+                const m = state.mocks.find(x => x.id == id); if (!m) return;
+                state.editingId = id;
+                window.app.nav('log');
+                el('inp-platform').value = m.platform; el('inp-name').value = m.name;
+                el('inp-cat').value = m.category; el('inp-perc').value = m.perc || '';
+                el('inp-time').value = m.time || ''; el('inp-date').value = m.date;
+                el('inp-weak').value = m.weak || ''; el('inp-silly-desc').value = m.sillyDesc || '';
+                if (m.quickEntry) {
+                    el('use-quick-entry').checked = true; state.useQuickEntry = true; toggleQuickEntry();
+                    el('quick-correct').value = m.quickCorrect||0; el('quick-wrong').value = m.quickWrong||0;
+                    el('quick-skip').value = m.quickSkip||0; el('quick-silly').value = m.quickSilly||0;
+                    calcQuickScore();
+                } else {
+                    updateForm();
+                    if (m.category === 'Sectional') {
+                        setTimeout(() => {
+                            const subs = (m.subjects||[]).map(s=>s.name);
+                            document.querySelectorAll('.sec-cb').forEach(cb => cb.checked = subs.includes(cb.value));
+                            window.renderFormRows(); fillFormValues(m.subjects);
+                        }, 100);
+                    } else { setTimeout(() => fillFormValues(m.subjects), 50); }
+                }
+            },
+            viewMock: (id) => {
+                const m = state.mocks.find(x => x.id == id); if (!m) return;
+                const group = EXAM_GROUPS[state.selectedExamGroup] || { c:2, w:0.5 };
+                const totalSillyLoss = (m.subjects||[]).reduce((acc,s) => acc + (s.s * (group.c + group.w)), 0);
+                let subjectsHTML = '';
+                if (m.quickEntry) {
+                    subjectsHTML = `<div class="p-5 rounded-2xl border border-emerald-200/40 dark:border-emerald-800/30" style="background:rgba(16,185,129,0.06)">
+                        <p class="text-xs font-black text-emerald-600 uppercase mb-3"><i class="fa-solid fa-bolt mr-1"></i>Quick Entry</p>
+                        <div class="grid grid-cols-2 gap-3 text-sm">
+                            <div><span class="text-slate-500">Correct:</span> <span class="font-black text-emerald-600">${m.quickCorrect||0}</span></div>
+                            <div><span class="text-slate-500">Wrong:</span> <span class="font-black text-rose-600">${m.quickWrong||0}</span></div>
+                            <div><span class="text-slate-500">Skip:</span> <span class="font-black">${m.quickSkip||0}</span></div>
+                            <div><span class="text-slate-500">Silly:</span> <span class="font-black text-orange-600">${m.quickSilly||0}</span></div>
+                        </div></div>`;
+                } else {
+                    subjectsHTML = `<div class="rounded-2xl overflow-hidden border border-white/30">
+                        <table class="w-full text-left text-xs" style="background:rgba(255,255,255,0.3)">
+                            <thead class="text-xs uppercase font-black text-slate-400" style="background:rgba(255,255,255,0.5)">
+                                <tr><th class="px-4 py-3">Subject</th><th class="px-2 py-3 text-center">Right</th><th class="px-2 py-3 text-center text-rose-500">Wrong</th><th class="px-2 py-3 text-center text-orange-500">Silly</th></tr>
+                            </thead>
+                            <tbody class="divide-y divide-white/20">
+                                ${m.subjects.map(s=>`<tr><td class="px-4 py-3 font-bold text-slate-700 dark:text-slate-200">${s.name}</td><td class="px-2 py-3 text-center text-emerald-500 font-black">${s.c}</td><td class="px-2 py-3 text-center text-rose-500 font-black">${s.w}</td><td class="px-2 py-3 text-center text-orange-500 font-black">${s.s}</td></tr>`).join('')}
+                            </tbody></table></div>`;
+                }
+                el('details-content').innerHTML = `
+                    <div class="p-7 space-y-5">
+                        ${state.isDemoMode ? '<div class="flex justify-center mb-1"><span class="demo-badge" style="display:inline-flex;">⚡ Demo Data — Sample Entry</span></div>' : ''}
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <h3 class="text-xl font-black text-slate-900 dark:text-white">${m.name}</h3>
+                                <p class="text-xs font-black text-brand-600 uppercase mt-1 tracking-widest">${m.exam} • ${m.category} • ${m.platform}</p>
+                            </div>
+                            <span class="px-3 py-1 rounded-lg text-xs font-black uppercase" style="background:rgba(255,255,255,0.4)">${m.date}</span>
+                        </div>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div class="p-5 rounded-2xl bg-gradient-to-br from-brand-600 to-indigo-700 text-white shadow-lg">
+                                <p class="text-xs font-black uppercase opacity-70 mb-1">Score</p>
+                                <h2 class="text-3xl font-black">${m.score} <span class="text-xs opacity-60">/ ${m.max}</span></h2>
+                            </div>
+                            <div class="p-5 rounded-2xl bg-gradient-to-br from-accent-500 to-purple-700 text-white shadow-lg">
+                                <p class="text-xs font-black uppercase opacity-70 mb-1">Percentile</p>
+                                <h2 class="text-3xl font-black">${m.perc}%ile</h2>
+                            </div>
+                        </div>
+                        ${subjectsHTML}
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="p-4 rounded-2xl border border-rose-200/40 dark:border-rose-900/30" style="background:rgba(239,68,68,0.05)">
+                                <h5 class="text-xs font-black text-rose-600 uppercase mb-1">Error Audit (-${totalSillyLoss.toFixed(1)})</h5>
+                                <p class="text-xs text-slate-600 dark:text-slate-400 italic leading-snug">"${m.sillyDesc||'No observations.'}"</p>
+                            </div>
+                            <div class="p-4 rounded-2xl border border-amber-200/40 dark:border-amber-900/30" style="background:rgba(245,158,11,0.05)">
+                                <h5 class="text-xs font-black text-amber-600 uppercase mb-1">Focus Topics</h5>
+                                <p class="text-xs font-bold text-slate-700 dark:text-amber-200 leading-snug">${m.weak||"No topics flagged."}</p>
+                            </div>
+                        </div>
+                    </div>`;
+                openModal('modal-details');
+            },
+            resolveWeakArea: async (id) => {
+                if (state.isDemoMode) return alert("Cannot modify in Demo Mode.");
+                if (!confirm("Mark as resolved?")) return;
+                try { if (state.user) await updateDoc(doc(db,'artifacts',appId,'users',state.user.uid,'mocks',id), { weak: "" }); }
+                catch(e) { alert("Failed: " + e.message); }
+            },
+            renderMatrix: () => {
+                const subset = getFilteredMocks();
+                // Feature #17 — analysis empty state
+                const emptyAna = el('empty-analysis');
+                const anaContent = el('analysis-content');
+                const hasEnough = subset.length >= 1;
+                if (emptyAna) emptyAna.classList.toggle('hidden', hasEnough);
+                if (anaContent) anaContent.classList.toggle('hidden', !hasEnough);
+                const group = EXAM_GROUPS[state.selectedExamGroup]; if (!group) return;
+                const ag = {}; let totalScoreSum=0, totalSillyLoss=0;
+                subset.forEach(m => {
+                    let es = m.score, esi = (m.subjects||[]).reduce((acc,s) => acc + (s.s * (group.c + group.w)), 0);
+                    if (m.category === 'Sectional' && m.max > 0) { const f = group.total/m.max; es*=f; esi*=f; }
+                    totalScoreSum += es; totalSillyLoss += esi;
+                    m.subjects?.forEach(s => {
+                        if (!ag[s.name]) ag[s.name] = { score:0, cor:0, tot:0, n:0, l5:[] };
+                        const sc = (s.c*group.c)-(s.w*group.w);
+                        ag[s.name].score+=sc; ag[s.name].cor+=s.c; ag[s.name].tot+=(s.c+s.w); ag[s.name].n++; ag[s.name].l5.push(sc);
+                    });
+                });
+                const count = subset.length;
+                if (count > 0) {
+                    safeSetText('ana-real-avg', (totalScoreSum/count).toFixed(1));
+                    safeSetText('ana-pot-avg', ((totalScoreSum+totalSillyLoss)/count).toFixed(1));
+                    safeSetText('ana-silly-loss-avg', "-"+(totalSillyLoss/count).toFixed(1));
+                } else { ['ana-real-avg','ana-pot-avg','ana-silly-loss-avg'].forEach(id => safeSetText(id,'-')); }
+                const mb = el('matrix-body');
+                if (mb) {
+                    mb.innerHTML = Object.entries(ag).map(([name,d]) => {
+                        const acc = d.tot ? (d.cor/d.tot*100) : 0;
+                        const l5 = d.l5.slice(-5); const avgL5 = l5.reduce((a,b)=>a+b,0)/Math.max(l5.length,1);
+                        const color = acc>85?'emerald':(acc<65?'rose':'brand');
+                        return `<tr class="transition cursor-pointer hover-row">
+                            <td class="px-6 py-4 font-black text-slate-800 dark:text-white text-xs">${name}</td>
+                            <td class="px-6 py-4 font-black text-brand-600">${(d.score/d.n).toFixed(1)}</td>
+                            <td class="px-6 py-4 font-bold text-slate-500">${(d.cor/d.n).toFixed(1)}</td>
+                            <td class="px-6 py-4 font-black text-slate-700 dark:text-slate-300">${acc.toFixed(1)}%</td>
+                            <td class="px-6 py-4 font-bold text-slate-400">${avgL5.toFixed(1)}</td>
+                            <td class="px-6 py-4"><span class="pill bg-${color}-100 dark:bg-${color}-900/30 text-${color}-600 dark:text-${color}-400">${acc>85?'Expert':(acc<65?'Weak':'Solid')}</span></td>
+                        </tr>`;
+                    }).join('') || `<tr><td colspan="6" class="p-10 text-center text-slate-400 font-bold uppercase opacity-40">No data yet</td></tr>`;
+                }
+                renderAnalysisHubs(subset);
+                renderPlatChart(subset);
+                renderRadarChart(ag);
+                renderScatterChart(subset);
+                renderBestDay(subset);
+                renderHistogram(subset);
+                renderDamageChart(subset);
+            },
+            backup: () => {
+                if (state.isDemoMode) return alert("Cannot export Demo data — exit demo first.");
+                const data = JSON.stringify({ mocks:state.mocks, tasks:state.tasks, links:state.links, selectedExamGroup:state.selectedExamGroup, date:new Date().toISOString() }, null, 2);
+                const a = document.createElement('a');
+                a.href = URL.createObjectURL(new Blob([data], {type:'application/json'}));
+                a.download = `MockPro_${EXAM_GROUPS[state.selectedExamGroup]?.name||'data'}_${new Date().toISOString().split('T')[0]}.json`;
+                a.click();
+            },
+            clearOfflineQueue: () => {
+                if (!confirm("Clear all queued offline mocks?")) return;
+                saveQueue([]); updateOfflineUI();
+            },
+            restore: (e) => {
+                const file = e.target.files[0]; if (!file) return;
+                if (!confirm("⚠️ This will overwrite cloud data. Continue?")) return;
+                const reader = new FileReader();
+                reader.onload = async (ev) => {
+                    try {
+                        const data = JSON.parse(ev.target.result);
+                        if (!state.user) { alert("Please sign in first!"); return; }
+                        for (const m of (data.mocks||[])) { const d={...m}; delete d.id; await addDoc(collection(db,'artifacts',appId,'users',state.user.uid,'mocks'), d); }
+                        for (const t of (data.tasks||[])) { const d={...t}; delete d.id; await addDoc(collection(db,'artifacts',appId,'users',state.user.uid,'tasks'), d); }
+                        for (const l of (data.links||[])) { const d={...l}; delete d.id; await addDoc(collection(db,'artifacts',appId,'users',state.user.uid,'links'), d); }
+                        alert("✅ Data Restored!"); window.location.reload();
+                    } catch(err) { alert("❌ Failed: " + err.message); }
+                };
+                reader.readAsText(file);
+            }
+        };
+
+        function fillFormValues(subjects) {
+            subjects?.forEach(s => {
+                const card = document.querySelector(`#subject-cards-grid [data-sub="${s.name}"]`);
+                if (card) {
+                    const ci=card.querySelector('.c'); if(ci) ci.value=s.c;
+                    const wi=card.querySelector('.w'); if(wi) wi.value=s.w;
+                    const ui=card.querySelector('.u'); if(ui) ui.value=s.u;
+                    const si=card.querySelector('.s'); if(si) si.value=s.s;
+                }
+            });
+            window.calcScore();
+        }
+
+        // ─────────────────────────────────────────────────
+        //  HELPER: Linear Regression (Feature #4)
+        // ─────────────────────────────────────────────────
+        function linearRegression(ys) {
+            const n = ys.length; if (n < 2) return null;
+            const xs = ys.map((_,i) => i);
+            const sx = xs.reduce((a,b)=>a+b,0), sy = ys.reduce((a,b)=>a+b,0);
+            const sxy = xs.reduce((acc,x,i)=>acc+x*ys[i],0);
+            const sx2 = xs.reduce((acc,x)=>acc+x*x,0);
+            const m = (n*sxy - sx*sy) / (n*sx2 - sx*sx);
+            const b = (sy - m*sx) / n;
+            return { m, b, predict: x => Math.max(0, m*x + b) };
+        }
+
+        // ─────────────────────────────────────────────────
+        //  HELPER: Target Ring Update (Feature #1)
+        // ─────────────────────────────────────────────────
+        function updateTargetRing(avgScore, targetScore) {
+            const pct = targetScore > 0 ? Math.min(100, (avgScore / targetScore) * 100) : 0;
+            const circumference = 213.6;
+            const offset = circumference - (pct / 100 * circumference);
+            const fill = el('target-ring-fill');
+            if (fill) fill.style.strokeDashoffset = offset;
+            safeSetText('target-pct', Math.round(pct) + '%');
+            // Always sync input to current exam's target
+            const inp = el('target-input');
+            if (inp) inp.value = state.targetScore || '';
+            const grp = EXAM_GROUPS[state.selectedExamGroup];
+            const maxEl = el('target-max-label');
+            if (maxEl && grp) maxEl.textContent = '/ ' + grp.total;
+        }
+
+        window.saveTargetScore = function() {
+            const v = parseInt(el('target-input')?.value || 0);
+            if (!v || v < 0) return;
+            state.targetScore = v;
+            localStorage.setItem(getTargetKey(), v);
+            processData();
+        };
+
+        // ─────────────────────────────────────────────────
+        //  HELPER: Auto-tag (Feature #9)
+        // ─────────────────────────────────────────────────
+        function getAutoTag(mock, allChron) {
+            const pb = Math.max(...allChron.map(m => m.score));
+            if (mock.score >= pb) return { label: '🏆 PB', cls: 'tag-pb' };
+            const idx = allChron.findIndex(m => m.id === mock.id);
+            if (idx > 0) {
+                const delta = mock.score - allChron[idx - 1].score;
+                if (delta > 5)  return { label: '⬆ Up',    cls: 'tag-up' };
+                if (delta < -5) return { label: '⬇ Dip',   cls: 'tag-down' };
+            }
+            return { label: '◆ Steady', cls: 'tag-steady' };
+        }
+
+        // ─────────────────────────────────────────────────
+        //  RENDER: Radar Chart (Feature #5)
+        // ─────────────────────────────────────────────────
+        function renderRadarChart(subjectAgg) {
+            const ctxEl = el('chart-radar'); if (!ctxEl) return;
+            if (state.charts.radar) state.charts.radar.destroy();
+            const labels = Object.keys(subjectAgg);
+            if (!labels.length) return;
+            const isDark = document.documentElement.classList.contains('dark');
+            const tc = isDark ? '#94a3b8' : '#64748b';
+            const gl = isDark ? 'rgba(139,92,246,0.15)' : 'rgba(99,102,241,0.08)';
+            // accuracy per subject
+            const accuracy = labels.map(name => {
+                const d = subjectAgg[name];
+                return d.tot ? parseFloat((d.cor / d.tot * 100).toFixed(1)) : 0;
+            });
+            state.charts.radar = new Chart(ctxEl.getContext('2d'), {
+                type: 'radar',
+                data: {
+                    labels,
+                    datasets: [{
+                        label: 'Accuracy %',
+                        data: accuracy,
+                        backgroundColor: 'rgba(99,102,241,0.18)',
+                        borderColor: '#6366f1',
+                        borderWidth: 2,
+                        pointBackgroundColor: '#d946ef',
+                        pointRadius: 4
+                    }]
+                },
+                options: {
+                    responsive: true, maintainAspectRatio: false,
+                    scales: { r: { beginAtZero: true, max: 100, ticks: { display: false }, grid: { color: gl }, angleLines: { color: gl }, pointLabels: { color: tc, font: { size: 10, weight: '800' } } } },
+                    plugins: { legend: { display: false } }
+                }
+            });
+        }
+
+        // ─────────────────────────────────────────────────
+        //  RENDER: Scatter Chart (Feature #7)
+        // ─────────────────────────────────────────────────
+        function renderScatterChart(subset) {
+            const ctxEl = el('chart-scatter'); if (!ctxEl) return;
+            if (state.charts.scatter) state.charts.scatter.destroy();
+            const isDark = document.documentElement.classList.contains('dark');
+            const pts = subset.filter(m => m.score && m.perc).map(m => ({ x: m.score, y: m.perc }));
+            state.charts.scatter = new Chart(ctxEl.getContext('2d'), {
+                type: 'scatter',
+                data: { datasets: [{ label: 'Mock', data: pts, backgroundColor: 'rgba(217,70,239,0.55)', borderColor: '#d946ef', borderWidth: 1, pointRadius: 6, pointHoverRadius: 8 }] },
+                options: {
+                    responsive: true, maintainAspectRatio: false,
+                    scales: {
+                        x: { title: { display: true, text: 'Score', color: isDark?'#64748b':'#94a3b8', font:{weight:'800',size:10} }, grid: { color: isDark?'rgba(139,92,246,0.12)':'rgba(99,102,241,0.07)' }, ticks: { color: isDark?'#64748b':'#94a3b8', font:{size:9} } },
+                        y: { title: { display: true, text: 'Percentile', color: isDark?'#64748b':'#94a3b8', font:{weight:'800',size:10} }, grid: { color: isDark?'rgba(139,92,246,0.12)':'rgba(99,102,241,0.07)' }, ticks: { color: isDark?'#64748b':'#94a3b8', font:{size:9} } }
+                    },
+                    plugins: { legend: { display: false }, tooltip: { callbacks: { label: ctx => `Score:${ctx.parsed.x} · %ile:${ctx.parsed.y}` } } }
+                }
+            });
+        }
+
+        // ─────────────────────────────────────────────────
+        //  RENDER: Best Day of Week (Feature #8)
+        // ─────────────────────────────────────────────────
+        function renderBestDay(subset) {
+            const grid = el('best-day-grid'); const insight = el('best-day-insight');
+            if (!grid) return;
+            const days = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+            const dayData = days.map((_,i) => {
+                const mocks = subset.filter(m => new Date(m.date).getDay() === i);
+                const avg = mocks.length ? (mocks.reduce((a,m)=>a+m.score,0)/mocks.length) : 0;
+                return { count: mocks.length, avg };
+            });
+            const maxAvg = Math.max(...dayData.map(d => d.avg));
+            grid.innerHTML = days.map((name, i) => {
+                const d = dayData[i]; const isBest = d.count > 0 && d.avg === maxAvg;
+                const opacity = d.count === 0 ? 0.08 : 0.15 + (d.avg / maxAvg) * 0.75;
+                return `<div class="rounded-2xl p-3 text-center transition hover:scale-105 cursor-default ${isBest ? 'ring-2 ring-brand-500 shadow-lg shadow-brand-500/25' : ''}"
+                    style="background:rgba(99,102,241,${opacity})">
+                    <p class="text-xs font-black uppercase tracking-widest ${isBest ? 'text-brand-600 dark:text-brand-400' : 'text-slate-500'}">${name}</p>
+                    <p class="text-base font-black mt-1 ${isBest ? 'text-gradient' : 'text-slate-400'}">${d.count ? d.avg.toFixed(0) : '–'}</p>
+                    <p class="text-xs font-bold text-slate-400">${d.count ? d.count + (d.count===1?' mock':' mocks') : 'no data'}</p>
+                </div>`;
+            }).join('');
+            if (insight) {
+                const bestIdx = dayData.findIndex(d => d.count > 0 && d.avg === maxAvg);
+                insight.textContent = bestIdx >= 0
+                    ? `You score highest on ${days[bestIdx]}s — avg ${maxAvg.toFixed(1)}. Schedule important mock attempts then! 💡`
+                    : '';
+            }
+        }
+
+        // ─────────────────────────────────────────────────
+        //  RENDER: Score Distribution Histogram (New)
+        // ─────────────────────────────────────────────────
+        function renderHistogram(subset) {
+            const ctxEl = el('chart-histogram'); if (!ctxEl) return;
+            if (state.charts.histogram) state.charts.histogram.destroy();
+            if (!subset.length) return;
+            const group = EXAM_GROUPS[state.selectedExamGroup];
+            const maxScore = group ? group.total : Math.max(...subset.map(m => m.max || 200));
+            const BIN = 10; // 10-mark buckets
+            const numBins = Math.ceil(maxScore / BIN);
+            const bins = Array(numBins).fill(0);
+            subset.forEach(m => {
+                const idx = Math.min(Math.floor(m.score / BIN), numBins - 1);
+                bins[idx]++;
+            });
+            const labels = bins.map((_, i) => `${i*BIN}–${(i+1)*BIN}`);
+            const avgScore = subset.reduce((a, m) => a + m.score, 0) / subset.length;
+            const avgBin = Math.floor(avgScore / BIN);
+            const isDark = document.documentElement.classList.contains('dark');
+            const colors = bins.map((_, i) => {
+                if (i === avgBin) return 'rgba(217,70,239,0.85)';
+                if (bins[i] === Math.max(...bins)) return 'rgba(99,102,241,0.85)';
+                return isDark ? 'rgba(99,102,241,0.35)' : 'rgba(99,102,241,0.45)';
+            });
+            state.charts.histogram = new Chart(ctxEl.getContext('2d'), {
+                type: 'bar',
+                data: { labels, datasets: [{ data: bins, backgroundColor: colors, borderRadius: 6, borderSkipped: false }] },
+                options: {
+                    responsive: true, maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: { callbacks: { label: ctx => `${ctx.parsed.y} mock${ctx.parsed.y !== 1 ? 's' : ''}` } }
+                    },
+                    scales: {
+                        x: { grid: { display: false }, ticks: { font: { size: 8, weight: '700' }, color: isDark ? '#64748b' : '#94a3b8', maxRotation: 45 } },
+                        y: { beginAtZero: true, ticks: { stepSize: 1, font: { size: 9, weight: '700' }, color: isDark ? '#64748b' : '#94a3b8' }, grid: { color: isDark ? 'rgba(139,92,246,0.1)' : 'rgba(99,102,241,0.06)' } }
+                    }
+                }
+            });
+            const insightEl = el('histogram-insight');
+            if (insightEl) {
+                const mode = labels[bins.indexOf(Math.max(...bins))];
+                const allAboveCut = state.targetScore > 0 ? subset.filter(m => m.score >= state.targetScore).length : 0;
+                const pct = state.targetScore > 0 ? ((allAboveCut / subset.length) * 100).toFixed(0) : null;
+                insightEl.textContent = `Most common range: ${mode} marks${pct !== null ? ` · ${pct}% above your target (${state.targetScore})` : ''}`;
+            }
+        }
+
+        // ─────────────────────────────────────────────────
+        //  RENDER: Negative Marking Damage Chart (New)
+        // ─────────────────────────────────────────────────
+        function renderDamageChart(subset) {
+            const ctxEl = el('chart-damage'); if (!ctxEl) return;
+            if (state.charts.damage) state.charts.damage.destroy();
+            const group = EXAM_GROUPS[state.selectedExamGroup]; if (!group) return;
+            const recent = subset.slice().sort((a, b) => new Date(a.date) - new Date(b.date)).slice(-12);
+            if (!recent.length) return;
+            const earned = [], bled = [], labels = [];
+            recent.forEach(m => {
+                let e = 0, b = 0;
+                if (m.quickEntry) {
+                    e = (m.quickCorrect || 0) * group.c;
+                    b = (m.quickWrong || 0) * group.w;
+                } else {
+                    (m.subjects || []).forEach(s => { e += s.c * group.c; b += s.w * group.w; });
+                }
+                earned.push(parseFloat(e.toFixed(1)));
+                bled.push(parseFloat((-b).toFixed(1)));
+                labels.push(m.date.slice(5));
+            });
+            const isDark = document.documentElement.classList.contains('dark');
+            const gc = isDark ? 'rgba(139,92,246,0.1)' : 'rgba(99,102,241,0.06)';
+            state.charts.damage = new Chart(ctxEl.getContext('2d'), {
+                type: 'bar',
+                data: {
+                    labels,
+                    datasets: [
+                        { label: 'Earned (+)', data: earned, backgroundColor: 'rgba(16,185,129,0.7)', borderRadius: 6, borderSkipped: false, stack: 'marks' },
+                        { label: 'Bled (−)',   data: bled,   backgroundColor: 'rgba(239,68,68,0.65)',  borderRadius: 6, borderSkipped: false, stack: 'marks' }
+                    ]
+                },
+                options: {
+                    responsive: true, maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: true, labels: { usePointStyle: true, pointStyle: 'rectRounded', font: { size: 9, weight: '800' }, color: isDark ? '#94a3b8' : '#475569' } },
+                        tooltip: { callbacks: { label: ctx => `${ctx.dataset.label}: ${Math.abs(ctx.parsed.y)}` } }
+                    },
+                    scales: {
+                        x: { stacked: true, grid: { display: false }, ticks: { font: { size: 9, weight: '700' }, color: isDark ? '#64748b' : '#94a3b8' } },
+                        y: { stacked: true, grid: { color: gc }, ticks: { font: { size: 9, weight: '700' }, color: isDark ? '#64748b' : '#94a3b8' } }
+                    }
+                }
+            });
+            const ins = el('damage-insight');
+            if (ins && recent.length >= 2) {
+                const avgBled = bled.reduce((a, b) => a + Math.abs(b), 0) / bled.length;
+                const avgEarned = earned.reduce((a, b) => a + b, 0) / earned.length;
+                const ratio = ((Math.abs(avgBled.toFixed(1)) / avgEarned) * 100).toFixed(1);
+                ins.textContent = `On avg you bleed ${avgBled.toFixed(1)} marks per mock (${ratio}% of what you earn). ${parseFloat(ratio) < 8 ? '✅ Excellent discipline!' : parseFloat(ratio) < 15 ? '⚠️ Reduce wrong attempts.' : '🚨 Wrong attempts badly hurting your score.'}`;
+            }
+        }
+
+        // ─────────────────────────────────────────────────
+        //  SHARE PERFORMANCE CARD (New)
+        // ─────────────────────────────────────────────────
+        window.openShareCard = function() {
+            const subset = getFilteredMocks();
+            const group  = EXAM_GROUPS[state.selectedExamGroup];
+            if (!subset.length) return alert("Log some mocks first to generate your card!");
+            const sorted = subset.slice().sort((a, b) => new Date(a.date) - new Date(b.date));
+            const avg  = (sorted.reduce((a, m) => a + m.score, 0) / sorted.length).toFixed(1);
+            const high = Math.max(...sorted.map(m => m.score));
+            const perc = (sorted.reduce((a, m) => a + (m.perc || 0), 0) / sorted.length).toFixed(1);
+            const first = sorted[0], last = sorted[sorted.length - 1];
+            const delta = sorted.length >= 2 ? (last.score - first.score).toFixed(1) : '—';
+            // Subject best
+            const subAcc = {};
+            sorted.forEach(m => (m.subjects || []).forEach(s => {
+                if (!subAcc[s.name]) subAcc[s.name] = { c: 0, tot: 0 };
+                subAcc[s.name].c += s.c; subAcc[s.name].tot += (s.c + s.w);
+            }));
+            const bestSub = Object.entries(subAcc).sort((a, b) => (b[1].tot ? b[1].c/b[1].tot : 0) - (a[1].tot ? a[1].c/a[1].tot : 0))[0];
+            const tgt = state.targetScore;
+            const tgtPct = tgt > 0 ? Math.min(100, (parseFloat(avg) / tgt * 100)).toFixed(0) : null;
+
+            el('sc-exam').textContent = group ? group.name.toUpperCase() : 'MOCK TRACKER';
+            el('sc-date').textContent = new Date().toLocaleDateString('en-IN', { month: 'short', year: 'numeric' });
+            el('sc-avg').textContent = avg;
+            el('sc-max-label').textContent = group ? '/ ' + group.total : '';
+            el('sc-total').textContent = sorted.length;
+            el('sc-high').textContent = high;
+            el('sc-perc').textContent = perc + '%ile';
+            el('sc-delta').textContent = (parseFloat(delta) >= 0 ? '▲ +' : '▼ ') + delta;
+            el('sc-delta').style.color = parseFloat(delta) >= 0 ? '#34d399' : '#f87171';
+            if (bestSub) el('sc-best-subject').textContent = `🏅 Strongest: ${bestSub[0]}`;
+            const tgtRow = el('sc-target-row');
+            if (tgt > 0 && tgtRow) {
+                tgtRow.style.display = 'block';
+                el('sc-target-pct').textContent = tgtPct + '% of target (' + tgt + ')';
+                setTimeout(() => { const bf = el('sc-bar-fill'); if (bf) bf.style.width = tgtPct + '%'; }, 100);
+            } else if (tgtRow) { tgtRow.style.display = 'none'; }
+
+            el('share-card-modal').classList.add('open');
+        };
+
+        window.closeShareCard = function() {
+            el('share-card-modal').classList.remove('open');
+        };
+
+        window.downloadShareCard = async function() {
+            const card = el('share-card');
+            try {
+                const canvas = await html2canvas(card, { backgroundColor: null, scale: 2, useCORS: true, logging: false });
+                const a = document.createElement('a');
+                a.href = canvas.toDataURL('image/png');
+                a.download = `MockTracker_Card_${new Date().toISOString().slice(0,10)}.png`;
+                a.click();
+            } catch(e) { alert("Download failed — try screenshotting manually. " + e.message); }
+        };
+
+        // ── Render Home ──
+        function renderHome() {
+            const tabHome = el('tab-home');
+            if (!tabHome || !tabHome.classList.contains('active')) return;
+            const subset = getFilteredMocks(); const total = subset.length;
+            const sorted = subset.slice().sort((a,b) => new Date(a.date)-new Date(b.date));
+            const avgScoreNum = total ? sorted.reduce((acc,m) => acc+m.score, 0)/total : 0;
+            const avgScore = total ? avgScoreNum.toFixed(1) : '-';
+            const high = total ? Math.max(...sorted.map(m=>m.score)) : 0;
+            const low  = total ? Math.min(...sorted.map(m=>m.score)) : 0;
+            const avgPerc = total ? (sorted.reduce((acc,m) => acc+(m.perc||0), 0)/total).toFixed(1) : 0;
+            const lastMock = sorted[sorted.length-1], prevMock = sorted[sorted.length-2];
+
+            safeSetText('h-total', total); safeSetText('h-avg', avgScore);
+            safeSetText('h-high', high); safeSetText('h-perc', avgPerc+'%');
+            safeSetText('h-low', total ? low : '-'); safeSetText('h-last', lastMock ? lastMock.score : '-');
+
+            const highEl = el('h-high-sub');
+            if (highEl) { const hm = sorted.reduce((b,m)=>m.score>(b?.score||0)?m:b, null); highEl.textContent = hm ? hm.name.substring(0,22)+'…' : ''; }
+
+            const deltaEl = el('h-delta');
+            if (deltaEl && lastMock && prevMock) {
+                const delta = (lastMock.score - prevMock.score).toFixed(1);
+                const isPos = delta >= 0;
+                deltaEl.textContent = (isPos ? '▲ +' : '▼ ') + delta;
+                deltaEl.className = `text-xs font-black pb-1 ${isPos ? 'text-emerald-500' : 'text-rose-500'}`;
+                deltaEl.classList.remove('hidden');
+            } else if (deltaEl) deltaEl.classList.add('hidden');
+
+            const streakEl = el('h-streak');
+            if (streakEl && total > 0) {
+                const dates = [...new Set(sorted.map(m=>m.date))].sort((a,b)=>new Date(b)-new Date(a));
+                let streak = 0, check = new Date().toISOString().slice(0,10);
+                for (const d of dates) {
+                    if (d === check) { streak++; const dt=new Date(check); dt.setDate(dt.getDate()-1); check=dt.toISOString().slice(0,10); }
+                    else if (d < check) break;
+                }
+                streakEl.textContent = streak + (streak===1?' day':' days');
+            }
+
+            const thisMonthEl = el('h-month');
+            if (thisMonthEl) { const ym = new Date().toISOString().slice(0,7); thisMonthEl.textContent = sorted.filter(m=>m.date?.startsWith(ym)).length + ' mocks'; }
+
+            // ── Target ring + above-cutoff count (Feature #1) ──
+            updateTargetRing(avgScoreNum, state.targetScore);
+            const aboveEl = el('target-above-count');
+            if (aboveEl && state.targetScore > 0 && total > 0) {
+                const aboveCount = sorted.filter(m => m.score >= state.targetScore).length;
+                aboveEl.textContent = `${aboveCount} / ${total} mocks above cutoff`;
+                aboveEl.classList.remove('hidden');
+            } else if (aboveEl) aboveEl.classList.add('hidden');
+
+            // ── Projection (Feature #4) ──
+            if (total >= 2) {
+                const reg = linearRegression(sorted.map(m => m.score));
+                if (reg) safeSetText('h-projected', reg.predict(total).toFixed(1));
+            } else safeSetText('h-projected', '-');
+
+            // Main line chart — with target line + trend (Features #1 & #4)
+            const ctxHomeEl = el('chart-home');
+            if (ctxHomeEl) {
+                if (state.charts.home) state.charts.home.destroy();
+                const recent = sorted.slice(-10);
+                const isDark = document.documentElement.classList.contains('dark');
+                const gc = isDark ? 'rgba(139,92,246,0.12)' : 'rgba(99,102,241,0.07)';
+
+                const datasets = [
+                    { label:'Score', data:recent.map(m=>m.score), borderColor:'#6366f1', tension:0.4, fill:true, backgroundColor:'rgba(99,102,241,0.08)', borderWidth:3, pointBackgroundColor:'#6366f1', pointRadius:4 },
+                    { label:'Percentile', data:recent.map(m=>m.perc), borderColor:'#d946ef', borderDash:[6,4], tension:0.4, borderWidth:2, pointRadius:3, pointBackgroundColor:'#d946ef' }
+                ];
+                // Target cutoff line
+                if (state.targetScore && recent.length) {
+                    datasets.push({ label:'Target', data: recent.map(() => state.targetScore), borderColor:'#f59e0b', borderDash:[4,4], borderWidth:2, pointRadius:0, fill:false, tension:0 });
+                }
+                // Trend line
+                if (recent.length >= 2) {
+                    const reg = linearRegression(recent.map(m => m.score));
+                    if (reg) datasets.push({ label:'Trend', data: recent.map((_,i) => parseFloat(reg.predict(i).toFixed(1))), borderColor:'rgba(16,185,129,0.7)', borderDash:[2,3], borderWidth:2, pointRadius:0, fill:false, tension:0 });
+                }
+
+                state.charts.home = new Chart(ctxHomeEl.getContext('2d'), {
+                    type: 'line',
+                    data: { labels: recent.map(m=>m.date.slice(5)), datasets },
+                    options: {
+                        responsive: true, maintainAspectRatio: false,
+                        scales: { x:{ grid:{ display:false }, ticks:{ font:{weight:'800',size:10}, color:isDark?'#64748b':'#94a3b8' } }, y:{ beginAtZero:true, grid:{color:gc}, ticks:{font:{weight:'800',size:10},color:isDark?'#64748b':'#94a3b8'} } },
+                        plugins: { legend: { display:true, labels:{ usePointStyle:true, pointStyle:'line', font:{size:9,weight:'bold'}, color:isDark?'#94a3b8':'#475569', boxWidth:20 } } }
+                    }
+                });
+            }
+
+            // Week bar chart
+            const ctxWEl = el('chart-week');
+            if (ctxWEl) {
+                if (state.charts.week) state.charts.week.destroy();
+                const labels=[], weekData=[];
+                for (let i=4; i>=0; i--) {
+                    const now = new Date();
+                    const first = now.getDate() - now.getDay() - (i*7);
+                    const start = new Date(new Date().setDate(first));
+                    const end   = new Date(new Date().setDate(first+6));
+                    labels.push(i===0 ? "THIS WEEK" : `${start.toLocaleDateString('en-US',{month:'short',day:'numeric'})}-${end.getDate()}`);
+                    weekData.push(subset.filter(m => { const d=new Date(m.date); return d>=new Date(start.setHours(0,0,0,0)) && d<=new Date(end.setHours(23,59,59,999)); }).length);
+                }
+                state.charts.week = new Chart(ctxWEl.getContext('2d'), {
+                    type:'bar', data:{ labels, datasets:[{ data:weekData, backgroundColor:'rgba(249,115,22,0.8)', borderRadius:8, borderSkipped:false }] },
+                    options:{ responsive:true, maintainAspectRatio:false, plugins:{ legend:{ display:false } }, scales:{ x:{ grid:{ display:false }, ticks:{ font:{ size:7, weight:'bold' }, color:'#94a3b8' } }, y:{ display:false } } }
+                });
+            }
+            renderLinks(); renderTaskList();
+        }
+
+        function renderLinks() {
+            const lg = el('links-grid'); if (!lg) return;
+            lg.innerHTML = state.links.map(l => `
+                <div class="relative group">
+                    <button onclick="window.open('${l.url}','_blank')" class="w-full p-3.5 rounded-xl glass-card text-xs font-black text-slate-700 dark:text-slate-200 hover-glow transition text-left truncate flex items-center gap-2.5">
+                        <div class="w-2 h-2 rounded-full bg-gradient-to-tr from-brand-500 to-accent-500 flex-shrink-0"></div>${l.name}
+                    </button>
+                    <button onclick="app.deleteLink('${l.id}')" class="absolute top-1/2 -right-1 -translate-y-1/2 w-6 h-6 rounded-full bg-rose-500 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition scale-0 group-hover:scale-100 shadow-lg z-10"><i class="fa-solid fa-xmark text-xs"></i></button>
+                </div>`).join('') || `<p class="text-center text-xs font-black text-slate-400 py-5 uppercase opacity-40">No Resources</p>`;
+        }
+
+        function renderTaskList() {
+            const tl = el('task-list'); if (!tl) return;
+            const today = new Date().getDay(), date = new Date().toISOString().slice(0,10);
+            const active = state.tasks.filter(t => t.days?.includes(today));
+            const upcoming = state.tasks.filter(t => t.days && !t.days.includes(today)).slice(0,4);
+            const dayNames = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+            const hasTasks = active.length + upcoming.length > 0;
+            // Feature #17 — empty state
+            const emptyEl = el('empty-tasks');
+            if (emptyEl) emptyEl.classList.toggle('hidden', hasTasks);
+            tl.classList.toggle('hidden', !hasTasks);
+            tl.innerHTML = active.map(t => {
+                const done = t.done && t.done[date];
+                return `<div class="glass-card p-5 rounded-[2rem] flex items-center justify-between border-l-[6px] border-brand-500 hover-glow transition">
+                    <div class="flex items-center gap-3">
+                        <input type="checkbox" ${done?'checked':''} onchange="toggleTask('${t.id}')" class="w-6 h-6 rounded-xl accent-brand-600 cursor-pointer">
+                        <span class="text-base font-black text-slate-700 dark:text-white ${done?'line-through opacity-40':''}">${t.name}</span>
+                    </div>
+                    <span class="pill bg-brand-100 dark:bg-brand-900/30 text-brand-600 dark:text-brand-400">Active</span>
+                </div>`;
+            }).join('') + upcoming.map(t => `
+                <div class="p-5 rounded-[2rem] border-2 border-dashed border-white/40 dark:border-white/10 flex justify-between items-center opacity-70">
+                    <div>
+                        <span class="text-base font-black text-slate-700 dark:text-slate-300">${t.name}</span>
+                        <p class="text-xs font-black text-brand-400 uppercase mt-1">Due: ${t.days?.[0]!==undefined?dayNames[t.days[0]]:'N/A'}</p>
+                    </div>
+                    <span class="pill bg-indigo-100 dark:bg-indigo-900/20 text-indigo-600 dark:text-indigo-400">Upcoming</span>
+                </div>`).join('');
+        }
+
+        // ── filterHistory (search + sort) ──
+        window.filterHistory = function() {
+            const query = (el('hist-search')?.value||'').toLowerCase();
+            const sort  = el('hist-sort')?.value||'date-desc';
+            // Build chronological sorted list for tag calculation (Feature #9)
+            const allChron = getFilteredMocks().slice().sort((a,b) => new Date(a.date)-new Date(b.date));
+            let filtered = [...allChron];
+            if (query) filtered = filtered.filter(m => m.name.toLowerCase().includes(query) || (m.platform||'').toLowerCase().includes(query));
+            if (sort==='date-desc')  filtered.sort((a,b)=>new Date(b.date)-new Date(a.date));
+            else if (sort==='date-asc')   filtered.sort((a,b)=>new Date(a.date)-new Date(b.date));
+            else if (sort==='score-desc') filtered.sort((a,b)=>b.score-a.score);
+            else if (sort==='score-asc')  filtered.sort((a,b)=>a.score-b.score);
+            else if (sort==='perc-desc')  filtered.sort((a,b)=>(b.perc||0)-(a.perc||0));
+            const hb = el('hist-body'); if (!hb) return;
+            // Feature #17 — empty state for history
+            const emptyHist = el('empty-history');
+            const histTable = el('hist-table');
+            const hasData = filtered.length > 0;
+            if (emptyHist) emptyHist.classList.toggle('hidden', hasData);
+            if (histTable) histTable.classList.toggle('hidden', !hasData);
+            hb.innerHTML = filtered.map(m => {
+                const tag = getAutoTag(m, allChron);
+                return `
+                <tr class="cursor-pointer transition" onclick="app.viewMock('${m.id}')">
+                    <td class="px-5 py-5 text-xs font-black text-slate-400 whitespace-nowrap">${m.date}</td>
+                    <td class="px-5 py-5 max-w-[200px]">
+                        <div class="font-black text-slate-900 dark:text-white text-sm flex items-center gap-2 truncate">
+                            ${state.isDemoMode ? '<span class="demo-badge flex-shrink-0" style="display:inline-flex;">demo</span>' : ''}
+                            <span class="truncate">${m.name}</span>
+                        </div>
+                        <div class="text-xs font-bold text-brand-500 uppercase tracking-wide mt-0.5 truncate">${m.exam} · ${m.platform}</div>
+                    </td>
+                    <td class="px-5 py-5 text-center font-black text-brand-600 text-base whitespace-nowrap">${m.score} <span class="text-xs font-normal text-slate-400">/ ${m.max}</span></td>
+                    <td class="px-4 py-5 text-center"><span class="pill ${tag.cls} text-xs whitespace-nowrap">${tag.label}</span></td>
+                    <td class="px-4 py-5 text-center whitespace-nowrap"><span class="bg-gradient-to-r from-accent-500 to-purple-600 text-white px-3 py-1.5 rounded-xl font-black text-xs shadow-md">${m.max?((m.score/m.max)*100).toFixed(1):0}%</span></td>
+                    <td class="px-5 py-5 text-right" onclick="event.stopPropagation()">
+                        <div class="flex items-center justify-end gap-3">
+                        ${state.isDemoMode ? '' : `<button onclick="app.editMock('${m.id}')" class="text-slate-300 hover:text-brand-500 transition p-1"><i class="fa-solid fa-pen-to-square text-base"></i></button><button onclick="app.deleteMock('${m.id}')" class="text-slate-300 hover:text-rose-500 transition p-1"><i class="fa-solid fa-trash-can text-base"></i></button>`}
+                        </div>
+                    </td>
+                </tr>`;
+            }).join('') || `<tr><td colspan="6" class="p-10 text-center text-slate-400 font-bold uppercase opacity-50">No mocks found</td></tr>`;
+        };
+
+        function renderHistory() { window.filterHistory(); }
+
+        // Feature #16 — Collapsible weak area toggle
+        window.toggleWeakArea = function(uid) {
+            const body = document.getElementById('weak-body-' + uid);
+            const chev = document.getElementById('weak-chev-' + uid);
+            if (!body || !chev) return;
+            body.classList.toggle('open');
+            chev.classList.toggle('open');
+        };
+
+        function renderAnalysisHubs(subset) {
+            const wh = el('ana-weak-list');
+            const withWeak = subset.filter(m => m.weak);
+            if (wh) wh.innerHTML = withWeak.map(m => `
+                <div class="glass-card rounded-[1.5rem] border border-amber-200/30 dark:border-amber-900/20 overflow-hidden">
+                    <button onclick="toggleWeakArea('${m.id}')" class="w-full px-5 py-4 flex items-center justify-between text-left hover:bg-amber-50/30 dark:hover:bg-amber-900/10 transition">
+                        <span class="text-xs font-black text-amber-600 dark:text-amber-400 uppercase tracking-widest truncate pr-3">${m.name} — ${m.date}</span>
+                        <span class="flex items-center gap-2 flex-shrink-0">
+                            ${state.isDemoMode ? '' : `<button onclick="event.stopPropagation();app.resolveWeakArea('${m.id}')" class="text-amber-400 hover:text-emerald-500 transition"><i class="fa-solid fa-check-double text-xs"></i></button>`}
+                            <i id="weak-chev-${m.id}" class="fa-solid fa-chevron-down weak-chevron text-slate-400 text-xs"></i>
+                        </span>
+                    </button>
+                    <div id="weak-body-${m.id}" class="weak-item-body">
+                        <p class="px-5 pb-4 text-sm font-bold text-slate-700 dark:text-amber-200 leading-relaxed">${m.weak}</p>
+                    </div>
+                </div>`).join('') || `<p class="col-span-full p-10 text-center text-slate-400 font-bold italic opacity-40 uppercase tracking-widest text-xs">No weaknesses logged.</p>`;
+            const sl = el('ana-silly-log-body');
+            if (sl) sl.innerHTML = subset.filter(m=>m.sillyMarks>0).map(m => `
+                <div class="glass-card p-5 rounded-[2rem] border border-rose-200/30 dark:border-rose-900/20">
+                    <div class="flex justify-between mb-2"><span class="text-xs font-black text-rose-500 uppercase tracking-widest">${m.name}</span><span class="font-black text-rose-500 text-sm">-${m.sillyMarks.toFixed(1)}</span></div>
+                    <p class="text-xs text-slate-600 dark:text-slate-400 italic">"${m.sillyDesc||'No notes.'}"</p>
+                </div>`).join('') || `<p class="p-8 text-center text-slate-400 font-bold italic uppercase tracking-widest text-xs opacity-50">Clean Audit ✓</p>`;
+        }
+
+        function renderPlatChart(data) {
+            const ctxEl = el('chart-plat'); if (!ctxEl) return;
+            if (state.charts.plat) state.charts.plat.destroy();
+            const ag = {};
+            data.forEach(m => { if (!ag[m.platform]) ag[m.platform]=[]; ag[m.platform].push(m.max?(m.score/m.max)*100:0); });
+            const isDark = document.documentElement.classList.contains('dark');
+            state.charts.plat = new Chart(ctxEl.getContext('2d'), {
+                type:'bar',
+                data: { labels:Object.keys(ag), datasets:[{ label:'Avg %', data:Object.values(ag).map(arr=>arr.reduce((a,b)=>a+b,0)/Math.max(arr.length,1)), backgroundColor:'rgba(99,102,241,0.7)', borderRadius:8, barThickness:14 }] },
+                options: { responsive:true, maintainAspectRatio:false, indexAxis:'y', plugins:{ legend:{ display:false } }, scales:{ x:{ beginAtZero:true, max:100, grid:{ color: isDark?'rgba(139,92,246,0.1)':'rgba(99,102,241,0.06)' }, ticks:{ font:{ weight:'bold' } } }, y:{ grid:{ display:false }, ticks:{ font:{ weight:'bold' } } } } }
+            });
+        }
+
+        function updateForm() {
+            const group = EXAM_GROUPS[state.selectedExamGroup]; if (!group) return;
+            safeSetText('marking-scheme', `MARKING: +${group.c} / -${group.w}`);
+            const sc = el('sec-checkboxes');
+            if (sc) sc.innerHTML = group.subjects.map(s => `
+                <label class="cursor-pointer glass-card px-4 py-3 rounded-2xl text-xs font-black text-slate-500 uppercase tracking-widest hover:border-brand-500 transition flex items-center gap-2 select-none">
+                    <input type="checkbox" value="${s}" class="sec-cb accent-brand-600 w-4 h-4 rounded" onchange="window.renderFormRows()"> ${s}
+                </label>`).join('');
+            window.renderFormRows();
+        }
+
+        window.renderFormRows = () => {
+            const catVal = el('inp-cat'), group = EXAM_GROUPS[state.selectedExamGroup];
+            if (!group || !catVal) return;
+            let subs = group.subjects;
+            const divSec = el('div-sec-select');
+            if (catVal.value === 'Sectional') {
+                if (divSec) divSec.classList.remove('hidden');
+                const checked = Array.from(document.querySelectorAll('.sec-cb:checked')).map(c=>c.value);
+                if (checked.length) subs = checked;
+            } else { if (divSec) divSec.classList.add('hidden'); }
+
+            // New card-based grid for subjects
+            const grid = el('subject-cards-grid');
+            if (grid) grid.innerHTML = subs.map(s => `
+                <div class="glass-card rounded-2xl p-4 border border-white/40 dark:border-white/5" data-sub="${s}">
+                    <p class="text-xs font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-3">${s}</p>
+                    <div class="grid grid-cols-4 gap-2">
+                        <div class="text-center">
+                            <p class="text-xs font-black text-emerald-500 uppercase mb-1">Right</p>
+                            <input type="number" min="0" class="score-inp c w-full text-emerald-600 text-lg font-black" placeholder="0" oninput="window.calcScore()" style="background:rgba(16,185,129,0.08);border-radius:8px;padding:6px 4px;">
+                        </div>
+                        <div class="text-center">
+                            <p class="text-xs font-black text-rose-500 uppercase mb-1">Wrong</p>
+                            <input type="number" min="0" class="score-inp w w-full text-rose-500 text-lg font-black" placeholder="0" oninput="window.calcScore()" style="background:rgba(239,68,68,0.08);border-radius:8px;padding:6px 4px;">
+                        </div>
+                        <div class="text-center">
+                            <p class="text-xs font-black text-slate-400 uppercase mb-1">Skip</p>
+                            <input type="number" min="0" class="score-inp u w-full text-slate-400 text-lg font-black" placeholder="0" style="background:rgba(148,163,184,0.08);border-radius:8px;padding:6px 4px;">
+                        </div>
+                        <div class="text-center">
+                            <p class="text-xs font-black text-orange-500 uppercase mb-1">Silly</p>
+                            <input type="number" min="0" class="score-inp s w-full text-orange-500 text-lg font-black" placeholder="0" style="background:rgba(249,115,22,0.08);border-radius:8px;padding:6px 4px;">
+                        </div>
+                    </div>
+                </div>`).join('');
+
+            // Keep hidden tbody in sync for form submit (reads data-sub from cards now)
+            const tbody = el('inp-subs-body');
+            if (tbody) tbody.innerHTML = subs.map(s => `<tr data-sub="${s}"></tr>`).join('');
+
+            window.calcScore();
+        };
+
+        window.calcScore = () => {
+            const group = EXAM_GROUPS[state.selectedExamGroup]; if (!group) return;
+            let score = 0;
+            document.querySelectorAll('#subject-cards-grid [data-sub]').forEach(card => {
+                const c = parseFloat(card.querySelector('.c')?.value||0), w = parseFloat(card.querySelector('.w')?.value||0);
+                score += (c * group.c) - (w * group.w);
+            });
+            safeSetText('calc-score', score.toFixed(2));
+        };
+
+        window.openModal = (id) => {
+            const mb = el('modal-backdrop'); if (!mb) return;
+            mb.classList.replace('hidden','flex');
+            document.querySelectorAll('#modal-backdrop > div').forEach(d => d.classList.add('hidden'));
+            const target = el(id); if (target) target.classList.remove('hidden');
+            if (id === 'modal-task') {
+                const td = el('task-days'); if (!td) return;
+                td.innerHTML = ['S','M','T','W','T','F','S'].map((d,i) => `
+                    <label class="cursor-pointer group">
+                        <input type="checkbox" name="days" value="${i}" class="peer hidden">
+                        <div class="text-xs font-black text-center py-3 rounded-2xl border border-white/40 dark:border-white/10 text-slate-400 peer-checked:bg-brand-600 peer-checked:text-white transition uppercase">${d}</div>
+                    </label>`).join('');
+            }
+        };
+
+        window.closeModal = () => { const mb = el('modal-backdrop'); if (mb) mb.classList.replace('flex','hidden'); };
+
+        async function toggleTask(id) {
+            const t = state.tasks.find(x => x.id == id); if (!t) return;
+            const date = new Date().toISOString().slice(0,10);
+            if (!t.done) t.done = {};
+            if (t.done[date]) delete t.done[date]; else t.done[date] = true;
+            if (!state.isDemoMode && state.user) {
+                try { await updateDoc(doc(db,'artifacts',appId,'users',state.user.uid,'tasks',id), { done: t.done }); }
+                catch(e) { console.error(e); }
+            }
+            renderTaskList();
+        }
+
+        function processData() {
+            state.mocks.sort((a,b) => new Date(a.date)-new Date(b.date));
+            renderHome(); renderHistory(); window.app.renderMatrix();
+        }
+
+        // ── Firebase Auth ──
+        if (auth) {
+            onAuthStateChanged(auth, async u => {
+                state.user = u;
+                if (u && !state.isDemoMode) {
+                    el('btn-login')?.classList.add('hidden');
+                    const up = el('user-profile'); if (up) { up.classList.remove('hidden'); up.style.display='flex'; }
+                    const av = el('user-avatar'); if (av) av.src = u.photoURL || '';
+                    safeSetText('status-text', 'Cloud Sync');
+                    const si = el('status-indicator'); if (si) { si.classList.remove('bg-gray-400'); si.classList.add('bg-emerald-500','animate-pulse'); }
+
+                    try {
+                        const { getDoc } = await import("https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js");
+                        const settingsDoc = await getDoc(doc(db,'artifacts',appId,'users',u.uid,'settings','exam'));
+                        if (settingsDoc.exists()) state.selectedExamGroup = settingsDoc.data().selectedExamGroup;
+                    } catch(e) {}
+
+                    if (!state.selectedExamGroup) state.selectedExamGroup = localStorage.getItem('selected_exam_group');
+                    if (!state.selectedExamGroup) showExamSelector();
+                    else { updateExamBadge(); updateFormForExam(); }
+
+                    onSnapshot(collection(db,'artifacts',appId,'users',u.uid,'mocks'), s => { if (!state.isDemoMode) { state.mocks = s.docs.map(d=>({id:d.id,...d.data()})); processData(); } });
+                    onSnapshot(collection(db,'artifacts',appId,'users',u.uid,'tasks'), s => { if (!state.isDemoMode) { state.tasks = s.docs.map(d=>({id:d.id,...d.data()})); renderTaskList(); } });
+                    onSnapshot(collection(db,'artifacts',appId,'users',u.uid,'links'), s => { if (!state.isDemoMode) { state.links = s.docs.map(d=>({id:d.id,...d.data()})); renderLinks(); } });
+                    syncOfflineQueue(); // Feature #19 — sync any queued mocks on login
+                } else if (!state.isDemoMode) {
+                    el('btn-login')?.classList.remove('hidden');
+                    el('user-profile')?.classList.add('hidden');
+                    safeSetText('status-text', 'Offline');
+                    const si = el('status-indicator'); if (si) { si.classList.remove('bg-emerald-500','animate-pulse'); si.classList.add('bg-gray-400'); }
+                    state.selectedExamGroup = localStorage.getItem('selected_exam_group');
+                    if (!state.selectedExamGroup) showExamSelector();
+                    else { updateExamBadge(); updateFormForExam(); }
+                    state.mocks=[]; state.tasks=[]; state.links=[];
+                    processData();
+                }
+            });
+        }
+
+        // ── Form Events ──
+        el('inp-cat')?.addEventListener('change', updateForm);
+        el('inp-date').valueAsDate = new Date();
+
+        el('form-task')?.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            if (state.isDemoMode) { alert("Cannot add tasks in Demo Mode."); return; }
+            const nameInp = el('task-name-inp');
+            const days = Array.from(document.querySelectorAll('input[name="days"]:checked')).map(c=>parseInt(c.value));
+            if (!days.length) return alert("Select active days!");
+            const taskData = { name:nameInp.value, days, done:{}, createdAt:Timestamp.now() };
+            try {
+                if (state.user) await addDoc(collection(db,'artifacts',appId,'users',state.user.uid,'tasks'), taskData);
+                else { alert("Please sign in!"); return; }
+            } catch(e) { alert("Failed: " + e.message); }
+            nameInp.value = ''; closeModal();
+        });
+
+        el('form-score')?.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            if (state.isDemoMode) { alert("Cannot save mocks in Demo Mode — exit demo first."); return; }
+            const group = EXAM_GROUPS[state.selectedExamGroup]; if (!group) return alert("Select exam first!");
+            let entry = {
+                platform: el('inp-platform').value, exam: group.exams[0], examGroup: state.selectedExamGroup,
+                name: el('inp-name').value, category: el('inp-cat').value,
+                date: el('inp-date').value || new Date().toISOString().slice(0,10),
+                perc: parseFloat(el('inp-perc').value)||0, time: parseFloat(el('inp-time').value)||0,
+                weak: el('inp-weak').value, sillyDesc: el('inp-silly-desc').value, updatedAt: Timestamp.now()
+            };
+            if (state.useQuickEntry) {
+                const c=parseInt(el('quick-correct')?.value||0), w=parseInt(el('quick-wrong')?.value||0), sk=parseInt(el('quick-skip')?.value||0), sy=parseInt(el('quick-silly')?.value||0);
+                entry = {...entry, quickEntry:true, quickCorrect:c, quickWrong:w, quickSkip:sk, quickSilly:sy, score:(c*group.c)-(w*group.w), max:(c+w+sk)*group.c, sillyMarks:sy*(group.c+group.w), subjects:[]};
+            } else {
+                const subjects=[]; let q=0, sillyQ=0;
+                document.querySelectorAll('#subject-cards-grid [data-sub]').forEach(card => {
+                    const c=parseInt(card.querySelector('.c')?.value||0), w=parseInt(card.querySelector('.w')?.value||0), u=parseInt(card.querySelector('.u')?.value||0), s=parseInt(card.querySelector('.s')?.value||0);
+                    subjects.push({ name:card.dataset.sub, c, w, u, s }); q+=(c+w+u); sillyQ+=s;
+                });
+                if (!subjects.length) return alert("Select subjects first!");
+                entry = {...entry, quickEntry:false, score:parseFloat(el('calc-score').textContent||0), max:q*group.c, sillyMarks:sillyQ*(group.c+group.w), subjects};
+            }
+            // ── Confetti on Personal Best (Feature #13) ──
+            const isPB = !state.editingId && checkPersonalBest(entry.score);
+            try {
+                if (state.user) {
+                    if (state.editingId) { await updateDoc(doc(db,'artifacts',appId,'users',state.user.uid,'mocks',state.editingId), entry); alert("✅ Mock Updated!"); }
+                    else { entry.createdAt = Timestamp.now(); await addDoc(collection(db,'artifacts',appId,'users',state.user.uid,'mocks'), entry); if (isPB) { fireConfetti(); alert("🏆 New Personal Best! Incredible!"); } else alert("✅ Mock Saved!"); }
+                } else {
+                    // ── Offline Queue fallback (Feature #19) ──
+                    addToQueue(entry);
+                    alert("📦 Saved to offline queue — sign in to sync to cloud.");
+                }
+            } catch(e) { alert("❌ Failed: " + e.message); }
+            app.resetForm(); app.nav('home');
+        });
+
+        window.toggleTask = toggleTask;
+        if (localStorage.getItem('theme') === 'dark') document.documentElement.classList.add('dark');
+        updateOfflineUI(); // Feature #19 — show queue badge on load if items exist
+        // ─── MOBILE NAV: Programmatic binding ───────────────────
+        // Bound here (after window.app exists) for full mobile compatibility.
+        // Uses both click + touchend to handle all mobile browsers.
+        window.openHamburger = function() {
+            var ov=document.getElementById('hamburger-overlay'),dr=document.getElementById('hamburger-drawer');
+            if(!ov||!dr)return;
+            ov.style.display='block';dr.style.display='block';
+            requestAnimationFrame(function(){requestAnimationFrame(function(){
+                ov.classList.add('overlay-open');dr.classList.add('drawer-open');
+            });});
+            ov.onclick=window.closeHamburger;
+            var sy=0;
+            dr.addEventListener('touchstart',function(e){sy=e.touches[0].clientY;},{passive:true,once:true});
+            dr.addEventListener('touchend',function(e){if(e.changedTouches[0].clientY-sy>60)window.closeHamburger();},{passive:true,once:true});
+        };
+        window.closeHamburger = function() {
+            var ov=document.getElementById('hamburger-overlay'),dr=document.getElementById('hamburger-drawer');
+            if(!ov||!dr)return;
+            ov.classList.remove('overlay-open');dr.classList.remove('drawer-open');
+            setTimeout(function(){ov.style.display='none';dr.style.display='none';},300);
+        };
+        (function bindDrawerItems(){
+            var pairs=[['hmenu-history',function(){window.app.nav('history');}],
+                       ['hmenu-tools',  function(){window.app.nav('tools');}],
+                       ['hmenu-switch', function(){window.showExamSelector();}],
+                       ['hmenu-demo',   function(){window.loadDemoMode();}]];
+            pairs.forEach(function(p){
+                var btn=document.getElementById(p[0]);if(!btn)return;
+                var fn=function(e){e.preventDefault();e.stopPropagation();window.closeHamburger();p[1]();};
+                btn.addEventListener('touchend',fn,{passive:false});
+                btn.addEventListener('click',fn,{passive:false});
+            });
+        })();
+
+        (function bindMobileNav() {
+            const routes = [
+                ['mnav-home',     () => window.app.nav('home')],
+                ['mnav-log',      () => window.app.nav('log')],
+                ['mnav-analysis', () => window.app.nav('analysis')],
+                ['mnav-menu',     () => window.openHamburger()]
+            ];
+            routes.forEach(([id, action]) => {
+                const btn = document.getElementById(id);
+                if (!btn) { console.warn('mnav btn missing:', id); return; }
+                const handler = (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    action();
+                    syncMnavActive();
+                };
+                btn.addEventListener('touchend', handler, { passive: false });
+                btn.addEventListener('click',    handler, { passive: false });
+            });
+            syncMnavActive();
+        })();
+
+        function syncMnavActive() {
+            const map = { home:'mnav-home', log:'mnav-log', history:'mnav-history', analysis:'mnav-analysis', tools:'mnav-tools' };
+            document.querySelectorAll('.mnav-btn').forEach(b => b.classList.remove('mnav-active'));
+            const id = map[TABS[currentTab]];
+            if (id) { const b = document.getElementById(id); if (b) b.classList.add('mnav-active'); }
+        }
+
+        // Patch window.app.nav to also sync mobile nav highlight
+        const _baseNav = window.app.nav;
+        window.app.nav = function(tabId) { _baseNav(tabId); syncMnavActive(); };
+
+                window.app.nav('home');
+
+    </script>
+</body>
+</html>
