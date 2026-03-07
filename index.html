@@ -704,6 +704,39 @@
                 </div>
             </div>
 
+
+            <!-- ── SCORE PREDICTOR ── -->
+            <div id="score-predictor-card" class="glass-card rounded-[2rem] overflow-hidden" style="display:none;">
+                <div class="p-6" style="background:linear-gradient(135deg,rgba(16,185,129,0.09),rgba(6,182,212,0.06));border-bottom:1px solid rgba(255,255,255,0.2);">
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 rounded-2xl flex items-center justify-center flex-shrink-0 shadow-lg" style="background:linear-gradient(135deg,#10b981,#06b6d4);">
+                            <i class="fa-solid fa-chart-line text-white" style="font-size:20px;"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-lg font-black text-slate-900 dark:text-white">Score Predictor</h3>
+                            <p class="text-xs font-bold text-slate-400 mt-0.5">Based on your last 5 mocks & trend line</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="p-6">
+                    <div class="grid grid-cols-3 gap-4 mb-5">
+                        <div class="text-center p-4 rounded-2xl" style="background:rgba(16,185,129,0.07);border:1px solid rgba(16,185,129,0.15);">
+                            <p class="text-xs font-black text-emerald-500 uppercase tracking-widest mb-1">Predicted Range</p>
+                            <h3 id="pred-range" class="text-2xl font-black text-emerald-600 dark:text-emerald-400">—</h3>
+                        </div>
+                        <div class="text-center p-4 rounded-2xl" style="background:rgba(99,102,241,0.07);border:1px solid rgba(99,102,241,0.15);">
+                            <p class="text-xs font-black text-brand-500 uppercase tracking-widest mb-1">Best Case</p>
+                            <h3 id="pred-best" class="text-2xl font-black text-brand-600 dark:text-brand-400">—</h3>
+                        </div>
+                        <div class="text-center p-4 rounded-2xl" style="background:rgba(245,158,11,0.07);border:1px solid rgba(245,158,11,0.15);">
+                            <p class="text-xs font-black text-amber-500 uppercase tracking-widest mb-1">Momentum</p>
+                            <h3 id="pred-trend" class="text-2xl font-black text-amber-500">—</h3>
+                        </div>
+                    </div>
+                    <p id="pred-insight" class="text-sm font-semibold text-slate-600 dark:text-slate-300 text-center leading-relaxed p-4 rounded-2xl" style="background:rgba(99,102,241,0.05);border:1px solid rgba(99,102,241,0.1);"></p>
+                </div>
+            </div>
+
             <!-- Chart + Resources Row -->
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 <div class="lg:col-span-2 glass-card p-7 rounded-[2rem]">
@@ -745,78 +778,90 @@
             </div>
 
             <!-- AI PERFORMANCE COACH -->
+            <!-- ── DAILY MOTIVATION ── -->
+            <div id="ai-motivation-card" class="glass-card rounded-[2rem] overflow-hidden" style="display:none;">
+                <div class="p-5 flex items-center gap-4" style="background:linear-gradient(135deg,rgba(99,102,241,0.1),rgba(217,70,239,0.07));">
+                    <div class="w-12 h-12 rounded-2xl flex-shrink-0 flex items-center justify-center text-2xl" style="background:linear-gradient(135deg,#6366f1,#d946ef);">✨</div>
+                    <div class="flex-1 min-w-0">
+                        <p class="text-xs font-black text-slate-400 uppercase tracking-widest mb-1">Today's Coach Message</p>
+                        <p id="motivation-text" class="text-sm font-semibold text-slate-700 dark:text-slate-200 leading-relaxed">Loading...</p>
+                    </div>
+                    <button id="motivation-refresh-btn" class="flex-shrink-0 w-8 h-8 rounded-xl flex items-center justify-center text-slate-400 hover:text-brand-500 transition" style="background:rgba(99,102,241,0.08);" title="New message">
+                        <i class="fa-solid fa-rotate-right" style="font-size:13px;pointer-events:none;"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- ── AI PERFORMANCE COACH ── -->
             <div class="glass-card rounded-[2rem] overflow-hidden" id="ai-coach-card">
-                <!-- Header -->
-                <div class="p-6 pb-4" style="background:linear-gradient(135deg,rgba(99,102,241,0.12),rgba(168,85,247,0.08));">
-                    <div class="flex items-center justify-between flex-wrap gap-3">
-                        <div class="flex items-center gap-3">
-                            <div class="w-11 h-11 rounded-2xl flex items-center justify-center text-xl flex-shrink-0" style="background:linear-gradient(135deg,#6366f1,#a855f7);"><i class="fa-solid fa-robot text-white" style="font-size:18px;"></i></div>
+                <div class="p-6" style="background:linear-gradient(135deg,rgba(99,102,241,0.1),rgba(168,85,247,0.07));">
+                    <div class="flex items-center justify-between flex-wrap gap-4">
+                        <div class="flex items-center gap-4">
+                            <div class="w-12 h-12 rounded-2xl flex items-center justify-center flex-shrink-0 shadow-lg" style="background:linear-gradient(135deg,#6366f1,#a855f7);">
+                                <i class="fa-solid fa-robot text-white" style="font-size:20px;"></i>
+                            </div>
                             <div>
-                                <h3 class="text-base font-black text-slate-900 dark:text-white leading-tight">AI Performance Coach</h3>
-                                <p class="text-xs text-slate-400 font-medium">Powered by Groq (Llama 3) · Free</p>
+                                <h3 class="text-lg font-black text-slate-900 dark:text-white leading-tight">AI Performance Coach</h3>
+                                <p class="text-xs font-bold text-slate-400 mt-0.5">Powered by Groq · Llama 3.3 · Free</p>
                             </div>
                         </div>
                         <div class="flex items-center gap-2 flex-wrap">
-                            <button id="ai-settings-btn" class="px-3 py-1.5 rounded-xl btn-glass text-xs font-bold flex items-center gap-1.5 transition hover:scale-105">
-                                <i class="fa-solid fa-key" style="font-size:11px;"></i> API Key
+                            <button id="ai-settings-btn" class="px-4 py-2 rounded-xl btn-glass text-sm font-black flex items-center gap-2 transition hover:scale-105">
+                                <i class="fa-solid fa-key text-brand-500"></i> API Key
                             </button>
-                            <button id="ai-analyze-btn" class="px-4 py-1.5 rounded-xl text-white text-xs font-black flex items-center gap-1.5 transition hover:scale-105 shadow-md" style="background:linear-gradient(135deg,#6366f1,#a855f7);">
-                                <i class="fa-solid fa-wand-magic-sparkles" style="font-size:11px;pointer-events:none;"></i>
+                            <button id="ai-analyze-btn" class="px-5 py-2 rounded-xl text-white text-sm font-black flex items-center gap-2 transition hover:scale-105 shadow-lg" style="background:linear-gradient(135deg,#6366f1,#a855f7);">
+                                <i class="fa-solid fa-wand-magic-sparkles" style="pointer-events:none;"></i>
                                 <span id="ai-btn-text" style="pointer-events:none;">Analyze My Performance</span>
                             </button>
                         </div>
                     </div>
-
-                    <!-- API Key Input (hidden by default) -->
-                    <div id="ai-settings-panel" class="hidden mt-4 p-4 rounded-2xl" style="background:rgba(0,0,0,0.05);">
-                        <p class="text-xs text-slate-500 dark:text-slate-400 mb-2 font-medium">Enter your free Groq API key from <strong>console.groq.com</strong></p>
-                        <div class="flex gap-2">
-                            <input id="ai-key-input" type="password" placeholder="AIza..." class="flex-1 px-3 py-2 rounded-xl text-sm font-mono border border-white/30 dark:border-white/10 bg-white/60 dark:bg-white/5 text-slate-800 dark:text-white outline-none focus:ring-2 focus:ring-brand-400" />
-                            <button id="ai-save-key-btn" class="px-4 py-2 rounded-xl btn-gradient text-white text-xs font-black hover:scale-105 transition">Save</button>
+                    <div id="ai-settings-panel" class="hidden mt-5 p-5 rounded-2xl" style="background:rgba(99,102,241,0.06);border:1px solid rgba(99,102,241,0.15);">
+                        <p class="text-sm font-bold text-slate-600 dark:text-slate-300 mb-3">Enter your free Groq API key from <strong class="text-brand-500">console.groq.com</strong></p>
+                        <div class="flex gap-3">
+                            <input id="ai-key-input" type="password" placeholder="gsk_..." class="flex-1 glass-input px-4 py-2.5 rounded-xl text-sm font-mono text-slate-800 dark:text-white" />
+                            <button id="ai-save-key-btn" class="px-5 py-2.5 rounded-xl btn-gradient text-white text-sm font-black shadow-lg hover:scale-105 transition">Save</button>
                         </div>
-                        <p class="text-[10px] text-slate-400 mt-2">🔒 Stored only in your browser. Never sent anywhere except Google's API.</p>
+                        <p class="text-xs text-slate-400 mt-2 flex items-center gap-1.5"><i class="fa-solid fa-lock text-emerald-500"></i> Stored only in your browser — never shared.</p>
                     </div>
                 </div>
-
-                <!-- Output area -->
-                <div id="ai-output" class="px-6 py-4">
-                    <div id="ai-placeholder" class="text-center py-6">
-                        <div class="text-4xl mb-3">🤖</div>
-                        <p class="text-sm font-bold text-slate-400">Click "Analyze My Performance" to get</p>
-                        <p class="text-sm text-slate-400">personalized AI coaching based on your mock data</p>
-                        <p class="text-xs text-slate-300 dark:text-slate-600 mt-2">Need a free API key? Get one at <strong class="text-brand-400">console.groq.com</strong></p>
+                <div id="ai-output" class="p-6">
+                    <div id="ai-placeholder" class="text-center py-8">
+                        <div class="w-16 h-16 rounded-2xl mx-auto mb-4 flex items-center justify-center text-3xl shadow-lg" style="background:linear-gradient(135deg,rgba(99,102,241,0.12),rgba(168,85,247,0.08));">🤖</div>
+                        <p class="text-base font-black text-slate-500 dark:text-slate-400">Get your personalized AI coaching report</p>
+                        <p class="text-sm text-slate-400 mt-1">Based on all your mock scores, subject data & trends</p>
+                        <p class="text-xs text-slate-300 dark:text-slate-600 mt-3">No API key? Get one free at <strong class="text-brand-400">console.groq.com</strong></p>
                     </div>
-                    <div id="ai-loading" class="hidden text-center py-8">
-                        <div class="inline-flex items-center gap-3">
-                            <div style="width:20px;height:20px;border:3px solid #e0e7ff;border-top-color:#6366f1;border-radius:50%;animation:spin 0.7s linear infinite;"></div>
-                            <span class="text-sm font-bold text-slate-400" id="ai-loading-text">Analyzing your performance...</span>
+                    <div id="ai-loading" class="hidden text-center py-10">
+                        <div class="inline-flex flex-col items-center gap-4">
+                            <div style="width:40px;height:40px;border:3px solid rgba(99,102,241,0.15);border-top-color:#6366f1;border-radius:50%;animation:spin 0.8s linear infinite;"></div>
+                            <span class="text-sm font-black text-slate-400 uppercase tracking-widest" id="ai-loading-text">Analyzing your performance...</span>
                         </div>
                     </div>
                     <div id="ai-result" class="hidden space-y-4"></div>
-                    <div id="ai-error" class="hidden p-4 rounded-2xl text-sm font-medium" style="background:rgba(239,68,68,0.08);color:#ef4444;border:1px solid rgba(239,68,68,0.2);"></div>
+                    <div id="ai-error" class="hidden p-5 rounded-2xl text-sm font-bold flex items-start gap-3" style="background:rgba(239,68,68,0.06);color:#ef4444;border:1px solid rgba(239,68,68,0.2);">
+                        <i class="fa-solid fa-circle-exclamation mt-0.5 flex-shrink-0"></i><span id="ai-error-text"></span>
+                    </div>
                 </div>
             </div>
 
 
             <!-- BEFORE YOUR NEXT MOCK -->
             <div id="premock-card" class="glass-card rounded-[2rem] overflow-hidden" style="display:none;">
-                <div style="padding:16px 20px 12px;background:linear-gradient(135deg,rgba(245,158,11,0.1),rgba(239,68,68,0.07));border-bottom:1px solid rgba(255,255,255,0.15);">
-                    <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;">
-                        <div style="display:flex;align-items:center;gap:10px;">
-                            <div style="width:36px;height:36px;border-radius:12px;background:linear-gradient(135deg,#f59e0b,#ef4444);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-                                <i class="fa-solid fa-bell" style="font-size:15px;color:white;"></i>
-                            </div>
-                            <div>
-                                <div style="font-size:13px;font-weight:900;" class="text-slate-900 dark:text-white">Before Your Next Mock</div>
-                                <div style="font-size:10px;font-weight:600;color:#94a3b8;">From your last AI debrief</div>
-                            </div>
+                <div class="p-6 pb-4 flex items-center justify-between gap-4" style="background:linear-gradient(135deg,rgba(245,158,11,0.1),rgba(239,68,68,0.07));border-bottom:1px solid rgba(255,255,255,0.2);">
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 rounded-2xl flex items-center justify-center flex-shrink-0 shadow-lg" style="background:linear-gradient(135deg,#f59e0b,#ef4444);">
+                            <i class="fa-solid fa-bell text-white" style="font-size:18px;"></i>
                         </div>
-                        <button id="refresh-premock-btn" style="font-size:10px;font-weight:800;color:#6366f1;background:none;border:none;cursor:pointer;display:flex;align-items:center;gap:4px;">
-                            <i class="fa-solid fa-rotate-right" style="font-size:10px;"></i> Refresh
-                        </button>
+                        <div>
+                            <h3 class="text-lg font-black text-slate-900 dark:text-white leading-tight">Before Your Next Mock</h3>
+                            <p class="text-xs font-bold text-slate-400 mt-0.5">AI brief from all your mocks & debriefs</p>
+                        </div>
                     </div>
+                    <button id="refresh-premock-btn" class="w-9 h-9 rounded-xl flex items-center justify-center text-amber-500 hover:scale-110 transition flex-shrink-0" style="background:rgba(245,158,11,0.12);">
+                        <i class="fa-solid fa-rotate-right" style="font-size:14px;pointer-events:none;"></i>
+                    </button>
                 </div>
-                <div id="premock-content" style="padding:14px 20px 16px;"></div>
+                <div id="premock-content" class="p-6"></div>
             </div>
 
         </div>
@@ -1039,26 +1084,35 @@
 
 
             <!-- AI CROSS-MOCK INSIGHTS -->
+            <!-- AI PATTERN INSIGHTS -->
             <div id="ai-insights-card" class="glass-card rounded-[2rem] overflow-hidden">
-                <div style="padding:16px 20px 12px;background:linear-gradient(135deg,rgba(99,102,241,0.1),rgba(168,85,247,0.07));border-bottom:1px solid rgba(255,255,255,0.15);">
-                    <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;">
-                        <div style="display:flex;align-items:center;gap:10px;">
-                            <div style="width:36px;height:36px;border-radius:12px;background:linear-gradient(135deg,#6366f1,#a855f7);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-                                <i class="fa-solid fa-brain" style="font-size:15px;color:white;"></i>
-                            </div>
-                            <div>
-                                <div style="font-size:13px;font-weight:900;" class="text-slate-900 dark:text-white">AI Pattern Insights</div>
-                                <div style="font-size:10px;font-weight:600;color:#94a3b8;">Analysing all your debriefs & scores</div>
-                            </div>
+                <div class="p-6 flex items-center justify-between flex-wrap gap-4" style="background:linear-gradient(135deg,rgba(99,102,241,0.1),rgba(168,85,247,0.07));border-bottom:1px solid rgba(255,255,255,0.2);">
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 rounded-2xl flex items-center justify-center flex-shrink-0 shadow-lg" style="background:linear-gradient(135deg,#6366f1,#a855f7);">
+                            <i class="fa-solid fa-brain text-white" style="font-size:20px;"></i>
                         </div>
-                        <button id="run-insights-btn" style="padding:7px 14px;border-radius:11px;background:linear-gradient(135deg,#6366f1,#a855f7);color:white;font-size:11px;font-weight:900;border:none;cursor:pointer;">
-                            <i class="fa-solid fa-wand-magic-sparkles" style="margin-right:5px;font-size:10px;pointer-events:none;"></i>
+                        <div>
+                            <h3 class="text-lg font-black text-slate-900 dark:text-white">AI Pattern Insights</h3>
+                            <p class="text-xs font-bold text-slate-400 mt-0.5">Deep analysis across all your mocks & debriefs</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <button id="run-readiness-btn" class="px-4 py-2 rounded-xl text-white text-sm font-black flex items-center gap-2 shadow-lg hover:scale-105 transition" style="background:linear-gradient(135deg,#10b981,#059669);">
+                            <i class="fa-solid fa-file-lines" style="pointer-events:none;"></i>
+                            <span style="pointer-events:none;">Readiness Report</span>
+                        </button>
+                        <button id="run-insights-btn" class="px-4 py-2 rounded-xl text-white text-sm font-black flex items-center gap-2 shadow-lg hover:scale-105 transition" style="background:linear-gradient(135deg,#6366f1,#a855f7);">
+                            <i class="fa-solid fa-wand-magic-sparkles" style="pointer-events:none;"></i>
                             <span id="insights-btn-text" style="pointer-events:none;">Generate Insights</span>
                         </button>
                     </div>
                 </div>
-                <div id="ai-insights-output" style="padding:14px 20px 16px;">
-                    <p style="font-size:12px;color:#94a3b8;text-align:center;padding:16px 0;">Click "Generate Insights" to get a deep analysis of your patterns across all mocks and debriefs.</p>
+                <div id="ai-insights-output" class="p-6">
+                    <div class="text-center py-6">
+                        <div class="w-14 h-14 rounded-2xl mx-auto mb-4 flex items-center justify-center text-2xl" style="background:linear-gradient(135deg,rgba(99,102,241,0.1),rgba(168,85,247,0.07));">🧠</div>
+                        <p class="text-base font-black text-slate-500 dark:text-slate-400">Pattern analysis across all mocks</p>
+                        <p class="text-sm text-slate-400 mt-1">Finds recurring mistakes, trends, and gives targeted fixes</p>
+                    </div>
                 </div>
             </div>
 
@@ -1872,58 +1926,40 @@ Respond in this EXACT JSON format (no markdown, no backticks, just pure JSON):
             const out = document.getElementById('ai-result');
             if (!out) return;
             out.classList.remove('hidden');
-
             const isDark = document.documentElement.classList.contains('dark');
-
-            out.innerHTML = `
-                <!-- Overall Assessment -->
-                <div style="padding:16px 18px;border-radius:16px;background:linear-gradient(135deg,rgba(99,102,241,0.1),rgba(168,85,247,0.07));border:1px solid rgba(99,102,241,0.2);">
-                    <p style="font-size:11px;font-weight:900;letter-spacing:0.08em;text-transform:uppercase;color:#6366f1;margin-bottom:6px;">📊 Overall Assessment</p>
-                    <p style="font-size:13px;color:${isDark?'#cbd5e1':'#334155'};line-height:1.6;font-weight:500;">${data.overall || ''}</p>
-                </div>
-
-                <!-- Strengths + Weaknesses -->
-                <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
-                    <div style="padding:14px 16px;border-radius:16px;background:rgba(16,185,129,0.07);border:1px solid rgba(16,185,129,0.2);">
-                        <p style="font-size:11px;font-weight:900;letter-spacing:0.08em;text-transform:uppercase;color:#059669;margin-bottom:8px;">✅ Strengths</p>
-                        ${(data.strengths||[]).map(s=>`<p style="font-size:12px;color:${isDark?'#a7f3d0':'#065f46'};margin-bottom:4px;line-height:1.5;">• ${s}</p>`).join('')}
-                    </div>
-                    <div style="padding:14px 16px;border-radius:16px;background:rgba(239,68,68,0.06);border:1px solid rgba(239,68,68,0.18);">
-                        <p style="font-size:11px;font-weight:900;letter-spacing:0.08em;text-transform:uppercase;color:#ef4444;margin-bottom:8px;">⚠️ Focus Areas</p>
-                        ${(data.weaknesses||[]).map(w=>`<p style="font-size:12px;color:${isDark?'#fca5a5':'#7f1d1d'};margin-bottom:4px;line-height:1.5;">• ${w}</p>`).join('')}
-                    </div>
-                </div>
-
-                <!-- This Week Actions -->
-                <div style="padding:14px 18px;border-radius:16px;background:rgba(245,158,11,0.07);border:1px solid rgba(245,158,11,0.2);">
-                    <p style="font-size:11px;font-weight:900;letter-spacing:0.08em;text-transform:uppercase;color:#d97706;margin-bottom:8px;">🎯 This Week's Action Plan</p>
-                    ${(data.this_week||[]).map((a,i)=>`
-                        <div style="display:flex;align-items:flex-start;gap:10px;margin-bottom:8px;">
-                            <span style="min-width:22px;height:22px;border-radius:50%;background:#f59e0b;color:white;font-size:11px;font-weight:900;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;">${i+1}</span>
-                            <p style="font-size:12px;color:${isDark?'#fde68a':'#78350f'};line-height:1.5;font-weight:500;">${a}</p>
-                        </div>`).join('')}
-                </div>
-
-                <!-- Prediction + Motivation -->
-                <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
-                    <div style="padding:14px 16px;border-radius:16px;background:rgba(99,102,241,0.07);border:1px solid rgba(99,102,241,0.18);text-align:center;">
-                        <p style="font-size:10px;font-weight:900;letter-spacing:0.08em;text-transform:uppercase;color:#6366f1;margin-bottom:6px;">📈 Score Prediction</p>
-                        <p style="font-size:12px;color:${isDark?'#c7d2fe':'#3730a3'};font-weight:600;line-height:1.5;">${data.score_prediction || '-'}</p>
-                    </div>
-                    <div style="padding:14px 16px;border-radius:16px;background:linear-gradient(135deg,rgba(236,72,153,0.07),rgba(168,85,247,0.06));border:1px solid rgba(236,72,153,0.18);text-align:center;">
-                        <p style="font-size:10px;font-weight:900;letter-spacing:0.08em;text-transform:uppercase;color:#db2777;margin-bottom:6px;">💪 Coach Says</p>
-                        <p style="font-size:11px;color:${isDark?'#fbcfe8':'#831843'};font-weight:600;line-height:1.5;font-style:italic;">"${data.motivation || ''}"</p>
-                    </div>
-                </div>
-
-                <!-- Footer -->
-                <div style="text-align:right;">
-                    <button id="ai-refresh-btn" style="font-size:11px;color:#94a3b8;background:none;border:none;cursor:pointer;font-weight:700;">
-                        <i class="fa-solid fa-rotate-right" style="margin-right:4px;font-size:10px;"></i>Refresh Analysis
-                    </button>
-                </div>
-            `;
+            const tc = isDark ? '#e2e8f0' : '#1e293b';
+            out.innerHTML =
+                '<div class="p-5 rounded-2xl" style="background:linear-gradient(135deg,rgba(99,102,241,0.08),rgba(168,85,247,0.05));border:1px solid rgba(99,102,241,0.18);">' +
+                    '<p class="text-xs font-black text-brand-500 uppercase tracking-widest mb-2">📊 Overall Assessment</p>' +
+                    '<p class="text-sm font-medium leading-relaxed" style="color:' + tc + ';">' + (data.overall||'') + '</p>' +
+                '</div>' +
+                '<div class="grid grid-cols-1 md:grid-cols-2 gap-4">' +
+                    '<div class="p-5 rounded-2xl" style="background:rgba(16,185,129,0.06);border:1px solid rgba(16,185,129,0.18);">' +
+                        '<p class="text-xs font-black text-emerald-500 uppercase tracking-widest mb-3">✅ Strengths</p>' +
+                        (data.strengths||[]).map(function(s){ return '<div class="flex items-start gap-2 mb-2"><span class="text-emerald-400 mt-0.5 flex-shrink-0 font-black">•</span><p class="text-sm font-medium leading-relaxed" style="color:' + tc + ';">' + s + '</p></div>'; }).join('') +
+                    '</div>' +
+                    '<div class="p-5 rounded-2xl" style="background:rgba(239,68,68,0.05);border:1px solid rgba(239,68,68,0.15);">' +
+                        '<p class="text-xs font-black text-rose-500 uppercase tracking-widest mb-3">⚠️ Focus Areas</p>' +
+                        (data.weaknesses||[]).map(function(w){ return '<div class="flex items-start gap-2 mb-2"><span class="text-rose-400 mt-0.5 flex-shrink-0 font-black">•</span><p class="text-sm font-medium leading-relaxed" style="color:' + tc + ';">' + w + '</p></div>'; }).join('') +
+                    '</div>' +
+                '</div>' +
+                '<div class="p-5 rounded-2xl" style="background:rgba(245,158,11,0.06);border:1px solid rgba(245,158,11,0.18);">' +
+                    '<p class="text-xs font-black text-amber-500 uppercase tracking-widest mb-3">🎯 This Week\'s Action Plan</p>' +
+                    (data.this_week||[]).map(function(a,i){ return '<div class="flex items-start gap-3 mb-3"><span class="w-6 h-6 rounded-full flex items-center justify-center text-xs font-black text-white flex-shrink-0 mt-0.5" style="background:#f59e0b;">' + (i+1) + '</span><p class="text-sm font-medium leading-relaxed" style="color:' + tc + ';">' + a + '</p></div>'; }).join('') +
+                '</div>' +
+                '<div class="grid grid-cols-1 md:grid-cols-2 gap-4">' +
+                    '<div class="p-5 rounded-2xl text-center" style="background:rgba(99,102,241,0.06);border:1px solid rgba(99,102,241,0.15);">' +
+                        '<p class="text-xs font-black text-brand-500 uppercase tracking-widest mb-2">📈 Score Prediction</p>' +
+                        '<p class="text-sm font-bold leading-relaxed" style="color:' + tc + ';">' + (data.score_prediction||'-') + '</p>' +
+                    '</div>' +
+                    '<div class="p-5 rounded-2xl text-center" style="background:linear-gradient(135deg,rgba(236,72,153,0.06),rgba(168,85,247,0.05));border:1px solid rgba(236,72,153,0.15);">' +
+                        '<p class="text-xs font-black text-pink-500 uppercase tracking-widest mb-2">💪 Coach Says</p>' +
+                        '<p class="text-sm font-semibold italic leading-relaxed" style="color:#db2777;">"' + (data.motivation||'') + '"</p>' +
+                    '</div>' +
+                '</div>' +
+                '<div class="text-right"><button id="ai-refresh-btn" class="text-xs font-black text-slate-400 hover:text-brand-500 transition flex items-center gap-1.5 ml-auto"><i class="fa-solid fa-rotate-right"></i> Refresh Analysis</button></div>';
         }
+
 
 
         // ═══════════════════════════════════════════════════
@@ -2215,32 +2251,28 @@ Respond ONLY in this exact JSON (no markdown, no backticks):
             const content = document.getElementById('debrief-summary-content');
             if (!sec || !content) return;
             const isDark = document.documentElement.classList.contains('dark');
-            const tc = isDark ? '#cbd5e1' : '#334155';
-
+            const tc = isDark ? '#e2e8f0' : '#1e293b';
             content.innerHTML =
-                '<div style="margin-bottom:10px;">' +
-                    '<div style="font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:0.07em;color:#ef4444;margin-bottom:4px;">⚠️ Silly Errors to Fix</div>' +
-                    '<p style="font-size:12px;color:' + tc + ';line-height:1.6;">' + (parsed.silly_errors_summary || '-') + '</p>' +
+                '<div class="p-4 rounded-2xl mb-3" style="background:rgba(239,68,68,0.06);border:1px solid rgba(239,68,68,0.15);">' +
+                    '<p class="text-xs font-black text-rose-500 uppercase tracking-widest mb-2">⚠️ Silly Errors to Fix</p>' +
+                    '<p class="text-sm font-medium leading-relaxed" style="color:' + tc + ';">' + (parsed.silly_errors_summary||'-') + '</p>' +
                 '</div>' +
-                '<div style="margin-bottom:10px;">' +
-                    '<div style="font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:0.07em;color:#f59e0b;margin-bottom:4px;">📚 Weak Topics</div>' +
-                    '<p style="font-size:12px;color:' + tc + ';line-height:1.6;">' + (parsed.weak_topics || '-') + '</p>' +
+                '<div class="p-4 rounded-2xl mb-3" style="background:rgba(245,158,11,0.06);border:1px solid rgba(245,158,11,0.15);">' +
+                    '<p class="text-xs font-black text-amber-500 uppercase tracking-widest mb-2">📚 Weak Topics</p>' +
+                    '<p class="text-sm font-medium leading-relaxed" style="color:' + tc + ';">' + (parsed.weak_topics||'-') + '</p>' +
                 '</div>' +
-                '<div style="margin-bottom:10px;">' +
-                    '<div style="font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:0.07em;color:#6366f1;margin-bottom:6px;">📌 Reminders for Next Mock</div>' +
-                    (parsed.key_reminders || []).map((r, i) =>
-                        '<div style="display:flex;gap:8px;align-items:flex-start;margin-bottom:4px;">' +
-                        '<span style="min-width:18px;height:18px;border-radius:50%;background:#6366f1;color:white;font-size:10px;font-weight:900;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;">' + (i+1) + '</span>' +
-                        '<p style="font-size:12px;color:' + tc + ';line-height:1.5;">' + r + '</p></div>'
-                    ).join('') +
+                '<div class="p-4 rounded-2xl mb-3" style="background:rgba(99,102,241,0.06);border:1px solid rgba(99,102,241,0.15);">' +
+                    '<p class="text-xs font-black text-brand-500 uppercase tracking-widest mb-3">📌 Key Reminders</p>' +
+                    (parsed.key_reminders||[]).map(function(r,i){ return '<div class="flex items-start gap-3 mb-2"><span class="w-5 h-5 rounded-full flex items-center justify-center text-xs font-black text-white flex-shrink-0 mt-0.5" style="background:#6366f1;">' + (i+1) + '</span><p class="text-sm font-medium leading-relaxed" style="color:' + tc + ';">' + r + '</p></div>'; }).join('') +
                 '</div>' +
-                '<div style="padding:10px 12px;border-radius:12px;background:' + (isDark ? 'rgba(99,102,241,0.12)' : 'rgba(99,102,241,0.06)') + ';border:1px solid rgba(99,102,241,0.2);">' +
-                    '<div style="font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:0.07em;color:#6366f1;margin-bottom:4px;">🎯 Before Your Next Mock</div>' +
-                    '<p style="font-size:12px;color:' + tc + ';line-height:1.6;">' + (parsed.before_next_mock || '-') + '</p>' +
+                '<div class="p-4 rounded-2xl" style="background:linear-gradient(135deg,rgba(99,102,241,0.08),rgba(168,85,247,0.05));border:1px solid rgba(99,102,241,0.18);">' +
+                    '<p class="text-xs font-black text-brand-500 uppercase tracking-widest mb-2">🎯 Before Your Next Mock</p>' +
+                    '<p class="text-sm font-semibold leading-relaxed" style="color:' + tc + ';">' + (parsed.before_next_mock||'-') + '</p>' +
                 '</div>';
-
             sec.style.display = 'block';
+            sec.style.borderTop = '1px solid rgba(255,255,255,0.2)';
         }
+
 
         async function saveDebriefSummary() {
             if (!debriefState.summary) { closeAIDebrief(true); return; }
@@ -2368,50 +2400,53 @@ Give a concise pre-mock briefing in this EXACT JSON (no markdown, no backticks):
         function renderPreMockCardAI(d, content, mockCount, avgScore, total) {
             const isDark = document.documentElement.classList.contains('dark');
             const tc = isDark ? '#e2e8f0' : '#1e293b';
-            const tc2 = isDark ? '#94a3b8' : '#64748b';
-
             content.innerHTML =
-                '<p style="font-size:13px;font-weight:800;color:' + tc + ';margin-bottom:10px;line-height:1.4;">' + (d.headline || '') + '</p>' +
-                '<div style="display:flex;flex-direction:column;gap:6px;">' +
-                    '<div style="display:flex;gap:8px;align-items:flex-start;">' +
-                        '<span style="font-size:14px;flex-shrink:0;margin-top:1px;">⚠️</span>' +
-                        '<p style="font-size:12px;color:' + tc + ';line-height:1.5;font-weight:500;">' + (d.watch_out || '') + '</p>' +
+                '<p class="text-base font-black mb-4 leading-snug" style="color:' + tc + ';">' + (d.headline||'') + '</p>' +
+                '<div class="space-y-3">' +
+                    '<div class="flex items-start gap-3 p-3 rounded-xl" style="background:rgba(239,68,68,0.06);border:1px solid rgba(239,68,68,0.12);">' +
+                        '<span class="text-lg flex-shrink-0">⚠️</span>' +
+                        '<p class="text-sm font-medium leading-relaxed" style="color:' + tc + ';">' + (d.watch_out||'') + '</p>' +
                     '</div>' +
-                    '<div style="display:flex;gap:8px;align-items:flex-start;">' +
-                        '<span style="font-size:14px;flex-shrink:0;margin-top:1px;">📚</span>' +
-                        '<p style="font-size:12px;color:' + tc + ';line-height:1.5;font-weight:500;">Stay sharp on: <strong>' + (d.focus_topics || '') + '</strong></p>' +
+                    '<div class="flex items-start gap-3 p-3 rounded-xl" style="background:rgba(245,158,11,0.06);border:1px solid rgba(245,158,11,0.12);">' +
+                        '<span class="text-lg flex-shrink-0">📚</span>' +
+                        '<p class="text-sm font-medium leading-relaxed" style="color:' + tc + ';">Stay sharp on: <strong class="font-black">' + (d.focus_topics||'') + '</strong></p>' +
                     '</div>' +
-                    '<div style="display:flex;gap:8px;align-items:flex-start;">' +
-                        '<span style="font-size:14px;flex-shrink:0;margin-top:1px;">💪</span>' +
-                        '<p style="font-size:12px;color:#6366f1;line-height:1.5;font-weight:600;font-style:italic;">' + (d.mindset || '') + '</p>' +
+                    '<div class="flex items-start gap-3 p-3 rounded-xl" style="background:rgba(99,102,241,0.06);border:1px solid rgba(99,102,241,0.12);">' +
+                        '<span class="text-lg flex-shrink-0">💪</span>' +
+                        '<p class="text-sm font-semibold italic leading-relaxed text-brand-500">' + (d.mindset||'') + '</p>' +
                     '</div>' +
                 '</div>' +
-                '<p style="font-size:10px;color:' + tc2 + ';margin-top:8px;">Based on ' + mockCount + ' mocks · avg ' + avgScore + '/' + total + '</p>';
+                '<p class="text-xs text-slate-400 mt-3">Based on ' + mockCount + ' mocks · avg ' + avgScore + '/' + total + '</p>';
         }
 
         function renderPreMockCardBasic(mocks, content) {
-            const sorted = mocks.slice().sort((a,b) => new Date(a.date)-new Date(b.date));
-            const avg = (sorted.reduce((a,m) => a+m.score,0)/sorted.length).toFixed(1);
+            const sorted = mocks.slice().sort(function(a,b){ return new Date(a.date)-new Date(b.date); });
+            const avg = (sorted.reduce(function(a,m){ return a+m.score; },0)/sorted.length).toFixed(1);
             const total = EXAM_GROUPS[state.selectedExamGroup]?.total || 200;
             const target = state.targetScore || total;
-            const gap = (target - avg).toFixed(1);
+            const gap = (target - parseFloat(avg)).toFixed(1);
             const isDark = document.documentElement.classList.contains('dark');
             const tc = isDark ? '#e2e8f0' : '#1e293b';
-
             const debriefs = JSON.parse(localStorage.getItem(DEBRIEF_KEY) || '[]');
             const weakTopics = debriefs[0]?.summary?.weak_topics || '';
-            const watchOut = debriefs[0]?.summary?.silly_errors_summary || 'Watch out for silly calculation errors.';
-
+            const watchOut = debriefs[0]?.summary?.silly_errors_summary || 'Watch out for silly calculation errors and rushing near the end.';
             content.innerHTML =
-                '<p style="font-size:13px;font-weight:800;color:' + tc + ';margin-bottom:10px;">' +
-                    (parseFloat(gap) > 0 ? 'You are ' + gap + ' marks from your target of ' + target : 'You are meeting your target! Maintain focus.') +
+                '<p class="text-base font-black mb-4 leading-snug" style="color:' + tc + ';">' +
+                    (parseFloat(gap) > 0 ? 'You are <strong>' + gap + ' marks</strong> from your target of ' + target : 'You are hitting your target — maintain the focus!') +
                 '</p>' +
-                '<div style="display:flex;flex-direction:column;gap:6px;">' +
-                    '<div style="display:flex;gap:8px;"><span>⚠️</span><p style="font-size:12px;color:' + tc + ';line-height:1.5;">' + watchOut.slice(0,120) + '</p></div>' +
-                    (weakTopics ? '<div style="display:flex;gap:8px;"><span>📚</span><p style="font-size:12px;color:' + tc + ';line-height:1.5;">Revise: <strong>' + weakTopics.slice(0,80) + '</strong></p></div>' : '') +
-                    '<div style="display:flex;gap:8px;"><span>💪</span><p style="font-size:12px;color:#6366f1;font-weight:600;font-style:italic;line-height:1.5;">Stay consistent, one mock at a time.</p></div>' +
+                '<div class="space-y-3">' +
+                    '<div class="flex items-start gap-3 p-3 rounded-xl" style="background:rgba(239,68,68,0.06);border:1px solid rgba(239,68,68,0.12);">' +
+                        '<span class="text-lg flex-shrink-0">⚠️</span>' +
+                        '<p class="text-sm font-medium leading-relaxed" style="color:' + tc + ';">' + watchOut.slice(0,150) + '</p>' +
+                    '</div>' +
+                    (weakTopics ? '<div class="flex items-start gap-3 p-3 rounded-xl" style="background:rgba(245,158,11,0.06);border:1px solid rgba(245,158,11,0.12);"><span class="text-lg flex-shrink-0">📚</span><p class="text-sm font-medium leading-relaxed" style="color:' + tc + ';">Revise: <strong>' + weakTopics.slice(0,100) + '</strong></p></div>' : '') +
+                    '<div class="flex items-start gap-3 p-3 rounded-xl" style="background:rgba(99,102,241,0.06);border:1px solid rgba(99,102,241,0.12);">' +
+                        '<span class="text-lg flex-shrink-0">💪</span>' +
+                        '<p class="text-sm font-semibold italic text-brand-500">Stay consistent — one mock at a time.</p>' +
+                    '</div>' +
                 '</div>';
         }
+
 
         function renderPreMockCard() {
             const mocks = getFilteredMocks ? getFilteredMocks() : state.mocks;
@@ -2445,6 +2480,275 @@ Give a concise pre-mock briefing in this EXACT JSON (no markdown, no backticks):
             @keyframes blink { 0%,80%,100%{opacity:0.2} 40%{opacity:1} }
         `;
         document.head.appendChild(debriefStyle);
+
+        // ── runAIInsights ──
+        window.runAIInsights = async function() {
+            const apiKey = localStorage.getItem(AI_KEY_STORAGE);
+            if (!apiKey) { alert('Add your Groq API key in the Home tab first.'); return; }
+            const mocks = getFilteredMocks();
+            if (!mocks || mocks.length < 2) { alert('Log at least 2 mocks to get pattern insights!'); return; }
+            const btn = document.getElementById('run-insights-btn');
+            const btnText = document.getElementById('insights-btn-text');
+            const output = document.getElementById('ai-insights-output');
+            if (btn) btn.disabled = true;
+            if (btnText) btnText.textContent = 'Analysing...';
+            if (output) output.innerHTML = '<div class="text-center py-8"><div style="width:36px;height:36px;border:3px solid rgba(99,102,241,0.15);border-top-color:#6366f1;border-radius:50%;animation:spin 0.8s linear infinite;margin:0 auto 12px;"></div><p class="text-sm font-black text-slate-400 uppercase tracking-widest">Analysing all mocks...</p></div>';
+            const sorted = mocks.slice().sort(function(a,b){ return new Date(a.date)-new Date(b.date); });
+            const examName = EXAM_GROUPS[state.selectedExamGroup]?.name || 'exam';
+            const total = EXAM_GROUPS[state.selectedExamGroup]?.total || 200;
+            const avgScore = (sorted.reduce(function(a,m){ return a+m.score; },0)/sorted.length).toFixed(1);
+            const totalSilly = sorted.reduce(function(a,m){ return a+(m.sillyMarks||0); },0).toFixed(1);
+            const mockSummaries = sorted.map(function(m,i){
+                var s = (i+1) + '. ' + (m.name||'Mock') + ' | Score: ' + m.score + '/' + total + ' | Date: ' + (m.date||'');
+                if (m.sillyMarks) s += ' | Silly lost: ' + m.sillyMarks;
+                if (m.sillyDesc) s += ' | Error notes: ' + m.sillyDesc;
+                if (m.weak) s += ' | Weak: ' + m.weak;
+                return s;
+            }).join('\n');
+            const prompt = 'You are an expert Indian competitive exam coach. Analyse this student\'s complete mock history for ' + examName + ' and find patterns.\n\nMOCK HISTORY (' + sorted.length + ' mocks):\n' + mockSummaries + '\n\nSTATS: Average: ' + avgScore + '/' + total + ', Total silly marks lost: ' + totalSilly + ', Target: ' + state.targetScore + '\n\nRespond ONLY in this exact JSON (no markdown, no backticks):\n{"recurring_mistakes":"2-3 sentences about repeating mistake patterns","improvement_trend":"Analysis of score trend with specific numbers","top_3_fixes":["Fix 1 with specific action","Fix 2","Fix 3"],"silly_mistake_strategy":"3-4 sentences on reducing silly errors based on their patterns","strength_to_leverage":"One specific consistent strength","exam_readiness":"Honest assessment vs target"}';
+            try {
+                const resp = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + apiKey },
+                    body: JSON.stringify({ model: 'llama-3.3-70b-versatile', messages: [{ role: 'user', content: prompt }], temperature: 0.65, max_tokens: 1000 })
+                });
+                const data = await resp.json();
+                const parsed = JSON.parse((data?.choices?.[0]?.message?.content||'').replace(/```json|```/g,'').trim());
+                renderAIInsights(parsed, sorted.length);
+            } catch(err) {
+                if (output) output.innerHTML = '<p class="text-sm text-rose-500 font-bold p-4">Error: ' + (err.message||'Something went wrong') + '</p>';
+            }
+            if (btn) btn.disabled = false;
+            if (btnText) btnText.textContent = 'Refresh Insights';
+        };
+
+        function renderAIInsights(d, mockCount) {
+            const output = document.getElementById('ai-insights-output');
+            if (!output) return;
+            const isDark = document.documentElement.classList.contains('dark');
+            const tc = isDark ? '#e2e8f0' : '#1e293b';
+            output.innerHTML =
+                '<div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">' +
+                    '<div class="p-5 rounded-2xl" style="background:rgba(239,68,68,0.06);border:1px solid rgba(239,68,68,0.15);">' +
+                        '<p class="text-xs font-black text-rose-500 uppercase tracking-widest mb-2">🔁 Recurring Mistakes</p>' +
+                        '<p class="text-sm font-medium leading-relaxed" style="color:' + tc + ';">' + (d.recurring_mistakes||'-') + '</p>' +
+                    '</div>' +
+                    '<div class="p-5 rounded-2xl" style="background:rgba(16,185,129,0.06);border:1px solid rgba(16,185,129,0.15);">' +
+                        '<p class="text-xs font-black text-emerald-500 uppercase tracking-widest mb-2">📈 Trend Analysis</p>' +
+                        '<p class="text-sm font-medium leading-relaxed" style="color:' + tc + ';">' + (d.improvement_trend||'-') + '</p>' +
+                    '</div>' +
+                '</div>' +
+                '<div class="p-5 rounded-2xl mb-4" style="background:rgba(245,158,11,0.06);border:1px solid rgba(245,158,11,0.15);">' +
+                    '<p class="text-xs font-black text-amber-500 uppercase tracking-widest mb-3">🎯 Top 3 Fixes Right Now</p>' +
+                    (d.top_3_fixes||[]).map(function(f,i){ return '<div class="flex items-start gap-3 mb-3"><span class="w-6 h-6 rounded-full flex items-center justify-center text-xs font-black text-white flex-shrink-0 mt-0.5" style="background:#f59e0b;">' + (i+1) + '</span><p class="text-sm font-medium leading-relaxed" style="color:' + tc + ';">' + f + '</p></div>'; }).join('') +
+                '</div>' +
+                '<div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">' +
+                    '<div class="p-5 rounded-2xl" style="background:rgba(99,102,241,0.06);border:1px solid rgba(99,102,241,0.15);">' +
+                        '<p class="text-xs font-black text-brand-500 uppercase tracking-widest mb-2">🛡️ Silly Mistake Strategy</p>' +
+                        '<p class="text-sm font-medium leading-relaxed" style="color:' + tc + ';">' + (d.silly_mistake_strategy||'-') + '</p>' +
+                    '</div>' +
+                    '<div class="p-5 rounded-2xl" style="background:rgba(236,72,153,0.06);border:1px solid rgba(236,72,153,0.12);">' +
+                        '<p class="text-xs font-black text-pink-500 uppercase tracking-widest mb-2">💪 Your Strength</p>' +
+                        '<p class="text-sm font-medium leading-relaxed" style="color:' + tc + ';">' + (d.strength_to_leverage||'-') + '</p>' +
+                    '</div>' +
+                '</div>' +
+                '<div class="p-5 rounded-2xl" style="background:linear-gradient(135deg,rgba(99,102,241,0.08),rgba(168,85,247,0.05));border:1px solid rgba(99,102,241,0.18);">' +
+                    '<p class="text-xs font-black text-brand-500 uppercase tracking-widest mb-2">🏁 Exam Readiness</p>' +
+                    '<p class="text-sm font-semibold leading-relaxed" style="color:' + tc + ';">' + (d.exam_readiness||'-') + '</p>' +
+                '</div>' +
+                '<p class="text-xs text-right mt-3 text-slate-400">Based on ' + mockCount + ' mocks</p>';
+        }
+
+        // ── Score Predictor ──
+        function updateScorePredictor() {
+            const card = document.getElementById('score-predictor-card');
+            if (!card) return;
+            const mocks = getFilteredMocks();
+            if (!mocks || mocks.length < 3) { card.style.display = 'none'; return; }
+            card.style.display = 'block';
+            const sorted = mocks.slice().sort(function(a,b){ return new Date(a.date)-new Date(b.date); });
+            const scores = sorted.map(function(m){ return m.score; });
+            const last5 = scores.slice(-5);
+            const total = EXAM_GROUPS[state.selectedExamGroup]?.total || 200;
+            const n = last5.length;
+            const xMean = (n-1)/2;
+            const yMean = last5.reduce(function(a,b){ return a+b; },0)/n;
+            var num = 0, den = 0;
+            last5.forEach(function(y,i){ num += (i-xMean)*(y-yMean); den += (i-xMean)*(i-xMean); });
+            const slope = den ? num/den : 0;
+            const intercept = yMean - slope*xMean;
+            const predicted = Math.round(intercept + slope*n);
+            const diffs = last5.map(function(s){ return (s-yMean)*(s-yMean); });
+            const stdDev = Math.sqrt(diffs.reduce(function(a,b){ return a+b; },0)/n);
+            const low = Math.max(0, Math.round(predicted - stdDev));
+            const high = Math.min(total, Math.round(predicted + stdDev));
+            const bestCase = Math.min(total, Math.round(Math.max.apply(null,last5) + slope));
+            const trendEl = document.getElementById('pred-trend');
+            const trendText = slope > 1.5 ? '📈 Rising' : slope < -1.5 ? '📉 Falling' : '➡️ Stable';
+            const trendColor = slope > 1.5 ? '#10b981' : slope < -1.5 ? '#ef4444' : '#f59e0b';
+            if (trendEl) { trendEl.textContent = trendText; trendEl.style.color = trendColor; }
+            const rangeEl = document.getElementById('pred-range');
+            if (rangeEl) rangeEl.textContent = low + '–' + high;
+            const bestEl = document.getElementById('pred-best');
+            if (bestEl) bestEl.textContent = bestCase + '';
+            const insightEl = document.getElementById('pred-insight');
+            if (insightEl) {
+                const gap = state.targetScore - predicted;
+                if (gap <= 0) insightEl.textContent = 'You are on track to meet or exceed your target of ' + state.targetScore + '. Keep the momentum going!';
+                else if (slope > 0) insightEl.textContent = 'At your current improvement rate of +' + slope.toFixed(1) + ' pts/mock, you could reach your target in approximately ' + Math.ceil(gap/slope) + ' more mocks.';
+                else insightEl.textContent = 'Your last ' + n + ' mocks average ' + yMean.toFixed(1) + '. You need ' + Math.abs(gap).toFixed(0) + ' more marks to hit your target — focus on reducing silly errors first.';
+            }
+        }
+
+        // ── Exam Readiness Report ──
+        window.runReadinessReport = async function() {
+            const apiKey = localStorage.getItem(AI_KEY_STORAGE);
+            if (!apiKey) { alert('Add your Groq API key in the Home tab first.'); return; }
+            const mocks = getFilteredMocks();
+            if (!mocks || mocks.length < 2) { alert('Log at least 2 mocks to generate a readiness report.'); return; }
+            const modal = document.getElementById('readiness-modal');
+            if (!modal) return;
+            modal.style.display = 'block';
+            const output = document.getElementById('readiness-output');
+            if (output) output.innerHTML = '<div class="text-center py-10"><div style="width:48px;height:48px;border:3px solid rgba(16,185,129,0.2);border-top-color:#10b981;border-radius:50%;animation:spin 0.8s linear infinite;margin:0 auto 16px;"></div><p class="text-sm font-black text-slate-400 uppercase tracking-widest">Generating your report...</p></div>';
+            const sorted = mocks.slice().sort(function(a,b){ return new Date(a.date)-new Date(b.date); });
+            const examName = EXAM_GROUPS[state.selectedExamGroup]?.name || 'exam';
+            const total = EXAM_GROUPS[state.selectedExamGroup]?.total || 200;
+            const avgScore = (sorted.reduce(function(a,m){ return a+m.score; },0)/sorted.length).toFixed(1);
+            const scores = sorted.map(function(m){ return m.score; });
+            const last5avg = (scores.slice(-5).reduce(function(a,b){ return a+b; },0)/Math.min(5,scores.length)).toFixed(1);
+            const totalSilly = sorted.reduce(function(a,m){ return a+(m.sillyMarks||0); },0).toFixed(1);
+            const debriefs = JSON.parse(localStorage.getItem(DEBRIEF_KEY) || '[]');
+            const allWeak = debriefs.map(function(d){ return d.summary?.weak_topics; }).filter(Boolean).join(', ');
+            const subMap = {};
+            sorted.forEach(function(m){ (m.subjects||[]).forEach(function(s){ if (!subMap[s.name]) subMap[s.name]=[]; subMap[s.name].push(s.c - s.w*(EXAM_GROUPS[state.selectedExamGroup]?.w||0.5)); }); });
+            const subSummary = Object.entries(subMap).map(function(e){ return e[0]+': '+(e[1].reduce(function(a,b){return a+b;},0)/e[1].length).toFixed(1); }).join(', ');
+            const prompt = 'Generate a comprehensive exam readiness report for a student preparing for ' + examName + '.\n\nDATA:\n- Total mocks: ' + sorted.length + ', Overall avg: ' + avgScore + '/' + total + ', Last 5 avg: ' + last5avg + '\n- Highest: ' + Math.max.apply(null,scores) + ', Lowest: ' + Math.min.apply(null,scores) + '\n- Total silly marks lost: ' + totalSilly + ', Target: ' + state.targetScore + '\n- Subject averages: ' + (subSummary||'N/A') + '\n- Recurring weak topics: ' + (allWeak||'not recorded yet') + '\n- Score trend: ' + scores[0] + ' to ' + scores[scores.length-1] + '\n\nRespond ONLY in this exact JSON (no markdown, no backticks):\n{"readiness_level":"Not Ready / Developing / Almost There / Ready","readiness_score":72,"readiness_summary":"2-3 sentence honest assessment","subject_health":[{"subject":"Reasoning","status":"Strong","note":"brief note"}],"critical_gaps":["gap 1","gap 2","gap 3"],"two_week_plan":["Day 1-3: action","Day 4-7: action","Day 8-10: action","Day 11-14: action"],"exam_day_tips":["tip 1","tip 2","tip 3"],"final_verdict":"One closing sentence"}';
+            try {
+                const resp = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + apiKey },
+                    body: JSON.stringify({ model: 'llama-3.3-70b-versatile', messages: [{ role: 'user', content: prompt }], temperature: 0.5, max_tokens: 1200 })
+                });
+                const data = await resp.json();
+                const parsed = JSON.parse((data?.choices?.[0]?.message?.content||'').replace(/```json|```/g,'').trim());
+                renderReadinessReport(parsed, sorted.length, avgScore, total);
+            } catch(e) {
+                if (output) output.innerHTML = '<p class="text-sm text-rose-500 font-bold p-4">Error: ' + (e.message||'unknown') + '</p>';
+            }
+        };
+
+        function renderReadinessReport(d, mockCount, avgScore, total) {
+            const output = document.getElementById('readiness-output');
+            if (!output) return;
+            const isDark = document.documentElement.classList.contains('dark');
+            const tc = isDark ? '#e2e8f0' : '#1e293b';
+            const levelColors = { 'Not Ready':'#ef4444','Developing':'#f59e0b','Almost There':'#6366f1','Ready':'#10b981' };
+            const lc = levelColors[d.readiness_level] || '#6366f1';
+            const pct = Math.min(100, Math.max(0, d.readiness_score||50));
+            const statusColors = { 'Strong':'#10b981','Good':'#10b981','Average':'#f59e0b','Needs Work':'#ef4444','Weak':'#ef4444' };
+            output.innerHTML =
+                '<div class="p-6 rounded-2xl mb-5 text-center" style="background:linear-gradient(135deg,rgba(16,185,129,0.08),rgba(6,182,212,0.05));border:1px solid rgba(16,185,129,0.18);">' +
+                    '<p class="text-xs font-black uppercase tracking-widest mb-2" style="color:' + lc + ';">Readiness Level</p>' +
+                    '<h2 class="text-4xl font-black mb-3" style="color:' + lc + ';">' + (d.readiness_level||'—') + '</h2>' +
+                    '<div class="w-full h-3 rounded-full mb-1" style="background:rgba(0,0,0,0.08);"><div class="h-3 rounded-full" style="width:' + pct + '%;background:' + lc + ';"></div></div>' +
+                    '<p class="text-xs font-bold text-slate-400">' + pct + '% exam ready based on your data</p>' +
+                '</div>' +
+                '<div class="p-5 rounded-2xl mb-4" style="background:rgba(99,102,241,0.06);border:1px solid rgba(99,102,241,0.15);">' +
+                    '<p class="text-xs font-black text-brand-500 uppercase tracking-widest mb-2">📋 Summary</p>' +
+                    '<p class="text-sm font-medium leading-relaxed" style="color:' + tc + ';">' + (d.readiness_summary||'') + '</p>' +
+                '</div>' +
+                '<p class="text-xs font-black text-slate-500 uppercase tracking-widest mb-3">📊 Subject Health</p>' +
+                '<div class="grid grid-cols-2 gap-3 mb-5">' +
+                (d.subject_health||[]).map(function(s){ var sc=statusColors[s.status]||'#6366f1'; return '<div class="p-4 rounded-2xl" style="background:rgba(0,0,0,0.03);border:1px solid rgba(0,0,0,0.07);"><div class="flex items-center justify-between mb-1"><span class="text-sm font-black" style="color:' + tc + ';">' + s.subject + '</span><span class="text-xs font-black px-2 py-0.5 rounded-full text-white" style="background:' + sc + ';">' + s.status + '</span></div><p class="text-xs text-slate-400 leading-relaxed">' + s.note + '</p></div>'; }).join('') +
+                '</div>' +
+                '<div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">' +
+                    '<div class="p-5 rounded-2xl" style="background:rgba(239,68,68,0.06);border:1px solid rgba(239,68,68,0.15);">' +
+                        '<p class="text-xs font-black text-rose-500 uppercase tracking-widest mb-3">🚨 Critical Gaps</p>' +
+                        (d.critical_gaps||[]).map(function(g){ return '<div class="flex items-start gap-2 mb-2"><i class="fa-solid fa-circle-xmark text-rose-400 flex-shrink-0 mt-0.5" style="font-size:13px;"></i><p class="text-sm font-medium leading-relaxed" style="color:' + tc + ';">' + g + '</p></div>'; }).join('') +
+                    '</div>' +
+                    '<div class="p-5 rounded-2xl" style="background:rgba(99,102,241,0.06);border:1px solid rgba(99,102,241,0.15);">' +
+                        '<p class="text-xs font-black text-brand-500 uppercase tracking-widest mb-3">📅 2-Week Plan</p>' +
+                        (d.two_week_plan||[]).map(function(p){ return '<div class="flex items-start gap-2 mb-2"><i class="fa-solid fa-circle-check text-brand-400 flex-shrink-0 mt-0.5" style="font-size:13px;"></i><p class="text-sm font-medium leading-relaxed" style="color:' + tc + ';">' + p + '</p></div>'; }).join('') +
+                    '</div>' +
+                '</div>' +
+                '<div class="p-5 rounded-2xl mb-4" style="background:rgba(245,158,11,0.06);border:1px solid rgba(245,158,11,0.15);">' +
+                    '<p class="text-xs font-black text-amber-500 uppercase tracking-widest mb-3">📝 Exam Day Tips</p>' +
+                    (d.exam_day_tips||[]).map(function(t){ return '<div class="flex items-start gap-2 mb-2"><span class="text-amber-400 font-black flex-shrink-0">→</span><p class="text-sm font-medium leading-relaxed" style="color:' + tc + ';">' + t + '</p></div>'; }).join('') +
+                '</div>' +
+                '<div class="p-5 rounded-2xl text-center" style="background:linear-gradient(135deg,rgba(16,185,129,0.08),rgba(6,182,212,0.05));border:1px solid rgba(16,185,129,0.18);">' +
+                    '<p class="text-base font-black italic leading-relaxed" style="color:' + lc + ';">"' + (d.final_verdict||'') + '"</p>' +
+                '</div>' +
+                '<p class="text-xs text-slate-400 text-right mt-3">Based on ' + mockCount + ' mocks · avg ' + avgScore + '/' + total + '</p>';
+        }
+
+        // ── Daily Motivation ──
+        const MOTIV_KEY = 'mockpro_motivation';
+        async function loadDailyMotivation() {
+            const apiKey = localStorage.getItem(AI_KEY_STORAGE);
+            const mocks = getFilteredMocks ? getFilteredMocks() : state.mocks;
+            const card = document.getElementById('ai-motivation-card');
+            const textEl = document.getElementById('motivation-text');
+            if (!card || !textEl) return;
+            if (!mocks || mocks.length === 0) { card.style.display = 'none'; return; }
+            card.style.display = 'block';
+            const today = new Date().toISOString().slice(0,10);
+            try {
+                const cached = JSON.parse(localStorage.getItem(MOTIV_KEY) || '{}');
+                if (cached.date === today && cached.text && !cached.forced) { textEl.textContent = cached.text; return; }
+            } catch(e) {}
+            if (!apiKey) {
+                const msgs = ['Every mock is a step closer. Log today, improve tomorrow.','Consistency beats intensity. Show up every day.','The exam tests what you practiced. Practice well.','Review your weak areas today — they will be your strength tomorrow.'];
+                textEl.textContent = msgs[new Date().getDay() % msgs.length];
+                return;
+            }
+            const sorted = mocks.slice().sort(function(a,b){ return new Date(a.date)-new Date(b.date); });
+            const avgScore = (sorted.reduce(function(a,m){ return a+m.score; },0)/sorted.length).toFixed(1);
+            const total = EXAM_GROUPS[state.selectedExamGroup]?.total || 200;
+            const last = sorted[sorted.length-1];
+            const trend = sorted.length >= 2 ? (last.score - sorted[sorted.length-2].score) : 0;
+            const examName = EXAM_GROUPS[state.selectedExamGroup]?.name || 'your exam';
+            const prompt = 'Write ONE short motivational message (max 2 sentences) for an Indian competitive exam student preparing for ' + examName + '. Their data: avg score ' + avgScore + '/' + total + ', last mock ' + last.score + ', target ' + state.targetScore + ', total mocks done: ' + sorted.length + ', recent trend: ' + (trend > 0 ? '+'+trend : trend) + '. Make it personal to their numbers. Be direct, punchy, encouraging. No quotes, no emojis, plain text only.';
+            try {
+                const resp = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + apiKey },
+                    body: JSON.stringify({ model: 'llama-3.3-70b-versatile', messages: [{ role: 'user', content: prompt }], temperature: 0.8, max_tokens: 80 })
+                });
+                const data = await resp.json();
+                const text = (data?.choices?.[0]?.message?.content || '').trim().replace(/^"|"$/g, '');
+                textEl.textContent = text || 'Every mock session builds your edge. Keep going.';
+                localStorage.setItem(MOTIV_KEY, JSON.stringify({ date: today, text: text }));
+            } catch(e) { textEl.textContent = 'Stay focused. Every mock session counts.'; }
+        }
+
+        // Bind motivation refresh button
+        (function() {
+            var btn = document.getElementById('motivation-refresh-btn');
+            if (!btn) return;
+            var fn = function() {
+                try { var cx = JSON.parse(localStorage.getItem(MOTIV_KEY)||'{}'); cx.forced = true; localStorage.setItem(MOTIV_KEY, JSON.stringify(cx)); } catch(e) {}
+                var textEl = document.getElementById('motivation-text');
+                if (textEl) textEl.textContent = 'Loading...';
+                loadDailyMotivation();
+            };
+            btn.addEventListener('click', fn);
+            btn.addEventListener('touchend', function(e){ e.preventDefault(); fn(); }, { passive: false });
+        })();
+
+        // Bind readiness buttons
+        (function() {
+            var btn = document.getElementById('run-readiness-btn');
+            if (btn) {
+                btn.addEventListener('click', function(){ window.runReadinessReport(); });
+                btn.addEventListener('touchend', function(e){ e.preventDefault(); window.runReadinessReport(); }, { passive: false });
+            }
+            var closeBtn = document.getElementById('readiness-close-btn');
+            if (closeBtn) {
+                closeBtn.addEventListener('click', function(){ var m=document.getElementById('readiness-modal'); if(m) m.style.display='none'; });
+                closeBtn.addEventListener('touchend', function(e){ e.preventDefault(); var m=document.getElementById('readiness-modal'); if(m) m.style.display='none'; }, { passive: false });
+            }
+        })();
 
         // Bind insights button
         (function bindInsightsBtn() {
@@ -3017,6 +3321,8 @@ Give a concise pre-mock briefing in this EXACT JSON (no markdown, no backticks):
             const tabHome = el('tab-home');
             if (!tabHome || !tabHome.classList.contains('active')) return;
             renderPreMockCard(); // refresh pre-mock card whenever home renders
+            updateScorePredictor();
+            loadDailyMotivation();
             const subset = getFilteredMocks(); const total = subset.length;
             const sorted = subset.slice().sort((a,b) => new Date(a.date)-new Date(b.date));
             const avgScoreNum = total ? sorted.reduce((acc,m) => acc+m.score, 0)/total : 0;
@@ -3552,50 +3858,76 @@ Give a concise pre-mock briefing in this EXACT JSON (no markdown, no backticks):
     </script>
 
     <!-- AI DEBRIEF CHAT MODAL -->
-    <div id="ai-debrief-modal" style="display:none;position:fixed;inset:0;z-index:20000;background:rgba(0,0,0,0.6);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);overflow-y:auto;padding:16px 16px 100px;">
-        <div style="max-width:520px;margin:auto;border-radius:1.75rem;overflow:hidden;box-shadow:0 24px 80px rgba(0,0,0,0.35);" class="glass-modal">
+    <!-- AI DEBRIEF MODAL -->
+    <div id="ai-debrief-modal" style="display:none;position:fixed;inset:0;z-index:20000;background:rgba(0,0,0,0.65);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);overflow-y:auto;padding:20px 16px 120px;display:none;">
+        <div style="max-width:540px;margin:auto;border-radius:2rem;overflow:hidden;box-shadow:0 32px 80px rgba(0,0,0,0.4);" class="glass-modal">
             <!-- Header -->
-            <div style="padding:20px 20px 16px;background:linear-gradient(135deg,rgba(99,102,241,0.15),rgba(168,85,247,0.1));border-bottom:1px solid rgba(255,255,255,0.15);">
-                <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;">
-                    <div style="display:flex;align-items:center;gap:12px;">
-                        <div style="width:42px;height:42px;border-radius:14px;background:linear-gradient(135deg,#6366f1,#a855f7);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-                            <i class="fa-solid fa-chalkboard-user" style="font-size:18px;color:white;"></i>
+            <div class="p-6" style="background:linear-gradient(135deg,rgba(99,102,241,0.14),rgba(168,85,247,0.09));border-bottom:1px solid rgba(255,255,255,0.2);">
+                <div class="flex items-center justify-between gap-4">
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 rounded-2xl flex items-center justify-center flex-shrink-0 shadow-lg" style="background:linear-gradient(135deg,#6366f1,#a855f7);">
+                            <i class="fa-solid fa-chalkboard-user text-white" style="font-size:20px;"></i>
                         </div>
                         <div>
-                            <div style="font-size:15px;font-weight:900;color:var(--text-primary,#1e293b);" class="text-slate-900 dark:text-white">AI Debrief Teacher</div>
-                            <div id="debrief-status-text" style="font-size:11px;font-weight:600;color:#6366f1;">Analyzing your mock...</div>
+                            <div class="text-lg font-black text-slate-900 dark:text-white">AI Debrief Teacher</div>
+                            <div id="debrief-status-text" class="text-xs font-black text-brand-500 uppercase tracking-widest mt-0.5">Starting session...</div>
                         </div>
                     </div>
-                    <button id="debrief-skip-btn" style="font-size:11px;font-weight:800;color:#94a3b8;background:none;border:1px solid rgba(148,163,184,0.3);padding:6px 12px;border-radius:10px;cursor:pointer;white-space:nowrap;">Skip →</button>
+                    <button id="debrief-skip-btn" class="px-4 py-2 rounded-xl text-sm font-black text-slate-400 hover:text-slate-600 transition" style="background:rgba(148,163,184,0.12);border:1px solid rgba(148,163,184,0.2);">Skip All</button>
                 </div>
             </div>
 
             <!-- Chat Messages -->
-            <div id="debrief-messages" style="padding:16px;min-height:260px;max-height:380px;overflow-y:auto;display:flex;flex-direction:column;gap:12px;">
-                <!-- messages injected here -->
-            </div>
+            <div id="debrief-messages" style="padding:20px;min-height:280px;max-height:400px;overflow-y:auto;display:flex;flex-direction:column;gap:14px;"></div>
 
             <!-- Input Area -->
-            <div id="debrief-input-area" style="padding:12px 16px;border-top:1px solid rgba(255,255,255,0.15);display:flex;gap:8px;align-items:flex-end;">
-                <textarea id="debrief-user-input" rows="2" placeholder="Type your answer here..." style="flex:1;padding:10px 14px;border-radius:14px;border:1.5px solid rgba(99,102,241,0.25);background:rgba(255,255,255,0.6);font-size:13px;font-weight:500;resize:none;outline:none;font-family:inherit;" class="dark:bg-white/5 dark:text-white dark:border-brand-500/30"></textarea>
-                <button id="debrief-send-btn" style="width:42px;height:42px;border-radius:13px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:transform 0.15s;">
-                    <i class="fa-solid fa-paper-plane" style="font-size:15px;color:white;pointer-events:none;"></i>
+            <div id="debrief-input-area" class="p-4 flex gap-3 items-end" style="border-top:1px solid rgba(255,255,255,0.2);">
+                <textarea id="debrief-user-input" rows="2" placeholder="Type your answer..." class="flex-1 glass-input px-4 py-3 rounded-2xl text-sm font-medium" style="resize:none;font-family:inherit;"></textarea>
+                <button id="debrief-send-btn" class="w-12 h-12 rounded-2xl flex items-center justify-center flex-shrink-0 shadow-lg hover:scale-105 transition" style="background:linear-gradient(135deg,#6366f1,#a855f7);border:none;cursor:pointer;">
+                    <i class="fa-solid fa-paper-plane text-white" style="font-size:16px;pointer-events:none;"></i>
                 </button>
             </div>
 
-            <!-- Summary Section (shown after chat) -->
-            <div id="debrief-summary-section" style="display:none;padding:16px;border-top:1px solid rgba(255,255,255,0.15);">
-                <div style="font-size:11px;font-weight:900;letter-spacing:0.08em;text-transform:uppercase;color:#6366f1;margin-bottom:10px;">
-                    <i class="fa-solid fa-wand-magic-sparkles" style="margin-right:6px;"></i>AI Generated Debrief Summary
+            <!-- Summary Section -->
+            <div id="debrief-summary-section" style="display:none;" class="p-6" style="border-top:1px solid rgba(255,255,255,0.2);">
+                <div class="flex items-center gap-2 mb-5">
+                    <i class="fa-solid fa-wand-magic-sparkles text-brand-500"></i>
+                    <span class="text-sm font-black text-slate-700 dark:text-slate-200 uppercase tracking-widest">Your Debrief Summary</span>
                 </div>
-                <div id="debrief-summary-content" style="font-size:12px;line-height:1.7;color:#475569;" class="dark:text-slate-300"></div>
-                <div style="display:flex;gap:8px;margin-top:14px;flex-wrap:wrap;">
-                    <button id="debrief-save-btn" style="flex:1;min-width:140px;padding:11px 16px;border-radius:14px;background:linear-gradient(135deg,#6366f1,#a855f7);color:white;font-size:13px;font-weight:900;border:none;cursor:pointer;transition:transform 0.15s;">
-                        <i class="fa-solid fa-floppy-disk" style="margin-right:6px;pointer-events:none;"></i>Save Debrief
+                <div id="debrief-summary-content" class="space-y-4"></div>
+                <div class="flex gap-3 mt-6 flex-wrap">
+                    <button id="debrief-save-btn" class="flex-1 py-3 rounded-2xl btn-gradient text-white text-sm font-black shadow-lg hover:scale-[1.02] transition flex items-center justify-center gap-2" style="min-width:160px;">
+                        <i class="fa-solid fa-floppy-disk" style="pointer-events:none;"></i> Save Debrief
                     </button>
-                    <button id="debrief-close-btn" style="padding:11px 16px;border-radius:14px;font-size:13px;font-weight:800;border:1px solid rgba(0,0,0,0.1);background:none;cursor:pointer;color:#64748b;">
+                    <button id="debrief-close-btn" class="px-6 py-3 rounded-2xl text-sm font-black text-slate-500 hover:text-slate-700 transition" style="background:rgba(148,163,184,0.1);border:1px solid rgba(148,163,184,0.2);">
                         Close
                     </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- READINESS REPORT MODAL -->
+    <div id="readiness-modal" style="display:none;position:fixed;inset:0;z-index:20000;background:rgba(0,0,0,0.65);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);overflow-y:auto;padding:20px 16px 120px;">
+        <div style="max-width:580px;margin:auto;border-radius:2rem;overflow:hidden;box-shadow:0 32px 80px rgba(0,0,0,0.4);" class="glass-modal">
+            <div class="p-6 flex items-center justify-between" style="background:linear-gradient(135deg,rgba(16,185,129,0.12),rgba(6,182,212,0.08));border-bottom:1px solid rgba(255,255,255,0.2);">
+                <div class="flex items-center gap-4">
+                    <div class="w-12 h-12 rounded-2xl flex items-center justify-center flex-shrink-0 shadow-lg" style="background:linear-gradient(135deg,#10b981,#059669);">
+                        <i class="fa-solid fa-file-lines text-white" style="font-size:20px;"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-black text-slate-900 dark:text-white">Exam Readiness Report</h3>
+                        <p class="text-xs font-bold text-emerald-500 mt-0.5 uppercase tracking-widest">AI Generated · Full Analysis</p>
+                    </div>
+                </div>
+                <button id="readiness-close-btn" class="w-9 h-9 rounded-xl flex items-center justify-center text-slate-400 hover:text-slate-600 transition" style="background:rgba(148,163,184,0.12);">
+                    <i class="fa-solid fa-xmark" style="font-size:16px;pointer-events:none;"></i>
+                </button>
+            </div>
+            <div id="readiness-output" class="p-6">
+                <div class="text-center py-10">
+                    <div style="width:48px;height:48px;border:3px solid rgba(16,185,129,0.2);border-top-color:#10b981;border-radius:50%;animation:spin 0.8s linear infinite;margin:0 auto 16px;"></div>
+                    <p class="text-sm font-black text-slate-400 uppercase tracking-widest">Generating your report...</p>
                 </div>
             </div>
         </div>
