@@ -1,0 +1,27 @@
+{
+  "name": "MockTracker Pro",
+  "short_name": "MockTracker",
+  "description": "Ultimate mock test performance tracker for SSC, RRB, Bank exams",
+  "start_url": "/mocktracker/",
+  "scope": "/mocktracker/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0f0a1e",
+  "theme_color": "#6366f1",
+  "icons": [
+    {
+      "src": "icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["education", "productivity"],
+  "lang": "en"
+}
