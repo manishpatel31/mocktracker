@@ -283,6 +283,26 @@
         /* ═══════════════════════════════════════
            TARGET SCORE RING  (Feature #1)
         ═══════════════════════════════════════ */
+        /* Exam countdown bar pulse */
+        @keyframes examPulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.75; }
+        }
+        .exam-urgent { animation: examPulse 2s ease-in-out infinite; }
+
+        /* Exam list item */
+        .exam-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 14px 16px;
+            border-radius: 1.25rem;
+            margin-bottom: 10px;
+            border: 1px solid rgba(255,255,255,0.2);
+            transition: all 0.2s;
+        }
+        .dark .exam-item { border-color: rgba(255,255,255,0.07); }
+
         .target-ring { position:relative; width:80px; height:80px; flex-shrink:0; }
         .target-ring svg { transform:rotate(-90deg); }
         .ring-bg  { fill:none; stroke:rgba(99,102,241,0.13); stroke-width:7; }
@@ -403,6 +423,82 @@
     <div id="offline-banner" class="flex items-center justify-center gap-3">
         <span class="offline-pulse w-2 h-2 rounded-full bg-amber-400 inline-block"></span>
         <span><span id="offline-queue-count">0</span> mock(s) queued offline — <button onclick="window.app.nav('tools')" class="underline font-black">View queue</button> · Sign in to sync</span>
+    </div>
+
+    <!-- UPCOMING EXAM COUNTDOWN BANNER -->
+    <div id="exam-countdown-bar" style="display:none;" class="flex-shrink-0 z-[200]">
+        <!-- Primary exam (most urgent) — full width prominent -->
+        <div id="exam-bar-primary" class="px-4 py-2.5 flex items-center justify-between gap-3 cursor-pointer" style="background:linear-gradient(135deg,#6366f1,#a855f7);" onclick="openExamModal()">
+            <div class="flex items-center gap-3 min-w-0">
+                <div class="w-8 h-8 rounded-xl bg-white/20 flex items-center justify-center flex-shrink-0">
+                    <i class="fa-solid fa-calendar-days text-white" style="font-size:14px;"></i>
+                </div>
+                <div class="min-w-0">
+                    <div class="flex items-center gap-2 flex-wrap">
+                        <span id="exam-bar-name" class="text-white font-black text-sm truncate max-w-[160px]">Exam</span>
+                        <span id="exam-bar-days" class="text-xs font-black px-2 py-0.5 rounded-full bg-white/25 text-white whitespace-nowrap">— days left</span>
+                    </div>
+                    <p id="exam-bar-ai" class="text-white/80 text-xs font-medium mt-0.5 truncate max-w-[280px]">Loading...</p>
+                </div>
+            </div>
+            <div class="flex items-center gap-2 flex-shrink-0">
+                <!-- Other exams mini pills -->
+                <div id="exam-bar-others" class="hidden md:flex items-center gap-1.5"></div>
+                <button onclick="event.stopPropagation();openExamModal()" class="w-7 h-7 rounded-lg bg-white/20 hover:bg-white/30 flex items-center justify-center transition flex-shrink-0">
+                    <i class="fa-solid fa-pen text-white" style="font-size:11px;pointer-events:none;"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- UPCOMING EXAMS MODAL -->
+    <div id="exam-modal" style="display:none;position:fixed;inset:0;z-index:25000;background:rgba(0,0,0,0.65);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);overflow-y:auto;padding:20px 16px 120px;">
+        <div style="max-width:500px;margin:auto;border-radius:2rem;overflow:hidden;box-shadow:0 32px 80px rgba(0,0,0,0.4);" class="glass-modal">
+
+            <!-- Header -->
+            <div class="p-6 flex items-center justify-between" style="background:linear-gradient(135deg,rgba(99,102,241,0.14),rgba(168,85,247,0.09));border-bottom:1px solid rgba(255,255,255,0.2);">
+                <div class="flex items-center gap-4">
+                    <div class="w-12 h-12 rounded-2xl flex items-center justify-center flex-shrink-0 shadow-lg" style="background:linear-gradient(135deg,#6366f1,#a855f7);">
+                        <i class="fa-solid fa-calendar-days text-white" style="font-size:20px;"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-black text-slate-900 dark:text-white">Upcoming Exams</h3>
+                        <p class="text-xs font-bold text-slate-400 mt-0.5">Track your exam dates & get AI pressure</p>
+                    </div>
+                </div>
+                <button id="exam-modal-close" class="w-9 h-9 rounded-xl flex items-center justify-center text-slate-400 hover:text-slate-600 transition" style="background:rgba(148,163,184,0.12);">
+                    <i class="fa-solid fa-xmark" style="font-size:16px;pointer-events:none;"></i>
+                </button>
+            </div>
+
+            <!-- Add Exam Form -->
+            <div class="p-6 border-b" style="border-color:rgba(255,255,255,0.15);">
+                <p class="text-xs font-black text-slate-500 uppercase tracking-widest mb-4">Add New Exam</p>
+                <div class="space-y-3">
+                    <input id="exam-name-input" type="text" placeholder="Exam name (e.g. SSC CGL Tier 1)" maxlength="50"
+                        class="w-full glass-input px-4 py-3 rounded-2xl text-sm font-semibold text-slate-800 dark:text-white">
+                    <div class="flex gap-3">
+                        <input id="exam-date-input" type="date"
+                            class="flex-1 glass-input px-4 py-3 rounded-2xl text-sm font-semibold text-slate-800 dark:text-white">
+                        <button id="exam-add-btn" class="px-6 py-3 rounded-2xl text-white text-sm font-black shadow-lg hover:scale-105 transition flex items-center gap-2" style="background:linear-gradient(135deg,#6366f1,#a855f7);">
+                            <i class="fa-solid fa-plus" style="pointer-events:none;"></i>
+                            Add
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Exam List -->
+            <div class="p-6">
+                <div id="exam-list-container">
+                    <div class="text-center py-8">
+                        <div class="text-4xl mb-3">📅</div>
+                        <p class="text-sm font-black text-slate-400">No exams added yet</p>
+                        <p class="text-xs text-slate-400 mt-1">Add your upcoming exam dates above</p>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
     <!-- SWIPE HINT (Feature #15) -->
@@ -2731,6 +2827,266 @@ Give a concise pre-mock briefing in this EXACT JSON (no markdown, no backticks):
                 localStorage.setItem(MOTIV_KEY, JSON.stringify({ date: today, text: text }));
             } catch(e) { textEl.textContent = 'Stay focused. Every mock session counts.'; }
         }
+
+        // ═══════════════════════════════════════════════════
+        //  UPCOMING EXAMS FEATURE
+        // ═══════════════════════════════════════════════════
+
+        const EXAMS_KEY = 'mockpro_upcoming_exams';
+        const EXAM_AI_KEY = 'mockpro_exam_ai_msg';
+
+        function getExams() {
+            try { return JSON.parse(localStorage.getItem(EXAMS_KEY) || '[]'); } catch(e) { return []; }
+        }
+
+        function saveExams(exams) {
+            localStorage.setItem(EXAMS_KEY, JSON.stringify(exams));
+        }
+
+        function daysUntil(dateStr) {
+            const today = new Date(); today.setHours(0,0,0,0);
+            const exam  = new Date(dateStr); exam.setHours(0,0,0,0);
+            return Math.ceil((exam - today) / (1000 * 60 * 60 * 24));
+        }
+
+        function urgencyStyle(days) {
+            if (days < 0)  return { bg: 'rgba(148,163,184,0.15)', border: 'rgba(148,163,184,0.25)', badge: '#94a3b8', label: 'Passed' };
+            if (days === 0) return { bg: 'rgba(239,68,68,0.1)',   border: 'rgba(239,68,68,0.3)',   badge: '#ef4444', label: 'TODAY!' };
+            if (days <= 3)  return { bg: 'rgba(239,68,68,0.08)',  border: 'rgba(239,68,68,0.25)',  badge: '#ef4444', label: days + 'd left' };
+            if (days <= 7)  return { bg: 'rgba(245,158,11,0.08)', border: 'rgba(245,158,11,0.25)', badge: '#f59e0b', label: days + 'd left' };
+            if (days <= 30) return { bg: 'rgba(99,102,241,0.08)', border: 'rgba(99,102,241,0.2)',  badge: '#6366f1', label: days + 'd left' };
+            return { bg: 'rgba(16,185,129,0.07)', border: 'rgba(16,185,129,0.2)', badge: '#10b981', label: days + 'd left' };
+        }
+
+        function barGradient(days) {
+            if (days < 0)   return 'linear-gradient(135deg,#64748b,#94a3b8)';
+            if (days <= 3)  return 'linear-gradient(135deg,#ef4444,#f97316)';
+            if (days <= 7)  return 'linear-gradient(135deg,#f59e0b,#ef4444)';
+            if (days <= 30) return 'linear-gradient(135deg,#6366f1,#a855f7)';
+            return 'linear-gradient(135deg,#10b981,#6366f1)';
+        }
+
+        // Render the top countdown bar
+        function renderExamBar() {
+            const bar = document.getElementById('exam-countdown-bar');
+            if (!bar) return;
+            const exams = getExams();
+            const upcoming = exams.filter(e => daysUntil(e.date) >= 0)
+                                  .sort((a,b) => daysUntil(a.date) - daysUntil(b.date));
+            const passed   = exams.filter(e => daysUntil(e.date) < 0);
+
+            if (exams.length === 0) { bar.style.display = 'none'; return; }
+            bar.style.display = 'block';
+
+            const primary = upcoming[0] || exams.sort((a,b) => new Date(b.date)-new Date(a.date))[0];
+            const days    = daysUntil(primary.date);
+
+            // Update bar gradient
+            const barPrimary = document.getElementById('exam-bar-primary');
+            if (barPrimary) barPrimary.style.background = barGradient(days);
+
+            // Add pulse if urgent
+            if (days <= 7 && days >= 0) barPrimary?.classList.add('exam-urgent');
+            else barPrimary?.classList.remove('exam-urgent');
+
+            // Name + days
+            const nameEl = document.getElementById('exam-bar-name');
+            const daysEl = document.getElementById('exam-bar-days');
+            if (nameEl) nameEl.textContent = primary.name;
+            if (daysEl) {
+                if (days < 0)       daysEl.textContent = 'Passed';
+                else if (days === 0) daysEl.textContent = '🔥 TODAY!';
+                else if (days === 1) daysEl.textContent = '⚡ TOMORROW!';
+                else                daysEl.textContent = days + ' days left';
+            }
+
+            // Other exams as mini pills
+            const othersEl = document.getElementById('exam-bar-others');
+            if (othersEl && upcoming.length > 1) {
+                othersEl.classList.remove('hidden');
+                othersEl.innerHTML = upcoming.slice(1, 3).map(e => {
+                    const d = daysUntil(e.date);
+                    return '<span class="text-xs font-black px-2 py-1 rounded-lg bg-white/20 text-white whitespace-nowrap">' +
+                        e.name.slice(0, 12) + (e.name.length > 12 ? '…' : '') + ' · ' + d + 'd</span>';
+                }).join('');
+            }
+
+            // Load AI message
+            loadExamAIMessage(primary, days);
+        }
+
+        // AI pressure/motivation message
+        async function loadExamAIMessage(exam, days) {
+            const el = document.getElementById('exam-bar-ai');
+            if (!el) return;
+
+            // Check cache (1 hour cache)
+            const cacheKey = EXAM_AI_KEY + '_' + exam.name;
+            try {
+                const cached = JSON.parse(localStorage.getItem(cacheKey) || '{}');
+                const age = Date.now() - (cached.ts || 0);
+                if (cached.text && age < 3600000 && cached.days === days) {
+                    el.textContent = cached.text;
+                    return;
+                }
+            } catch(e) {}
+
+            // Fallback messages (no API key needed)
+            const fallbacks = {
+                0:  ['This is it. Everything you studied is for today. Breathe, focus, execute.', 'Today is the day. Trust your preparation and give it everything.'],
+                1:  ['One day away. Light revision only — sleep early, eat well, stay calm.', 'Tomorrow is your moment. Stop studying new topics. Rest and visualise success.'],
+                3:  ['3 days. No new topics now — revise what you know best.', '72 hours. Every hour of focused revision counts more than ever.'],
+                7:  ['1 week left. Cut distractions. Treat every mock as the real thing.', '7 days. This is crunch time — maximum focus, minimum excuses.'],
+                30: ['30 days is enough to move 10 marks. Make every session count.', 'One month. The students who win are the ones who stay consistent now.'],
+            };
+            const bracket = days === 0 ? 0 : days === 1 ? 1 : days <= 3 ? 3 : days <= 7 ? 7 : 30;
+            const msgs = fallbacks[bracket] || fallbacks[30];
+            const fallbackText = msgs[Math.floor(Math.random() * msgs.length)];
+
+            const apiKey = localStorage.getItem(AI_KEY_STORAGE);
+            if (!apiKey) {
+                el.textContent = fallbackText;
+                return;
+            }
+
+            const mocks = getFilteredMocks ? getFilteredMocks() : state.mocks;
+            const avgScore = mocks && mocks.length
+                ? (mocks.reduce((a,m) => a+m.score,0)/mocks.length).toFixed(1) : null;
+
+            const tone = days <= 3 ? 'urgent and intense' : days <= 7 ? 'focused and serious' : days <= 30 ? 'motivating but firm' : 'encouraging and energetic';
+            const prompt = 'Write ONE short message (' + tone + ' tone, max 15 words) for a student. Exam: ' + exam.name + '. Days left: ' + days + '.' + (avgScore ? ' Their avg mock score: ' + avgScore + '.' : '') + ' Be personal, punchy, no emojis. Plain text only.';
+
+            try {
+                const resp = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + apiKey },
+                    body: JSON.stringify({ model: 'llama-3.3-70b-versatile', messages: [{ role: 'user', content: prompt }], temperature: 0.9, max_tokens: 40 })
+                });
+                const data = await resp.json();
+                const text = (data?.choices?.[0]?.message?.content || '').trim().replace(/^"|"$/g,'');
+                el.textContent = text || fallbackText;
+                localStorage.setItem(cacheKey, JSON.stringify({ text, ts: Date.now(), days }));
+            } catch(e) {
+                el.textContent = fallbackText;
+            }
+        }
+
+        // Render exam list inside modal
+        function renderExamList() {
+            const container = document.getElementById('exam-list-container');
+            if (!container) return;
+            const exams = getExams().sort((a,b) => new Date(a.date)-new Date(b.date));
+
+            if (exams.length === 0) {
+                container.innerHTML = '<div class="text-center py-8"><div class="text-4xl mb-3">📅</div><p class="text-sm font-black text-slate-400">No exams added yet</p><p class="text-xs text-slate-400 mt-1">Add your upcoming exam dates above</p></div>';
+                return;
+            }
+
+            const isDark = document.documentElement.classList.contains('dark');
+            container.innerHTML = exams.map((exam, idx) => {
+                const days = daysUntil(exam.date);
+                const u    = urgencyStyle(days);
+                const dateStr = new Date(exam.date).toLocaleDateString('en-IN', { day:'numeric', month:'short', year:'numeric' });
+                const isPrimary = days >= 0;
+                return '<div class="exam-item" style="background:' + u.bg + ';border-color:' + u.border + ';">' +
+                    '<div class="flex items-center gap-3 min-w-0">' +
+                        '<div class="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 text-white font-black text-xs" style="background:' + u.badge + ';">' +
+                            (days < 0 ? '✓' : days === 0 ? '🔥' : days + 'd') +
+                        '</div>' +
+                        '<div class="min-w-0">' +
+                            '<p class="text-sm font-black text-slate-900 dark:text-white truncate">' + exam.name + '</p>' +
+                            '<p class="text-xs font-medium text-slate-400">' + dateStr + ' · ' +
+                                (days < 0 ? '<span style="color:#94a3b8;">Exam passed</span>' :
+                                 days === 0 ? '<span style="color:#ef4444;font-weight:900;">TODAY!</span>' :
+                                 days === 1 ? '<span style="color:#ef4444;font-weight:900;">Tomorrow!</span>' :
+                                 '<span style="color:' + u.badge + ';font-weight:800;">' + days + ' days remaining</span>') +
+                            '</p>' +
+                        '</div>' +
+                    '</div>' +
+                    '<button class="exam-delete-btn w-8 h-8 rounded-xl flex items-center justify-center text-slate-300 hover:text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-900/20 transition flex-shrink-0" style="background:rgba(148,163,184,0.1);" data-idx="' + idx + '">' +
+                        '<i class="fa-solid fa-trash" style="font-size:12px;pointer-events:none;"></i>' +
+                    '</button>' +
+                '</div>';
+            }).join('');
+
+            // Bind delete buttons
+            container.querySelectorAll('.exam-delete-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const idx = parseInt(this.getAttribute('data-idx'));
+                    const exams = getExams().sort((a,b) => new Date(a.date)-new Date(b.date));
+                    exams.splice(idx, 1);
+                    saveExams(exams);
+                    renderExamList();
+                    renderExamBar();
+                });
+            });
+        }
+
+        // Open/close modal
+        window.openExamModal = function() {
+            const modal = document.getElementById('exam-modal');
+            if (modal) { modal.style.display = 'block'; renderExamList(); }
+        };
+
+        // Bind modal close
+        (function() {
+            var closeBtn = document.getElementById('exam-modal-close');
+            if (closeBtn) {
+                closeBtn.addEventListener('click', function() {
+                    document.getElementById('exam-modal').style.display = 'none';
+                });
+            }
+            // Close on backdrop click
+            var modal = document.getElementById('exam-modal');
+            if (modal) {
+                modal.addEventListener('click', function(e) {
+                    if (e.target === modal) modal.style.display = 'none';
+                });
+            }
+        })();
+
+        // Bind Add Exam button
+        (function() {
+            var btn = document.getElementById('exam-add-btn');
+            if (!btn) return;
+            var fn = function() {
+                var nameInput = document.getElementById('exam-name-input');
+                var dateInput = document.getElementById('exam-date-input');
+                var name = (nameInput?.value || '').trim();
+                var date = dateInput?.value || '';
+                if (!name) { nameInput?.focus(); return; }
+                if (!date) { dateInput?.focus(); return; }
+                var exams = getExams();
+                exams.push({ name, date, id: Date.now() });
+                saveExams(exams);
+                if (nameInput) nameInput.value = '';
+                if (dateInput) dateInput.value = '';
+                renderExamList();
+                renderExamBar();
+                // Clear AI cache so new message generates
+                localStorage.removeItem(EXAM_AI_KEY + '_' + name);
+            };
+            btn.addEventListener('click', fn);
+            btn.addEventListener('touchend', function(e){ e.preventDefault(); fn(); }, { passive: false });
+
+            // Enter key on name input → focus date
+            var nameInput = document.getElementById('exam-name-input');
+            if (nameInput) {
+                nameInput.addEventListener('keydown', function(e) {
+                    if (e.key === 'Enter') document.getElementById('exam-date-input')?.focus();
+                });
+            }
+            // Enter key on date → add
+            var dateInput = document.getElementById('exam-date-input');
+            if (dateInput) {
+                dateInput.addEventListener('keydown', function(e) {
+                    if (e.key === 'Enter') fn();
+                });
+            }
+        })();
+
+        // Initial render of exam bar on load
+        renderExamBar();
 
         // Bind motivation refresh button
         (function() {
