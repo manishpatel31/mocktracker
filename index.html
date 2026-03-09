@@ -700,6 +700,17 @@
                 <div id="home-other-exams" class="hidden grid grid-cols-2 gap-3 mt-3"></div>
             </div>
 
+            <!-- WELCOME GREETING -->
+            <div id="welcome-greeting-card" class="glass-card rounded-[2rem] p-5 flex items-center gap-4" style="display:none!important;">
+                <div class="w-12 h-12 rounded-2xl flex items-center justify-center flex-shrink-0 text-2xl" style="background:linear-gradient(135deg,rgba(99,102,241,0.12),rgba(168,85,247,0.08));">
+                    <span id="greeting-emoji">👋</span>
+                </div>
+                <div class="min-w-0">
+                    <h2 id="greeting-text" class="text-lg font-black text-slate-900 dark:text-white leading-tight"></h2>
+                    <p id="greeting-sub" class="text-sm text-slate-400 font-medium mt-0.5 truncate"></p>
+                </div>
+            </div>
+
             <!-- Primary Stat Cards -->
             <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
                 <div class="glass-card p-6 rounded-[2rem] relative overflow-hidden group hover:scale-[1.02] transition-transform">
@@ -1398,6 +1409,18 @@
                 <div id="offline-queue-list" class="space-y-2"></div>
             </div>
         </div>
+
+    <!-- FOOTER -->
+    <footer class="text-center py-5 pb-28 md:pb-6">
+        <p class="text-xs text-slate-400 dark:text-slate-600 font-medium tracking-wide">
+            Designed by <span class="text-slate-500 dark:text-slate-500 font-black">Manish</span>
+            <span class="mx-1.5 opacity-40">·</span>
+            Co-piloted by
+            <span class="font-semibold" style="background:linear-gradient(135deg,#4285f4,#34a853);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">Gemini</span>
+            <span class="mx-1 opacity-40">&</span>
+            <span class="font-semibold" style="background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">Claude</span>
+        </p>
+    </footer>
 
     </main>
 
@@ -2681,6 +2704,113 @@ Give a concise pre-mock briefing in this EXACT JSON (no markdown, no backticks):
                 '<p class="text-xs text-right mt-3 text-slate-400">Based on ' + mockCount + ' mocks</p>';
         }
 
+        // ═══════════════════════════════════════════════════
+        //  USER NAME + WELCOME GREETING
+        // ═══════════════════════════════════════════════════
+        const USER_NAME_KEY = 'mockpro_user_name';
+
+        function getUserName() {
+            return localStorage.getItem(USER_NAME_KEY) || '';
+        }
+
+        function greetingByTime() {
+            const h = new Date().getHours();
+            if (h < 12) return { text: 'Good morning', emoji: '☀️' };
+            if (h < 17) return { text: 'Good afternoon', emoji: '🌤️' };
+            if (h < 21) return { text: 'Good evening', emoji: '🌙' };
+            return { text: 'Late night grind', emoji: '🔥' };
+        }
+
+        const MOTIVATIONAL_LINES = [
+            'Ready to conquer today?',
+            'Every mock brings you closer.',
+            'Consistency is your superpower.',
+            'One more mock. One step closer.',
+            'Champions practise when no one watches.',
+            'Your future self is counting on you.',
+            'Focus. Practice. Succeed.',
+            'The exam won\'t wait — neither should you.',
+            'Small progress every day adds up.',
+            'You\'ve got this. Now prove it.',
+        ];
+
+        function getDailyMotivationalLine() {
+            const idx = new Date().getDate() % MOTIVATIONAL_LINES.length;
+            return MOTIVATIONAL_LINES[idx];
+        }
+
+        function renderWelcomeGreeting() {
+            const card  = document.getElementById('welcome-greeting-card');
+            const textEl = document.getElementById('greeting-text');
+            const subEl  = document.getElementById('greeting-sub');
+            const emojiEl = document.getElementById('greeting-emoji');
+            if (!card || !textEl) return;
+
+            const name = getUserName();
+            if (!name) { card.style.display = 'none'; return; }
+
+            card.style.cssText = 'display:flex!important;';
+            const g = greetingByTime();
+            if (emojiEl) emojiEl.textContent = g.emoji;
+            textEl.textContent = g.text + ', ' + name + '!';
+            if (subEl) subEl.textContent = getDailyMotivationalLine();
+        }
+
+        function showWelcomeToast(name) {
+            const toast = document.getElementById('welcome-toast');
+            const textEl = document.getElementById('welcome-toast-text');
+            if (!toast || !textEl) return;
+            const g = greetingByTime();
+            textEl.textContent = g.emoji + '  ' + g.text + ', ' + name + '! Ready to conquer?';
+            toast.style.display = 'block';
+            setTimeout(() => {
+                toast.style.transition = 'opacity 0.6s';
+                toast.style.opacity = '0';
+                setTimeout(() => { toast.style.display = 'none'; toast.style.opacity = '1'; }, 600);
+            }, 3000);
+        }
+
+        function showNameModal() {
+            const modal = document.getElementById('name-modal');
+            if (modal) { modal.style.display = 'flex'; }
+            setTimeout(() => { document.getElementById('name-input')?.focus(); }, 200);
+        }
+
+        // Bind name save button
+        (function() {
+            var btn = document.getElementById('name-save-btn');
+            if (!btn) return;
+            var fn = function() {
+                var input = document.getElementById('name-input');
+                var name = (input?.value || '').trim();
+                if (!name) { input?.focus(); return; }
+                // Capitalise first letter
+                name = name.charAt(0).toUpperCase() + name.slice(1);
+                localStorage.setItem(USER_NAME_KEY, name);
+                var modal = document.getElementById('name-modal');
+                if (modal) modal.style.display = 'none';
+                renderWelcomeGreeting();
+                showWelcomeToast(name);
+            };
+            btn.addEventListener('click', fn);
+            btn.addEventListener('touchend', function(e){ e.preventDefault(); fn(); }, { passive: false });
+            // Enter key
+            var input = document.getElementById('name-input');
+            if (input) input.addEventListener('keydown', function(e){ if (e.key === 'Enter') fn(); });
+        })();
+
+        // On first load — if no name stored, show modal after a short delay
+        (function() {
+            const name = getUserName();
+            if (!name) {
+                // Wait a second so app loads first
+                setTimeout(showNameModal, 1200);
+            } else {
+                // Already have name — show toast on every open
+                setTimeout(() => showWelcomeToast(name), 800);
+            }
+        })();
+
         // ── Score Predictor ──
         function updateScorePredictor() {
             const card = document.getElementById('score-predictor-card');
@@ -3794,6 +3924,7 @@ Give a concise pre-mock briefing in this EXACT JSON (no markdown, no backticks):
             updateScorePredictor();
             loadDailyMotivation();
             renderHomeCountdown();
+            renderWelcomeGreeting();
             const subset = getFilteredMocks(); const total = subset.length;
             const sorted = subset.slice().sort((a,b) => new Date(a.date)-new Date(b.date));
             const avgScoreNum = total ? sorted.reduce((acc,m) => acc+m.score, 0)/total : 0;
@@ -4405,6 +4536,27 @@ Give a concise pre-mock briefing in this EXACT JSON (no markdown, no backticks):
         </div>
     </div>
 
+
+    <!-- NAME PROMPT MODAL -->
+    <div id="name-modal" style="display:none;position:fixed;inset:0;z-index:30000;background:rgba(0,0,0,0.7);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);display:none;align-items:center;justify-content:center;padding:20px;">
+        <div class="glass-modal rounded-[2rem] w-full p-8 text-center" style="max-width:380px;box-shadow:0 32px 80px rgba(0,0,0,0.4);">
+            <div class="w-16 h-16 rounded-2xl mx-auto mb-5 flex items-center justify-center text-3xl shadow-lg" style="background:linear-gradient(135deg,#6366f1,#a855f7);">👋</div>
+            <h2 class="text-2xl font-black text-slate-900 dark:text-white mb-2">Welcome!</h2>
+            <p class="text-sm text-slate-500 dark:text-slate-400 mb-6">What should we call you?</p>
+            <input id="name-input" type="text" placeholder="Your first name" maxlength="20" autocomplete="given-name"
+                class="w-full glass-input px-4 py-3 rounded-2xl text-base font-bold text-center text-slate-800 dark:text-white mb-4">
+            <button id="name-save-btn" class="w-full py-3.5 rounded-2xl btn-gradient text-white font-black text-base shadow-lg hover:scale-[1.02] transition">
+                Let's go 🚀
+            </button>
+        </div>
+    </div>
+
+    <!-- WELCOME TOAST -->
+    <div id="welcome-toast" style="display:none;position:fixed;top:80px;left:50%;transform:translateX(-50%);z-index:29000;pointer-events:none;">
+        <div class="px-5 py-3 rounded-2xl shadow-2xl flex items-center gap-3 whitespace-nowrap" style="background:linear-gradient(135deg,#6366f1,#a855f7);">
+            <span id="welcome-toast-text" class="text-white font-black text-sm"></span>
+        </div>
+    </div>
 
     <!-- PWA Service Worker Registration -->
     <script>
