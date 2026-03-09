@@ -290,6 +290,97 @@
         }
         .exam-urgent { animation: examPulse 2s ease-in-out infinite; }
 
+        /* ── ONBOARDING TOUR ── */
+        #tour-overlay {
+            position: fixed; inset: 0; z-index: 40000;
+            pointer-events: none;
+        }
+        #tour-backdrop {
+            position: fixed; inset: 0; z-index: 40001;
+            background: rgba(0,0,0,0.0);
+            pointer-events: none;
+            transition: background 0.3s;
+        }
+        #tour-backdrop.active { background: rgba(0,0,0,0.72); pointer-events: all; }
+
+        #tour-highlight {
+            position: fixed; z-index: 40002;
+            border-radius: 16px;
+            box-shadow: 0 0 0 4px rgba(99,102,241,0.8), 0 0 0 9999px rgba(0,0,0,0.72);
+            transition: all 0.35s cubic-bezier(0.16,1,0.3,1);
+            pointer-events: none;
+        }
+
+        #tour-popup {
+            position: fixed; z-index: 40003;
+            width: min(340px, calc(100vw - 32px));
+            border-radius: 1.5rem;
+            padding: 22px 22px 18px;
+            box-shadow: 0 24px 60px rgba(0,0,0,0.4);
+            transition: all 0.35s cubic-bezier(0.16,1,0.3,1);
+            pointer-events: all;
+        }
+
+        #tour-popup .tour-step-badge {
+            font-size: 10px; font-weight: 900; letter-spacing: 0.1em;
+            text-transform: uppercase; color: #a5b4fc;
+            margin-bottom: 8px; display: block;
+        }
+        #tour-popup .tour-title {
+            font-size: 17px; font-weight: 900; color: white;
+            line-height: 1.3; margin-bottom: 8px;
+        }
+        #tour-popup .tour-desc {
+            font-size: 13px; font-weight: 500; color: rgba(255,255,255,0.78);
+            line-height: 1.6; margin-bottom: 16px;
+        }
+        #tour-popup .tour-tip {
+            font-size: 11px; font-weight: 700; color: #fbbf24;
+            background: rgba(251,191,36,0.12); border: 1px solid rgba(251,191,36,0.2);
+            border-radius: 10px; padding: 8px 12px; margin-bottom: 16px;
+            display: none;
+        }
+        #tour-popup .tour-api-guide {
+            background: rgba(255,255,255,0.06); border-radius: 12px;
+            padding: 12px 14px; margin-bottom: 16px; display: none;
+        }
+        #tour-popup .tour-api-guide .api-step {
+            display: flex; align-items: flex-start; gap: 10px; margin-bottom: 8px;
+        }
+        #tour-popup .tour-api-guide .api-num {
+            min-width: 20px; height: 20px; border-radius: 50%;
+            background: linear-gradient(135deg,#6366f1,#a855f7);
+            color: white; font-size: 10px; font-weight: 900;
+            display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+        }
+        #tour-popup .tour-api-guide .api-text {
+            font-size: 12px; color: rgba(255,255,255,0.85); font-weight: 500; line-height: 1.5;
+        }
+        #tour-popup .tour-api-guide .api-link {
+            color: #818cf8; font-weight: 800; text-decoration: none;
+        }
+        .tour-btn-row { display: flex; align-items: center; gap: 10px; }
+        .tour-next-btn {
+            flex: 1; padding: 11px 16px; border-radius: 13px;
+            background: linear-gradient(135deg,#6366f1,#a855f7);
+            color: white; font-size: 13px; font-weight: 900; border: none; cursor: pointer;
+            transition: transform 0.15s; display: flex; align-items: center; justify-content: center; gap-6px;
+        }
+        .tour-next-btn:hover { transform: scale(1.03); }
+        .tour-skip-btn {
+            padding: 11px 14px; border-radius: 13px; font-size: 12px; font-weight: 800;
+            color: rgba(255,255,255,0.45); background: rgba(255,255,255,0.07);
+            border: 1px solid rgba(255,255,255,0.1); cursor: pointer; transition: all 0.15s;
+            white-space: nowrap;
+        }
+        .tour-skip-btn:hover { color: rgba(255,255,255,0.7); }
+        .tour-dots { display: flex; gap: 5px; align-items: center; }
+        .tour-dot {
+            width: 6px; height: 6px; border-radius: 50%;
+            background: rgba(255,255,255,0.25); transition: all 0.2s;
+        }
+        .tour-dot.active { width: 18px; border-radius: 3px; background: #818cf8; }
+
         /* Exam list item */
         .exam-item {
             display: flex;
@@ -1445,6 +1536,7 @@
             <button id="hmenu-switch" class="hmenu-item" style="width:100%;display:flex;align-items:center;gap:14px;padding:13px 12px;border:none;background:none;cursor:pointer;border-radius:14px;text-align:left;touch-action:manipulation;-webkit-tap-highlight-color:transparent;"><span style="width:38px;height:38px;border-radius:11px;background:#e0f2fe;display:flex;align-items:center;justify-content:center;flex-shrink:0;pointer-events:none;"><i class="fa-solid fa-exchange-alt" style="font-size:16px;color:#0284c7;pointer-events:none;"></i></span><div style="pointer-events:none;"><div style="font-size:14px;font-weight:800;color:#1e293b;">Switch Exam</div><div style="font-size:11px;color:#94a3b8;margin-top:1px;">Change exam — SSC, RRB, Bank PO</div></div></button>
             <button id="hmenu-exams" class="hmenu-item" style="width:100%;display:flex;align-items:center;gap:14px;padding:13px 12px;border:none;background:none;cursor:pointer;border-radius:14px;text-align:left;touch-action:manipulation;-webkit-tap-highlight-color:transparent;"><span style="width:38px;height:38px;border-radius:11px;background:linear-gradient(135deg,#ede9fe,#e0e7ff);display:flex;align-items:center;justify-content:center;flex-shrink:0;pointer-events:none;"><i class="fa-solid fa-calendar-days" style="font-size:16px;color:#6366f1;pointer-events:none;"></i></span><div style="pointer-events:none;"><div style="font-size:14px;font-weight:800;color:#1e293b;" class="dark:text-white">Upcoming Exams</div><div style="font-size:11px;color:#94a3b8;margin-top:1px;">Track exam dates &amp; get AI reminders</div></div></button>
             <div style="height:1px;background:rgba(0,0,0,0.05);margin:6px 12px;"></div>
+            <button id="hmenu-tour" class="hmenu-item" style="width:100%;display:flex;align-items:center;gap:14px;padding:13px 12px;border:none;background:none;cursor:pointer;border-radius:14px;text-align:left;touch-action:manipulation;-webkit-tap-highlight-color:transparent;"><span style="width:38px;height:38px;border-radius:11px;background:linear-gradient(135deg,#e0e7ff,#ede9fe);display:flex;align-items:center;justify-content:center;flex-shrink:0;pointer-events:none;font-size:18px;">🗺️</span><div style="pointer-events:none;"><div style="font-size:14px;font-weight:800;color:#1e293b;" class="dark:text-white">Take App Tour</div><div style="font-size:11px;color:#94a3b8;margin-top:1px;">Replay the full feature walkthrough</div></div></button>
             <button id="hmenu-demo" class="hmenu-item" style="width:100%;display:flex;align-items:center;gap:14px;padding:13px 12px;border:none;background:none;cursor:pointer;border-radius:14px;text-align:left;touch-action:manipulation;-webkit-tap-highlight-color:transparent;"><span style="width:38px;height:38px;border-radius:11px;background:linear-gradient(135deg,#fef3c7,#fee2e2);display:flex;align-items:center;justify-content:center;flex-shrink:0;pointer-events:none;"><i class="fa-solid fa-flask-vial" style="font-size:16px;color:#d97706;pointer-events:none;"></i></span><div style="pointer-events:none;"><div style="font-size:14px;font-weight:800;color:#1e293b;">Try Demo Mode</div><div style="font-size:11px;color:#94a3b8;margin-top:1px;">Explore with 5 sample SSC CGL mocks</div></div></button>
         </div>
     </div>
@@ -2703,6 +2795,268 @@ Give a concise pre-mock briefing in this EXACT JSON (no markdown, no backticks):
                 '</div>' +
                 '<p class="text-xs text-right mt-3 text-slate-400">Based on ' + mockCount + ' mocks</p>';
         }
+
+        // ═══════════════════════════════════════════════════
+        //  ONBOARDING TOUR
+        // ═══════════════════════════════════════════════════
+        const TOUR_KEY = 'mockpro_tour_done';
+
+        const TOUR_STEPS = [
+            {
+                target: null, // centered — no highlight
+                title: '👋 Welcome to MockTracker Pro!',
+                desc: 'This quick tour will show you everything the app can do — from logging mocks to getting AI coaching. It takes about 60 seconds.',
+                tip: null,
+                tab: 'home',
+                position: 'center'
+            },
+            {
+                target: 'mnav-log',
+                targetDesktop: 'nav-log',
+                title: '📝 Log Your Mock Score',
+                desc: 'After every mock test, tap here to log your score, subject-wise marks, silly errors, and time taken. This is the heart of the app — the more you log, the smarter the AI gets.',
+                tip: '💡 Log within 30 minutes of finishing — memory is freshest then.',
+                tab: 'home',
+                position: 'top'
+            },
+            {
+                target: 'h-total',
+                title: '📊 Your Dashboard',
+                desc: 'Your Home tab shows your total mocks attempted, average score, percentile, high score, streak, and more — all updating automatically every time you log a new mock.',
+                tip: null,
+                tab: 'home',
+                position: 'bottom'
+            },
+            {
+                target: 'target-input',
+                title: '🎯 Set Your Target Score',
+                desc: 'Enter your cutoff target here and hit Set Goal. The app will show it as a line on your chart, track how many mocks you\'ve crossed it, and the AI will factor it into all its advice.',
+                tip: '💡 Set it to the actual exam cutoff for your category — not a round number.',
+                tab: 'home',
+                position: 'bottom'
+            },
+            {
+                target: 'chart-home',
+                title: '📈 Performance Chart',
+                desc: 'Your score trend over all mocks. The dotted line is your target. Watch this move upward as you practise — that\'s the dopamine hit that keeps you going.',
+                tip: null,
+                tab: 'home',
+                position: 'top'
+            },
+            {
+                target: 'ai-coach-card',
+                title: '🤖 AI Performance Coach',
+                desc: 'Tap "Analyze My Performance" to get a full AI coaching report — your strengths, weak areas, a 3-week action plan, and a score prediction. Powered by Groq (Llama 3) — completely free.',
+                tip: null,
+                tab: 'home',
+                position: 'top',
+                showApiGuide: true
+            },
+            {
+                target: 'premock-card',
+                title: '🔔 Before Your Next Mock',
+                desc: 'This card appears after your first AI debrief. It gives you a personalised briefing — what to watch out for, which topics to revise, and a mindset message — right before you sit down for a mock.',
+                tip: '💡 Check this card the night before every mock.',
+                tab: 'home',
+                position: 'top'
+            },
+            {
+                target: 'nav-analysis',
+                targetMobile: 'mnav-analysis',
+                title: '🔬 Deep Analysis Tab',
+                desc: 'Dive into subject-wise performance, potential score (if you had zero silly errors), negative marking breakdown, and the AI Pattern Insights engine that scans all your mocks for recurring mistakes.',
+                tip: null,
+                tab: 'analysis',
+                position: 'bottom'
+            },
+            {
+                target: 'ai-insights-card',
+                title: '🧠 AI Pattern Insights',
+                desc: 'Hit "Generate Insights" to get a deep pattern analysis across ALL your mocks — recurring mistakes, your improvement trend, top 3 fixes, and an honest exam readiness score.',
+                tip: '💡 Run this every 5 mocks for the most useful insights.',
+                tab: 'analysis',
+                position: 'bottom'
+            },
+            {
+                target: 'nav-tools',
+                targetMobile: 'mnav-menu',
+                title: '🛠️ Tools & Upcoming Exams',
+                desc: 'The Tools tab has everything else — add your upcoming exam dates for a countdown timer, export/restore your data, and the AI Exam Readiness Report that gives you a full 2-week plan.',
+                tip: null,
+                tab: 'tools',
+                position: 'bottom'
+            },
+            {
+                target: null,
+                title: '🚀 You\'re all set!',
+                desc: 'Start by logging your very first mock. The app gets smarter with every entry — after 3-4 mocks the AI features come alive with real insights personalised to you.',
+                tip: '💡 You can replay this tour anytime from the Menu → "Take App Tour".',
+                tab: 'home',
+                position: 'center',
+                isLast: true
+            }
+        ];
+
+        let tourActive = false;
+        let tourStep = 0;
+
+        function getEl(id) { return document.getElementById(id); }
+
+        function isMobile() { return window.innerWidth < 768; }
+
+        function getTargetEl(step) {
+            if (!step.target) return null;
+            const id = isMobile() && step.targetMobile ? step.targetMobile :
+                       !isMobile() && step.targetDesktop ? step.targetDesktop :
+                       step.target;
+            return document.getElementById(id);
+        }
+
+        function positionPopup(targetEl, position) {
+            const popup = getEl('tour-popup');
+            if (!popup) return;
+            const vw = window.innerWidth;
+            const vh = window.innerHeight;
+            const pw = popup.offsetWidth || 340;
+            const ph = popup.offsetHeight || 220;
+            const pad = 16;
+
+            if (!targetEl || position === 'center') {
+                popup.style.left = Math.max(pad, (vw - pw) / 2) + 'px';
+                popup.style.top  = Math.max(pad, (vh - ph) / 2) + 'px';
+                return;
+            }
+
+            const r = targetEl.getBoundingClientRect();
+            let top, left;
+
+            if (position === 'bottom') {
+                top  = r.bottom + 14;
+                left = r.left + r.width / 2 - pw / 2;
+            } else { // top
+                top  = r.top - ph - 14;
+                left = r.left + r.width / 2 - pw / 2;
+            }
+
+            // Clamp to viewport
+            left = Math.max(pad, Math.min(vw - pw - pad, left));
+            top  = Math.max(pad, Math.min(vh - ph - pad, top));
+
+            popup.style.left = left + 'px';
+            popup.style.top  = top + 'px';
+        }
+
+        function positionHighlight(targetEl) {
+            const hl = getEl('tour-highlight');
+            if (!hl) return;
+            if (!targetEl) { hl.style.display = 'none'; return; }
+            hl.style.display = 'block';
+            const r = targetEl.getBoundingClientRect();
+            const pad = 6;
+            hl.style.left   = (r.left - pad) + 'px';
+            hl.style.top    = (r.top  - pad) + 'px';
+            hl.style.width  = (r.width  + pad * 2) + 'px';
+            hl.style.height = (r.height + pad * 2) + 'px';
+        }
+
+        function renderTourStep(idx) {
+            const step = TOUR_STEPS[idx];
+            if (!step) { endTour(); return; }
+
+            // Switch tab if needed
+            if (step.tab) window.app.nav(step.tab);
+
+            setTimeout(function() {
+                const overlay  = getEl('tour-overlay');
+                const backdrop = getEl('tour-backdrop');
+                const popup    = getEl('tour-popup');
+                if (!overlay || !popup) return;
+
+                overlay.style.display = 'block';
+                backdrop.classList.add('active');
+
+                // Update content
+                getEl('tour-step-badge').textContent = 'Step ' + (idx + 1) + ' of ' + TOUR_STEPS.length;
+                getEl('tour-title').textContent = step.title;
+                getEl('tour-desc').textContent  = step.desc;
+
+                // Tip
+                const tipEl = getEl('tour-tip');
+                if (tipEl) { tipEl.textContent = step.tip || ''; tipEl.style.display = step.tip ? 'block' : 'none'; }
+
+                // API guide
+                const apiEl = getEl('tour-api-guide');
+                if (apiEl) apiEl.style.display = step.showApiGuide ? 'block' : 'none';
+
+                // Dots
+                const dotsEl = getEl('tour-dots');
+                if (dotsEl) {
+                    dotsEl.innerHTML = TOUR_STEPS.map(function(_, i) {
+                        return '<div class="tour-dot' + (i === idx ? ' active' : '') + '"></div>';
+                    }).join('');
+                }
+
+                // Next btn label
+                const nextBtn = getEl('tour-next-btn');
+                if (nextBtn) nextBtn.textContent = step.isLast ? '🚀 Start using app!' : 'Next →';
+
+                // Target element
+                const targetEl = getTargetEl(step);
+                if (targetEl) targetEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+                setTimeout(function() {
+                    positionHighlight(targetEl);
+                    positionPopup(targetEl, step.position || 'bottom');
+                }, targetEl ? 350 : 50);
+            }, step.tab ? 320 : 0);
+        }
+
+        function nextTourStep() {
+            tourStep++;
+            if (tourStep >= TOUR_STEPS.length) { endTour(); return; }
+            renderTourStep(tourStep);
+        }
+
+        function endTour() {
+            tourActive = false;
+            localStorage.setItem(TOUR_KEY, '1');
+            const overlay = getEl('tour-overlay');
+            const backdrop = getEl('tour-backdrop');
+            const hl = getEl('tour-highlight');
+            if (overlay)  overlay.style.display = 'none';
+            if (backdrop) backdrop.classList.remove('active');
+            if (hl)       hl.style.display = 'none';
+            window.app.nav('home');
+        }
+
+        window.startTour = function() {
+            tourActive = true;
+            tourStep = 0;
+            renderTourStep(0);
+        };
+
+        // Bind tour buttons
+        (function() {
+            var nextBtn = getEl('tour-next-btn');
+            var skipBtn = getEl('tour-skip-btn');
+            if (nextBtn) {
+                nextBtn.addEventListener('click', nextTourStep);
+                nextBtn.addEventListener('touchend', function(e){ e.preventDefault(); nextTourStep(); }, { passive: false });
+            }
+            if (skipBtn) {
+                skipBtn.addEventListener('click', endTour);
+                skipBtn.addEventListener('touchend', function(e){ e.preventDefault(); endTour(); }, { passive: false });
+            }
+        })();
+
+        // Auto-start on first ever open (after name modal delay)
+        (function() {
+            const done = localStorage.getItem(TOUR_KEY);
+            if (!done) {
+                // Delay so name modal shows first, then tour starts
+                setTimeout(window.startTour, 3500);
+            }
+        })();
 
         // ═══════════════════════════════════════════════════
         //  USER NAME + WELCOME GREETING
@@ -4392,6 +4746,7 @@ Give a concise pre-mock briefing in this EXACT JSON (no markdown, no backticks):
                        ['hmenu-tools',  function(){window.app.nav('tools');}],
                        ['hmenu-switch', function(){window.showExamSelector();}],
                        ['hmenu-exams', function(){window.app.nav('tools');}],
+                       ['hmenu-tour',  function(){window.startTour();}],
                        ['hmenu-demo',   function(){window.loadDemoMode();}]];
             pairs.forEach(function(p){
                 var btn=document.getElementById(p[0]);if(!btn)return;
@@ -4555,6 +4910,46 @@ Give a concise pre-mock briefing in this EXACT JSON (no markdown, no backticks):
     <div id="welcome-toast" style="display:none;position:fixed;top:80px;left:50%;transform:translateX(-50%);z-index:29000;pointer-events:none;">
         <div class="px-5 py-3 rounded-2xl shadow-2xl flex items-center gap-3 whitespace-nowrap" style="background:linear-gradient(135deg,#6366f1,#a855f7);">
             <span id="welcome-toast-text" class="text-white font-black text-sm"></span>
+        </div>
+    </div>
+
+    <!-- ONBOARDING TOUR -->
+    <div id="tour-overlay" style="display:none;">
+        <div id="tour-backdrop"></div>
+        <div id="tour-highlight"></div>
+        <div id="tour-popup" style="background:linear-gradient(145deg,#1e1b4b,#312e81);border:1px solid rgba(139,92,246,0.35);">
+            <span class="tour-step-badge" id="tour-step-badge">Step 1 of 10</span>
+            <div class="tour-title" id="tour-title">Welcome to MockTracker Pro</div>
+            <div class="tour-desc" id="tour-desc">Let's take a quick tour.</div>
+            <div class="tour-tip" id="tour-tip"></div>
+            <div class="tour-api-guide" id="tour-api-guide">
+                <div class="api-step">
+                    <div class="api-num">1</div>
+                    <div class="api-text">Go to <a href="https://console.groq.com" target="_blank" class="api-link">console.groq.com</a> and sign up free — no credit card needed</div>
+                </div>
+                <div class="api-step">
+                    <div class="api-num">2</div>
+                    <div class="api-text">Click <strong style="color:white;">API Keys</strong> in the left sidebar → click <strong style="color:white;">Create API Key</strong></div>
+                </div>
+                <div class="api-step">
+                    <div class="api-num">3</div>
+                    <div class="api-text">Give it any name → click <strong style="color:white;">Submit</strong> → copy the key (starts with <span style="color:#818cf8;font-family:monospace;">gsk_</span>)</div>
+                </div>
+                <div class="api-step">
+                    <div class="api-num">4</div>
+                    <div class="api-text">Come back here → click <strong style="color:white;">API Key</strong> button → paste it → Save. Done! ✅</div>
+                </div>
+                <div class="api-step">
+                    <div class="api-num">5</div>
+                    <div class="api-text">Free tier gives you <strong style="color:#4ade80;">14,400 requests/day</strong> — more than enough for daily use</div>
+                </div>
+            </div>
+            <div class="tour-btn-row">
+                <div class="tour-dots" id="tour-dots"></div>
+                <div style="flex:1;"></div>
+                <button class="tour-skip-btn" id="tour-skip-btn">Skip tour</button>
+                <button class="tour-next-btn" id="tour-next-btn">Next →</button>
+            </div>
         </div>
     </div>
 
