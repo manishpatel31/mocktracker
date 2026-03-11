@@ -430,12 +430,248 @@
         #swipe-hint.show { opacity:1; }
 
         /* ═══════════════════════════════════════
-           COLLAPSIBLE WEAK AREAS  (Feature #16)
+           COLLAPSIBLE WEAK AREAS  — REDESIGNED
         ═══════════════════════════════════════ */
-        .weak-item-body { max-height:0; overflow:hidden; transition:max-height 0.32s ease, padding 0.2s ease; }
-        .weak-item-body.open { max-height:160px; }
+        .weak-item-body { max-height:0; overflow:hidden; transition:max-height 0.4s cubic-bezier(0.16,1,0.3,1), opacity 0.3s ease; opacity:0; }
+        .weak-item-body.open { max-height:400px; opacity:1; }
         .weak-chevron { transition: transform 0.3s ease; display:inline-block; }
         .weak-chevron.open { transform: rotate(180deg); }
+
+        /* New weak area card */
+        .weak-area-card-v2 {
+            border-radius: 1.5rem; overflow:hidden; position:relative;
+            background: rgba(255,255,255,0.5);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255,255,255,0.6);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+            transition: all 0.3s cubic-bezier(0.16,1,0.3,1);
+            animation: weakSlideIn 0.4s cubic-bezier(0.16,1,0.3,1) both;
+        }
+        .dark .weak-area-card-v2 {
+            background: rgba(14,10,31,0.5);
+            border-color: rgba(139,92,246,0.15);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+        }
+        .weak-area-card-v2:hover { transform: translateY(-3px); box-shadow: 0 12px 32px rgba(245,158,11,0.15); }
+        .dark .weak-area-card-v2:hover { box-shadow: 0 12px 32px rgba(245,158,11,0.1); }
+
+        @keyframes weakSlideIn {
+            from { opacity:0; transform: translateX(-16px); }
+            to   { opacity:1; transform: translateX(0); }
+        }
+
+        /* Severity accent bar on left */
+        .weak-accent { position:absolute; left:0; top:0; bottom:0; width:4px; border-radius:4px 0 0 4px; }
+        .weak-accent-critical { background: linear-gradient(to bottom, #ef4444, #dc2626); }
+        .weak-accent-moderate { background: linear-gradient(to bottom, #f59e0b, #d97706); }
+        .weak-accent-mild     { background: linear-gradient(to bottom, #6366f1, #8b5cf6); }
+
+        /* Severity badge */
+        .weak-badge { padding:3px 10px; border-radius:999px; font-size:10px; font-weight:900; letter-spacing:0.06em; text-transform:uppercase; flex-shrink:0; }
+        .weak-badge-critical { background:rgba(239,68,68,0.12); color:#ef4444; border:1px solid rgba(239,68,68,0.2); }
+        .weak-badge-moderate { background:rgba(245,158,11,0.12); color:#d97706; border:1px solid rgba(245,158,11,0.2); }
+        .weak-badge-mild     { background:rgba(99,102,241,0.1);  color:#6366f1; border:1px solid rgba(99,102,241,0.2); }
+        .dark .weak-badge-critical { background:rgba(239,68,68,0.2);  color:#fca5a5; }
+        .dark .weak-badge-moderate { background:rgba(245,158,11,0.2); color:#fcd34d; }
+        .dark .weak-badge-mild     { background:rgba(99,102,241,0.18);color:#a5b4fc; }
+
+        /* Weak area resolve button */
+        .weak-resolve-btn {
+            padding:5px 14px; border-radius:999px; font-size:11px; font-weight:900;
+            background:rgba(16,185,129,0.1); color:#10b981; border:1px solid rgba(16,185,129,0.25);
+            cursor:pointer; transition:all 0.2s; white-space:nowrap;
+        }
+        .weak-resolve-btn:hover { background:rgba(16,185,129,0.2); transform:scale(1.06); }
+
+        /* Weak topic chip */
+        .weak-chip {
+            display:inline-flex; align-items:center; gap:5px;
+            padding:4px 10px; border-radius:999px;
+            font-size:11px; font-weight:800; letter-spacing:0.03em;
+            background:rgba(245,158,11,0.1); color:#b45309;
+            border:1px solid rgba(245,158,11,0.2);
+            transition:all 0.2s;
+        }
+        .dark .weak-chip { background:rgba(245,158,11,0.12); color:#fcd34d; border-color:rgba(245,158,11,0.25); }
+        .weak-chip:hover { background:rgba(245,158,11,0.2); transform:scale(1.05); }
+        .weak-chip.resolved { background:rgba(16,185,129,0.1); color:#065f46; border-color:rgba(16,185,129,0.2); }
+        .dark .weak-chip.resolved { background:rgba(16,185,129,0.12); color:#6ee7b7; }
+
+        /* ═══════════════════════════════════════
+           GLOBAL SPARKLE / FLOAT ANIMATIONS
+        ═══════════════════════════════════════ */
+        @keyframes floatUp {
+            0%   { opacity:1; transform:translateY(0) scale(1); }
+            100% { opacity:0; transform:translateY(-60px) scale(0.5); }
+        }
+        @keyframes sparkleRotate {
+            0%   { transform: rotate(0deg)   scale(1);   }
+            50%  { transform: rotate(180deg) scale(1.2); }
+            100% { transform: rotate(360deg) scale(1);   }
+        }
+        @keyframes bobble {
+            0%,100% { transform: translateY(0); }
+            50%     { transform: translateY(-5px); }
+        }
+        @keyframes shimmerSlide {
+            0%   { transform: translateX(-100%); }
+            100% { transform: translateX(200%); }
+        }
+        @keyframes popIn {
+            0%   { opacity:0; transform:scale(0.7) translateY(10px); }
+            70%  { transform:scale(1.05) translateY(-2px); }
+            100% { opacity:1; transform:scale(1) translateY(0); }
+        }
+        @keyframes aiActivateBurst {
+            0%   { transform:scale(1);   opacity:1; }
+            40%  { transform:scale(1.35); opacity:0.8; }
+            100% { transform:scale(1);   opacity:1; }
+        }
+        @keyframes particlePop {
+            0%   { opacity:1; transform:translate(0,0) scale(1); }
+            100% { opacity:0; transform:translate(var(--tx),var(--ty)) scale(0); }
+        }
+        @keyframes floatEmoji {
+            0%   { opacity:0.9; transform: translateY(0) rotate(0deg); }
+            100% { opacity:0;   transform: translateY(-80px) rotate(20deg); }
+        }
+        @keyframes waveIn {
+            0%   { opacity:0; transform: translateY(30px) scale(0.97); }
+            100% { opacity:1; transform: translateY(0) scale(1); }
+        }
+        @keyframes glowPulse {
+            0%,100% { box-shadow: 0 0 8px rgba(99,102,241,0.3); }
+            50%      { box-shadow: 0 0 22px rgba(99,102,241,0.65), 0 0 8px rgba(168,85,247,0.4); }
+        }
+
+        /* Shimmer overlay on stat cards */
+        .shimmer-card { position:relative; overflow:hidden; }
+        .shimmer-card::after {
+            content:''; position:absolute; inset:0; pointer-events:none;
+            background: linear-gradient(105deg, transparent 40%, rgba(255,255,255,0.35) 50%, transparent 60%);
+            transform: translateX(-100%);
+            transition: transform 0s;
+        }
+        .shimmer-card:hover::after { animation: shimmerSlide 0.7s ease forwards; }
+        .dark .shimmer-card::after { background: linear-gradient(105deg, transparent 40%, rgba(255,255,255,0.08) 50%, transparent 60%); }
+
+        /* Icon bobble on hover */
+        .icon-bobble:hover { animation: bobble 0.5s ease infinite; }
+
+        /* Floating emoji particle */
+        .emoji-particle {
+            position:fixed; pointer-events:none; z-index:99999; font-size:22px;
+            animation: floatEmoji 1.2s ease-out forwards;
+        }
+
+        /* Pop-in entrance for modal */
+        .pop-in { animation: popIn 0.4s cubic-bezier(0.34,1.56,0.64,1) both; }
+
+        /* Scroll entrance */
+        .scroll-reveal {
+            opacity:0; transform:translateY(24px);
+            transition: opacity 0.55s ease, transform 0.55s cubic-bezier(0.16,1,0.3,1);
+        }
+        .scroll-reveal.revealed { opacity:1; transform:translateY(0); }
+
+        /* Glow pulse on brand buttons */
+        .btn-glow-pulse:hover { animation: glowPulse 1.2s ease-in-out infinite; }
+
+        /* ═══════════════════════════════════════
+           AI INFO MODAL
+        ═══════════════════════════════════════ */
+        #ai-info-modal {
+            display:none; position:fixed; inset:0; z-index:60000;
+            background:rgba(0,0,0,0.65); backdrop-filter:blur(16px);
+            -webkit-backdrop-filter:blur(16px);
+            align-items:center; justify-content:center;
+            padding:20px;
+        }
+        #ai-info-modal.open { display:flex; }
+        .ai-info-inner {
+            max-width:480px; width:100%;
+            border-radius:2rem; overflow:hidden;
+            max-height:90vh; overflow-y:auto;
+        }
+        .ai-info-inner::-webkit-scrollbar { width:4px; }
+        .ai-info-inner::-webkit-scrollbar-thumb { background:rgba(99,102,241,0.3); border-radius:10px; }
+
+        /* AI compact card override */
+        #ai-mode-card .ai-compact-header {
+            background: linear-gradient(135deg,rgba(99,102,241,0.12),rgba(168,85,247,0.09));
+            border-bottom: 1px solid rgba(255,255,255,0.2);
+        }
+
+        /* ═══════════════════════════════════════
+           AI INFO MODAL INNER STYLES
+        ═══════════════════════════════════════ */
+        .ai-feat-pill {
+            display:flex; align-items:flex-start; gap:10px;
+            padding:9px 12px; border-radius:14px;
+            background: rgba(99,102,241,0.05);
+            border: 1px solid rgba(99,102,241,0.1);
+            transition: all 0.2s;
+        }
+        .dark .ai-feat-pill { background: rgba(99,102,241,0.08); border-color: rgba(99,102,241,0.18); }
+        .ai-feat-pill:hover { background: rgba(99,102,241,0.1); transform: translateX(3px); }
+        .ai-feat-pill .text-lg { font-size:1.15rem; flex-shrink:0; line-height:1.4; }
+
+        .api-step-row {
+            display:flex; align-items:flex-start; gap:10px; padding:6px 0;
+        }
+        .api-step-num {
+            width:24px; height:24px; border-radius:50%; flex-shrink:0;
+            background: linear-gradient(135deg, #6366f1, #a855f7);
+            color:white; font-size:11px; font-weight:900;
+            display:flex; align-items:center; justify-content:center;
+        }
+
+        /* AI info modal sizing */
+        .ai-info-inner { max-width:440px; width:100%; border-radius:2rem; overflow:hidden; max-height:88vh; overflow-y:auto; }
+        .ai-info-inner::-webkit-scrollbar { width:4px; }
+        .ai-info-inner::-webkit-scrollbar-thumb { background:rgba(99,102,241,0.3); border-radius:10px; }
+
+        /* ═══════════════════════════════════════
+           PARTICLE BURST CANVAS
+        ═══════════════════════════════════════ */
+        #ai-burst-canvas { position:fixed; inset:0; pointer-events:none; z-index:99998; display:none; }
+
+        /* ═══════════════════════════════════════
+           CARD ENTRANCE ANIMATIONS
+        ═══════════════════════════════════════ */
+        .anim-card {
+            opacity:0; transform:translateY(20px);
+            transition:opacity 0.5s ease, transform 0.5s cubic-bezier(0.16,1,0.3,1);
+        }
+        .anim-card.anim-visible { opacity:1; transform:translateY(0); }
+
+        /* Floating sparkles */
+        @keyframes sparkleFloat {
+            0%   { opacity:0; transform:translateY(0) scale(0); }
+            30%  { opacity:1; transform:translateY(-20px) scale(1); }
+            100% { opacity:0; transform:translateY(-50px) scale(0.5); }
+        }
+        .sparkle-particle {
+            position:absolute; pointer-events:none; z-index:9999;
+            font-size:14px; animation:sparkleFloat 0.8s ease-out forwards;
+        }
+
+        /* Toggle ripple burst */
+        @keyframes toggleRipple {
+            0%   { transform:scale(0); opacity:0.8; }
+            100% { transform:scale(3); opacity:0; }
+        }
+        .toggle-ripple {
+            position:absolute; width:40px; height:40px; border-radius:50%;
+            background:radial-gradient(circle, rgba(99,102,241,0.5), transparent);
+            transform:scale(0); pointer-events:none;
+            animation:toggleRipple 0.6s ease-out forwards;
+        }
+
+        /* Count-up number animation */
+        @keyframes countUp { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
+        .count-animated { animation:countUp 0.4s ease-out; }
 
         /* ═══════════════════════════════════════
            EMPTY STATE ART  (Feature #17)
@@ -471,68 +707,8 @@
         #hamburger-overlay.overlay-open { opacity: 1; }
 
         /* ═══════════════════════════════════════
-           SHARE CARD MODAL  (New Feature)
+           SHARE CARD MODAL
         ═══════════════════════════════════════ */
-        /* ═══════════════════════════════════════
-           AI MODE — VISIBILITY CONTROL
-        ═══════════════════════════════════════ */
-        /* When AI mode is OFF, hide all AI-powered UI elements */
-        .ai-mode-off #ai-coach-card,
-        .ai-mode-off #premock-card,
-        .ai-mode-off #ai-insights-card { display: none !important; }
-
-        /* AI Mode Toggle Switch */
-        .ai-toggle-track {
-            width: 64px; height: 34px; border-radius: 999px;
-            background: rgba(148,163,184,0.25);
-            border: 2px solid rgba(148,163,184,0.3);
-            cursor: pointer; transition: all 0.35s cubic-bezier(0.34,1.56,0.64,1);
-            position: relative; flex-shrink: 0;
-        }
-        .ai-toggle-track.on {
-            background: linear-gradient(135deg, #6366f1, #a855f7);
-            border-color: transparent;
-            box-shadow: 0 0 18px rgba(99,102,241,0.5);
-        }
-        .ai-toggle-thumb {
-            width: 26px; height: 26px; border-radius: 50%; background: white;
-            position: absolute; top: 2px; left: 2px;
-            transition: all 0.35s cubic-bezier(0.34,1.56,0.64,1);
-            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
-            display: flex; align-items: center; justify-content: center;
-        }
-        .ai-toggle-track.on .ai-toggle-thumb { left: 34px; }
-
-        /* Pulse glow ring when ON */
-        @keyframes aiPulse {
-            0%, 100% { box-shadow: 0 0 18px rgba(99,102,241,0.4); }
-            50%       { box-shadow: 0 0 32px rgba(99,102,241,0.7), 0 0 8px rgba(168,85,247,0.5); }
-        }
-        .ai-toggle-track.on { animation: aiPulse 2.5s ease-in-out infinite; }
-
-        /* AI feature list item */
-        .ai-feature-item {
-            display: flex; align-items: flex-start; gap: 10px;
-            padding: 10px 12px; border-radius: 14px;
-            background: rgba(99,102,241,0.05);
-            border: 1px solid rgba(99,102,241,0.1);
-            transition: all 0.2s;
-        }
-        .dark .ai-feature-item { background: rgba(99,102,241,0.08); border-color: rgba(99,102,241,0.18); }
-        .ai-feature-item:hover { background: rgba(99,102,241,0.1); transform: translateX(2px); }
-
-        /* API step */
-        .ai-api-step {
-            display: flex; align-items: flex-start; gap: 12px;
-            padding: 10px 0;
-        }
-        .ai-api-num {
-            width: 26px; height: 26px; border-radius: 50%; flex-shrink: 0;
-            background: linear-gradient(135deg, #6366f1, #a855f7);
-            color: white; font-size: 11px; font-weight: 900;
-            display: flex; align-items: center; justify-content: center;
-        }
-
         #share-card-modal { position:fixed; inset:0; z-index:500; background:rgba(6,4,15,0.88); backdrop-filter:blur(20px);
             display:none; align-items:flex-start; justify-content:center; padding:1.25rem;
             overflow-y:auto; }
@@ -547,6 +723,78 @@
         .share-bar-fill { height:100%; background:linear-gradient(90deg,#6366f1,#d946ef); border-radius:3px; transition:width 0.8s ease; }
         .share-actions { position:sticky; bottom:0; background:rgba(6,4,15,0.75); backdrop-filter:blur(12px);
             padding:0.75rem 0 0.25rem; margin-top:0.75rem; }
+
+        /* ═══════════════════════════════════════
+           WEAK AREAS MANAGER — REDESIGNED 💪
+        ═══════════════════════════════════════ */
+        .weak-entry-card {
+            border-radius:1.5rem; overflow:hidden;
+            background:rgba(255,255,255,0.58); backdrop-filter:blur(16px);
+            border:1px solid rgba(245,158,11,0.22);
+            box-shadow:0 4px 20px rgba(245,158,11,0.06);
+            transition:all 0.3s ease;
+        }
+        .dark .weak-entry-card {
+            background:rgba(14,10,31,0.55);
+            border-color:rgba(245,158,11,0.15);
+        }
+        .weak-entry-card:hover { transform:translateY(-2px); box-shadow:0 8px 28px rgba(245,158,11,0.14); }
+        .weak-topic-tag {
+            display:inline-flex; align-items:center; gap:3px;
+            padding:3px 10px; border-radius:999px;
+            font-size:11px; font-weight:800; letter-spacing:0.02em;
+            transition:all 0.2s; cursor:default;
+        }
+        .weak-topic-tag:hover { transform:translateY(-1px) scale(1.05); }
+        .weak-sev-bar {
+            height:3px; border-radius:999px; overflow:hidden;
+            background:rgba(245,158,11,0.12); margin-top:6px;
+        }
+        .weak-sev-fill {
+            height:100%; border-radius:999px;
+            background:linear-gradient(90deg,#f59e0b,#ef4444);
+            transition:width 1s cubic-bezier(0.34,1.2,0.64,1);
+        }
+
+        /* ═══════════════════════════════════════
+           CARD STAGGER + POP ENTRANCE
+        ═══════════════════════════════════════ */
+        @keyframes cardPop {
+            from { opacity:0; transform:translateY(18px) scale(0.97); }
+            to   { opacity:1; transform:translateY(0) scale(1); }
+        }
+        .card-pop { animation:cardPop 0.42s cubic-bezier(0.16,1,0.3,1) both; }
+        .card-pop:nth-child(2) { animation-delay:0.06s; }
+        .card-pop:nth-child(3) { animation-delay:0.12s; }
+        .card-pop:nth-child(4) { animation-delay:0.18s; }
+        .card-pop:nth-child(5) { animation-delay:0.24s; }
+        .card-pop:nth-child(6) { animation-delay:0.30s; }
+
+        /* ═══════════════════════════════════════
+           FLOATING DECORATIONS
+        ═══════════════════════════════════════ */
+        .float-deco {
+            position:absolute; pointer-events:none; user-select:none;
+            opacity:0.12; font-size:26px;
+            animation:floatDrift 7s ease-in-out infinite;
+        }
+        .float-deco-b { animation-delay:-3s; animation-duration:9s; opacity:0.09; }
+        @keyframes floatDrift {
+            0%,100% { transform:translateY(0) rotate(-3deg); }
+            50%     { transform:translateY(-14px) rotate(5deg); }
+        }
+
+        /* Sparkle burst (AI mode ON) */
+        .sparkle-burst {
+            position:fixed; pointer-events:none; z-index:99999;
+            font-size:20px;
+            animation:sparkBurst 1s ease-out forwards;
+        }
+        @keyframes sparkBurst {
+            0%   { opacity:1; transform:translate(0,0) scale(0) rotate(0deg); }
+            50%  { opacity:1; transform:translate(var(--dx),var(--dy)) scale(1.3) rotate(200deg); }
+            100% { opacity:0; transform:translate(calc(var(--dx)*1.8),calc(var(--dy)*1.8)) scale(0) rotate(360deg); }
+        }
     </style>
     <!-- SVG gradient defs for ring -->
     <svg width="0" height="0" style="position:absolute">
@@ -864,25 +1112,25 @@
 
             <!-- Primary Stat Cards -->
             <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
-                <div class="glass-card p-6 rounded-[2rem] relative overflow-hidden group hover:scale-[1.02] transition-transform">
+                <div class="glass-card shimmer-card p-6 rounded-[2rem] relative overflow-hidden group hover:scale-[1.02] transition-transform">
                     <div class="absolute -right-4 -bottom-4 text-brand-500/8 text-7xl group-hover:scale-110 transition duration-500"><i class="fa-solid fa-layer-group"></i></div>
-                    <p class="text-xs font-black text-slate-400 uppercase tracking-widest mb-1 flex items-center gap-1">Mocks Attempted <span class="demo-badge">demo</span></p>
+                    <p class="text-xs font-black text-slate-400 uppercase tracking-widest mb-1 flex items-center gap-1">📚 Mocks Attempted <span class="demo-badge">demo</span></p>
                     <h3 id="h-total" class="text-4xl font-black text-slate-900 dark:text-white">-</h3>
                 </div>
-                <div class="glass-card p-6 rounded-[2rem] relative overflow-hidden group hover:scale-[1.02] transition-transform">
+                <div class="glass-card shimmer-card p-6 rounded-[2rem] relative overflow-hidden group hover:scale-[1.02] transition-transform">
                     <div class="absolute -right-4 -bottom-4 text-emerald-500/8 text-7xl group-hover:scale-110 transition duration-500"><i class="fa-solid fa-bolt"></i></div>
-                    <p class="text-xs font-black text-slate-400 uppercase tracking-widest mb-1 flex items-center gap-1">Avg Score <span class="demo-badge">demo</span></p>
+                    <p class="text-xs font-black text-slate-400 uppercase tracking-widest mb-1 flex items-center gap-1">⚡ Avg Score <span class="demo-badge">demo</span></p>
                     <div class="flex items-end gap-2">
                         <h3 id="h-avg" class="text-4xl font-black text-gradient">-</h3>
                         <span id="h-delta" class="text-xs font-black pb-1 hidden"></span>
                     </div>
                 </div>
-                <div class="glass-card p-6 rounded-[2rem] relative overflow-hidden group hover:scale-[1.02] transition-transform border-l-4 border-accent-500">
-                    <p class="text-xs font-black text-slate-400 uppercase tracking-widest mb-1 flex items-center gap-1">Mean Percentile <span class="demo-badge">demo</span></p>
+                <div class="glass-card shimmer-card p-6 rounded-[2rem] relative overflow-hidden group hover:scale-[1.02] transition-transform border-l-4 border-accent-500">
+                    <p class="text-xs font-black text-slate-400 uppercase tracking-widest mb-1 flex items-center gap-1">🎖️ Mean Percentile <span class="demo-badge">demo</span></p>
                     <h3 id="h-perc" class="text-4xl font-black text-accent-500">-</h3>
                 </div>
-                <div class="glass-card p-6 rounded-[2rem] relative overflow-hidden group hover:scale-[1.02] transition-transform border-l-4 border-amber-500">
-                    <p class="text-xs font-black text-slate-400 uppercase tracking-widest mb-1 flex items-center gap-1">High Score <span class="demo-badge">demo</span></p>
+                <div class="glass-card shimmer-card p-6 rounded-[2rem] relative overflow-hidden group hover:scale-[1.02] transition-transform border-l-4 border-amber-500">
+                    <p class="text-xs font-black text-slate-400 uppercase tracking-widest mb-1 flex items-center gap-1">🏆 High Score <span class="demo-badge">demo</span></p>
                     <h3 id="h-high" class="text-4xl font-black text-amber-500">-</h3>
                     <p id="h-high-sub" class="text-xs font-black text-amber-400/60 uppercase tracking-widest mt-1 truncate max-w-full">-</p>
                 </div>
@@ -890,20 +1138,20 @@
 
             <!-- Secondary Mini Stats -->
             <div class="grid grid-cols-2 lg:grid-cols-4 gap-3">
-                <div class="glass-card p-4 rounded-[1.5rem] flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-xl bg-orange-100 dark:bg-orange-900/30 flex items-center justify-center text-lg">🔥</div>
+                <div class="glass-card p-4 rounded-[1.5rem] flex items-center gap-3 hover:scale-[1.04] transition-transform cursor-default">
+                    <div class="w-10 h-10 rounded-xl bg-orange-100 dark:bg-orange-900/30 flex items-center justify-center text-lg" style="animation:floatBob 2.5s ease-in-out infinite;">🔥</div>
                     <div><p class="text-xs font-black text-slate-400 uppercase tracking-widest">Streak</p><h4 id="h-streak" class="text-xl font-black text-orange-500">- days</h4></div>
                 </div>
-                <div class="glass-card p-4 rounded-[1.5rem] flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-xl bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center text-lg">📈</div>
+                <div class="glass-card p-4 rounded-[1.5rem] flex items-center gap-3 hover:scale-[1.04] transition-transform cursor-default">
+                    <div class="w-10 h-10 rounded-xl bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center text-lg" style="animation:floatBob 3s ease-in-out infinite 0.5s;">📈</div>
                     <div><p class="text-xs font-black text-slate-400 uppercase tracking-widest">Last Score</p><h4 id="h-last" class="text-xl font-black text-emerald-600">-</h4></div>
                 </div>
-                <div class="glass-card p-4 rounded-[1.5rem] flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-xl bg-rose-100 dark:bg-rose-900/30 flex items-center justify-center text-lg">🎯</div>
+                <div class="glass-card p-4 rounded-[1.5rem] flex items-center gap-3 hover:scale-[1.04] transition-transform cursor-default">
+                    <div class="w-10 h-10 rounded-xl bg-rose-100 dark:bg-rose-900/30 flex items-center justify-center text-lg" style="animation:floatBob 2.8s ease-in-out infinite 1s;">🎯</div>
                     <div><p class="text-xs font-black text-slate-400 uppercase tracking-widest">Lowest</p><h4 id="h-low" class="text-xl font-black text-rose-500">-</h4></div>
                 </div>
-                <div class="glass-card p-4 rounded-[1.5rem] flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-xl bg-brand-100 dark:bg-brand-900/30 flex items-center justify-center text-lg">📅</div>
+                <div class="glass-card p-4 rounded-[1.5rem] flex items-center gap-3 hover:scale-[1.04] transition-transform cursor-default">
+                    <div class="w-10 h-10 rounded-xl bg-brand-100 dark:bg-brand-900/30 flex items-center justify-center text-lg" style="animation:floatBob 3.2s ease-in-out infinite 1.5s;">📅</div>
                     <div><p class="text-xs font-black text-slate-400 uppercase tracking-widest">This Month</p><h4 id="h-month" class="text-xl font-black text-brand-500">- mocks</h4></div>
                 </div>
             </div>
@@ -1033,7 +1281,9 @@
             </div>
 
             <!-- ── AI PERFORMANCE COACH ── -->
-            <div class="glass-card rounded-[2rem] overflow-hidden" id="ai-coach-card">
+            <div class="glass-card rounded-[2rem] overflow-hidden" id="ai-coach-card" style="position:relative;">
+                <span class="float-deco" style="right:20px;top:10px;">🤖</span>
+                <span class="float-deco float-deco-b" style="right:56px;top:16px;font-size:16px;">⚡</span>
                 <div class="p-6" style="background:linear-gradient(135deg,rgba(99,102,241,0.1),rgba(168,85,247,0.07));">
                     <div class="flex items-center justify-between flex-wrap gap-4">
                         <div class="flex items-center gap-4">
@@ -1359,17 +1609,17 @@
             <div id="analysis-content">
                 <div class="flex items-center justify-between mb-5 flex-wrap gap-3">
                     <h3 class="text-base font-black text-slate-800 dark:text-white uppercase tracking-widest flex items-center gap-2">
-                        <i class="fa-solid fa-bolt text-amber-500"></i> Potential Score Analysis
+                        <i class="fa-solid fa-bolt text-amber-500"></i> ⚡ Potential Score Analysis
                         <span class="demo-badge">demo</span>
                     </h3>
-                    <button onclick="openShareCard()" class="btn-gradient px-5 py-2.5 rounded-xl text-white text-xs font-black shadow-lg flex items-center gap-2 hover:scale-105 transition">
+                    <button onclick="openShareCard()" class="btn-gradient px-5 py-2.5 rounded-xl text-white text-xs font-black shadow-lg flex items-center gap-2 hover:scale-105 transition btn-glow-pulse">
                         <i class="fa-solid fa-share-nodes"></i> Share Performance Card
                     </button>
                 </div>
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <div class="text-center p-5 rounded-2xl glass-card"><p class="text-xs font-black text-slate-400 uppercase tracking-widest mb-1">Real Average</p><h2 id="ana-real-avg" class="text-3xl font-black text-slate-800 dark:text-white">-</h2></div>
-                    <div class="text-center p-5 rounded-2xl glass-card border border-emerald-200/40 dark:border-emerald-900/30"><p class="text-xs font-black text-emerald-500 uppercase tracking-widest mb-1">Potential Average</p><h2 id="ana-pot-avg" class="text-3xl font-black text-emerald-600">-</h2><p class="text-xs text-emerald-400 mt-1 font-bold">If 0 Silly Errors</p></div>
-                    <div class="text-center p-5 rounded-2xl glass-card border border-rose-200/40 dark:border-rose-900/30"><p class="text-xs font-black text-rose-500 uppercase tracking-widest mb-1">Avg Marks Lost</p><h2 id="ana-silly-loss-avg" class="text-3xl font-black text-rose-500">-</h2><p class="text-xs text-rose-400 mt-1 font-bold">Due to Mistakes</p></div>
+                    <div class="text-center p-5 rounded-2xl glass-card shimmer-card scroll-reveal"><p class="text-xs font-black text-slate-400 uppercase tracking-widest mb-1">📊 Real Average</p><h2 id="ana-real-avg" class="text-3xl font-black text-slate-800 dark:text-white">-</h2></div>
+                    <div class="text-center p-5 rounded-2xl glass-card shimmer-card scroll-reveal border border-emerald-200/40 dark:border-emerald-900/30" style="animation-delay:0.1s"><p class="text-xs font-black text-emerald-500 uppercase tracking-widest mb-1">🚀 Potential Average</p><h2 id="ana-pot-avg" class="text-3xl font-black text-emerald-600">-</h2><p class="text-xs text-emerald-400 mt-1 font-bold">If 0 Silly Errors</p></div>
+                    <div class="text-center p-5 rounded-2xl glass-card shimmer-card scroll-reveal border border-rose-200/40 dark:border-rose-900/30" style="animation-delay:0.2s"><p class="text-xs font-black text-rose-500 uppercase tracking-widest mb-1">💸 Avg Marks Lost</p><h2 id="ana-silly-loss-avg" class="text-3xl font-black text-rose-500">-</h2><p class="text-xs text-rose-400 mt-1 font-bold">Due to Mistakes</p></div>
                 </div>
             </div>
 
@@ -1377,7 +1627,7 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div class="glass-card p-7 rounded-[2rem]">
                     <h3 class="text-sm font-black text-slate-800 dark:text-white mb-4 uppercase tracking-widest flex items-center gap-2">
-                        <i class="fa-solid fa-chart-simple text-brand-500"></i> Subject Radar
+                        <i class="fa-solid fa-chart-simple text-brand-500"></i> 🕸️ Subject Radar
                         <span class="demo-badge">demo</span>
                     </h3>
                     <div class="h-56 relative"><canvas id="chart-radar"></canvas></div>
@@ -1394,7 +1644,7 @@
             <!-- SCORE DISTRIBUTION HISTOGRAM (New) -->
             <div class="glass-card p-7 rounded-[2rem]">
                 <h3 class="text-sm font-black text-slate-800 dark:text-white mb-4 uppercase tracking-widest flex items-center gap-2">
-                    <i class="fa-solid fa-chart-column text-indigo-500"></i> Score Distribution
+                    <i class="fa-solid fa-chart-column text-indigo-500"></i> 📊 Score Distribution
                     <span class="demo-badge">demo</span>
                     <span class="ml-auto text-xs font-normal text-slate-400 normal-case">How your scores cluster</span>
                 </h3>
@@ -1405,7 +1655,7 @@
             <!-- NEGATIVE MARKING DAMAGE (New) -->
             <div class="glass-card p-7 rounded-[2rem]">
                 <h3 class="text-sm font-black text-slate-800 dark:text-white mb-4 uppercase tracking-widest flex items-center gap-2">
-                    <i class="fa-solid fa-skull text-rose-500"></i> Negative Marking Damage
+                        <i class="fa-solid fa-skull text-rose-500"></i> 🩸 Negative Marking Damage
                     <span class="demo-badge">demo</span>
                     <span class="ml-auto text-xs font-normal text-slate-400 normal-case">Earned vs Bled per mock</span>
                 </h3>
@@ -1416,7 +1666,7 @@
             <!-- BEST DAY OF WEEK (Feature #8) -->
             <div class="glass-card p-7 rounded-[2rem]">
                 <h3 class="text-sm font-black text-slate-800 dark:text-white mb-5 uppercase tracking-widest flex items-center gap-2">
-                    <i class="fa-solid fa-calendar-star text-amber-500"></i> Best Day of Week
+                    <i class="fa-solid fa-calendar-star text-amber-500"></i> 📅 Best Day of Week
                     <span class="demo-badge">demo</span>
                 </h3>
                 <div id="best-day-grid" class="grid grid-cols-7 gap-2"></div>
@@ -1426,7 +1676,7 @@
             <div class="glass-card rounded-[2rem] overflow-hidden">
                 <div class="p-5 border-b border-white/30 dark:border-white/5" style="background:rgba(255,255,255,0.2)">
                     <h3 class="text-base font-bold text-gray-900 dark:text-white flex items-center gap-2">
-                        <i class="fa-solid fa-table-cells text-brand-500"></i> Subject Mastery Matrix
+                        <i class="fa-solid fa-table-cells text-brand-500"></i> 🧮 Subject Mastery Matrix
                         <span class="demo-badge">demo</span>
                     </h3>
                 </div>
@@ -1449,23 +1699,34 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div class="glass-card p-7 rounded-[2rem] border-t-4 border-rose-500">
                     <h3 class="text-base font-bold text-rose-500 mb-5 flex items-center gap-2 uppercase tracking-widest">
-                        <i class="fa-solid fa-bug"></i> Silly Error Audit <span class="demo-badge">demo</span>
+                        <i class="fa-solid fa-bug"></i> 🐛 Silly Error Audit <span class="demo-badge">demo</span>
                     </h3>
                     <div id="ana-silly-log-body" class="space-y-3"></div>
                 </div>
                 <div class="glass-card p-7 rounded-[2rem] border-t-4 border-brand-500">
                     <h3 class="text-base font-bold text-brand-600 dark:text-brand-400 mb-5 uppercase tracking-widest flex items-center gap-2">
-                        <i class="fa-solid fa-scale-balanced"></i> Platform Performance <span class="demo-badge">demo</span>
+                        <i class="fa-solid fa-scale-balanced"></i> 🏆 Platform Performance <span class="demo-badge">demo</span>
                     </h3>
                     <div class="h-60 relative"><canvas id="chart-plat"></canvas></div>
                 </div>
             </div>
-            <div class="glass-card p-7 rounded-[2rem]">
-                <h3 class="text-lg font-bold mb-4 flex items-center gap-3 text-amber-500">
-                    <i class="fa-solid fa-dumbbell"></i> Weak Areas Manager <span class="demo-badge">demo</span>
-                    <span class="ml-auto text-xs text-slate-400 font-normal normal-case">Tap to expand</span>
-                </h3>
-                <div id="ana-weak-list" class="space-y-2"></div>
+            <div class="glass-card rounded-[2rem] overflow-hidden" id="weak-areas-outer" style="position:relative;">
+                <!-- floating decos -->
+                <span class="float-deco" style="right:18px;top:8px;font-size:22px;">💪</span>
+                <span class="float-deco float-deco-b" style="right:50px;top:14px;font-size:14px;">📌</span>
+                <div class="p-5 flex items-center gap-4" style="background:linear-gradient(135deg,rgba(245,158,11,0.1),rgba(239,68,68,0.06));border-bottom:1px solid rgba(255,255,255,0.18);">
+                    <div class="w-11 h-11 rounded-2xl flex items-center justify-center flex-shrink-0 shadow-lg" style="background:linear-gradient(135deg,#f59e0b,#ef4444);animation:floatBob 3s ease-in-out infinite;">
+                        <i class="fa-solid fa-dumbbell text-white" style="font-size:18px;"></i>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <h3 class="text-base font-black text-slate-900 dark:text-white leading-tight flex items-center gap-2">
+                            💪 Weak Areas Manager <span class="demo-badge">demo</span>
+                        </h3>
+                        <p class="text-xs font-bold text-slate-400 mt-0.5">Tap any card to expand notes &amp; mark resolved ✅</p>
+                    </div>
+                    <div id="weak-area-count-badge" class="hidden px-3 py-1 rounded-full text-xs font-black text-white flex-shrink-0" style="background:linear-gradient(135deg,#f59e0b,#ef4444);"></div>
+                </div>
+                <div class="p-4" id="ana-weak-list"></div>
             </div>
             </div><!-- /analysis-content -->
         </div>
@@ -1475,142 +1736,109 @@
 
             <!-- ── AI MODE TOGGLE CARD ── -->
             <div class="glass-card rounded-[2rem] overflow-hidden" id="ai-mode-card">
-
-                <!-- Header -->
-                <div class="p-6" style="background:linear-gradient(135deg,rgba(99,102,241,0.12),rgba(168,85,247,0.09));border-bottom:1px solid rgba(255,255,255,0.2);">
-                    <div class="flex items-center justify-between gap-4 flex-wrap">
-                        <div class="flex items-center gap-4">
-                            <div class="w-12 h-12 rounded-2xl flex items-center justify-center flex-shrink-0 shadow-lg" style="background:linear-gradient(135deg,#6366f1,#a855f7);">
-                                <i class="fa-solid fa-robot text-white" style="font-size:20px;"></i>
-                            </div>
-                            <div>
-                                <h3 class="text-lg font-black text-slate-900 dark:text-white leading-tight">AI Mode</h3>
-                                <p id="ai-mode-subtitle" class="text-xs font-bold text-slate-400 mt-0.5">Enable to unlock all AI-powered features</p>
-                            </div>
+                <!-- Compact single-row header -->
+                <div class="px-5 py-4" style="background:linear-gradient(135deg,rgba(99,102,241,0.1),rgba(168,85,247,0.07));">
+                    <div class="flex items-center gap-3">
+                        <!-- Icon -->
+                        <div class="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 shadow-md" style="background:linear-gradient(135deg,#6366f1,#a855f7);">
+                            <i class="fa-solid fa-robot text-white" style="font-size:17px;"></i>
                         </div>
-                        <!-- Toggle -->
-                        <div class="flex items-center gap-4">
-                            <span id="ai-mode-status-label" class="text-sm font-black text-slate-400 uppercase tracking-widest">DEACTIVATED</span>
-                            <div id="ai-mode-toggle" class="ai-toggle-track" onclick="toggleAIMode()">
+                        <!-- Label -->
+                        <div class="flex-1 min-w-0">
+                            <div class="flex items-center gap-2">
+                                <span class="text-base font-black text-slate-900 dark:text-white">AI Mode</span>
+                                <!-- ℹ️ info button -->
+                                <button onclick="openAIInfoModal()" title="What is AI Mode?" class="w-6 h-6 rounded-full flex items-center justify-center text-white text-xs font-black flex-shrink-0 hover:scale-110 transition shadow-sm" style="background:linear-gradient(135deg,#6366f1,#a855f7);">
+                                    <i class="fa-solid fa-info" style="font-size:10px;pointer-events:none;"></i>
+                                </button>
+                            </div>
+                            <p id="ai-mode-subtitle" class="text-xs font-bold text-slate-400 truncate">Enable to unlock all AI-powered features</p>
+                        </div>
+                        <!-- Status + Toggle -->
+                        <div class="flex items-center gap-2.5 flex-shrink-0">
+                            <span id="ai-mode-status-label" class="text-xs font-black text-slate-400 uppercase tracking-wider hidden sm:block">OFF</span>
+                            <div id="ai-mode-toggle" class="ai-toggle-track relative" onclick="toggleAIMode(event)">
                                 <div class="ai-toggle-thumb">
-                                    <i class="fa-solid fa-robot" style="font-size:11px;color:#6366f1;opacity:0.6;"></i>
+                                    <span style="pointer-events:none;">🤖</span>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- API Key Input Panel (shown when enabling) -->
-                <div id="ai-mode-key-panel" class="hidden px-6 pt-5 pb-2">
-                    <div class="p-5 rounded-2xl" style="background:linear-gradient(135deg,rgba(99,102,241,0.07),rgba(168,85,247,0.05));border:1px solid rgba(99,102,241,0.18);">
-                        <p class="text-sm font-black text-slate-700 dark:text-slate-200 mb-1 flex items-center gap-2">
-                            <i class="fa-solid fa-key text-brand-500"></i> Enter your Groq API Key to activate
-                        </p>
-                        <p class="text-xs text-slate-400 mb-3">Your key is stored only in your browser — never sent anywhere else.</p>
-                        <div class="flex gap-3">
-                            <input id="ai-mode-key-input" type="password" placeholder="gsk_..." autocomplete="off"
-                                class="flex-1 glass-input px-4 py-2.5 rounded-xl text-sm font-mono text-slate-800 dark:text-white" />
-                            <button onclick="saveAIModeKey()" class="px-5 py-2.5 rounded-xl btn-gradient text-white text-sm font-black shadow-lg hover:scale-105 transition flex-shrink-0">
-                                Activate <i class="fa-solid fa-bolt ml-1"></i>
-                            </button>
-                        </div>
-                        <button onclick="cancelAIMode()" class="mt-2 text-xs text-slate-400 hover:text-slate-600 font-bold transition">✕ Cancel</button>
+                <!-- Inline API key input (shown only when toggling ON) -->
+                <div id="ai-mode-key-panel" class="hidden px-5 pt-4 pb-4" style="border-top:1px solid rgba(99,102,241,0.1);">
+                    <p class="text-xs font-bold text-slate-500 dark:text-slate-400 mb-2.5 flex items-center gap-1.5">
+                        <i class="fa-solid fa-key text-brand-500"></i> Paste your Groq API Key
+                        <button onclick="openAIInfoModal()" class="ml-1 text-brand-500 hover:underline text-xs">— How to get it?</button>
+                    </p>
+                    <div class="flex gap-2">
+                        <input id="ai-mode-key-input" type="password" placeholder="gsk_..." autocomplete="off"
+                            class="flex-1 glass-input px-3 py-2 rounded-xl text-sm font-mono text-slate-800 dark:text-white" />
+                        <button onclick="saveAIModeKey()" class="px-4 py-2 rounded-xl btn-gradient text-white text-sm font-black shadow-md hover:scale-105 transition flex-shrink-0 flex items-center gap-1.5">
+                            <i class="fa-solid fa-bolt" style="pointer-events:none;font-size:11px;"></i> Activate
+                        </button>
+                        <button onclick="cancelAIMode()" class="w-9 h-9 rounded-xl flex items-center justify-center text-slate-400 hover:text-rose-500 transition flex-shrink-0" style="background:rgba(148,163,184,0.1);">
+                            <i class="fa-solid fa-xmark" style="pointer-events:none;"></i>
+                        </button>
                     </div>
-                </div>
-
-                <!-- Body: Feature list + API guide -->
-                <div class="p-6 space-y-6">
-
-                    <!-- What you unlock -->
-                    <div>
-                        <p class="text-xs font-black text-slate-400 uppercase tracking-widest mb-3 flex items-center gap-2">
-                            <i class="fa-solid fa-wand-magic-sparkles text-brand-500"></i> Features Unlocked with AI Mode
-                        </p>
-                        <div class="space-y-2">
-                            <div class="ai-feature-item">
-                                <div class="w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0 text-white text-sm" style="background:linear-gradient(135deg,#6366f1,#a855f7);">🤖</div>
-                                <div>
-                                    <p class="text-sm font-black text-slate-800 dark:text-slate-100">AI Performance Coach <span class="text-xs font-bold text-brand-500 ml-1">(Home tab)</span></p>
-                                    <p class="text-xs text-slate-400 mt-0.5">Personalized coaching report based on all your mock scores, subject trends, and weak areas.</p>
-                                </div>
-                            </div>
-                            <div class="ai-feature-item">
-                                <div class="w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0 text-white text-sm" style="background:linear-gradient(135deg,#f59e0b,#ef4444);">🔔</div>
-                                <div>
-                                    <p class="text-sm font-black text-slate-800 dark:text-slate-100">Before Your Next Mock <span class="text-xs font-bold text-amber-500 ml-1">(Home tab)</span></p>
-                                    <p class="text-xs text-slate-400 mt-0.5">AI-generated prep brief before each attempt — what to revise, what to avoid, and your mental strategy.</p>
-                                </div>
-                            </div>
-                            <div class="ai-feature-item">
-                                <div class="w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0 text-white text-sm" style="background:linear-gradient(135deg,#6366f1,#8b5cf6);">🧠</div>
-                                <div>
-                                    <p class="text-sm font-black text-slate-800 dark:text-slate-100">AI Debrief Session <span class="text-xs font-bold text-purple-500 ml-1">(auto-starts after Log)</span></p>
-                                    <p class="text-xs text-slate-400 mt-0.5">After saving a mock, the AI coach starts a live chat — asks what went wrong, what clicked, and builds a structured debrief report.</p>
-                                </div>
-                            </div>
-                            <div class="ai-feature-item">
-                                <div class="w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0 text-white text-sm" style="background:linear-gradient(135deg,#8b5cf6,#d946ef);">🔍</div>
-                                <div>
-                                    <p class="text-sm font-black text-slate-800 dark:text-slate-100">AI Pattern Insights <span class="text-xs font-bold text-fuchsia-500 ml-1">(Analysis tab)</span></p>
-                                    <p class="text-xs text-slate-400 mt-0.5">Deep cross-mock pattern analysis — finds recurring mistakes, spots score plateaus, and gives targeted fixes.</p>
-                                </div>
-                            </div>
-                            <div class="ai-feature-item">
-                                <div class="w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0 text-white text-sm" style="background:linear-gradient(135deg,#10b981,#059669);">📋</div>
-                                <div>
-                                    <p class="text-sm font-black text-slate-800 dark:text-slate-100">Exam Readiness Report <span class="text-xs font-bold text-emerald-500 ml-1">(Analysis tab)</span></p>
-                                    <p class="text-xs text-slate-400 mt-0.5">A full AI-generated 2-week study plan tailored to your weak subjects, score gap from target, and upcoming exam date.</p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="mt-3 px-4 py-2.5 rounded-xl text-xs font-bold flex items-center gap-2" style="background:rgba(99,102,241,0.07);border:1px dashed rgba(99,102,241,0.25);">
-                            <i class="fa-solid fa-circle-info text-brand-500"></i>
-                            <span class="text-slate-500 dark:text-slate-400">All AI features use <strong class="text-brand-500">Groq (Llama 3.3)</strong> — 100% free, no credit card needed. ~14,400 requests/day on the free tier.</span>
-                        </div>
-                    </div>
-
-                    <!-- How to get the API key -->
-                    <div>
-                        <p class="text-xs font-black text-slate-400 uppercase tracking-widest mb-3 flex items-center gap-2">
-                            <i class="fa-solid fa-key text-amber-500"></i> How to Get Your Free API Key (2 minutes)
-                        </p>
-                        <div class="rounded-2xl overflow-hidden" style="border:1px solid rgba(99,102,241,0.15);">
-                            <div class="divide-y" style="divide-color:rgba(99,102,241,0.1);">
-                                <div class="ai-api-step px-5 py-3" style="border-bottom:1px solid rgba(99,102,241,0.08);">
-                                    <div class="ai-api-num">1</div>
-                                    <div>
-                                        <p class="text-sm font-black text-slate-700 dark:text-slate-200">Go to <a href="https://console.groq.com" target="_blank" rel="noopener" class="text-brand-500 underline underline-offset-2 hover:text-brand-600">console.groq.com</a></p>
-                                        <p class="text-xs text-slate-400 mt-0.5">Click <strong class="text-slate-600 dark:text-slate-300">Sign Up</strong> — it's free, no credit card required.</p>
-                                    </div>
-                                </div>
-                                <div class="ai-api-step px-5 py-3" style="border-bottom:1px solid rgba(99,102,241,0.08);">
-                                    <div class="ai-api-num">2</div>
-                                    <div>
-                                        <p class="text-sm font-black text-slate-700 dark:text-slate-200">Click <strong class="text-brand-500">API Keys</strong> in the left sidebar</p>
-                                        <p class="text-xs text-slate-400 mt-0.5">Then click the <strong class="text-slate-600 dark:text-slate-300">+ Create API Key</strong> button.</p>
-                                    </div>
-                                </div>
-                                <div class="ai-api-step px-5 py-3" style="border-bottom:1px solid rgba(99,102,241,0.08);">
-                                    <div class="ai-api-num">3</div>
-                                    <div>
-                                        <p class="text-sm font-black text-slate-700 dark:text-slate-200">Give it any name → click <strong class="text-brand-500">Submit</strong></p>
-                                        <p class="text-xs text-slate-400 mt-0.5">Copy the key — it starts with <code class="font-mono text-brand-500 bg-brand-100/40 dark:bg-brand-900/30 px-1 rounded">gsk_</code></p>
-                                    </div>
-                                </div>
-                                <div class="ai-api-step px-5 py-3">
-                                    <div class="ai-api-num">4</div>
-                                    <div>
-                                        <p class="text-sm font-black text-slate-700 dark:text-slate-200">Toggle AI Mode ON above → paste your key → hit <strong class="text-brand-500">Activate ⚡</strong></p>
-                                        <p class="text-xs text-slate-400 mt-0.5">Done! All 5 AI features are now live across the app. 🎉</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
+                    <p class="text-xs text-slate-400 mt-1.5 flex items-center gap-1"><i class="fa-solid fa-lock text-emerald-500" style="font-size:10px;"></i> Stored only in your browser — never shared.</p>
                 </div>
             </div>
             <!-- ── END AI MODE CARD ── -->
+
+            <!-- ── AI INFO MODAL ── -->
+            <div id="ai-info-modal" onclick="if(event.target===this)closeAIInfoModal()">
+                <div id="ai-info-modal-inner" class="glass-modal ai-info-inner pop-in">
+                    <!-- Header -->
+                    <div class="p-5 flex items-center justify-between" style="background:linear-gradient(135deg,rgba(99,102,241,0.12),rgba(168,85,247,0.09));border-bottom:1px solid rgba(255,255,255,0.2);">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-xl flex items-center justify-center shadow-lg text-xl" style="background:linear-gradient(135deg,#6366f1,#a855f7);">🤖</div>
+                            <div>
+                                <h3 class="text-base font-black text-slate-900 dark:text-white">AI Mode — Full Details</h3>
+                                <p class="text-xs text-brand-500 font-bold mt-0.5">Powered by Groq · Free · No credit card</p>
+                            </div>
+                        </div>
+                        <button onclick="closeAIInfoModal()" class="w-8 h-8 rounded-xl flex items-center justify-center text-slate-400 hover:text-slate-600 transition" style="background:rgba(148,163,184,0.12);">
+                            <i class="fa-solid fa-xmark" style="font-size:14px;pointer-events:none;"></i>
+                        </button>
+                    </div>
+
+                    <div class="p-5 space-y-5">
+                        <!-- Features unlocked -->
+                        <div>
+                            <p class="text-xs font-black text-slate-400 uppercase tracking-widest mb-2.5 flex items-center gap-1.5">
+                                <i class="fa-solid fa-wand-magic-sparkles text-brand-500"></i> 5 Features You Unlock
+                            </p>
+                            <div class="space-y-1.5">
+                                <div class="ai-feat-pill"><span class="text-lg">🤖</span><div><p class="text-xs font-black text-slate-800 dark:text-slate-100">AI Performance Coach <span class="text-brand-500 font-bold">(Home)</span></p><p class="text-xs text-slate-400">Personalized coaching report from all your scores & trends.</p></div></div>
+                                <div class="ai-feat-pill"><span class="text-lg">🔔</span><div><p class="text-xs font-black text-slate-800 dark:text-slate-100">Before Your Next Mock <span class="text-amber-500 font-bold">(Home)</span></p><p class="text-xs text-slate-400">AI prep brief — what to revise & mental strategy.</p></div></div>
+                                <div class="ai-feat-pill"><span class="text-lg">🧠</span><div><p class="text-xs font-black text-slate-800 dark:text-slate-100">AI Debrief Session <span class="text-purple-500 font-bold">(after Log)</span></p><p class="text-xs text-slate-400">Live AI chat after each mock — builds a debrief report.</p></div></div>
+                                <div class="ai-feat-pill"><span class="text-lg">🔍</span><div><p class="text-xs font-black text-slate-800 dark:text-slate-100">AI Pattern Insights <span class="text-fuchsia-500 font-bold">(Analysis)</span></p><p class="text-xs text-slate-400">Cross-mock patterns, recurring mistakes, targeted fixes.</p></div></div>
+                                <div class="ai-feat-pill"><span class="text-lg">📋</span><div><p class="text-xs font-black text-slate-800 dark:text-slate-100">Exam Readiness Report <span class="text-emerald-500 font-bold">(Analysis)</span></p><p class="text-xs text-slate-400">AI 2-week study plan based on your weak spots & target.</p></div></div>
+                            </div>
+                        </div>
+
+                        <!-- API guide -->
+                        <div>
+                            <p class="text-xs font-black text-slate-400 uppercase tracking-widest mb-2.5 flex items-center gap-1.5">
+                                <i class="fa-solid fa-key text-amber-500"></i> Get Your Free API Key (2 min)
+                            </p>
+                            <div class="rounded-2xl p-4 space-y-1" style="background:rgba(99,102,241,0.05);border:1px solid rgba(99,102,241,0.12);">
+                                <div class="api-step-row"><div class="api-step-num">1</div><div><p class="text-xs font-black text-slate-700 dark:text-slate-200">Go to <a href="https://console.groq.com" target="_blank" class="text-brand-500 underline">console.groq.com</a> → Sign Up free</p><p class="text-xs text-slate-400">No credit card, no payment info needed.</p></div></div>
+                                <div class="api-step-row"><div class="api-step-num">2</div><div><p class="text-xs font-black text-slate-700 dark:text-slate-200">Click <strong class="text-brand-500">API Keys</strong> in left sidebar → <strong class="text-brand-500">+ Create API Key</strong></p></div></div>
+                                <div class="api-step-row"><div class="api-step-num">3</div><div><p class="text-xs font-black text-slate-700 dark:text-slate-200">Name it anything → Submit → copy the key <code class="font-mono text-brand-500 text-xs bg-indigo-50 dark:bg-indigo-900/30 px-1.5 rounded-md">gsk_...</code></p></div></div>
+                                <div class="api-step-row"><div class="api-step-num">4</div><div><p class="text-xs font-black text-slate-700 dark:text-slate-200">Toggle AI Mode ON → paste key → <strong class="text-brand-500">Activate ⚡</strong></p><p class="text-xs text-emerald-500 font-bold mt-0.5">Done! 14,400 free requests/day — more than enough 🎉</p></div></div>
+                            </div>
+                        </div>
+
+                        <button onclick="closeAIInfoModal()" class="w-full py-3 rounded-2xl btn-gradient text-white font-black text-sm shadow-lg hover:scale-[1.02] transition">
+                            Got it! ✓
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <!-- ── END AI INFO MODAL ── -->
 
             <!-- ── UPCOMING EXAMS CARD ── -->
             <div class="glass-card rounded-[2rem] overflow-hidden">
@@ -1655,18 +1883,20 @@
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div class="glass-card p-9 rounded-[2.5rem] text-center hover:scale-[1.02] transition group">
-                    <div class="w-14 h-14 rounded-2xl bg-indigo-100/60 dark:bg-indigo-950/60 text-indigo-600 mx-auto mb-5 flex items-center justify-center text-2xl group-hover:scale-110 transition"><i class="fa-solid fa-download"></i></div>
-                    <h3 class="text-lg font-bold mb-2 text-slate-900 dark:text-white">Export Data</h3>
-                    <p class="text-sm text-slate-500 mb-7">Save all your records to a JSON file.</p>
-                    <button onclick="app.backup()" class="w-full py-4 rounded-2xl btn-gradient text-white font-black shadow-lg">Download JSON</button>
+                <div class="glass-card p-8 rounded-[2.5rem] text-center hover:scale-[1.03] transition group card-pop" style="position:relative;overflow:hidden;">
+                    <span style="position:absolute;right:14px;top:12px;font-size:22px;opacity:0.15;animation:floatDrift 6s ease-in-out infinite;">💾</span>
+                    <div class="w-14 h-14 rounded-2xl bg-indigo-100/60 dark:bg-indigo-950/60 text-indigo-600 mx-auto mb-4 flex items-center justify-center text-2xl group-hover:scale-110 group-hover:rotate-6 transition"><i class="fa-solid fa-download"></i></div>
+                    <h3 class="text-lg font-bold mb-1 text-slate-900 dark:text-white">📦 Export Data</h3>
+                    <p class="text-sm text-slate-500 mb-6">Save all your records to a JSON file.</p>
+                    <button onclick="app.backup()" class="w-full py-3.5 rounded-2xl btn-gradient text-white font-black shadow-lg hover:scale-[1.02] transition">⬇️ Download JSON</button>
                 </div>
-                <div class="glass-card p-9 rounded-[2.5rem] text-center hover:scale-[1.02] transition group">
-                    <div class="w-14 h-14 rounded-2xl bg-purple-100/60 dark:bg-purple-900/30 text-purple-600 mx-auto mb-5 flex items-center justify-center text-2xl group-hover:scale-110 transition"><i class="fa-solid fa-upload"></i></div>
-                    <h3 class="text-lg font-bold mb-2 text-slate-900 dark:text-white">Restore Data</h3>
-                    <p class="text-sm text-slate-500 mb-7">Load records from a previously saved file.</p>
+                <div class="glass-card p-8 rounded-[2.5rem] text-center hover:scale-[1.03] transition group card-pop" style="position:relative;overflow:hidden;animation-delay:0.08s;">
+                    <span style="position:absolute;right:14px;top:12px;font-size:22px;opacity:0.15;animation:floatDrift 7s ease-in-out infinite 1s;">📂</span>
+                    <div class="w-14 h-14 rounded-2xl bg-purple-100/60 dark:bg-purple-900/30 text-purple-600 mx-auto mb-4 flex items-center justify-center text-2xl group-hover:scale-110 group-hover:rotate-6 transition"><i class="fa-solid fa-upload"></i></div>
+                    <h3 class="text-lg font-bold mb-1 text-slate-900 dark:text-white">🔄 Restore Data</h3>
+                    <p class="text-sm text-slate-500 mb-6">Load records from a previously saved file.</p>
                     <input type="file" id="restore-input" class="hidden" accept=".json" onchange="app.restore(event)">
-                    <button onclick="document.getElementById('restore-input').click()" class="w-full py-4 rounded-2xl btn-gradient text-white font-black shadow-lg">Upload JSON</button>
+                    <button onclick="document.getElementById('restore-input').click()" class="w-full py-3.5 rounded-2xl btn-gradient text-white font-black shadow-lg hover:scale-[1.02] transition">⬆️ Upload JSON</button>
                 </div>
             </div>
             <!-- DEMO MODE CARD -->
@@ -2139,47 +2369,63 @@
         //  AI PERFORMANCE COACH — Powered by Google Gemini
         // ═══════════════════════════════════════════════════
         const AI_KEY_STORAGE = 'mockpro_gemini_key';
-        const AI_MODE_KEY    = 'mockpro_ai_mode'; // 'on' or 'off'
+        const AI_MODE_KEY    = 'mockpro_ai_mode';
 
-        // ── Apply AI mode visibility on every page load ──
         function applyAIMode() {
             const isOn = localStorage.getItem(AI_MODE_KEY) === 'on';
             const html = document.documentElement;
-            if (isOn) {
-                html.classList.remove('ai-mode-off');
-            } else {
-                html.classList.add('ai-mode-off');
-            }
-            // Sync toggle UI
-            const track = document.getElementById('ai-mode-toggle');
-            const label = document.getElementById('ai-mode-status-label');
-            const sub   = document.getElementById('ai-mode-subtitle');
-            if (track) track.classList.toggle('on', isOn);
-            if (label) {
-                label.textContent = isOn ? 'ACTIVATED' : 'DEACTIVATED';
-                label.style.color = isOn ? '#6366f1' : '';
-            }
-            if (sub) {
-                sub.textContent = isOn
-                    ? 'All 5 AI features are live across the app ✨'
-                    : 'Enable to unlock all AI-powered features';
-                sub.style.color = isOn ? '#10b981' : '';
-            }
+            isOn ? html.classList.remove('ai-mode-off') : html.classList.add('ai-mode-off');
+            const track    = document.getElementById('ai-mode-toggle');
+            const label    = document.getElementById('ai-mode-status-label');
+            const pill     = document.getElementById('ai-mode-status-pill');
+            const sub      = document.getElementById('ai-mode-subtitle');
+            const iconWrap = document.getElementById('ai-mode-icon-wrap');
+            if (track)  track.classList.toggle('on', isOn);
+            if (label)  { label.textContent = isOn ? 'ON' : 'OFF'; label.style.color = isOn ? '#6366f1' : ''; }
+            if (pill)   { pill.textContent = isOn ? '✨ ON' : 'OFF'; pill.style.background = isOn ? 'linear-gradient(135deg,#6366f1,#a855f7)' : 'rgba(148,163,184,0.15)'; pill.style.color = isOn ? 'white' : '#94a3b8'; }
+            if (sub)    sub.textContent = isOn ? 'All 5 AI features are live 🚀' : 'Enable to unlock 5 AI-powered features';
+            if (iconWrap) iconWrap.style.boxShadow = isOn ? '0 0 18px rgba(99,102,241,0.55)' : '';
         }
 
-        window.toggleAIMode = function() {
+        // Sparkle burst effect on toggle — upgraded 🎆
+        function spawnSparkles(el) {
+            const rect = el.getBoundingClientRect();
+            const cx = rect.left + rect.width/2, cy = rect.top + rect.height/2;
+            const emojis = ['✨','⚡','🌟','💫','🎯','🚀','🤖','🔥'];
+            for (let i = 0; i < 12; i++) {
+                const sp = document.createElement('div');
+                sp.className = 'sparkle-burst';
+                sp.textContent = emojis[i % emojis.length];
+                const angle = (i / 12) * Math.PI * 2;
+                const dist  = 55 + Math.random() * 55;
+                const dx = Math.cos(angle) * dist, dy = Math.sin(angle) * dist;
+                sp.style.cssText = `left:${cx}px;top:${cy}px;--dx:${dx}px;--dy:${dy}px;animation-delay:${i*0.05}s;transform:translate(-50%,-50%);`;
+                document.body.appendChild(sp);
+                setTimeout(() => sp.remove(), 1200);
+            }
+            // Central ripple
+            const ripple = document.createElement('div');
+            ripple.className = 'toggle-ripple';
+            ripple.style.left = (cx - 20) + 'px';
+            ripple.style.top  = (cy - 20) + 'px';
+            ripple.style.position = 'fixed';
+            document.body.appendChild(ripple);
+            setTimeout(() => ripple.remove(), 650);
+        }
+
+        window.toggleAIMode = function(event) {
             const isOn = localStorage.getItem(AI_MODE_KEY) === 'on';
+            const toggle = document.getElementById('ai-mode-toggle');
             if (isOn) {
-                // Turning OFF — just deactivate, no prompt needed
                 localStorage.setItem(AI_MODE_KEY, 'off');
                 applyAIMode();
-                showToastMsg('AI Mode deactivated. AI features are now hidden.', '🤖');
+                showToastMsg('AI Mode deactivated', '🤖');
             } else {
-                // Turning ON — show API key panel
+                // Show sparkles even before key is entered
+                if (toggle) spawnSparkles(toggle);
                 const panel = document.getElementById('ai-mode-key-panel');
                 if (panel) {
                     panel.classList.remove('hidden');
-                    // Pre-fill if key already exists
                     const existing = localStorage.getItem(AI_KEY_STORAGE) || '';
                     const inp = document.getElementById('ai-mode-key-input');
                     if (inp && existing) inp.value = existing;
@@ -2192,7 +2438,11 @@
             const inp = document.getElementById('ai-mode-key-input');
             const key = inp ? inp.value.trim() : '';
             if (!key || !key.startsWith('gsk_')) {
-                alert('⚠️ Please enter a valid Groq API key (it starts with gsk_)');
+                if (inp) {
+                    inp.style.borderColor = '#ef4444';
+                    inp.animate([{transform:'translateX(-6px)'},{transform:'translateX(6px)'},{transform:'translateX(-4px)'},{transform:'translateX(4px)'},{transform:'translateX(0)'}],{duration:300,easing:'ease-out'});
+                    setTimeout(()=>{ inp.style.borderColor=''; },1500);
+                }
                 return;
             }
             localStorage.setItem(AI_KEY_STORAGE, key);
@@ -2200,7 +2450,19 @@
             const panel = document.getElementById('ai-mode-key-panel');
             if (panel) panel.classList.add('hidden');
             applyAIMode();
-            showToastMsg('AI Mode activated! All AI features are now live 🚀', '✨');
+            // 🎆 CONFETTI BURST
+            if (typeof confetti !== 'undefined') {
+                confetti({ particleCount:100, spread:110, origin:{y:0.55}, colors:['#6366f1','#a855f7','#d946ef','#818cf8','#fbbf24','#34d399'] });
+                setTimeout(() => confetti({ particleCount:50, spread:80, origin:{y:0.5,x:0.2}, colors:['#6366f1','#a855f7'] }), 220);
+                setTimeout(() => confetti({ particleCount:50, spread:80, origin:{y:0.5,x:0.8}, colors:['#d946ef','#fbbf24'] }), 420);
+            }
+            const toggle = document.getElementById('ai-mode-toggle');
+            if (toggle) spawnSparkles(toggle);
+            const iconWrap = document.getElementById('ai-mode-icon-wrap');
+            if (iconWrap) {
+                iconWrap.animate([{transform:'scale(1)'},{transform:'scale(1.4)',filter:'drop-shadow(0 0 12px #6366f1)'},{transform:'scale(1)'}],{duration:600,easing:'cubic-bezier(0.34,1.56,0.64,1)'});
+            }
+            showToastMsg('🎉 AI Mode activated! All 5 features are live!', '✨');
         };
 
         window.cancelAIMode = function() {
@@ -2208,23 +2470,34 @@
             if (panel) panel.classList.add('hidden');
         };
 
+        window.openAIInfoModal = function() {
+            const m = document.getElementById('ai-info-modal');
+            const inner = document.getElementById('ai-info-modal-inner');
+            if (!m) return;
+            m.classList.add('open');
+            if (inner) {
+                inner.style.animation = 'none';
+                requestAnimationFrame(() => { inner.style.animation = 'popIn 0.42s cubic-bezier(0.34,1.56,0.64,1) both'; });
+            }
+        };
+        window.closeAIInfoModal = function() {
+            const m = document.getElementById('ai-info-modal');
+            if (m) m.classList.remove('open');
+        };
+
         function showToastMsg(msg, icon = '✅') {
-            // Reuse welcome toast infrastructure or create a simple toast
             const t = document.getElementById('welcome-toast');
             const txt = document.getElementById('welcome-toast-text');
             if (t && txt) {
                 txt.textContent = icon + '  ' + msg;
-                t.style.display = 'block';
-                t.style.opacity = '1';
+                t.style.display = 'block'; t.style.opacity = '1';
                 setTimeout(() => {
-                    t.style.transition = 'opacity 0.5s';
-                    t.style.opacity = '0';
+                    t.style.transition = 'opacity 0.5s'; t.style.opacity = '0';
                     setTimeout(() => { t.style.display = 'none'; t.style.opacity = '1'; }, 500);
                 }, 3000);
             }
         }
 
-        // Run on load
         applyAIMode();
 
         window.toggleAISettings = function() {
@@ -4770,19 +5043,123 @@ Give a concise pre-mock briefing in this EXACT JSON (no markdown, no backticks):
         function renderAnalysisHubs(subset) {
             const wh = el('ana-weak-list');
             const withWeak = subset.filter(m => m.weak);
-            if (wh) wh.innerHTML = withWeak.map(m => `
-                <div class="glass-card rounded-[1.5rem] border border-amber-200/30 dark:border-amber-900/20 overflow-hidden">
-                    <button onclick="toggleWeakArea('${m.id}')" class="w-full px-5 py-4 flex items-center justify-between text-left hover:bg-amber-50/30 dark:hover:bg-amber-900/10 transition">
-                        <span class="text-xs font-black text-amber-600 dark:text-amber-400 uppercase tracking-widest truncate pr-3">${m.name} — ${m.date}</span>
-                        <span class="flex items-center gap-2 flex-shrink-0">
-                            ${state.isDemoMode ? '' : `<button onclick="event.stopPropagation();app.resolveWeakArea('${m.id}')" class="text-amber-400 hover:text-emerald-500 transition"><i class="fa-solid fa-check-double text-xs"></i></button>`}
-                            <i id="weak-chev-${m.id}" class="fa-solid fa-chevron-down weak-chevron text-slate-400 text-xs"></i>
-                        </span>
-                    </button>
-                    <div id="weak-body-${m.id}" class="weak-item-body">
-                        <p class="px-5 pb-4 text-sm font-bold text-slate-700 dark:text-amber-200 leading-relaxed">${m.weak}</p>
-                    </div>
-                </div>`).join('') || `<p class="col-span-full p-10 text-center text-slate-400 font-bold italic opacity-40 uppercase tracking-widest text-xs">No weaknesses logged.</p>`;
+
+            // Update badge
+            const badge = el('weak-area-count-badge');
+            if (badge) {
+                if (withWeak.length > 0) { badge.textContent = withWeak.length + ' entries'; badge.classList.remove('hidden'); }
+                else badge.classList.add('hidden');
+            }
+
+            if (wh) {
+                if (withWeak.length === 0) {
+                    wh.innerHTML = `
+                        <div class="empty-state py-12">
+                            <div class="empty-icon text-5xl mb-3">🎯</div>
+                            <p class="text-sm font-black text-slate-400 uppercase tracking-widest">No weak areas logged yet</p>
+                            <p class="text-xs text-slate-400 mt-1 max-w-xs">Log mocks with weak topic notes to track them here</p>
+                        </div>`;
+                } else {
+                    // ── Aggregate all topics across mocks ──
+                    const topicFreq = {};
+                    withWeak.forEach(m => {
+                        (m.weak||'').split(/[,;]+/).map(t=>t.trim()).filter(Boolean)
+                            .forEach(t => { topicFreq[t] = (topicFreq[t]||0)+1; });
+                    });
+                    const sorted = Object.entries(topicFreq).sort((a,b)=>b[1]-a[1]);
+                    const topTopics = sorted.slice(0,8);
+
+                    // ── Tag colour palette (cycles) ──
+                    const palettes = [
+                        {bg:'rgba(239,68,68,0.1)',  border:'rgba(239,68,68,0.25)',  text:'#ef4444'},
+                        {bg:'rgba(245,158,11,0.1)', border:'rgba(245,158,11,0.25)', text:'#d97706'},
+                        {bg:'rgba(168,85,247,0.1)', border:'rgba(168,85,247,0.25)', text:'#a855f7'},
+                        {bg:'rgba(99,102,241,0.1)', border:'rgba(99,102,241,0.25)', text:'#6366f1'},
+                        {bg:'rgba(236,72,153,0.1)', border:'rgba(236,72,153,0.25)', text:'#ec4899'},
+                        {bg:'rgba(16,185,129,0.1)', border:'rgba(16,185,129,0.25)', text:'#10b981'},
+                    ];
+                    const getPalette = (i) => palettes[i % palettes.length];
+
+                    // ── Hot-topics summary banner ──
+                    const hotChips = topTopics.map(([t,c], i) => {
+                        const p = getPalette(i);
+                        const icon = c >= 3 ? '🔥' : c >= 2 ? '⚠️' : '📌';
+                        return `<span class="weak-topic-tag" style="background:${p.bg};border:1px solid ${p.border};color:${p.text};">${icon} ${t}${c>1?` <sup style="font-size:9px;opacity:0.75;">×${c}</sup>`:''}</span>`;
+                    }).join('');
+
+                    const summaryBanner = topTopics.length > 0 ? `
+                        <div class="p-4 rounded-2xl mb-4 relative overflow-hidden" style="background:linear-gradient(135deg,rgba(245,158,11,0.07),rgba(239,68,68,0.04));border:1px solid rgba(245,158,11,0.18);">
+                            <div class="flex items-start justify-between gap-3 mb-3">
+                                <div class="flex items-center gap-2">
+                                    <span class="text-base">🔍</span>
+                                    <p class="text-xs font-black text-amber-600 dark:text-amber-400 uppercase tracking-widest">Top Recurring Weak Topics</p>
+                                </div>
+                                <span class="text-xs font-black px-2 py-0.5 rounded-lg" style="background:rgba(245,158,11,0.15);color:#d97706;">${withWeak.length} mock${withWeak.length!==1?'s':''}</span>
+                            </div>
+                            <div class="flex flex-wrap gap-1.5">${hotChips}</div>
+                        </div>` : '';
+
+                    // ── Individual mock cards ──
+                    const cards = withWeak.map((m, idx) => {
+                        const topics = (m.weak||'').split(/[,;]+/).map(t=>t.trim()).filter(Boolean);
+                        const count  = topics.length;
+                        const sevPct = Math.min(100, count * 20); // 5+ topics = 100%
+                        const scorePct  = m.max ? Math.round((m.score/m.max)*100) : null;
+                        const scoreGrad = scorePct >= 70 ? 'linear-gradient(135deg,#10b981,#059669)'
+                                        : scorePct >= 50 ? 'linear-gradient(135deg,#f59e0b,#ef4444)'
+                                        :                  'linear-gradient(135deg,#ef4444,#dc2626)';
+                        const topicTags = topics.map((t, ti) => {
+                            const p = getPalette(ti);
+                            return `<span class="weak-topic-tag" style="background:${p.bg};border:1px solid ${p.border};color:${p.text};">📌 ${t}</span>`;
+                        }).join('');
+                        const resolveBtn = !state.isDemoMode
+                            ? `<button onclick="event.stopPropagation();app.resolveWeakArea('${m.id}')" title="Mark resolved"
+                                class="w-7 h-7 rounded-xl flex items-center justify-center flex-shrink-0 transition hover:scale-110"
+                                style="background:rgba(16,185,129,0.1);color:#10b981;border:1px solid rgba(16,185,129,0.2);">
+                                <i class="fa-solid fa-check" style="font-size:11px;pointer-events:none;"></i>
+                               </button>` : '';
+
+                        return `
+                        <div class="weak-entry-card" style="animation-delay:${idx*0.06}s;animation:cardPop 0.4s cubic-bezier(0.16,1,0.3,1) both;">
+                            <!-- Header row -->
+                            <button onclick="toggleWeakArea('${m.id}')" class="w-full px-4 py-3.5 flex items-center gap-3 text-left" style="background:transparent;">
+                                <!-- Score bubble -->
+                                <div class="w-11 h-11 rounded-2xl flex flex-col items-center justify-center flex-shrink-0 text-white font-black shadow-md" style="background:${scoreGrad};min-width:44px;">
+                                    ${scorePct !== null
+                                        ? `<span style="font-size:13px;line-height:1;">${scorePct}</span><span style="font-size:8px;opacity:0.8;">%ile</span>`
+                                        : `<span style="font-size:18px;">📝</span>`}
+                                </div>
+                                <div class="flex-1 min-w-0">
+                                    <p class="text-sm font-black text-slate-800 dark:text-slate-100 truncate">${m.name || 'Unnamed Mock'}</p>
+                                    <div class="flex items-center gap-2 mt-0.5">
+                                        <span class="text-xs text-slate-400 font-semibold">${m.date || ''}</span>
+                                        <span class="text-xs font-black px-2 py-0.5 rounded-lg"
+                                            style="background:rgba(245,158,11,0.1);color:#d97706;border:1px solid rgba(245,158,11,0.2);">
+                                            ${count} topic${count!==1?'s':''}
+                                        </span>
+                                    </div>
+                                    <!-- Severity bar -->
+                                    <div class="weak-sev-bar mt-1.5" style="width:80px;">
+                                        <div class="weak-sev-fill" style="width:${sevPct}%;"></div>
+                                    </div>
+                                </div>
+                                ${resolveBtn}
+                                <i id="weak-chev-${m.id}" class="fa-solid fa-chevron-down weak-chevron text-slate-300 dark:text-slate-600 flex-shrink-0" style="font-size:11px;transition:transform 0.3s;"></i>
+                            </button>
+                            <!-- Collapsible body -->
+                            <div id="weak-body-${m.id}" class="weak-item-body">
+                                <div class="px-4 pb-4 pt-1">
+                                    <div class="flex flex-wrap gap-1.5">
+                                        ${topicTags || '<span class="text-xs text-slate-400 italic">No topics noted</span>'}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>`;
+                    }).join('');
+
+                    wh.innerHTML = summaryBanner + `<div class="space-y-2">${cards}</div>`;
+                }
+            }
             const sl = el('ana-silly-log-body');
             if (sl) sl.innerHTML = subset.filter(m=>m.sillyMarks>0).map(m => `
                 <div class="glass-card p-5 rounded-[2rem] border border-rose-200/30 dark:border-rose-900/20">
@@ -5097,6 +5474,28 @@ Give a concise pre-mock briefing in this EXACT JSON (no markdown, no backticks):
 
                 window.app.nav('home');
 
+        // ═══════════════════════════════════════
+        // CARD ENTRANCE ANIMATIONS (IntersectionObserver)
+        // ═══════════════════════════════════════
+        (function() {
+            if (!window.IntersectionObserver) return;
+            const obs = new IntersectionObserver((entries) => {
+                entries.forEach((entry, i) => {
+                    if (entry.isIntersecting) {
+                        setTimeout(() => {
+                            entry.target.classList.add('anim-visible');
+                            entry.target.classList.add('revealed');
+                        }, i * 60);
+                        obs.unobserve(entry.target);
+                    }
+                });
+            }, { threshold: 0.08 });
+            // Observe all glass-cards and scroll-reveal elements
+            document.querySelectorAll('.glass-card, .glass-modal, .scroll-reveal').forEach(card => {
+                card.classList.add('anim-card');
+                obs.observe(card);
+            });
+        })();
     </script>
 
     <!-- AI DEBRIEF CHAT MODAL -->
@@ -5236,6 +5635,9 @@ Give a concise pre-mock briefing in this EXACT JSON (no markdown, no backticks):
             </div>
         </div>
     </div>
+
+    <!-- AI ACTIVATE BURST CANVAS -->
+    <canvas id="ai-burst-canvas"></canvas>
 
     <!-- PWA Service Worker Registration -->
     <script>
