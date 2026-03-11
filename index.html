@@ -473,6 +473,66 @@
         /* ═══════════════════════════════════════
            SHARE CARD MODAL  (New Feature)
         ═══════════════════════════════════════ */
+        /* ═══════════════════════════════════════
+           AI MODE — VISIBILITY CONTROL
+        ═══════════════════════════════════════ */
+        /* When AI mode is OFF, hide all AI-powered UI elements */
+        .ai-mode-off #ai-coach-card,
+        .ai-mode-off #premock-card,
+        .ai-mode-off #ai-insights-card { display: none !important; }
+
+        /* AI Mode Toggle Switch */
+        .ai-toggle-track {
+            width: 64px; height: 34px; border-radius: 999px;
+            background: rgba(148,163,184,0.25);
+            border: 2px solid rgba(148,163,184,0.3);
+            cursor: pointer; transition: all 0.35s cubic-bezier(0.34,1.56,0.64,1);
+            position: relative; flex-shrink: 0;
+        }
+        .ai-toggle-track.on {
+            background: linear-gradient(135deg, #6366f1, #a855f7);
+            border-color: transparent;
+            box-shadow: 0 0 18px rgba(99,102,241,0.5);
+        }
+        .ai-toggle-thumb {
+            width: 26px; height: 26px; border-radius: 50%; background: white;
+            position: absolute; top: 2px; left: 2px;
+            transition: all 0.35s cubic-bezier(0.34,1.56,0.64,1);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+            display: flex; align-items: center; justify-content: center;
+        }
+        .ai-toggle-track.on .ai-toggle-thumb { left: 34px; }
+
+        /* Pulse glow ring when ON */
+        @keyframes aiPulse {
+            0%, 100% { box-shadow: 0 0 18px rgba(99,102,241,0.4); }
+            50%       { box-shadow: 0 0 32px rgba(99,102,241,0.7), 0 0 8px rgba(168,85,247,0.5); }
+        }
+        .ai-toggle-track.on { animation: aiPulse 2.5s ease-in-out infinite; }
+
+        /* AI feature list item */
+        .ai-feature-item {
+            display: flex; align-items: flex-start; gap: 10px;
+            padding: 10px 12px; border-radius: 14px;
+            background: rgba(99,102,241,0.05);
+            border: 1px solid rgba(99,102,241,0.1);
+            transition: all 0.2s;
+        }
+        .dark .ai-feature-item { background: rgba(99,102,241,0.08); border-color: rgba(99,102,241,0.18); }
+        .ai-feature-item:hover { background: rgba(99,102,241,0.1); transform: translateX(2px); }
+
+        /* API step */
+        .ai-api-step {
+            display: flex; align-items: flex-start; gap: 12px;
+            padding: 10px 0;
+        }
+        .ai-api-num {
+            width: 26px; height: 26px; border-radius: 50%; flex-shrink: 0;
+            background: linear-gradient(135deg, #6366f1, #a855f7);
+            color: white; font-size: 11px; font-weight: 900;
+            display: flex; align-items: center; justify-content: center;
+        }
+
         #share-card-modal { position:fixed; inset:0; z-index:500; background:rgba(6,4,15,0.88); backdrop-filter:blur(20px);
             display:none; align-items:flex-start; justify-content:center; padding:1.25rem;
             overflow-y:auto; }
@@ -1413,6 +1473,145 @@
         <!-- TOOLS TAB -->
         <div id="tab-tools" class="tab-content max-w-4xl mx-auto space-y-6 pt-5 pb-28">
 
+            <!-- ── AI MODE TOGGLE CARD ── -->
+            <div class="glass-card rounded-[2rem] overflow-hidden" id="ai-mode-card">
+
+                <!-- Header -->
+                <div class="p-6" style="background:linear-gradient(135deg,rgba(99,102,241,0.12),rgba(168,85,247,0.09));border-bottom:1px solid rgba(255,255,255,0.2);">
+                    <div class="flex items-center justify-between gap-4 flex-wrap">
+                        <div class="flex items-center gap-4">
+                            <div class="w-12 h-12 rounded-2xl flex items-center justify-center flex-shrink-0 shadow-lg" style="background:linear-gradient(135deg,#6366f1,#a855f7);">
+                                <i class="fa-solid fa-robot text-white" style="font-size:20px;"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-lg font-black text-slate-900 dark:text-white leading-tight">AI Mode</h3>
+                                <p id="ai-mode-subtitle" class="text-xs font-bold text-slate-400 mt-0.5">Enable to unlock all AI-powered features</p>
+                            </div>
+                        </div>
+                        <!-- Toggle -->
+                        <div class="flex items-center gap-4">
+                            <span id="ai-mode-status-label" class="text-sm font-black text-slate-400 uppercase tracking-widest">DEACTIVATED</span>
+                            <div id="ai-mode-toggle" class="ai-toggle-track" onclick="toggleAIMode()">
+                                <div class="ai-toggle-thumb">
+                                    <i class="fa-solid fa-robot" style="font-size:11px;color:#6366f1;opacity:0.6;"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- API Key Input Panel (shown when enabling) -->
+                <div id="ai-mode-key-panel" class="hidden px-6 pt-5 pb-2">
+                    <div class="p-5 rounded-2xl" style="background:linear-gradient(135deg,rgba(99,102,241,0.07),rgba(168,85,247,0.05));border:1px solid rgba(99,102,241,0.18);">
+                        <p class="text-sm font-black text-slate-700 dark:text-slate-200 mb-1 flex items-center gap-2">
+                            <i class="fa-solid fa-key text-brand-500"></i> Enter your Groq API Key to activate
+                        </p>
+                        <p class="text-xs text-slate-400 mb-3">Your key is stored only in your browser — never sent anywhere else.</p>
+                        <div class="flex gap-3">
+                            <input id="ai-mode-key-input" type="password" placeholder="gsk_..." autocomplete="off"
+                                class="flex-1 glass-input px-4 py-2.5 rounded-xl text-sm font-mono text-slate-800 dark:text-white" />
+                            <button onclick="saveAIModeKey()" class="px-5 py-2.5 rounded-xl btn-gradient text-white text-sm font-black shadow-lg hover:scale-105 transition flex-shrink-0">
+                                Activate <i class="fa-solid fa-bolt ml-1"></i>
+                            </button>
+                        </div>
+                        <button onclick="cancelAIMode()" class="mt-2 text-xs text-slate-400 hover:text-slate-600 font-bold transition">✕ Cancel</button>
+                    </div>
+                </div>
+
+                <!-- Body: Feature list + API guide -->
+                <div class="p-6 space-y-6">
+
+                    <!-- What you unlock -->
+                    <div>
+                        <p class="text-xs font-black text-slate-400 uppercase tracking-widest mb-3 flex items-center gap-2">
+                            <i class="fa-solid fa-wand-magic-sparkles text-brand-500"></i> Features Unlocked with AI Mode
+                        </p>
+                        <div class="space-y-2">
+                            <div class="ai-feature-item">
+                                <div class="w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0 text-white text-sm" style="background:linear-gradient(135deg,#6366f1,#a855f7);">🤖</div>
+                                <div>
+                                    <p class="text-sm font-black text-slate-800 dark:text-slate-100">AI Performance Coach <span class="text-xs font-bold text-brand-500 ml-1">(Home tab)</span></p>
+                                    <p class="text-xs text-slate-400 mt-0.5">Personalized coaching report based on all your mock scores, subject trends, and weak areas.</p>
+                                </div>
+                            </div>
+                            <div class="ai-feature-item">
+                                <div class="w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0 text-white text-sm" style="background:linear-gradient(135deg,#f59e0b,#ef4444);">🔔</div>
+                                <div>
+                                    <p class="text-sm font-black text-slate-800 dark:text-slate-100">Before Your Next Mock <span class="text-xs font-bold text-amber-500 ml-1">(Home tab)</span></p>
+                                    <p class="text-xs text-slate-400 mt-0.5">AI-generated prep brief before each attempt — what to revise, what to avoid, and your mental strategy.</p>
+                                </div>
+                            </div>
+                            <div class="ai-feature-item">
+                                <div class="w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0 text-white text-sm" style="background:linear-gradient(135deg,#6366f1,#8b5cf6);">🧠</div>
+                                <div>
+                                    <p class="text-sm font-black text-slate-800 dark:text-slate-100">AI Debrief Session <span class="text-xs font-bold text-purple-500 ml-1">(auto-starts after Log)</span></p>
+                                    <p class="text-xs text-slate-400 mt-0.5">After saving a mock, the AI coach starts a live chat — asks what went wrong, what clicked, and builds a structured debrief report.</p>
+                                </div>
+                            </div>
+                            <div class="ai-feature-item">
+                                <div class="w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0 text-white text-sm" style="background:linear-gradient(135deg,#8b5cf6,#d946ef);">🔍</div>
+                                <div>
+                                    <p class="text-sm font-black text-slate-800 dark:text-slate-100">AI Pattern Insights <span class="text-xs font-bold text-fuchsia-500 ml-1">(Analysis tab)</span></p>
+                                    <p class="text-xs text-slate-400 mt-0.5">Deep cross-mock pattern analysis — finds recurring mistakes, spots score plateaus, and gives targeted fixes.</p>
+                                </div>
+                            </div>
+                            <div class="ai-feature-item">
+                                <div class="w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0 text-white text-sm" style="background:linear-gradient(135deg,#10b981,#059669);">📋</div>
+                                <div>
+                                    <p class="text-sm font-black text-slate-800 dark:text-slate-100">Exam Readiness Report <span class="text-xs font-bold text-emerald-500 ml-1">(Analysis tab)</span></p>
+                                    <p class="text-xs text-slate-400 mt-0.5">A full AI-generated 2-week study plan tailored to your weak subjects, score gap from target, and upcoming exam date.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mt-3 px-4 py-2.5 rounded-xl text-xs font-bold flex items-center gap-2" style="background:rgba(99,102,241,0.07);border:1px dashed rgba(99,102,241,0.25);">
+                            <i class="fa-solid fa-circle-info text-brand-500"></i>
+                            <span class="text-slate-500 dark:text-slate-400">All AI features use <strong class="text-brand-500">Groq (Llama 3.3)</strong> — 100% free, no credit card needed. ~14,400 requests/day on the free tier.</span>
+                        </div>
+                    </div>
+
+                    <!-- How to get the API key -->
+                    <div>
+                        <p class="text-xs font-black text-slate-400 uppercase tracking-widest mb-3 flex items-center gap-2">
+                            <i class="fa-solid fa-key text-amber-500"></i> How to Get Your Free API Key (2 minutes)
+                        </p>
+                        <div class="rounded-2xl overflow-hidden" style="border:1px solid rgba(99,102,241,0.15);">
+                            <div class="divide-y" style="divide-color:rgba(99,102,241,0.1);">
+                                <div class="ai-api-step px-5 py-3" style="border-bottom:1px solid rgba(99,102,241,0.08);">
+                                    <div class="ai-api-num">1</div>
+                                    <div>
+                                        <p class="text-sm font-black text-slate-700 dark:text-slate-200">Go to <a href="https://console.groq.com" target="_blank" rel="noopener" class="text-brand-500 underline underline-offset-2 hover:text-brand-600">console.groq.com</a></p>
+                                        <p class="text-xs text-slate-400 mt-0.5">Click <strong class="text-slate-600 dark:text-slate-300">Sign Up</strong> — it's free, no credit card required.</p>
+                                    </div>
+                                </div>
+                                <div class="ai-api-step px-5 py-3" style="border-bottom:1px solid rgba(99,102,241,0.08);">
+                                    <div class="ai-api-num">2</div>
+                                    <div>
+                                        <p class="text-sm font-black text-slate-700 dark:text-slate-200">Click <strong class="text-brand-500">API Keys</strong> in the left sidebar</p>
+                                        <p class="text-xs text-slate-400 mt-0.5">Then click the <strong class="text-slate-600 dark:text-slate-300">+ Create API Key</strong> button.</p>
+                                    </div>
+                                </div>
+                                <div class="ai-api-step px-5 py-3" style="border-bottom:1px solid rgba(99,102,241,0.08);">
+                                    <div class="ai-api-num">3</div>
+                                    <div>
+                                        <p class="text-sm font-black text-slate-700 dark:text-slate-200">Give it any name → click <strong class="text-brand-500">Submit</strong></p>
+                                        <p class="text-xs text-slate-400 mt-0.5">Copy the key — it starts with <code class="font-mono text-brand-500 bg-brand-100/40 dark:bg-brand-900/30 px-1 rounded">gsk_</code></p>
+                                    </div>
+                                </div>
+                                <div class="ai-api-step px-5 py-3">
+                                    <div class="ai-api-num">4</div>
+                                    <div>
+                                        <p class="text-sm font-black text-slate-700 dark:text-slate-200">Toggle AI Mode ON above → paste your key → hit <strong class="text-brand-500">Activate ⚡</strong></p>
+                                        <p class="text-xs text-slate-400 mt-0.5">Done! All 5 AI features are now live across the app. 🎉</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            <!-- ── END AI MODE CARD ── -->
+
             <!-- ── UPCOMING EXAMS CARD ── -->
             <div class="glass-card rounded-[2rem] overflow-hidden">
                 <div class="p-6" style="background:linear-gradient(135deg,rgba(99,102,241,0.1),rgba(168,85,247,0.07));border-bottom:1px solid rgba(255,255,255,0.2);">
@@ -1940,8 +2139,93 @@
         //  AI PERFORMANCE COACH — Powered by Google Gemini
         // ═══════════════════════════════════════════════════
         const AI_KEY_STORAGE = 'mockpro_gemini_key';
-        // Clear any previously hardcoded key
-        // Default API key (pre-loaded)
+        const AI_MODE_KEY    = 'mockpro_ai_mode'; // 'on' or 'off'
+
+        // ── Apply AI mode visibility on every page load ──
+        function applyAIMode() {
+            const isOn = localStorage.getItem(AI_MODE_KEY) === 'on';
+            const html = document.documentElement;
+            if (isOn) {
+                html.classList.remove('ai-mode-off');
+            } else {
+                html.classList.add('ai-mode-off');
+            }
+            // Sync toggle UI
+            const track = document.getElementById('ai-mode-toggle');
+            const label = document.getElementById('ai-mode-status-label');
+            const sub   = document.getElementById('ai-mode-subtitle');
+            if (track) track.classList.toggle('on', isOn);
+            if (label) {
+                label.textContent = isOn ? 'ACTIVATED' : 'DEACTIVATED';
+                label.style.color = isOn ? '#6366f1' : '';
+            }
+            if (sub) {
+                sub.textContent = isOn
+                    ? 'All 5 AI features are live across the app ✨'
+                    : 'Enable to unlock all AI-powered features';
+                sub.style.color = isOn ? '#10b981' : '';
+            }
+        }
+
+        window.toggleAIMode = function() {
+            const isOn = localStorage.getItem(AI_MODE_KEY) === 'on';
+            if (isOn) {
+                // Turning OFF — just deactivate, no prompt needed
+                localStorage.setItem(AI_MODE_KEY, 'off');
+                applyAIMode();
+                showToastMsg('AI Mode deactivated. AI features are now hidden.', '🤖');
+            } else {
+                // Turning ON — show API key panel
+                const panel = document.getElementById('ai-mode-key-panel');
+                if (panel) {
+                    panel.classList.remove('hidden');
+                    // Pre-fill if key already exists
+                    const existing = localStorage.getItem(AI_KEY_STORAGE) || '';
+                    const inp = document.getElementById('ai-mode-key-input');
+                    if (inp && existing) inp.value = existing;
+                    setTimeout(() => { if (inp) inp.focus(); }, 80);
+                }
+            }
+        };
+
+        window.saveAIModeKey = function() {
+            const inp = document.getElementById('ai-mode-key-input');
+            const key = inp ? inp.value.trim() : '';
+            if (!key || !key.startsWith('gsk_')) {
+                alert('⚠️ Please enter a valid Groq API key (it starts with gsk_)');
+                return;
+            }
+            localStorage.setItem(AI_KEY_STORAGE, key);
+            localStorage.setItem(AI_MODE_KEY, 'on');
+            const panel = document.getElementById('ai-mode-key-panel');
+            if (panel) panel.classList.add('hidden');
+            applyAIMode();
+            showToastMsg('AI Mode activated! All AI features are now live 🚀', '✨');
+        };
+
+        window.cancelAIMode = function() {
+            const panel = document.getElementById('ai-mode-key-panel');
+            if (panel) panel.classList.add('hidden');
+        };
+
+        function showToastMsg(msg, icon = '✅') {
+            // Reuse welcome toast infrastructure or create a simple toast
+            const t = document.getElementById('welcome-toast');
+            const txt = document.getElementById('welcome-toast-text');
+            if (t && txt) {
+                txt.textContent = icon + '  ' + msg;
+                t.style.display = 'block';
+                t.style.opacity = '1';
+                setTimeout(() => {
+                    t.style.transition = 'opacity 0.5s';
+                    t.style.opacity = '0';
+                    setTimeout(() => { t.style.display = 'none'; t.style.opacity = '1'; }, 500);
+                }, 3000);
+            }
+        }
+
+        // Run on load
+        applyAIMode();
 
         window.toggleAISettings = function() {
             const panel = document.getElementById('ai-settings-panel');
@@ -4711,8 +4995,8 @@ Give a concise pre-mock briefing in this EXACT JSON (no markdown, no backticks):
                 }
             } catch(e) { alert("❌ Failed: " + e.message); }
             app.resetForm(); app.nav('home');
-            // Launch AI debrief after a short delay (only for new mocks, not edits)
-            if (!state.editingId) {
+            // Launch AI debrief after a short delay (only for new mocks, not edits, and only if AI mode is ON)
+            if (!state.editingId && localStorage.getItem(AI_MODE_KEY) === 'on') {
                 setTimeout(() => window.openAIDebrief(entry, savedMockId), 600);
             }
         });
