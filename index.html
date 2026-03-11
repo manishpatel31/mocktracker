@@ -604,12 +604,24 @@
         }
 
         /* ═══════════════════════════════════════
+           EXAM COUNTDOWN TILES
+        ═══════════════════════════════════════ */
+        .exam-tile {
+            position:relative; overflow:hidden; border-radius:1.5rem;
+            padding:16px 16px 14px;
+            transition:all 0.3s cubic-bezier(0.16,1,0.3,1);
+            animation:cardPop 0.45s cubic-bezier(0.16,1,0.3,1) both;
+            box-shadow:0 4px 18px rgba(0,0,0,0.15);
+        }
+        .exam-tile:hover { transform:translateY(-3px) scale(1.02); box-shadow:0 10px 30px rgba(0,0,0,0.22); }
+
+        /* ═══════════════════════════════════════
            MOCK VAULT CARDS
         ═══════════════════════════════════════ */
         .vault-card {
-            display:flex; align-items:center; gap:14px;
-            padding:14px 16px; border-radius:1.5rem;
-            background:rgba(255,255,255,0.6);
+            display:flex; align-items:center; gap:16px;
+            padding:16px 18px; border-radius:1.5rem;
+            border-left:4px solid transparent;
             backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px);
             border:1px solid rgba(255,255,255,0.7);
             box-shadow:0 2px 12px rgba(0,0,0,0.05);
@@ -617,17 +629,8 @@
             transition:all 0.25s cubic-bezier(0.16,1,0.3,1);
             animation:cardPop 0.4s cubic-bezier(0.16,1,0.3,1) both;
         }
-        .dark .vault-card {
-            background:rgba(14,10,31,0.55);
-            border-color:rgba(99,102,241,0.12);
-            box-shadow:0 2px 12px rgba(0,0,0,0.25);
-        }
-        .vault-card:hover {
-            transform:translateY(-2px) scale(1.005);
-            box-shadow:0 8px 28px rgba(99,102,241,0.13);
-            border-color:rgba(99,102,241,0.25);
-        }
-        .dark .vault-card:hover { box-shadow:0 8px 28px rgba(99,102,241,0.18); }
+        .dark .vault-card { border-color:rgba(99,102,241,0.12); box-shadow:0 2px 12px rgba(0,0,0,0.25); }
+        .vault-card:hover { transform:translateY(-2px) scale(1.005); box-shadow:0 8px 28px rgba(0,0,0,0.15); }
         /* On mobile always show actions */
         @media(max-width:640px){ .vault-actions { opacity:1 !important; } }
 
@@ -1104,51 +1107,27 @@
 
             <!-- ── EXAM COUNTDOWN WIDGET ── -->
             <div id="home-exam-countdown" style="display:none;">
-                <!-- Section label -->
+                <!-- Section header -->
                 <div class="flex items-center justify-between mb-3 px-1">
-                    <p class="text-xs font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">
+                    <p class="text-sm font-black text-slate-700 dark:text-slate-200 flex items-center gap-2">
                         <i class="fa-solid fa-calendar-days text-brand-500"></i> Upcoming Exams
                     </p>
-                    <button onclick="window.app.nav('tools')" class="text-xs font-black text-brand-500 hover:text-brand-600 transition flex items-center gap-1">
-                        Manage <i class="fa-solid fa-arrow-right text-xs"></i>
+                    <button onclick="window.app.nav('tools')" class="text-xs font-black text-brand-500 hover:text-brand-600 transition flex items-center gap-1.5">
+                        Manage <i class="fa-solid fa-arrow-right" style="font-size:10px;"></i>
                     </button>
                 </div>
-
-                <!-- Primary exam card — compact horizontal -->
-                <div id="home-primary-exam" class="rounded-[1.75rem] overflow-hidden relative" style="background:linear-gradient(135deg,#6366f1,#a855f7);">
-                    <!-- Ambient bg emoji -->
-                    <div style="position:absolute;right:-10px;bottom:-10px;font-size:80px;opacity:0.07;line-height:1;pointer-events:none;">📅</div>
-                    <div class="p-4 relative z-10">
-                        <div class="flex items-center gap-4">
-                            <!-- Days pill -->
-                            <div id="hcd-days-badge" class="flex-shrink-0 flex flex-col items-center justify-center rounded-2xl bg-white/20 backdrop-blur-sm" style="min-width:60px;padding:8px 12px;">
-                                <div id="hcd-days-num" class="text-white font-black leading-none" style="font-size:1.9rem;">—</div>
-                                <div class="text-white/75 font-black uppercase tracking-wider" style="font-size:9px;margin-top:2px;">days</div>
-                            </div>
-                            <!-- Name + date + progress -->
-                            <div class="flex-1 min-w-0">
-                                <p class="text-white/65 font-black uppercase tracking-widest" style="font-size:10px;">Next Exam</p>
-                                <h2 id="hcd-exam-name" class="text-white font-black leading-tight truncate" style="font-size:1rem;margin-top:1px;">—</h2>
-                                <p id="hcd-exam-date" class="text-white/60 font-bold truncate" style="font-size:11px;margin-top:2px;">—</p>
-                                <!-- slim progress bar -->
-                                <div class="mt-2.5 flex items-center gap-2">
-                                    <div class="flex-1 h-1.5 rounded-full bg-white/20">
-                                        <div id="hcd-progress-bar" class="h-1.5 rounded-full bg-white/80 transition-all duration-700" style="width:0%"></div>
-                                    </div>
-                                    <span id="hcd-progress-pct" class="text-white/55 font-black flex-shrink-0" style="font-size:9px;">—</span>
-                                </div>
-                            </div>
-                        </div>
-                        <!-- AI message — only 1 line, italicised -->
-                        <div class="mt-3 px-3 py-2 rounded-xl bg-white/10 flex items-start gap-2">
-                            <span style="font-size:13px;flex-shrink:0;margin-top:1px;">💬</span>
-                            <p id="hcd-ai-msg" class="text-white/85 font-semibold leading-snug line-clamp-2 italic" style="font-size:12px;">Loading motivational message...</p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Other exams — horizontal scrollable chips -->
-                <div id="home-other-exams" class="hidden mt-2.5 flex gap-2.5 overflow-x-auto pb-1" style="scrollbar-width:none;-webkit-overflow-scrolling:touch;"></div>
+                <!-- All exam cards live here — rendered by JS as 2-column grid -->
+                <div id="home-exam-grid" class="grid grid-cols-2 gap-3"></div>
+                <!-- Hidden AI msg stub (kept for JS compat) -->
+                <span id="hcd-ai-msg" style="display:none;"></span>
+                <span id="hcd-exam-name" style="display:none;"></span>
+                <span id="hcd-exam-date" style="display:none;"></span>
+                <span id="hcd-days-num" style="display:none;"></span>
+                <span id="hcd-days-badge" style="display:none;"></span>
+                <span id="hcd-progress-bar" style="display:none;"></span>
+                <span id="hcd-progress-pct" style="display:none;"></span>
+                <div id="home-primary-exam" style="display:none;"></div>
+                <div id="home-other-exams" style="display:none;"></div>
             </div>
 
             <!-- WELCOME GREETING -->
@@ -3979,81 +3958,77 @@ Give a concise pre-mock briefing in this EXACT JSON (no markdown, no backticks):
         }
 
         // Render the HOME countdown widget (big card at top of home tab)
+        // Exam urgency colour system — from calm green → angry red
+        function examUrgencyTheme(days) {
+            if (days < 0)   return { grad:'linear-gradient(135deg,#94a3b8,#64748b)', text:'#fff', sub:'rgba(255,255,255,0.7)',  border:'rgba(148,163,184,0.3)', emoji:'✅', mood:'Done!' };
+            if (days === 0) return { grad:'linear-gradient(135deg,#991b1b,#b91c1c)', text:'#fff', sub:'rgba(255,255,255,0.75)', border:'rgba(239,68,68,0.5)',   emoji:'🔥', mood:'TODAY!' };
+            if (days <= 3)  return { grad:'linear-gradient(135deg,#dc2626,#ef4444)', text:'#fff', sub:'rgba(255,255,255,0.75)', border:'rgba(239,68,68,0.4)',   emoji:'😰', mood:'Very soon!' };
+            if (days <= 7)  return { grad:'linear-gradient(135deg,#ea580c,#f97316)', text:'#fff', sub:'rgba(255,255,255,0.75)', border:'rgba(249,115,22,0.4)',  emoji:'😬', mood:'This week!' };
+            if (days <= 14) return { grad:'linear-gradient(135deg,#d97706,#f59e0b)', text:'#fff', sub:'rgba(255,255,255,0.75)', border:'rgba(245,158,11,0.4)',  emoji:'😟', mood:'2 weeks left' };
+            if (days <= 30) return { grad:'linear-gradient(135deg,#6366f1,#818cf8)', text:'#fff', sub:'rgba(255,255,255,0.75)', border:'rgba(99,102,241,0.4)',  emoji:'😐', mood:'This month' };
+            if (days <= 60) return { grad:'linear-gradient(135deg,#2563eb,#3b82f6)', text:'#fff', sub:'rgba(255,255,255,0.75)', border:'rgba(59,130,246,0.4)',  emoji:'🙂', mood:'2 months' };
+            if (days <= 90) return { grad:'linear-gradient(135deg,#0891b2,#06b6d4)', text:'#fff', sub:'rgba(255,255,255,0.75)', border:'rgba(6,182,212,0.4)',   emoji:'😊', mood:'3 months' };
+            return             { grad:'linear-gradient(135deg,#059669,#10b981)', text:'#fff', sub:'rgba(255,255,255,0.75)', border:'rgba(16,185,129,0.4)',  emoji:'😎', mood:'Plenty of time' };
+        }
+
         function renderHomeCountdown() {
             const widget = document.getElementById('home-exam-countdown');
-            if (!widget) return;
-            const exams = getExams();
+            const grid   = document.getElementById('home-exam-grid');
+            if (!widget || !grid) return;
+
+            const exams    = getExams();
             const upcoming = exams.filter(e => daysUntil(e.date) >= 0)
                                   .sort((a,b) => daysUntil(a.date) - daysUntil(b.date));
 
             if (exams.length === 0) { widget.style.display = 'none'; return; }
             widget.style.display = 'block';
 
-            const primary = upcoming[0] || exams.sort((a,b) => new Date(b.date)-new Date(a.date))[0];
-            const days    = daysUntil(primary.date);
+            // All exams sorted: upcoming first, then passed (shown dimmed)
+            const allSorted = [
+                ...upcoming,
+                ...exams.filter(e => daysUntil(e.date) < 0).sort((a,b) => new Date(b.date)-new Date(a.date))
+            ];
 
-            // Card gradient by urgency
-            const primaryCard = document.getElementById('home-primary-exam');
-            if (primaryCard) {
-                if (days <= 3 && days >= 0)       primaryCard.style.background = 'linear-gradient(135deg,#ef4444,#f97316)';
-                else if (days <= 7)  primaryCard.style.background = 'linear-gradient(135deg,#f59e0b,#ef4444)';
-                else if (days <= 30) primaryCard.style.background = 'linear-gradient(135deg,#6366f1,#a855f7)';
-                else                 primaryCard.style.background = 'linear-gradient(135deg,#10b981,#6366f1)';
-                if (days <= 3 && days >= 0) primaryCard.classList.add('exam-urgent');
-                else primaryCard.classList.remove('exam-urgent');
-            }
+            grid.innerHTML = allSorted.map((exam, idx) => {
+                const days = daysUntil(exam.date);
+                const th   = examUrgencyTheme(days);
+                const totalWin = 180;
+                const elapsed  = Math.max(0, totalWin - Math.max(days,0));
+                const progPct  = Math.min(100, Math.round((elapsed / totalWin) * 100));
+                const daysLabel = days < 0 ? 'Passed' : days === 0 ? 'TODAY 🔥' : days + ' days left';
+                const dateStr   = new Date(exam.date).toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'});
+                const isUrgent  = days >= 0 && days <= 3;
 
-            // Name
-            const nameEl = document.getElementById('hcd-exam-name');
-            if (nameEl) nameEl.textContent = primary.name;
-
-            // Date string
-            const dateEl = document.getElementById('hcd-exam-date');
-            if (dateEl) dateEl.textContent = new Date(primary.date).toLocaleDateString('en-IN', { weekday:'long', day:'numeric', month:'long', year:'numeric' });
-
-            // Days badge
-            const daysNumEl = document.getElementById('hcd-days-num');
-            const daysBadge = document.getElementById('hcd-days-badge');
-            if (daysNumEl) {
-                if (days < 0)        daysNumEl.textContent = 'Done';
-                else if (days === 0) daysNumEl.textContent = '🔥';
-                else                 daysNumEl.textContent = days;
-            }
-
-            // Progress bar (based on 180 days max window)
-            const totalWindow = 180;
-            const elapsed = Math.max(0, totalWindow - days);
-            const pct = Math.min(100, Math.round((elapsed / totalWindow) * 100));
-            const barEl = document.getElementById('hcd-progress-bar');
-            const pctEl = document.getElementById('hcd-progress-pct');
-            if (barEl) barEl.style.width = pct + '%';
-            if (pctEl) pctEl.textContent = (100 - pct) + '% time remaining';
-
-            // Other exams — compact scrollable chips
-            const othersContainer = document.getElementById('home-other-exams');
-            if (othersContainer && upcoming.length > 1) {
-                othersContainer.classList.remove('hidden');
-                othersContainer.style.display = 'flex';
-                const chipEmoji = (d) => d === 0 ? '🔥' : d <= 3 ? '⚡' : d <= 7 ? '⏰' : d <= 30 ? '📅' : '🗓️';
-                othersContainer.innerHTML = upcoming.slice(1).map(e => {
-                    const d = daysUntil(e.date);
-                    const grad = barGradient(d);
-                    const dLabel = d === 0 ? 'TODAY' : d < 0 ? 'Passed' : d + 'd';
-                    return `<div class="exam-chip flex-shrink-0 flex items-center gap-2 px-3 py-2 rounded-2xl cursor-default"
-                                 style="background:rgba(255,255,255,0.55);backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,0.65);box-shadow:0 2px 8px rgba(0,0,0,0.06);min-width:0;">
-                        <div class="w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0 text-white font-black" style="background:${grad};font-size:10px;">${chipEmoji(d)}</div>
-                        <div style="min-width:0;">
-                            <p class="font-black text-slate-800 dark:text-white truncate" style="font-size:11px;max-width:110px;">${e.name}</p>
-                            <p class="font-black" style="font-size:10px;background:${grad};-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">${dLabel}</p>
+                return `<div class="exam-tile ${isUrgent?'exam-urgent':''}" style="background:${th.grad};border:1px solid ${th.border};animation-delay:${idx*0.07}s;">
+                    <!-- Big ambient bg emoji -->
+                    <div style="position:absolute;right:-4px;bottom:-10px;font-size:64px;opacity:0.13;line-height:1;pointer-events:none;user-select:none;">${th.emoji}</div>
+                    <div style="position:relative;z-index:1;">
+                        <!-- Top row: mood emoji left, days number right -->
+                        <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:6px;margin-bottom:10px;">
+                            <span style="font-size:28px;line-height:1;">${th.emoji}</span>
+                            <div style="text-align:right;flex-shrink:0;">
+                                <div style="font-size:${days >= 0 && days < 100 ? '2rem' : '1.3rem'};font-weight:900;color:${th.text};line-height:1;">${days===0?'🔥':days<0?'✅':days}</div>
+                                <div style="font-size:11px;font-weight:800;color:${th.sub};letter-spacing:0.04em;text-transform:uppercase;">${days<0?'passed':days===0?'':days===1?'day':'days'}</div>
+                            </div>
                         </div>
-                    </div>`;
-                }).join('');
-            } else if (othersContainer) {
-                othersContainer.classList.add('hidden');
-            }
+                        <!-- Exam name — bold, never tiny -->
+                        <p style="font-size:14px;font-weight:900;color:${th.text};line-height:1.35;margin-bottom:4px;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;">${exam.name}</p>
+                        <!-- Date -->
+                        <p style="font-size:12px;font-weight:700;color:${th.sub};margin-bottom:8px;">${dateStr}</p>
+                        <!-- Mood pill -->
+                        <div style="display:inline-block;padding:3px 10px;border-radius:999px;background:rgba(255,255,255,0.22);font-size:11px;font-weight:800;color:${th.text};margin-bottom:9px;letter-spacing:0.01em;">${th.mood}</div>
+                        <!-- Progress bar -->
+                        <div style="height:4px;border-radius:999px;background:rgba(255,255,255,0.2);overflow:hidden;">
+                            <div style="height:100%;border-radius:999px;background:rgba(255,255,255,0.75);width:${progPct}%;transition:width 0.9s ease;"></div>
+                        </div>
+                    </div>
+                </div>`;
+            }).join('');
 
-            // Load AI message for home widget
-            loadExamAIMessage(primary, days);
+            // Load AI message for the nearest upcoming exam
+            if (upcoming.length > 0) {
+                loadExamAIMessage(upcoming[0], daysUntil(upcoming[0].date));
+            }
         }
 
         // Also update the ai message target for home widget
@@ -5074,91 +5049,114 @@ Give a concise pre-mock briefing in this EXACT JSON (no markdown, no backticks):
 
             if (!hasData) { hb.innerHTML = ''; return; }
 
-            // Score colour helper
-            const scoreCol = (pct) => pct >= 70 ? '#10b981' : pct >= 50 ? '#f59e0b' : '#ef4444';
-            const scoreGrad = (pct) => pct >= 70
-                ? 'linear-gradient(135deg,#10b981,#059669)'
-                : pct >= 50 ? 'linear-gradient(135deg,#f59e0b,#ef4444)'
-                : 'linear-gradient(135deg,#ef4444,#dc2626)';
+            // ── Colour-band system: relative rank within current filtered list ──
+            // Each card gets a subtle tinted background from deep-green (best) → deep-red (worst)
+            const scores = filtered.map(m => m.max ? (m.score/m.max)*100 : 0);
+            const maxPct  = Math.max(...scores, 1);
+            const minPct  = Math.min(...scores, 0);
+            const range   = maxPct - minPct || 1;
+
+            // 10-stop colour palette: index 0 = best (emerald), 9 = worst (rose)
+            const PALETTE = [
+                {bg:'rgba(5,150,105,0.12)',  border:'rgba(5,150,105,0.25)',  ring0:'#059669', ring1:'#10b981', txt:'#065f46',  dtxt:'#6ee7b7'},
+                {bg:'rgba(16,185,129,0.09)', border:'rgba(16,185,129,0.22)', ring0:'#10b981', ring1:'#34d399', txt:'#065f46',  dtxt:'#6ee7b7'},
+                {bg:'rgba(20,184,166,0.09)', border:'rgba(20,184,166,0.2)',  ring0:'#0d9488', ring1:'#2dd4bf', txt:'#134e4a',  dtxt:'#5eead4'},
+                {bg:'rgba(99,102,241,0.08)', border:'rgba(99,102,241,0.2)',  ring0:'#4f46e5', ring1:'#818cf8', txt:'#312e81',  dtxt:'#a5b4fc'},
+                {bg:'rgba(139,92,246,0.08)', border:'rgba(139,92,246,0.2)',  ring0:'#7c3aed', ring1:'#a78bfa', txt:'#4c1d95',  dtxt:'#c4b5fd'},
+                {bg:'rgba(245,158,11,0.09)', border:'rgba(245,158,11,0.22)', ring0:'#d97706', ring1:'#fbbf24', txt:'#78350f',  dtxt:'#fde68a'},
+                {bg:'rgba(249,115,22,0.09)', border:'rgba(249,115,22,0.22)', ring0:'#c2410c', ring1:'#fb923c', txt:'#7c2d12',  dtxt:'#fdba74'},
+                {bg:'rgba(239,68,68,0.09)',  border:'rgba(239,68,68,0.22)',  ring0:'#dc2626', ring1:'#f87171', txt:'#7f1d1d',  dtxt:'#fca5a5'},
+                {bg:'rgba(220,38,38,0.1)',   border:'rgba(220,38,38,0.25)',  ring0:'#b91c1c', ring1:'#ef4444', txt:'#7f1d1d',  dtxt:'#fca5a5'},
+                {bg:'rgba(185,28,28,0.12)',  border:'rgba(185,28,28,0.28)',  ring0:'#991b1b', ring1:'#dc2626', txt:'#450a0a',  dtxt:'#fca5a5'},
+            ];
+
+            // Map each mock to a palette index based on its relative score
+            const getPalIdx = (pct) => {
+                const norm = 1 - Math.max(0, Math.min(1, (pct - minPct) / range));
+                return Math.min(9, Math.floor(norm * 10));
+            };
+
+            // Score emoji
+            const scoreEmoji = (pct) => pct >= 85 ? '🏆' : pct >= 70 ? '⭐' : pct >= 55 ? '📈' : pct >= 40 ? '📉' : '💀';
+
+            const circum = 220;
 
             hb.innerHTML = filtered.map((m, idx) => {
-                const tag   = getAutoTag(m, allChron);
-                const pct   = m.max ? ((m.score / m.max) * 100) : 0;
+                const tag    = getAutoTag(m, allChron);
+                const pct    = m.max ? ((m.score / m.max) * 100) : 0;
                 const pctFmt = pct.toFixed(1);
-                const grad  = scoreGrad(pct);
-                const hasWeak = !!(m.weak && m.weak.trim());
-                const hasSilly = m.sillyMarks > 0;
-                const weakSnip = hasWeak ? m.weak.substring(0, 55) + (m.weak.length > 55 ? '…' : '') : '';
-
-                // Score ring arc (out of 220 circumference ≈ r=35)
-                const circum = 220;
+                const pal    = PALETTE[getPalIdx(pct)];
                 const offset = circum - (pct / 100) * circum;
+                const hasWeak  = !!(m.weak && m.weak.trim());
+                const hasSilly = m.sillyMarks > 0;
+                const weakSnip = hasWeak ? m.weak.substring(0, 52) + (m.weak.length > 52 ? '…' : '') : '';
 
                 return `
-                <div class="vault-card group" style="animation-delay:${Math.min(idx,8)*0.04}s;" onclick="app.viewMock('${m.id}')">
-                    <!-- Score ring -->
-                    <div class="vault-ring flex-shrink-0" style="position:relative;width:54px;height:54px;">
-                        <svg width="54" height="54" style="transform:rotate(-90deg);">
-                            <circle cx="27" cy="27" r="23" fill="none" stroke="rgba(99,102,241,0.1)" stroke-width="4"/>
-                            <circle cx="27" cy="27" r="23" fill="none" stroke="url(#vaultRingGrad${idx})" stroke-width="4"
-                                stroke-linecap="round" stroke-dasharray="${circum}" stroke-dashoffset="${offset}"
-                                style="transition:stroke-dashoffset 0.8s cubic-bezier(0.34,1.2,0.64,1)"/>
+                <div class="vault-card group" style="background:${pal.bg};border-color:${pal.border};animation-delay:${Math.min(idx,8)*0.04}s;" onclick="app.viewMock('${m.id}')">
+                    <!-- Animated SVG score ring -->
+                    <div class="flex-shrink-0" style="position:relative;width:60px;height:60px;">
+                        <svg width="60" height="60" style="transform:rotate(-90deg);display:block;">
+                            <circle cx="30" cy="30" r="25" fill="none" stroke="rgba(0,0,0,0.07)" stroke-width="5"/>
+                            <circle cx="30" cy="30" r="25" fill="none" stroke="url(#vRG${idx})" stroke-width="5"
+                                stroke-linecap="round" stroke-dasharray="157" stroke-dashoffset="${157 - (pct/100)*157}"
+                                style="transition:stroke-dashoffset 1s cubic-bezier(0.34,1.2,0.64,1);"/>
                             <defs>
-                                <linearGradient id="vaultRingGrad${idx}" x1="0%" y1="0%" x2="100%" y2="100%">
-                                    <stop offset="0%" stop-color="${pct>=70?'#10b981':pct>=50?'#f59e0b':'#ef4444'}"/>
-                                    <stop offset="100%" stop-color="${pct>=70?'#059669':pct>=50?'#ef4444':'#dc2626'}"/>
+                                <linearGradient id="vRG${idx}" x1="0%" y1="0%" x2="100%" y2="100%">
+                                    <stop offset="0%" stop-color="${pal.ring0}"/>
+                                    <stop offset="100%" stop-color="${pal.ring1}"/>
                                 </linearGradient>
                             </defs>
                         </svg>
-                        <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;">
-                            <span style="font-size:12px;font-weight:900;color:${scoreCol(pct)};line-height:1;">${pctFmt}</span>
-                            <span style="font-size:7px;font-weight:800;color:#94a3b8;letter-spacing:0.04em;">%</span>
+                        <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;">
+                            <span style="font-size:13px;font-weight:900;color:${pal.ring0};line-height:1;">${pctFmt}</span>
+                            <span style="font-size:9px;font-weight:800;color:${pal.ring0};opacity:0.8;">%</span>
                         </div>
                     </div>
 
-                    <!-- Main content -->
+                    <!-- Content -->
                     <div class="flex-1 min-w-0">
                         <div class="flex items-start justify-between gap-2">
-                            <div class="min-w-0">
-                                <div class="flex items-center gap-1.5 flex-wrap mb-0.5">
+                            <div class="min-w-0 flex-1">
+                                <div class="flex items-center gap-1.5 flex-wrap">
                                     ${state.isDemoMode ? '<span class="demo-badge" style="display:inline-flex;">demo</span>' : ''}
-                                    <span class="font-black text-slate-900 dark:text-white truncate" style="font-size:14px;">${m.name}</span>
+                                    <span class="font-black text-slate-900 dark:text-white truncate" style="font-size:15px;">${m.name}</span>
                                 </div>
-                                <div class="flex items-center gap-2 flex-wrap">
-                                    <span class="text-xs font-black text-brand-500 uppercase tracking-wide">${m.exam}</span>
-                                    <span class="text-slate-300 dark:text-slate-600" style="font-size:10px;">·</span>
-                                    <span class="text-xs font-semibold text-slate-400">${m.platform}</span>
-                                    <span class="text-slate-300 dark:text-slate-600" style="font-size:10px;">·</span>
-                                    <span class="text-xs font-semibold text-slate-400">📅 ${m.date}</span>
+                                <div class="flex items-center gap-1.5 flex-wrap mt-1">
+                                    <span style="font-size:12px;font-weight:800;color:${pal.ring0};">${m.exam}</span>
+                                    <span class="text-slate-300 dark:text-slate-500" style="font-size:10px;">·</span>
+                                    <span style="font-size:12px;font-weight:600;color:#94a3b8;">${m.platform}</span>
+                                    <span class="text-slate-300 dark:text-slate-500" style="font-size:10px;">·</span>
+                                    <span style="font-size:12px;font-weight:600;color:#94a3b8;">${m.date}</span>
                                 </div>
-                                ${hasWeak ? `<p class="text-xs text-amber-500 dark:text-amber-400 font-semibold mt-1 truncate">⚠️ ${weakSnip}</p>` : ''}
+                                ${hasWeak ? `<p style="font-size:12px;font-weight:600;color:#f59e0b;margin-top:4px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;">⚠️ ${weakSnip}</p>` : ''}
                             </div>
-                            <!-- Score pill -->
-                            <div class="flex-shrink-0 text-right">
-                                <div class="font-black text-slate-900 dark:text-white" style="font-size:1.15rem;line-height:1;">${m.score}</div>
-                                <div class="text-slate-400 font-semibold" style="font-size:10px;">/ ${m.max}</div>
+                            <!-- Raw score -->
+                            <div class="flex-shrink-0 text-right pl-2">
+                                <div style="font-size:20px;font-weight:900;color:${pal.ring0};line-height:1;">${m.score}</div>
+                                <div style="font-size:11px;font-weight:600;color:#94a3b8;margin-top:1px;">/${m.max}</div>
+                                <div style="font-size:16px;margin-top:3px;">${scoreEmoji(pct)}</div>
                             </div>
                         </div>
-                        <!-- Tags row -->
+                        <!-- Pills row -->
                         <div class="flex items-center gap-1.5 mt-2 flex-wrap">
-                            <span class="pill ${tag.cls}" style="font-size:10px;">${tag.label}</span>
-                            ${hasSilly ? `<span class="pill" style="font-size:10px;background:rgba(239,68,68,0.1);color:#ef4444;border:1px solid rgba(239,68,68,0.2);">🐛 -${m.sillyMarks.toFixed(1)}</span>` : ''}
-                            ${m.perc ? `<span class="pill" style="font-size:10px;background:rgba(99,102,241,0.1);color:#6366f1;border:1px solid rgba(99,102,241,0.2);">🎯 ${m.perc}%ile</span>` : ''}
+                            <span class="pill ${tag.cls}" style="font-size:11px;">${tag.label}</span>
+                            ${hasSilly ? `<span class="pill" style="font-size:11px;background:rgba(239,68,68,0.1);color:#ef4444;border:1px solid rgba(239,68,68,0.2);">🐛 -${m.sillyMarks.toFixed(1)}</span>` : ''}
+                            ${m.perc ? `<span class="pill" style="font-size:11px;background:rgba(99,102,241,0.1);color:#6366f1;border:1px solid rgba(99,102,241,0.2);">🎯 ${m.perc}%ile</span>` : ''}
                         </div>
                     </div>
 
-                    <!-- Actions (shown on hover) -->
+                    <!-- Edit/Delete (hover on desktop, always visible mobile) -->
                     <div class="vault-actions flex-shrink-0 flex flex-col gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity" onclick="event.stopPropagation()">
                         ${!state.isDemoMode ? `
                         <button onclick="app.editMock('${m.id}')" title="Edit"
-                            class="w-8 h-8 rounded-xl flex items-center justify-center transition hover:scale-110"
-                            style="background:rgba(99,102,241,0.1);color:#6366f1;border:1px solid rgba(99,102,241,0.15);">
-                            <i class="fa-solid fa-pen-to-square" style="font-size:12px;pointer-events:none;"></i>
+                            class="w-9 h-9 rounded-xl flex items-center justify-center transition hover:scale-110"
+                            style="background:rgba(99,102,241,0.12);color:${pal.ring0};border:1px solid ${pal.border};">
+                            <i class="fa-solid fa-pen-to-square" style="font-size:13px;pointer-events:none;"></i>
                         </button>
                         <button onclick="app.deleteMock('${m.id}')" title="Delete"
-                            class="w-8 h-8 rounded-xl flex items-center justify-center transition hover:scale-110"
+                            class="w-9 h-9 rounded-xl flex items-center justify-center transition hover:scale-110"
                             style="background:rgba(239,68,68,0.08);color:#ef4444;border:1px solid rgba(239,68,68,0.15);">
-                            <i class="fa-solid fa-trash-can" style="font-size:12px;pointer-events:none;"></i>
+                            <i class="fa-solid fa-trash-can" style="font-size:13px;pointer-events:none;"></i>
                         </button>` : ''}
                     </div>
                 </div>`;
