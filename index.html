@@ -604,6 +604,48 @@
         }
 
         /* ═══════════════════════════════════════
+           MOCK VAULT CARDS
+        ═══════════════════════════════════════ */
+        .vault-card {
+            display:flex; align-items:center; gap:14px;
+            padding:14px 16px; border-radius:1.5rem;
+            background:rgba(255,255,255,0.6);
+            backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px);
+            border:1px solid rgba(255,255,255,0.7);
+            box-shadow:0 2px 12px rgba(0,0,0,0.05);
+            cursor:pointer;
+            transition:all 0.25s cubic-bezier(0.16,1,0.3,1);
+            animation:cardPop 0.4s cubic-bezier(0.16,1,0.3,1) both;
+        }
+        .dark .vault-card {
+            background:rgba(14,10,31,0.55);
+            border-color:rgba(99,102,241,0.12);
+            box-shadow:0 2px 12px rgba(0,0,0,0.25);
+        }
+        .vault-card:hover {
+            transform:translateY(-2px) scale(1.005);
+            box-shadow:0 8px 28px rgba(99,102,241,0.13);
+            border-color:rgba(99,102,241,0.25);
+        }
+        .dark .vault-card:hover { box-shadow:0 8px 28px rgba(99,102,241,0.18); }
+        /* On mobile always show actions */
+        @media(max-width:640px){ .vault-actions { opacity:1 !important; } }
+
+        /* ═══════════════════════════════════════
+           UPDATE BANNER
+        ═══════════════════════════════════════ */
+        #update-banner {
+            display:none; position:fixed; bottom:90px; left:50%; transform:translateX(-50%);
+            z-index:90000; max-width:360px; width:calc(100vw - 32px);
+            padding:12px 16px; border-radius:1.25rem;
+            background:linear-gradient(135deg,#1e1b4b,#312e81);
+            box-shadow:0 8px 32px rgba(99,102,241,0.45), 0 0 0 1px rgba(99,102,241,0.3);
+            backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px);
+            animation:popIn 0.4s cubic-bezier(0.34,1.56,0.64,1) both;
+        }
+        #update-banner.show { display:flex; align-items:center; gap:12px; }
+
+        /* ═══════════════════════════════════════
            AI INFO MODAL INNER STYLES
         ═══════════════════════════════════════ */
         .ai-feat-pill {
@@ -1062,41 +1104,51 @@
 
             <!-- ── EXAM COUNTDOWN WIDGET ── -->
             <div id="home-exam-countdown" style="display:none;">
-                <!-- Primary exam — big prominent card -->
-                <div id="home-primary-exam" class="rounded-[2rem] overflow-hidden relative" style="background:linear-gradient(135deg,#6366f1,#a855f7);min-height:100px;">
-                    <!-- Background decoration -->
-                    <div style="position:absolute;right:-20px;bottom:-20px;font-size:120px;opacity:0.08;line-height:1;">📅</div>
-                    <div class="p-5 relative z-10">
-                        <div class="flex items-start justify-between gap-3">
+                <!-- Section label -->
+                <div class="flex items-center justify-between mb-3 px-1">
+                    <p class="text-xs font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">
+                        <i class="fa-solid fa-calendar-days text-brand-500"></i> Upcoming Exams
+                    </p>
+                    <button onclick="window.app.nav('tools')" class="text-xs font-black text-brand-500 hover:text-brand-600 transition flex items-center gap-1">
+                        Manage <i class="fa-solid fa-arrow-right text-xs"></i>
+                    </button>
+                </div>
+
+                <!-- Primary exam card — compact horizontal -->
+                <div id="home-primary-exam" class="rounded-[1.75rem] overflow-hidden relative" style="background:linear-gradient(135deg,#6366f1,#a855f7);">
+                    <!-- Ambient bg emoji -->
+                    <div style="position:absolute;right:-10px;bottom:-10px;font-size:80px;opacity:0.07;line-height:1;pointer-events:none;">📅</div>
+                    <div class="p-4 relative z-10">
+                        <div class="flex items-center gap-4">
+                            <!-- Days pill -->
+                            <div id="hcd-days-badge" class="flex-shrink-0 flex flex-col items-center justify-center rounded-2xl bg-white/20 backdrop-blur-sm" style="min-width:60px;padding:8px 12px;">
+                                <div id="hcd-days-num" class="text-white font-black leading-none" style="font-size:1.9rem;">—</div>
+                                <div class="text-white/75 font-black uppercase tracking-wider" style="font-size:9px;margin-top:2px;">days</div>
+                            </div>
+                            <!-- Name + date + progress -->
                             <div class="flex-1 min-w-0">
-                                <p class="text-white/70 text-xs font-black uppercase tracking-widest mb-1">Next Exam</p>
-                                <h2 id="hcd-exam-name" class="text-white font-black text-xl leading-tight truncate">—</h2>
-                                <p id="hcd-exam-date" class="text-white/70 text-xs font-bold mt-1">—</p>
-                            </div>
-                            <div id="hcd-days-badge" class="flex-shrink-0 text-center px-4 py-2 rounded-2xl bg-white/20 backdrop-blur-sm">
-                                <div id="hcd-days-num" class="text-white font-black text-3xl leading-none">—</div>
-                                <div class="text-white/80 text-xs font-black uppercase tracking-wider mt-0.5">days left</div>
+                                <p class="text-white/65 font-black uppercase tracking-widest" style="font-size:10px;">Next Exam</p>
+                                <h2 id="hcd-exam-name" class="text-white font-black leading-tight truncate" style="font-size:1rem;margin-top:1px;">—</h2>
+                                <p id="hcd-exam-date" class="text-white/60 font-bold truncate" style="font-size:11px;margin-top:2px;">—</p>
+                                <!-- slim progress bar -->
+                                <div class="mt-2.5 flex items-center gap-2">
+                                    <div class="flex-1 h-1.5 rounded-full bg-white/20">
+                                        <div id="hcd-progress-bar" class="h-1.5 rounded-full bg-white/80 transition-all duration-700" style="width:0%"></div>
+                                    </div>
+                                    <span id="hcd-progress-pct" class="text-white/55 font-black flex-shrink-0" style="font-size:9px;">—</span>
+                                </div>
                             </div>
                         </div>
-                        <!-- AI message -->
-                        <div class="mt-4 p-3 rounded-xl bg-white/10 backdrop-blur-sm">
-                            <p id="hcd-ai-msg" class="text-white/90 text-sm font-semibold leading-relaxed">Loading your message...</p>
-                        </div>
-                        <!-- Progress bar -->
-                        <div class="mt-3">
-                            <div class="flex justify-between text-white/60 text-xs font-bold mb-1">
-                                <span>Countdown progress</span>
-                                <span id="hcd-progress-pct">—</span>
-                            </div>
-                            <div class="w-full h-2 rounded-full bg-white/20">
-                                <div id="hcd-progress-bar" class="h-2 rounded-full bg-white transition-all" style="width:0%"></div>
-                            </div>
+                        <!-- AI message — only 1 line, italicised -->
+                        <div class="mt-3 px-3 py-2 rounded-xl bg-white/10 flex items-start gap-2">
+                            <span style="font-size:13px;flex-shrink:0;margin-top:1px;">💬</span>
+                            <p id="hcd-ai-msg" class="text-white/85 font-semibold leading-snug line-clamp-2 italic" style="font-size:12px;">Loading motivational message...</p>
                         </div>
                     </div>
                 </div>
 
-                <!-- Other exams row -->
-                <div id="home-other-exams" class="hidden grid grid-cols-2 gap-3 mt-3"></div>
+                <!-- Other exams — horizontal scrollable chips -->
+                <div id="home-other-exams" class="hidden mt-2.5 flex gap-2.5 overflow-x-auto pb-1" style="scrollbar-width:none;-webkit-overflow-scrolling:touch;"></div>
             </div>
 
             <!-- WELCOME GREETING -->
@@ -1517,48 +1569,51 @@
             </form>
         </div>
 
-        <!-- HISTORY TAB -->
-        <div id="tab-history" class="tab-content max-w-6xl mx-auto pt-5">
+        <!-- HISTORY TAB — Mock Vault (cards layout) -->
+        <div id="tab-history" class="tab-content max-w-6xl mx-auto pt-5 pb-28 space-y-5">
+
+            <!-- Header card -->
             <div class="glass-card rounded-[2rem] overflow-hidden">
-                <div class="p-7 border-b border-white/30 dark:border-white/5 flex flex-col md:flex-row gap-4 justify-between items-start md:items-center">
-                    <h2 class="text-xl font-black text-gradient flex items-center gap-2">Mock Performance Vault <span class="demo-badge">demo</span></h2>
-                    <div class="flex gap-3 w-full md:w-auto">
-                        <div class="relative flex-1 md:w-60">
-                            <i class="fa-solid fa-search absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
-                            <input type="text" id="hist-search" placeholder="Search mocks..." oninput="filterHistory()" class="glass-input w-full pl-10 pr-4 py-3 rounded-2xl font-bold text-sm">
+                <div class="p-5 flex flex-col md:flex-row gap-4 justify-between items-start md:items-center" style="background:linear-gradient(135deg,rgba(99,102,241,0.09),rgba(168,85,247,0.06));border-bottom:1px solid rgba(255,255,255,0.2);">
+                    <div class="flex items-center gap-3">
+                        <div class="w-11 h-11 rounded-2xl flex items-center justify-center shadow-lg flex-shrink-0" style="background:linear-gradient(135deg,#6366f1,#a855f7);">
+                            <i class="fa-solid fa-vault text-white" style="font-size:18px;"></i>
                         </div>
-                        <select id="hist-sort" onchange="filterHistory()" class="glass-input px-3 py-3 rounded-2xl font-bold text-sm modern-select">
-                            <option value="date-desc">Newest First</option>
-                            <option value="date-asc">Oldest First</option>
-                            <option value="score-desc">Highest Score</option>
-                            <option value="score-asc">Lowest Score</option>
-                            <option value="perc-desc">Best Percentile</option>
+                        <div>
+                            <h2 class="text-lg font-black text-slate-900 dark:text-white flex items-center gap-2">Mock Vault <span class="demo-badge">demo</span></h2>
+                            <p id="vault-count-label" class="text-xs font-bold text-slate-400 mt-0.5">All your past attempts</p>
+                        </div>
+                    </div>
+                    <div class="flex gap-2.5 w-full md:w-auto">
+                        <div class="relative flex-1 md:w-52">
+                            <i class="fa-solid fa-search absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" style="font-size:11px;"></i>
+                            <input type="text" id="hist-search" placeholder="Search by name or platform..." oninput="filterHistory()"
+                                class="glass-input w-full pl-9 pr-3 py-2.5 rounded-2xl font-semibold text-sm">
+                        </div>
+                        <select id="hist-sort" onchange="filterHistory()" class="glass-input px-3 py-2.5 rounded-2xl font-bold text-sm modern-select flex-shrink-0">
+                            <option value="date-desc">📅 Newest</option>
+                            <option value="date-asc">📅 Oldest</option>
+                            <option value="score-desc">🏆 Best Score</option>
+                            <option value="score-asc">📉 Lowest Score</option>
+                            <option value="perc-desc">🎯 Best %ile</option>
                         </select>
                     </div>
                 </div>
-                <div class="overflow-x-auto" id="hist-table-wrap">
-                    <!-- Empty state (Feature #17) -->
-                    <div id="empty-history" class="hidden empty-state py-20">
-                        <div class="empty-icon">📝</div>
-                        <p class="font-black text-slate-600 dark:text-slate-300 text-xl">No mocks recorded yet</p>
-                        <p class="text-sm text-slate-400 max-w-xs">Log your first mock to start tracking progress here</p>
-                        <button onclick="window.app.nav('log')" class="btn-gradient text-white px-6 py-3 rounded-xl font-black text-sm mt-1">Log First Mock →</button>
-                    </div>
-                    <table class="w-full text-left text-sm" id="hist-table">
-                        <thead class="text-xs font-black text-slate-400 uppercase tracking-wide" style="background:rgba(255,255,255,0.3)">
-                            <tr>
-                                <th class="px-6 py-4 whitespace-nowrap">Date</th>
-                                <th class="px-6 py-4">Mock Title</th>
-                                <th class="px-6 py-4 text-center whitespace-nowrap">Score</th>
-                                <th class="px-6 py-4 text-center">Tag</th>
-                                <th class="px-6 py-4 text-center whitespace-nowrap">% Score</th>
-                                <th class="px-6 py-4 text-right whitespace-nowrap">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody id="hist-body" class="divide-y divide-white/20 dark:divide-white/5" style="background:rgba(255,255,255,0.15)"></tbody>
-                    </table>
-                </div>
             </div>
+
+            <!-- Empty state -->
+            <div id="empty-history" class="hidden glass-card rounded-[2rem] empty-state py-20">
+                <div class="empty-icon">📝</div>
+                <p class="font-black text-slate-600 dark:text-slate-300 text-xl">Vault is empty</p>
+                <p class="text-sm text-slate-400 max-w-xs">Log your first mock to start building your performance history</p>
+                <button onclick="window.app.nav('log')" class="btn-gradient text-white px-6 py-3 rounded-xl font-black text-sm mt-1">Log First Mock →</button>
+            </div>
+
+            <!-- Cards grid -->
+            <div id="hist-body" class="space-y-3"></div>
+
+            <!-- hidden table stub so old JS refs don't break -->
+            <table id="hist-table" class="hidden"><tbody id="_hist-body-stub"></tbody></table>
         </div>
 
         <!-- ANALYSIS TAB -->
@@ -1572,39 +1627,6 @@
                 <button onclick="window.app.nav('log')" class="btn-gradient text-white px-6 py-3 rounded-xl font-black text-sm mt-1">Log Mocks →</button>
             </div>
 
-
-            <!-- AI CROSS-MOCK INSIGHTS -->
-            <!-- AI PATTERN INSIGHTS -->
-            <div id="ai-insights-card" class="glass-card rounded-[2rem] overflow-hidden">
-                <div class="p-6 flex items-center justify-between flex-wrap gap-4" style="background:linear-gradient(135deg,rgba(99,102,241,0.1),rgba(168,85,247,0.07));border-bottom:1px solid rgba(255,255,255,0.2);">
-                    <div class="flex items-center gap-4">
-                        <div class="w-12 h-12 rounded-2xl flex items-center justify-center flex-shrink-0 shadow-lg" style="background:linear-gradient(135deg,#6366f1,#a855f7);">
-                            <i class="fa-solid fa-brain text-white" style="font-size:20px;"></i>
-                        </div>
-                        <div>
-                            <h3 class="text-lg font-black text-slate-900 dark:text-white">AI Pattern Insights</h3>
-                            <p class="text-xs font-bold text-slate-400 mt-0.5">Deep analysis across all your mocks & debriefs</p>
-                        </div>
-                    </div>
-                    <div class="flex items-center gap-2">
-                        <button id="run-readiness-btn" class="px-4 py-2 rounded-xl text-white text-sm font-black flex items-center gap-2 shadow-lg hover:scale-105 transition" style="background:linear-gradient(135deg,#10b981,#059669);">
-                            <i class="fa-solid fa-file-lines" style="pointer-events:none;"></i>
-                            <span style="pointer-events:none;">Readiness Report</span>
-                        </button>
-                        <button id="run-insights-btn" class="px-4 py-2 rounded-xl text-white text-sm font-black flex items-center gap-2 shadow-lg hover:scale-105 transition" style="background:linear-gradient(135deg,#6366f1,#a855f7);">
-                            <i class="fa-solid fa-wand-magic-sparkles" style="pointer-events:none;"></i>
-                            <span id="insights-btn-text" style="pointer-events:none;">Generate Insights</span>
-                        </button>
-                    </div>
-                </div>
-                <div id="ai-insights-output" class="p-6">
-                    <div class="text-center py-6">
-                        <div class="w-14 h-14 rounded-2xl mx-auto mb-4 flex items-center justify-center text-2xl" style="background:linear-gradient(135deg,rgba(99,102,241,0.1),rgba(168,85,247,0.07));">🧠</div>
-                        <p class="text-base font-black text-slate-500 dark:text-slate-400">Pattern analysis across all mocks</p>
-                        <p class="text-sm text-slate-400 mt-1">Finds recurring mistakes, trends, and gives targeted fixes</p>
-                    </div>
-                </div>
-            </div>
 
             <div id="analysis-content">
                 <div class="flex items-center justify-between mb-5 flex-wrap gap-3">
@@ -1727,6 +1749,38 @@
                     <div id="weak-area-count-badge" class="hidden px-3 py-1 rounded-full text-xs font-black text-white flex-shrink-0" style="background:linear-gradient(135deg,#f59e0b,#ef4444);"></div>
                 </div>
                 <div class="p-4" id="ana-weak-list"></div>
+            </div>
+
+            <!-- AI PATTERN INSIGHTS — placed at bottom for deep dive after all charts -->
+            <div id="ai-insights-card" class="glass-card rounded-[2rem] overflow-hidden" style="border:1px solid rgba(99,102,241,0.18);">
+                <div class="p-5 flex items-center justify-between flex-wrap gap-3" style="background:linear-gradient(135deg,rgba(99,102,241,0.1),rgba(168,85,247,0.07));border-bottom:1px solid rgba(255,255,255,0.2);">
+                    <div class="flex items-center gap-3">
+                        <div class="w-11 h-11 rounded-2xl flex items-center justify-center flex-shrink-0 shadow-lg" style="background:linear-gradient(135deg,#6366f1,#a855f7);">
+                            <i class="fa-solid fa-brain text-white" style="font-size:18px;"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-base font-black text-slate-900 dark:text-white">🧠 AI Pattern Insights</h3>
+                            <p class="text-xs font-bold text-slate-400 mt-0.5">Deep cross-mock analysis · patterns · targeted fixes</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-2 flex-wrap">
+                        <button id="run-readiness-btn" class="px-4 py-2 rounded-xl text-white text-sm font-black flex items-center gap-2 shadow-lg hover:scale-105 transition" style="background:linear-gradient(135deg,#10b981,#059669);">
+                            <i class="fa-solid fa-file-lines" style="pointer-events:none;"></i>
+                            <span style="pointer-events:none;">📋 Readiness Report</span>
+                        </button>
+                        <button id="run-insights-btn" class="px-4 py-2 rounded-xl text-white text-sm font-black flex items-center gap-2 shadow-lg hover:scale-105 transition" style="background:linear-gradient(135deg,#6366f1,#a855f7);">
+                            <i class="fa-solid fa-wand-magic-sparkles" style="pointer-events:none;"></i>
+                            <span id="insights-btn-text" style="pointer-events:none;">✨ Generate Insights</span>
+                        </button>
+                    </div>
+                </div>
+                <div id="ai-insights-output" class="p-6">
+                    <div class="text-center py-8">
+                        <div class="w-14 h-14 rounded-2xl mx-auto mb-4 flex items-center justify-center text-2xl" style="background:linear-gradient(135deg,rgba(99,102,241,0.1),rgba(168,85,247,0.07));animation:floatBob 3s ease-in-out infinite;">🧠</div>
+                        <p class="text-base font-black text-slate-500 dark:text-slate-400">Ready for deep pattern analysis</p>
+                        <p class="text-sm text-slate-400 mt-1">Scroll through your charts above, then hit Generate — AI will spot what you missed</p>
+                    </div>
+                </div>
             </div>
             </div><!-- /analysis-content -->
         </div>
@@ -3975,20 +4029,24 @@ Give a concise pre-mock briefing in this EXACT JSON (no markdown, no backticks):
             if (barEl) barEl.style.width = pct + '%';
             if (pctEl) pctEl.textContent = (100 - pct) + '% time remaining';
 
-            // Other exams
+            // Other exams — compact scrollable chips
             const othersContainer = document.getElementById('home-other-exams');
             if (othersContainer && upcoming.length > 1) {
                 othersContainer.classList.remove('hidden');
-                othersContainer.style.display = 'grid';
-                const isDark = document.documentElement.classList.contains('dark');
-                othersContainer.innerHTML = upcoming.slice(1, 3).map(e => {
+                othersContainer.style.display = 'flex';
+                const chipEmoji = (d) => d === 0 ? '🔥' : d <= 3 ? '⚡' : d <= 7 ? '⏰' : d <= 30 ? '📅' : '🗓️';
+                othersContainer.innerHTML = upcoming.slice(1).map(e => {
                     const d = daysUntil(e.date);
-                    const u = urgencyStyle(d);
-                    return '<div class="glass-card p-4 rounded-[1.5rem] flex items-center gap-3">' +
-                        '<div class="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 text-white text-xs font-black" style="background:' + u.badge + ';">' + (d === 0 ? '🔥' : d + 'd') + '</div>' +
-                        '<div class="min-w-0"><p class="text-sm font-black text-slate-900 dark:text-white truncate">' + e.name + '</p>' +
-                        '<p class="text-xs text-slate-400 font-medium">' + new Date(e.date).toLocaleDateString('en-IN',{day:'numeric',month:'short'}) + '</p></div>' +
-                        '</div>';
+                    const grad = barGradient(d);
+                    const dLabel = d === 0 ? 'TODAY' : d < 0 ? 'Passed' : d + 'd';
+                    return `<div class="exam-chip flex-shrink-0 flex items-center gap-2 px-3 py-2 rounded-2xl cursor-default"
+                                 style="background:rgba(255,255,255,0.55);backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,0.65);box-shadow:0 2px 8px rgba(0,0,0,0.06);min-width:0;">
+                        <div class="w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0 text-white font-black" style="background:${grad};font-size:10px;">${chipEmoji(d)}</div>
+                        <div style="min-width:0;">
+                            <p class="font-black text-slate-800 dark:text-white truncate" style="font-size:11px;max-width:110px;">${e.name}</p>
+                            <p class="font-black" style="font-size:10px;background:${grad};-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">${dLabel}</p>
+                        </div>
+                    </div>`;
                 }).join('');
             } else if (othersContainer) {
                 othersContainer.classList.add('hidden');
@@ -4985,48 +5043,126 @@ Give a concise pre-mock briefing in this EXACT JSON (no markdown, no backticks):
                 </div>`).join('');
         }
 
-        // ── filterHistory (search + sort) ──
+        // ── filterHistory — card layout ──
         window.filterHistory = function() {
             const query = (el('hist-search')?.value||'').toLowerCase();
             const sort  = el('hist-sort')?.value||'date-desc';
-            // Build chronological sorted list for tag calculation (Feature #9)
-            const allChron = getFilteredMocks().slice().sort((a,b) => new Date(a.date)-new Date(b.date));
+            const allChron = getFilteredMocks().slice().sort((a,b)=>new Date(a.date)-new Date(b.date));
             let filtered = [...allChron];
-            if (query) filtered = filtered.filter(m => m.name.toLowerCase().includes(query) || (m.platform||'').toLowerCase().includes(query));
+            if (query) filtered = filtered.filter(m =>
+                m.name.toLowerCase().includes(query) ||
+                (m.platform||'').toLowerCase().includes(query) ||
+                (m.exam||'').toLowerCase().includes(query));
             if (sort==='date-desc')  filtered.sort((a,b)=>new Date(b.date)-new Date(a.date));
             else if (sort==='date-asc')   filtered.sort((a,b)=>new Date(a.date)-new Date(b.date));
             else if (sort==='score-desc') filtered.sort((a,b)=>b.score-a.score);
             else if (sort==='score-asc')  filtered.sort((a,b)=>a.score-b.score);
             else if (sort==='perc-desc')  filtered.sort((a,b)=>(b.perc||0)-(a.perc||0));
-            const hb = el('hist-body'); if (!hb) return;
-            // Feature #17 — empty state for history
+
+            const hb = el('hist-body');
             const emptyHist = el('empty-history');
-            const histTable = el('hist-table');
+            if (!hb) return;
+
             const hasData = filtered.length > 0;
             if (emptyHist) emptyHist.classList.toggle('hidden', hasData);
-            if (histTable) histTable.classList.toggle('hidden', !hasData);
-            hb.innerHTML = filtered.map(m => {
-                const tag = getAutoTag(m, allChron);
+
+            // Update vault count label
+            const vaultLabel = el('vault-count-label');
+            if (vaultLabel) vaultLabel.textContent = hasData
+                ? `${filtered.length} mock${filtered.length!==1?'s':''} · tap any to view`
+                : 'All your past attempts';
+
+            if (!hasData) { hb.innerHTML = ''; return; }
+
+            // Score colour helper
+            const scoreCol = (pct) => pct >= 70 ? '#10b981' : pct >= 50 ? '#f59e0b' : '#ef4444';
+            const scoreGrad = (pct) => pct >= 70
+                ? 'linear-gradient(135deg,#10b981,#059669)'
+                : pct >= 50 ? 'linear-gradient(135deg,#f59e0b,#ef4444)'
+                : 'linear-gradient(135deg,#ef4444,#dc2626)';
+
+            hb.innerHTML = filtered.map((m, idx) => {
+                const tag   = getAutoTag(m, allChron);
+                const pct   = m.max ? ((m.score / m.max) * 100) : 0;
+                const pctFmt = pct.toFixed(1);
+                const grad  = scoreGrad(pct);
+                const hasWeak = !!(m.weak && m.weak.trim());
+                const hasSilly = m.sillyMarks > 0;
+                const weakSnip = hasWeak ? m.weak.substring(0, 55) + (m.weak.length > 55 ? '…' : '') : '';
+
+                // Score ring arc (out of 220 circumference ≈ r=35)
+                const circum = 220;
+                const offset = circum - (pct / 100) * circum;
+
                 return `
-                <tr class="cursor-pointer transition" onclick="app.viewMock('${m.id}')">
-                    <td class="px-5 py-5 text-xs font-black text-slate-400 whitespace-nowrap">${m.date}</td>
-                    <td class="px-5 py-5 max-w-[200px]">
-                        <div class="font-black text-slate-900 dark:text-white text-sm flex items-center gap-2 truncate">
-                            ${state.isDemoMode ? '<span class="demo-badge flex-shrink-0" style="display:inline-flex;">demo</span>' : ''}
-                            <span class="truncate">${m.name}</span>
+                <div class="vault-card group" style="animation-delay:${Math.min(idx,8)*0.04}s;" onclick="app.viewMock('${m.id}')">
+                    <!-- Score ring -->
+                    <div class="vault-ring flex-shrink-0" style="position:relative;width:54px;height:54px;">
+                        <svg width="54" height="54" style="transform:rotate(-90deg);">
+                            <circle cx="27" cy="27" r="23" fill="none" stroke="rgba(99,102,241,0.1)" stroke-width="4"/>
+                            <circle cx="27" cy="27" r="23" fill="none" stroke="url(#vaultRingGrad${idx})" stroke-width="4"
+                                stroke-linecap="round" stroke-dasharray="${circum}" stroke-dashoffset="${offset}"
+                                style="transition:stroke-dashoffset 0.8s cubic-bezier(0.34,1.2,0.64,1)"/>
+                            <defs>
+                                <linearGradient id="vaultRingGrad${idx}" x1="0%" y1="0%" x2="100%" y2="100%">
+                                    <stop offset="0%" stop-color="${pct>=70?'#10b981':pct>=50?'#f59e0b':'#ef4444'}"/>
+                                    <stop offset="100%" stop-color="${pct>=70?'#059669':pct>=50?'#ef4444':'#dc2626'}"/>
+                                </linearGradient>
+                            </defs>
+                        </svg>
+                        <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;">
+                            <span style="font-size:12px;font-weight:900;color:${scoreCol(pct)};line-height:1;">${pctFmt}</span>
+                            <span style="font-size:7px;font-weight:800;color:#94a3b8;letter-spacing:0.04em;">%</span>
                         </div>
-                        <div class="text-xs font-bold text-brand-500 uppercase tracking-wide mt-0.5 truncate">${m.exam} · ${m.platform}</div>
-                    </td>
-                    <td class="px-5 py-5 text-center font-black text-brand-600 text-base whitespace-nowrap">${m.score} <span class="text-xs font-normal text-slate-400">/ ${m.max}</span></td>
-                    <td class="px-4 py-5 text-center"><span class="pill ${tag.cls} text-xs whitespace-nowrap">${tag.label}</span></td>
-                    <td class="px-4 py-5 text-center whitespace-nowrap"><span class="bg-gradient-to-r from-accent-500 to-purple-600 text-white px-3 py-1.5 rounded-xl font-black text-xs shadow-md">${m.max?((m.score/m.max)*100).toFixed(1):0}%</span></td>
-                    <td class="px-5 py-5 text-right" onclick="event.stopPropagation()">
-                        <div class="flex items-center justify-end gap-3">
-                        ${state.isDemoMode ? '' : `<button onclick="app.editMock('${m.id}')" class="text-slate-300 hover:text-brand-500 transition p-1"><i class="fa-solid fa-pen-to-square text-base"></i></button><button onclick="app.deleteMock('${m.id}')" class="text-slate-300 hover:text-rose-500 transition p-1"><i class="fa-solid fa-trash-can text-base"></i></button>`}
+                    </div>
+
+                    <!-- Main content -->
+                    <div class="flex-1 min-w-0">
+                        <div class="flex items-start justify-between gap-2">
+                            <div class="min-w-0">
+                                <div class="flex items-center gap-1.5 flex-wrap mb-0.5">
+                                    ${state.isDemoMode ? '<span class="demo-badge" style="display:inline-flex;">demo</span>' : ''}
+                                    <span class="font-black text-slate-900 dark:text-white truncate" style="font-size:14px;">${m.name}</span>
+                                </div>
+                                <div class="flex items-center gap-2 flex-wrap">
+                                    <span class="text-xs font-black text-brand-500 uppercase tracking-wide">${m.exam}</span>
+                                    <span class="text-slate-300 dark:text-slate-600" style="font-size:10px;">·</span>
+                                    <span class="text-xs font-semibold text-slate-400">${m.platform}</span>
+                                    <span class="text-slate-300 dark:text-slate-600" style="font-size:10px;">·</span>
+                                    <span class="text-xs font-semibold text-slate-400">📅 ${m.date}</span>
+                                </div>
+                                ${hasWeak ? `<p class="text-xs text-amber-500 dark:text-amber-400 font-semibold mt-1 truncate">⚠️ ${weakSnip}</p>` : ''}
+                            </div>
+                            <!-- Score pill -->
+                            <div class="flex-shrink-0 text-right">
+                                <div class="font-black text-slate-900 dark:text-white" style="font-size:1.15rem;line-height:1;">${m.score}</div>
+                                <div class="text-slate-400 font-semibold" style="font-size:10px;">/ ${m.max}</div>
+                            </div>
                         </div>
-                    </td>
-                </tr>`;
-            }).join('') || `<tr><td colspan="6" class="p-10 text-center text-slate-400 font-bold uppercase opacity-50">No mocks found</td></tr>`;
+                        <!-- Tags row -->
+                        <div class="flex items-center gap-1.5 mt-2 flex-wrap">
+                            <span class="pill ${tag.cls}" style="font-size:10px;">${tag.label}</span>
+                            ${hasSilly ? `<span class="pill" style="font-size:10px;background:rgba(239,68,68,0.1);color:#ef4444;border:1px solid rgba(239,68,68,0.2);">🐛 -${m.sillyMarks.toFixed(1)}</span>` : ''}
+                            ${m.perc ? `<span class="pill" style="font-size:10px;background:rgba(99,102,241,0.1);color:#6366f1;border:1px solid rgba(99,102,241,0.2);">🎯 ${m.perc}%ile</span>` : ''}
+                        </div>
+                    </div>
+
+                    <!-- Actions (shown on hover) -->
+                    <div class="vault-actions flex-shrink-0 flex flex-col gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity" onclick="event.stopPropagation()">
+                        ${!state.isDemoMode ? `
+                        <button onclick="app.editMock('${m.id}')" title="Edit"
+                            class="w-8 h-8 rounded-xl flex items-center justify-center transition hover:scale-110"
+                            style="background:rgba(99,102,241,0.1);color:#6366f1;border:1px solid rgba(99,102,241,0.15);">
+                            <i class="fa-solid fa-pen-to-square" style="font-size:12px;pointer-events:none;"></i>
+                        </button>
+                        <button onclick="app.deleteMock('${m.id}')" title="Delete"
+                            class="w-8 h-8 rounded-xl flex items-center justify-center transition hover:scale-110"
+                            style="background:rgba(239,68,68,0.08);color:#ef4444;border:1px solid rgba(239,68,68,0.15);">
+                            <i class="fa-solid fa-trash-can" style="font-size:12px;pointer-events:none;"></i>
+                        </button>` : ''}
+                    </div>
+                </div>`;
+            }).join('') || `<div class="glass-card rounded-[2rem] p-10 text-center text-slate-400 font-bold uppercase opacity-50 text-xs">No mocks match your search</div>`;
         };
 
         function renderHistory() { window.filterHistory(); }
@@ -5636,16 +5772,61 @@ Give a concise pre-mock briefing in this EXACT JSON (no markdown, no backticks):
         </div>
     </div>
 
+    <!-- UPDATE AVAILABLE BANNER -->
+    <div id="update-banner" role="alert">
+        <div class="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0" style="background:rgba(99,102,241,0.3);">
+            <i class="fa-solid fa-rotate text-white" style="font-size:15px;"></i>
+        </div>
+        <div class="flex-1 min-w-0">
+            <p class="text-white font-black text-sm leading-tight">✨ Update available!</p>
+            <p class="text-white/65 font-semibold" style="font-size:11px;margin-top:2px;">A newer version of MockTracker is ready.</p>
+        </div>
+        <button id="update-reload-btn"
+            class="flex-shrink-0 px-4 py-2 rounded-xl text-white font-black text-xs hover:scale-105 transition"
+            style="background:linear-gradient(135deg,#6366f1,#a855f7);box-shadow:0 2px 8px rgba(99,102,241,0.4);">
+            Reload 🚀
+        </button>
+    </div>
+
     <!-- AI ACTIVATE BURST CANVAS -->
     <canvas id="ai-burst-canvas"></canvas>
 
-    <!-- PWA Service Worker Registration -->
+    <!-- PWA Service Worker Registration + Update Detection -->
     <script>
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
-                navigator.serviceWorker.register('sw.js')
-                    .then(reg => console.log('MockTracker SW registered:', reg.scope))
-                    .catch(err => console.log('SW registration failed:', err));
+                navigator.serviceWorker.register('sw.js').then(reg => {
+                    // Check for waiting SW on load
+                    if (reg.waiting) showUpdateBanner(reg.waiting);
+
+                    // New SW installed, waiting to activate
+                    reg.addEventListener('updatefound', () => {
+                        const newWorker = reg.installing;
+                        if (!newWorker) return;
+                        newWorker.addEventListener('statechange', () => {
+                            if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                                showUpdateBanner(newWorker);
+                            }
+                        });
+                    });
+                }).catch(err => console.log('SW registration failed:', err));
+
+                // When SW has actually taken control, reload silently
+                let refreshing = false;
+                navigator.serviceWorker.addEventListener('controllerchange', () => {
+                    if (!refreshing) { refreshing = true; window.location.reload(); }
+                });
+            });
+        }
+
+        function showUpdateBanner(worker) {
+            const banner = document.getElementById('update-banner');
+            const btn    = document.getElementById('update-reload-btn');
+            if (!banner) return;
+            banner.classList.add('show');
+            if (btn) btn.addEventListener('click', () => {
+                worker.postMessage({ type: 'SKIP_WAITING' });
+                banner.classList.remove('show');
             });
         }
     </script>
