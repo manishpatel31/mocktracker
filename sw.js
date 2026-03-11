@@ -1,86 +1,77 @@
-const CACHE_NAME = 'mocktracker-v1';
+// ══════════════════════════════════════════════════════════════
+//  MockTracker Pro — Service Worker
+//  Bump CACHE_VERSION on every deploy to force cache refresh.
+// ══════════════════════════════════════════════════════════════
 
-// Cache the app shell — the HTML file and key CDN assets
-const PRECACHE_URLS = [
-  '/mocktracker/',
-  '/mocktracker/index.html',
-  'https://cdn.tailwindcss.com',
-  'https://cdn.jsdelivr.net/npm/chart.js',
-  'https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js',
-  'https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js',
-  'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css'
+const CACHE_VERSION = 'v26';          // ← change this every time you deploy
+const CACHE_NAME    = `mocktracker-${CACHE_VERSION}`;
+
+const PRECACHE = [
+    './',
+    './index.html',
+    './manifest.json',
 ];
 
-// Install: cache the app shell
+// ── Install: cache shell assets ──────────────────────────────
 self.addEventListener('install', event => {
-  event.waitUntil(
-    caches.open(CACHE_NAME).then(cache => {
-      // Cache what we can — ignore failures for CDN resources
-      return Promise.allSettled(
-        PRECACHE_URLS.map(url => cache.add(url).catch(() => null))
-      );
-    }).then(() => self.skipWaiting())
-  );
+    // Don't call self.skipWaiting() here — we want the update banner
+    // to show first so users can choose when to reload.
+    event.waitUntil(
+        caches.open(CACHE_NAME).then(cache => cache.addAll(PRECACHE)).catch(() => {})
+    );
 });
 
-// Activate: clean up old caches
+// ── Activate: delete OLD caches ──────────────────────────────
 self.addEventListener('activate', event => {
-  event.waitUntil(
-    caches.keys().then(keys =>
-      Promise.all(keys.filter(k => k !== CACHE_NAME).map(k => caches.delete(k)))
-    ).then(() => self.clients.claim())
-  );
+    event.waitUntil(
+        caches.keys().then(keys =>
+            Promise.all(
+                keys.filter(k => k !== CACHE_NAME).map(k => caches.delete(k))
+            )
+        ).then(() => self.clients.claim())
+    );
 });
 
-// Fetch: network-first for Firebase/API calls, cache-first for app shell
+// ── Fetch: Network-first (always get latest HTML) ────────────
 self.addEventListener('fetch', event => {
-  const url = new URL(event.request.url);
+    const url = new URL(event.request.url);
 
-  // Always go network for Firebase, Groq API, and analytics
-  if (
-    url.hostname.includes('firestore.googleapis.com') ||
-    url.hostname.includes('firebase') ||
-    url.hostname.includes('groq.com') ||
-    url.hostname.includes('identitytoolkit') ||
-    url.hostname.includes('securetoken')
-  ) {
-    return; // Let browser handle normally
-  }
+    // Only handle same-origin requests
+    if (url.origin !== location.origin) return;
 
-  // For app shell (same origin) — cache first, fallback to network
-  if (url.hostname === self.location.hostname) {
+    // For navigation (HTML page loads) — network first, then cache fallback
+    if (event.request.mode === 'navigate') {
+        event.respondWith(
+            fetch(event.request)
+                .then(response => {
+                    // Cache the fresh page
+                    const clone = response.clone();
+                    caches.open(CACHE_NAME).then(c => c.put(event.request, clone));
+                    return response;
+                })
+                .catch(() => caches.match(event.request).then(r => r || caches.match('./index.html')))
+        );
+        return;
+    }
+
+    // For other assets — stale-while-revalidate
     event.respondWith(
-      caches.match(event.request).then(cached => {
-        return cached || fetch(event.request).then(response => {
-          if (response && response.status === 200) {
-            const clone = response.clone();
-            caches.open(CACHE_NAME).then(cache => cache.put(event.request, clone));
-          }
-          return response;
-        });
-      })
+        caches.match(event.request).then(cached => {
+            const networkFetch = fetch(event.request).then(response => {
+                if (response && response.status === 200) {
+                    const clone = response.clone();
+                    caches.open(CACHE_NAME).then(c => c.put(event.request, clone));
+                }
+                return response;
+            }).catch(() => null);
+            return cached || networkFetch;
+        })
     );
-    return;
-  }
+});
 
-  // For CDN resources — cache first
-  if (
-    url.hostname.includes('cdn.jsdelivr.net') ||
-    url.hostname.includes('cdnjs.cloudflare.com') ||
-    url.hostname.includes('cdn.tailwindcss.com') ||
-    url.hostname.includes('fonts.googleapis.com') ||
-    url.hostname.includes('fonts.gstatic.com')
-  ) {
-    event.respondWith(
-      caches.match(event.request).then(cached => {
-        return cached || fetch(event.request).then(response => {
-          if (response && response.status === 200) {
-            const clone = response.clone();
-            caches.open(CACHE_NAME).then(cache => cache.put(event.request, clone));
-          }
-          return response;
-        }).catch(() => cached)
-      })
-    );
-  }
+// ── Message: skip waiting on user request ────────────────────
+self.addEventListener('message', event => {
+    if (event.data && event.data.type === 'SKIP_WAITING') {
+        self.skipWaiting();
+    }
 });
