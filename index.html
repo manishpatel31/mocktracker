@@ -41,7 +41,16 @@
         }
     </script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Bebas+Neue&display=swap');
+        @keyframes examNameReveal {
+            0%   { opacity:0; transform:translateY(6px) scale(0.97); letter-spacing:0.06em; }
+            60%  { opacity:1; transform:translateY(-1px) scale(1.01); }
+            100% { opacity:1; transform:translateY(0) scale(1); letter-spacing:normal; }
+        }
+        @keyframes examNamePulse {
+            0%,100% { opacity:1; }
+            50%     { opacity:0.7; }
+        }
         * { -webkit-font-smoothing: antialiased; }
         body { font-family: 'Plus Jakarta Sans', sans-serif; }
 
@@ -1345,8 +1354,8 @@
                     </button>
                 </div>
 
-                <!-- Output area — shared, toggles between analyze result and premock -->
-                <div id="ai-output" class="px-5 pb-5 hidden">
+                <!-- Output area — collapsed by default, expands on button click -->
+                <div id="ai-output" class="px-5 pb-5 hidden" style="max-height:0;opacity:0;overflow:hidden;">
                     <div id="ai-loading" class="hidden text-center py-8">
                         <div class="inline-flex flex-col items-center gap-3">
                             <div style="width:36px;height:36px;border:3px solid rgba(99,102,241,0.15);border-top-color:#6366f1;border-radius:50%;animation:spin 0.8s linear infinite;"></div>
@@ -4017,18 +4026,19 @@ Give a concise pre-mock briefing in this EXACT JSON (no markdown, no backticks):
                     <div style="position:absolute;right:-4px;bottom:-12px;font-size:72px;opacity:0.07;line-height:1;pointer-events:none;user-select:none;">${th.emoji}</div>
                     <div style="position:relative;z-index:1;height:100%;display:flex;flex-direction:column;gap:0;">
 
-                        <!-- ROW 1: emoji · exam name · days number — all on one line -->
-                        <div style="display:flex;align-items:flex-start;gap:8px;margin-bottom:10px;">
-                            <!-- Mood emoji -->
-                            <span style="font-size:22px;line-height:1.1;flex-shrink:0;margin-top:1px;">${th.emoji}</span>
-                            <!-- Exam name — takes all available middle space -->
-                            <p style="flex:1;min-width:0;font-size:15px;font-weight:900;color:${nameColour};line-height:1.3;overflow:hidden;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;margin:0;word-break:break-word;">${exam.name}</p>
-                            <!-- Days counter — right aligned, never shrinks -->
-                            <div style="flex-shrink:0;text-align:right;margin-left:4px;">
-                                <div style="font-size:${days >= 0 && days < 100 ? '2.1rem' : '1.4rem'};font-weight:900;color:${daysColour};line-height:1;">${days===0?'🔥':days<0?'✅':days}</div>
-                                <div style="font-size:10px;font-weight:800;color:${daysColour};opacity:0.75;letter-spacing:0.05em;text-transform:uppercase;margin-top:1px;">${days<0?'passed':days===0?'':days===1?'day':'days'}</div>
+                        <!-- ROW 1: emoji on its own line above name -->
+                        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
+                            <span style="font-size:26px;line-height:1;">${th.emoji}</span>
+                            <!-- Days counter — top-right -->
+                            <div style="flex-shrink:0;text-align:right;">
+                                <div style="font-size:${days >= 0 && days < 100 ? '2.2rem' : '1.5rem'};font-weight:900;color:${daysColour};line-height:1;font-family:'Bebas Neue',sans-serif;letter-spacing:0.03em;">${days===0?'🔥':days<0?'✅':days}</div>
+                                <div style="font-size:10px;font-weight:800;color:${daysColour};opacity:0.75;letter-spacing:0.06em;text-transform:uppercase;">${days<0?'passed':days===0?'':days===1?'day':'days'}</div>
                             </div>
                         </div>
+                        <!-- Exam name — full width, large, Bebas Neue -->
+                        <p style="font-family:'Bebas Neue',sans-serif;font-size:clamp(18px,5vw,24px);font-weight:400;letter-spacing:0.04em;color:${nameColour};line-height:1.2;margin:0 0 8px 0;overflow:hidden;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;word-break:break-word;animation:examNameReveal 0.55s cubic-bezier(0.16,1,0.3,1) both;animation-delay:${0.1+idx*0.07}s;${isUrgent?'animation:examNameReveal 0.55s cubic-bezier(0.16,1,0.3,1) both, examNamePulse 2.2s ease-in-out 0.7s infinite;':''}">
+                            ${exam.name}
+                        </p>
 
                         <!-- ROW 2: Date + mood pill -->
                         <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:9px;">
@@ -4328,29 +4338,101 @@ Give a concise pre-mock briefing in this EXACT JSON (no markdown, no backticks):
             btn.addEventListener('touchend', function(e){ e.preventDefault(); refreshPreMockCard(); }, { passive: false });
         })();
 
-        // Bind "Before Next Mock" CTA button
-        (function bindPreMockCTA() {
-            var btn = document.getElementById('premock-cta-btn');
-            if (!btn) return;
-            function doPremock(e) {
-                e.stopPropagation();
-                const outputWrap = document.getElementById('ai-output');
-                const content    = document.getElementById('premock-content');
-                const result     = document.getElementById('ai-result');
-                const loading    = document.getElementById('ai-loading');
-                if (outputWrap) outputWrap.classList.remove('hidden');
-                if (result) { result.classList.remove('hidden'); result.innerHTML = content ? content.innerHTML : ''; }
-                if (!content || !content.innerHTML.trim() || content.innerHTML.includes('Loading')) {
-                    if (loading) loading.classList.remove('hidden');
-                    if (result) result.classList.add('hidden');
-                    refreshPreMockCard().then(() => {
-                        if (loading) loading.classList.add('hidden');
-                        if (result) { result.classList.remove('hidden'); result.innerHTML = content ? content.innerHTML : ''; }
-                    }).catch(() => { if (loading) loading.classList.add('hidden'); });
-                }
+        // ── AI card toggle system ─────────────────────────────────────────────
+        // Each button has its own "active" state. Clicking the same active button
+        // collapses the output. Clicking the other button switches content.
+        // ai-output is ALWAYS hidden until a button is clicked.
+        (function bindAICardToggles() {
+            var activeMode = null; // 'analyze' | 'premock' | null
+
+            function collapse() {
+                activeMode = null;
+                const wrap = document.getElementById('ai-output');
+                if (wrap) { wrap.style.maxHeight = '0'; wrap.style.opacity = '0'; wrap.style.overflow = 'hidden'; setTimeout(()=>wrap.classList.add('hidden'), 280); }
+                // reset button styles
+                setButtonState('ai-analyze-btn', false);
+                setButtonState('premock-cta-btn', false);
             }
-            btn.addEventListener('click', doPremock);
-            btn.addEventListener('touchend', function(e){ e.preventDefault(); doPremock(e); }, { passive: false });
+
+            function setButtonState(id, active) {
+                const b = document.getElementById(id);
+                if (!b) return;
+                b.style.opacity = active ? '1' : '0.8';
+                b.style.transform = active ? 'scale(1)' : 'scale(1)';
+                b.style.boxShadow = active ? '0 0 0 2px rgba(255,255,255,0.6) inset' : '';
+            }
+
+            function expand() {
+                const wrap = document.getElementById('ai-output');
+                if (!wrap) return;
+                wrap.classList.remove('hidden');
+                wrap.style.overflow = 'hidden';
+                wrap.style.opacity = '0';
+                wrap.style.maxHeight = '0';
+                requestAnimationFrame(() => {
+                    wrap.style.transition = 'max-height 0.4s cubic-bezier(0.16,1,0.3,1), opacity 0.3s ease';
+                    wrap.style.maxHeight = '1000px';
+                    wrap.style.opacity = '1';
+                    wrap.style.overflow = 'visible';
+                });
+            }
+
+            function showContent(html) {
+                const result = document.getElementById('ai-result');
+                const loading = document.getElementById('ai-loading');
+                if (loading) loading.classList.add('hidden');
+                if (result) { result.classList.remove('hidden'); result.innerHTML = html; }
+            }
+
+            function showLoading(text) {
+                const result = document.getElementById('ai-result');
+                const loading = document.getElementById('ai-loading');
+                const loadTxt = document.getElementById('ai-loading-text');
+                if (result) result.classList.add('hidden');
+                if (loading) loading.classList.remove('hidden');
+                if (loadTxt) loadTxt.textContent = text || 'Analyzing...';
+            }
+
+            // Analyze button
+            var analyzeBtn = document.getElementById('ai-analyze-btn');
+            if (analyzeBtn) {
+                function doAnalyze(e) {
+                    if (e) e.stopPropagation();
+                    if (activeMode === 'analyze') { collapse(); return; }
+                    activeMode = 'analyze';
+                    setButtonState('ai-analyze-btn', true);
+                    setButtonState('premock-cta-btn', false);
+                    expand();
+                    window.runAICoach();
+                }
+                analyzeBtn.addEventListener('click', doAnalyze);
+                analyzeBtn.addEventListener('touchend', function(e){ e.preventDefault(); doAnalyze(e); }, { passive: false });
+            }
+
+            // Before Next Mock button
+            var premockBtn = document.getElementById('premock-cta-btn');
+            if (premockBtn) {
+                function doPremock(e) {
+                    if (e) e.stopPropagation();
+                    if (activeMode === 'premock') { collapse(); return; }
+                    activeMode = 'premock';
+                    setButtonState('premock-cta-btn', true);
+                    setButtonState('ai-analyze-btn', false);
+                    expand();
+                    const content = document.getElementById('premock-content');
+                    const alreadyReady = content && content.innerHTML.trim() && !content.innerHTML.includes('Loading');
+                    if (alreadyReady) {
+                        showContent(content.innerHTML);
+                    } else {
+                        showLoading('Preparing your pre-mock brief...');
+                        refreshPreMockCard().then(() => {
+                            showContent(content ? content.innerHTML : '<p class="text-slate-400 text-sm p-4">No data yet — log some mocks first!</p>');
+                        }).catch(() => showContent('<p class="text-rose-400 text-sm p-4">Something went wrong. Try again.</p>'));
+                    }
+                }
+                premockBtn.addEventListener('click', doPremock);
+                premockBtn.addEventListener('touchend', function(e){ e.preventDefault(); doPremock(e); }, { passive: false });
+            }
         })();
 
         // Show "Set Key" hint on coach card if no API key saved
