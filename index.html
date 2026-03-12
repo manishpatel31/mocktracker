@@ -1312,77 +1312,65 @@
             </div>
 
             <!-- ── AI PERFORMANCE COACH ── -->
-            <div class="glass-card rounded-[2rem] overflow-hidden" id="ai-coach-card" style="position:relative;">
-                <span class="float-deco" style="right:20px;top:10px;">🤖</span>
-                <span class="float-deco float-deco-b" style="right:56px;top:16px;font-size:16px;">⚡</span>
-                <div class="p-6" style="background:linear-gradient(135deg,rgba(99,102,241,0.1),rgba(168,85,247,0.07));">
-                    <div class="flex items-center justify-between flex-wrap gap-4">
-                        <div class="flex items-center gap-4">
-                            <div class="w-12 h-12 rounded-2xl flex items-center justify-center flex-shrink-0 shadow-lg" style="background:linear-gradient(135deg,#6366f1,#a855f7);">
-                                <i class="fa-solid fa-robot text-white" style="font-size:20px;"></i>
-                            </div>
-                            <div>
-                                <h3 class="text-lg font-black text-slate-900 dark:text-white leading-tight">AI Performance Coach</h3>
-                                <p class="text-xs font-bold text-slate-400 mt-0.5">Powered by Groq · Llama 3.3 · Free</p>
-                            </div>
-                        </div>
-                        <div class="flex items-center gap-2 flex-wrap">
-                            <button id="ai-settings-btn" class="px-4 py-2 rounded-xl btn-glass text-sm font-black flex items-center gap-2 transition hover:scale-105">
-                                <i class="fa-solid fa-key text-brand-500"></i> API Key
-                            </button>
-                            <button id="ai-analyze-btn" class="px-5 py-2 rounded-xl text-white text-sm font-black flex items-center gap-2 transition hover:scale-105 shadow-lg" style="background:linear-gradient(135deg,#6366f1,#a855f7);">
-                                <i class="fa-solid fa-wand-magic-sparkles" style="pointer-events:none;"></i>
-                                <span id="ai-btn-text" style="pointer-events:none;">Analyze My Performance</span>
-                            </button>
-                        </div>
+            <!-- AI COACH — compact two-button card -->
+            <div class="glass-card rounded-[2rem] overflow-hidden" id="ai-coach-card">
+                <!-- Header -->
+                <div class="px-5 py-4 flex items-center gap-3" style="background:linear-gradient(135deg,rgba(99,102,241,0.09),rgba(168,85,247,0.06));border-bottom:1px solid rgba(255,255,255,0.2);">
+                    <div class="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 shadow-md" style="background:linear-gradient(135deg,#6366f1,#a855f7);">
+                        <i class="fa-solid fa-robot text-white" style="font-size:16px;"></i>
                     </div>
-                    <div id="ai-settings-panel" class="hidden mt-5 p-5 rounded-2xl" style="background:rgba(99,102,241,0.06);border:1px solid rgba(99,102,241,0.15);">
-                        <p class="text-sm font-bold text-slate-600 dark:text-slate-300 mb-3">Enter your free Groq API key from <strong class="text-brand-500">console.groq.com</strong></p>
-                        <div class="flex gap-3">
-                            <input id="ai-key-input" type="password" placeholder="gsk_..." class="flex-1 glass-input px-4 py-2.5 rounded-xl text-sm font-mono text-slate-800 dark:text-white" />
-                            <button id="ai-save-key-btn" class="px-5 py-2.5 rounded-xl btn-gradient text-white text-sm font-black shadow-lg hover:scale-105 transition">Save</button>
-                        </div>
-                        <p class="text-xs text-slate-400 mt-2 flex items-center gap-1.5"><i class="fa-solid fa-lock text-emerald-500"></i> Stored only in your browser — never shared.</p>
+                    <div class="flex-1 min-w-0">
+                        <p class="text-sm font-black text-slate-900 dark:text-white leading-tight">AI Performance Coach</p>
+                        <p class="text-xs font-semibold text-slate-400 mt-0.5">Powered by Groq · Llama 3.3 · Free</p>
                     </div>
+                    <!-- Go-to-tools hint if no key -->
+                    <button onclick="window.app.nav('tools')" id="ai-goto-tools-btn" class="hidden text-xs font-black text-brand-500 hover:text-brand-600 transition flex items-center gap-1 flex-shrink-0">
+                        <i class="fa-solid fa-key" style="font-size:10px;"></i> Set Key
+                    </button>
                 </div>
-                <div id="ai-output" class="p-6">
-                    <div id="ai-placeholder" class="text-center py-8">
-                        <div class="w-16 h-16 rounded-2xl mx-auto mb-4 flex items-center justify-center text-3xl shadow-lg" style="background:linear-gradient(135deg,rgba(99,102,241,0.12),rgba(168,85,247,0.08));">🤖</div>
-                        <p class="text-base font-black text-slate-500 dark:text-slate-400">Get your personalized AI coaching report</p>
-                        <p class="text-sm text-slate-400 mt-1">Based on all your mock scores, subject data & trends</p>
-                        <p class="text-xs text-slate-300 dark:text-slate-600 mt-3">No API key? Get one free at <strong class="text-brand-400">console.groq.com</strong></p>
-                    </div>
-                    <div id="ai-loading" class="hidden text-center py-10">
-                        <div class="inline-flex flex-col items-center gap-4">
-                            <div style="width:40px;height:40px;border:3px solid rgba(99,102,241,0.15);border-top-color:#6366f1;border-radius:50%;animation:spin 0.8s linear infinite;"></div>
-                            <span class="text-sm font-black text-slate-400 uppercase tracking-widest" id="ai-loading-text">Analyzing your performance...</span>
+
+                <!-- Two CTA buttons -->
+                <div class="p-4 grid grid-cols-2 gap-3">
+                    <button id="ai-analyze-btn"
+                        class="flex items-center justify-center gap-2 px-4 py-3.5 rounded-2xl text-white font-black text-sm transition hover:scale-[1.03] hover:shadow-lg shadow-md"
+                        style="background:linear-gradient(135deg,#6366f1,#a855f7);">
+                        <i class="fa-solid fa-wand-magic-sparkles" style="pointer-events:none;font-size:14px;"></i>
+                        <span style="pointer-events:none;" id="ai-btn-text">Analyze My Performance</span>
+                    </button>
+                    <button id="premock-cta-btn"
+                        class="flex items-center justify-center gap-2 px-4 py-3.5 rounded-2xl text-white font-black text-sm transition hover:scale-[1.03] hover:shadow-lg shadow-md"
+                        style="background:linear-gradient(135deg,#f59e0b,#ef4444);">
+                        <i class="fa-solid fa-bell" style="pointer-events:none;font-size:14px;"></i>
+                        <span style="pointer-events:none;">Before Next Mock</span>
+                    </button>
+                </div>
+
+                <!-- Output area — shared, toggles between analyze result and premock -->
+                <div id="ai-output" class="px-5 pb-5 hidden">
+                    <div id="ai-loading" class="hidden text-center py-8">
+                        <div class="inline-flex flex-col items-center gap-3">
+                            <div style="width:36px;height:36px;border:3px solid rgba(99,102,241,0.15);border-top-color:#6366f1;border-radius:50%;animation:spin 0.8s linear infinite;"></div>
+                            <span class="text-sm font-black text-slate-400 uppercase tracking-widest" id="ai-loading-text">Analyzing...</span>
                         </div>
                     </div>
                     <div id="ai-result" class="hidden space-y-4"></div>
-                    <div id="ai-error" class="hidden p-5 rounded-2xl text-sm font-bold flex items-start gap-3" style="background:rgba(239,68,68,0.06);color:#ef4444;border:1px solid rgba(239,68,68,0.2);">
+                    <div id="ai-error" class="hidden p-4 rounded-2xl text-sm font-bold flex items-start gap-3" style="background:rgba(239,68,68,0.06);color:#ef4444;border:1px solid rgba(239,68,68,0.2);">
                         <i class="fa-solid fa-circle-exclamation mt-0.5 flex-shrink-0"></i><span id="ai-error-text"></span>
                     </div>
                 </div>
+
+                <!-- Hidden stubs for JS compat -->
+                <div id="ai-placeholder" style="display:none;"></div>
+                <div id="ai-settings-panel" style="display:none;"></div>
+                <input id="ai-key-input" style="display:none;" type="password"/>
+                <button id="ai-save-key-btn" style="display:none;"></button>
+                <button id="ai-settings-btn" style="display:none;"></button>
             </div>
 
-
-            <!-- BEFORE YOUR NEXT MOCK -->
-            <div id="premock-card" class="glass-card rounded-[2rem] overflow-hidden" style="display:none;">
-                <div class="p-6 pb-4 flex items-center justify-between gap-4" style="background:linear-gradient(135deg,rgba(245,158,11,0.1),rgba(239,68,68,0.07));border-bottom:1px solid rgba(255,255,255,0.2);">
-                    <div class="flex items-center gap-4">
-                        <div class="w-12 h-12 rounded-2xl flex items-center justify-center flex-shrink-0 shadow-lg" style="background:linear-gradient(135deg,#f59e0b,#ef4444);">
-                            <i class="fa-solid fa-bell text-white" style="font-size:18px;"></i>
-                        </div>
-                        <div>
-                            <h3 class="text-lg font-black text-slate-900 dark:text-white leading-tight">Before Your Next Mock</h3>
-                            <p class="text-xs font-bold text-slate-400 mt-0.5">AI brief from all your mocks & debriefs</p>
-                        </div>
-                    </div>
-                    <button id="refresh-premock-btn" class="w-9 h-9 rounded-xl flex items-center justify-center text-amber-500 hover:scale-110 transition flex-shrink-0" style="background:rgba(245,158,11,0.12);">
-                        <i class="fa-solid fa-rotate-right" style="font-size:14px;pointer-events:none;"></i>
-                    </button>
-                </div>
-                <div id="premock-content" class="p-6"></div>
+            <!-- Premock card stub — content lives inside ai-output above -->
+            <div id="premock-card" style="display:none;">
+                <button id="refresh-premock-btn" style="display:none;"></button>
+                <div id="premock-content"></div>
             </div>
 
         </div>
@@ -2418,6 +2406,9 @@
             if (pill)   { pill.textContent = isOn ? '✨ ON' : 'OFF'; pill.style.background = isOn ? 'linear-gradient(135deg,#6366f1,#a855f7)' : 'rgba(148,163,184,0.15)'; pill.style.color = isOn ? 'white' : '#94a3b8'; }
             if (sub)    sub.textContent = isOn ? 'All 5 AI features are live 🚀' : 'Enable to unlock 5 AI-powered features';
             if (iconWrap) iconWrap.style.boxShadow = isOn ? '0 0 18px rgba(99,102,241,0.55)' : '';
+            // Refresh "Set Key" hint on coach card
+            const hint = document.getElementById('ai-goto-tools-btn');
+            if (hint) hint.classList.toggle('hidden', !!localStorage.getItem('mockpro_gemini_key'));
         }
 
         // Sparkle burst effect on toggle — upgraded 🎆
@@ -2564,6 +2555,8 @@
         }
 
         window.hideAllAIStates = function() {
+            const outputWrap = document.getElementById('ai-output');
+            if (outputWrap) outputWrap.classList.remove('hidden');
             ['ai-placeholder','ai-loading','ai-result','ai-error'].forEach(id => {
                 const el2 = document.getElementById(id);
                 if (el2) el2.classList.add('hidden');
@@ -4020,25 +4013,31 @@ Give a concise pre-mock briefing in this EXACT JSON (no markdown, no backticks):
 
                 return `<div class="exam-tile ${isUrgent?'exam-urgent':''}"
                     style="background:${tileBg};border:2px solid ${tileBorder};animation-delay:${idx*0.07}s;">
-                    <!-- Faint ambient emoji bg -->
-                    <div style="position:absolute;right:-2px;bottom:-10px;font-size:60px;opacity:0.08;line-height:1;pointer-events:none;user-select:none;">${th.emoji}</div>
-                    <div style="position:relative;z-index:1;">
-                        <!-- Top: mood emoji + days counter -->
-                        <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:6px;margin-bottom:10px;">
-                            <span style="font-size:26px;line-height:1;">${th.emoji}</span>
-                            <div style="text-align:right;flex-shrink:0;">
-                                <div style="font-size:${days >= 0 && days < 100 ? '2rem' : '1.3rem'};font-weight:900;color:${daysColour};line-height:1;">${days===0?'🔥':days<0?'✅':days}</div>
-                                <div style="font-size:11px;font-weight:800;color:${daysColour};opacity:0.7;letter-spacing:0.04em;text-transform:uppercase;">${days<0?'passed':days===0?'':days===1?'day':'days'}</div>
+                    <!-- Faint ambient emoji (large, bottom-right) -->
+                    <div style="position:absolute;right:-4px;bottom:-12px;font-size:72px;opacity:0.07;line-height:1;pointer-events:none;user-select:none;">${th.emoji}</div>
+                    <div style="position:relative;z-index:1;height:100%;display:flex;flex-direction:column;gap:0;">
+
+                        <!-- ROW 1: emoji · exam name · days number — all on one line -->
+                        <div style="display:flex;align-items:flex-start;gap:8px;margin-bottom:10px;">
+                            <!-- Mood emoji -->
+                            <span style="font-size:22px;line-height:1.1;flex-shrink:0;margin-top:1px;">${th.emoji}</span>
+                            <!-- Exam name — takes all available middle space -->
+                            <p style="flex:1;min-width:0;font-size:15px;font-weight:900;color:${nameColour};line-height:1.3;overflow:hidden;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;margin:0;word-break:break-word;">${exam.name}</p>
+                            <!-- Days counter — right aligned, never shrinks -->
+                            <div style="flex-shrink:0;text-align:right;margin-left:4px;">
+                                <div style="font-size:${days >= 0 && days < 100 ? '2.1rem' : '1.4rem'};font-weight:900;color:${daysColour};line-height:1;">${days===0?'🔥':days<0?'✅':days}</div>
+                                <div style="font-size:10px;font-weight:800;color:${daysColour};opacity:0.75;letter-spacing:0.05em;text-transform:uppercase;margin-top:1px;">${days<0?'passed':days===0?'':days===1?'day':'days'}</div>
                             </div>
                         </div>
-                        <!-- Exam name -->
-                        <p style="font-size:14px;font-weight:900;color:${nameColour};line-height:1.35;margin-bottom:4px;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;">${exam.name}</p>
-                        <!-- Date -->
-                        <p style="font-size:12px;font-weight:600;color:${dateColour};margin-bottom:8px;">${dateStr}</p>
-                        <!-- Mood pill -->
-                        <div style="display:inline-block;padding:3px 10px;border-radius:999px;background:${moodBg};border:1px solid ${tileBorder};font-size:11px;font-weight:800;color:${moodCol};margin-bottom:9px;">${th.mood}</div>
-                        <!-- Progress bar -->
-                        <div style="height:4px;border-radius:999px;background:${progTrack};overflow:hidden;">
+
+                        <!-- ROW 2: Date + mood pill -->
+                        <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:9px;">
+                            <span style="font-size:12px;font-weight:600;color:${dateColour};">${dateStr}</span>
+                            <span style="padding:2px 9px;border-radius:999px;background:${moodBg};border:1px solid ${tileBorder};font-size:11px;font-weight:800;color:${moodCol};">${th.mood}</span>
+                        </div>
+
+                        <!-- ROW 3: Progress bar -->
+                        <div style="height:4px;border-radius:999px;background:${progTrack};overflow:hidden;margin-top:auto;">
                             <div style="height:100%;border-radius:999px;background:${progFill};width:${progPct}%;transition:width 0.9s ease;"></div>
                         </div>
                     </div>
@@ -4321,7 +4320,7 @@ Give a concise pre-mock briefing in this EXACT JSON (no markdown, no backticks):
             btn.addEventListener('touchend', function(e){ e.preventDefault(); e.stopPropagation(); window.runAIInsights(); }, { passive: false });
         })();
 
-        // Bind refresh pre-mock button
+        // Bind refresh pre-mock button (hidden stub — kept for compat)
         (function bindPreMockRefresh() {
             var btn = document.getElementById('refresh-premock-btn');
             if (!btn) return;
@@ -4329,7 +4328,40 @@ Give a concise pre-mock briefing in this EXACT JSON (no markdown, no backticks):
             btn.addEventListener('touchend', function(e){ e.preventDefault(); refreshPreMockCard(); }, { passive: false });
         })();
 
-        // Load pre-mock card on startup
+        // Bind "Before Next Mock" CTA button
+        (function bindPreMockCTA() {
+            var btn = document.getElementById('premock-cta-btn');
+            if (!btn) return;
+            function doPremock(e) {
+                e.stopPropagation();
+                const outputWrap = document.getElementById('ai-output');
+                const content    = document.getElementById('premock-content');
+                const result     = document.getElementById('ai-result');
+                const loading    = document.getElementById('ai-loading');
+                if (outputWrap) outputWrap.classList.remove('hidden');
+                if (result) { result.classList.remove('hidden'); result.innerHTML = content ? content.innerHTML : ''; }
+                if (!content || !content.innerHTML.trim() || content.innerHTML.includes('Loading')) {
+                    if (loading) loading.classList.remove('hidden');
+                    if (result) result.classList.add('hidden');
+                    refreshPreMockCard().then(() => {
+                        if (loading) loading.classList.add('hidden');
+                        if (result) { result.classList.remove('hidden'); result.innerHTML = content ? content.innerHTML : ''; }
+                    }).catch(() => { if (loading) loading.classList.add('hidden'); });
+                }
+            }
+            btn.addEventListener('click', doPremock);
+            btn.addEventListener('touchend', function(e){ e.preventDefault(); doPremock(e); }, { passive: false });
+        })();
+
+        // Show "Set Key" hint on coach card if no API key saved
+        (function checkAIKeyHint() {
+            const hint = document.getElementById('ai-goto-tools-btn');
+            if (!hint) return;
+            const hasKey = !!localStorage.getItem('mockpro_gemini_key');
+            hint.classList.toggle('hidden', hasKey);
+        })();
+
+        // Load pre-mock content on startup (hidden, ready for button click)
         renderPreMockCard();
 
         window.app = {
