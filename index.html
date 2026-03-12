@@ -1105,6 +1105,17 @@
         <!-- HOME TAB -->
         <div id="tab-home" class="tab-content active space-y-6 max-w-7xl mx-auto pt-5">
 
+            <!-- WELCOME GREETING — always first -->
+            <div id="welcome-greeting-card" class="glass-card rounded-[2rem] p-5 flex items-center gap-4" style="display:none!important;">
+                <div class="w-12 h-12 rounded-2xl flex items-center justify-center flex-shrink-0 text-2xl" style="background:linear-gradient(135deg,rgba(99,102,241,0.12),rgba(168,85,247,0.08));">
+                    <span id="greeting-emoji">👋</span>
+                </div>
+                <div class="min-w-0">
+                    <h2 id="greeting-text" class="text-lg font-black text-slate-900 dark:text-white leading-tight"></h2>
+                    <p id="greeting-sub" class="text-sm text-slate-400 font-medium mt-0.5 truncate"></p>
+                </div>
+            </div>
+
             <!-- ── EXAM COUNTDOWN WIDGET ── -->
             <div id="home-exam-countdown" style="display:none;">
                 <!-- Section header -->
@@ -1118,7 +1129,7 @@
                 </div>
                 <!-- All exam cards live here — rendered by JS as 2-column grid -->
                 <div id="home-exam-grid" class="grid grid-cols-2 gap-3"></div>
-                <!-- Hidden AI msg stub (kept for JS compat) -->
+                <!-- Hidden stubs for JS compat -->
                 <span id="hcd-ai-msg" style="display:none;"></span>
                 <span id="hcd-exam-name" style="display:none;"></span>
                 <span id="hcd-exam-date" style="display:none;"></span>
@@ -1128,17 +1139,6 @@
                 <span id="hcd-progress-pct" style="display:none;"></span>
                 <div id="home-primary-exam" style="display:none;"></div>
                 <div id="home-other-exams" style="display:none;"></div>
-            </div>
-
-            <!-- WELCOME GREETING -->
-            <div id="welcome-greeting-card" class="glass-card rounded-[2rem] p-5 flex items-center gap-4" style="display:none!important;">
-                <div class="w-12 h-12 rounded-2xl flex items-center justify-center flex-shrink-0 text-2xl" style="background:linear-gradient(135deg,rgba(99,102,241,0.12),rgba(168,85,247,0.08));">
-                    <span id="greeting-emoji">👋</span>
-                </div>
-                <div class="min-w-0">
-                    <h2 id="greeting-text" class="text-lg font-black text-slate-900 dark:text-white leading-tight"></h2>
-                    <p id="greeting-sub" class="text-sm text-slate-400 font-medium mt-0.5 truncate"></p>
-                </div>
             </div>
 
             <!-- Primary Stat Cards -->
@@ -3959,16 +3959,17 @@ Give a concise pre-mock briefing in this EXACT JSON (no markdown, no backticks):
 
         // Render the HOME countdown widget (big card at top of home tab)
         // Exam urgency colour system — from calm green → angry red
+        // rgb field used for glass-card tinting
         function examUrgencyTheme(days) {
-            if (days < 0)   return { grad:'linear-gradient(135deg,#94a3b8,#64748b)', text:'#fff', sub:'rgba(255,255,255,0.7)',  border:'rgba(148,163,184,0.3)', emoji:'✅', mood:'Done!' };
-            if (days === 0) return { grad:'linear-gradient(135deg,#991b1b,#b91c1c)', text:'#fff', sub:'rgba(255,255,255,0.75)', border:'rgba(239,68,68,0.5)',   emoji:'🔥', mood:'TODAY!' };
-            if (days <= 3)  return { grad:'linear-gradient(135deg,#dc2626,#ef4444)', text:'#fff', sub:'rgba(255,255,255,0.75)', border:'rgba(239,68,68,0.4)',   emoji:'😰', mood:'Very soon!' };
-            if (days <= 7)  return { grad:'linear-gradient(135deg,#ea580c,#f97316)', text:'#fff', sub:'rgba(255,255,255,0.75)', border:'rgba(249,115,22,0.4)',  emoji:'😬', mood:'This week!' };
-            if (days <= 14) return { grad:'linear-gradient(135deg,#d97706,#f59e0b)', text:'#fff', sub:'rgba(255,255,255,0.75)', border:'rgba(245,158,11,0.4)',  emoji:'😟', mood:'2 weeks left' };
-            if (days <= 30) return { grad:'linear-gradient(135deg,#6366f1,#818cf8)', text:'#fff', sub:'rgba(255,255,255,0.75)', border:'rgba(99,102,241,0.4)',  emoji:'😐', mood:'This month' };
-            if (days <= 60) return { grad:'linear-gradient(135deg,#2563eb,#3b82f6)', text:'#fff', sub:'rgba(255,255,255,0.75)', border:'rgba(59,130,246,0.4)',  emoji:'🙂', mood:'2 months' };
-            if (days <= 90) return { grad:'linear-gradient(135deg,#0891b2,#06b6d4)', text:'#fff', sub:'rgba(255,255,255,0.75)', border:'rgba(6,182,212,0.4)',   emoji:'😊', mood:'3 months' };
-            return             { grad:'linear-gradient(135deg,#059669,#10b981)', text:'#fff', sub:'rgba(255,255,255,0.75)', border:'rgba(16,185,129,0.4)',  emoji:'😎', mood:'Plenty of time' };
+            if (days < 0)   return { rgb:'148,163,184', emoji:'✅', mood:'Done!'          };
+            if (days === 0) return { rgb:'220,38,38',   emoji:'🔥', mood:'TODAY!'         };
+            if (days <= 3)  return { rgb:'220,38,38',   emoji:'😰', mood:'Very soon!'     };
+            if (days <= 7)  return { rgb:'234,88,12',   emoji:'😬', mood:'This week!'     };
+            if (days <= 14) return { rgb:'217,119,6',   emoji:'😟', mood:'2 weeks left'   };
+            if (days <= 30) return { rgb:'99,102,241',  emoji:'😐', mood:'This month'     };
+            if (days <= 60) return { rgb:'37,99,235',   emoji:'🙂', mood:'2 months away'  };
+            if (days <= 90) return { rgb:'8,145,178',   emoji:'😊', mood:'3 months away'  };
+            return             { rgb:'5,150,105',   emoji:'😎', mood:'Plenty of time' };
         }
 
         function renderHomeCountdown() {
@@ -3999,27 +4000,46 @@ Give a concise pre-mock briefing in this EXACT JSON (no markdown, no backticks):
                 const dateStr   = new Date(exam.date).toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'});
                 const isUrgent  = days >= 0 && days <= 3;
 
-                return `<div class="exam-tile ${isUrgent?'exam-urgent':''}" style="background:${th.grad};border:1px solid ${th.border};animation-delay:${idx*0.07}s;">
-                    <!-- Big ambient bg emoji -->
-                    <div style="position:absolute;right:-4px;bottom:-10px;font-size:64px;opacity:0.13;line-height:1;pointer-events:none;user-select:none;">${th.emoji}</div>
+                // Glass card style: transparent bg, coloured border + tint
+                const tileAlpha  = 0.10;
+                const borderAlpha = 0.45;
+                // extract first colour from gradient for tint/border
+                const accentCol  = th.accent;
+                const isDark     = document.documentElement.classList.contains('dark');
+                const tileBg     = isDark
+                    ? `rgba(${th.rgb}, 0.13)`
+                    : `rgba(${th.rgb}, 0.08)`;
+                const tileBorder = `rgba(${th.rgb}, ${borderAlpha})`;
+                const daysColour = `rgba(${th.rgb}, 1)`;
+                const nameColour = isDark ? '#f1f5f9' : '#0f172a';
+                const dateColour = isDark ? '#94a3b8' : '#64748b';
+                const moodBg     = `rgba(${th.rgb}, 0.12)`;
+                const moodCol    = `rgba(${th.rgb}, 1)`;
+                const progTrack  = `rgba(${th.rgb}, 0.15)`;
+                const progFill   = `rgba(${th.rgb}, 0.6)`;
+
+                return `<div class="exam-tile ${isUrgent?'exam-urgent':''}"
+                    style="background:${tileBg};border:2px solid ${tileBorder};animation-delay:${idx*0.07}s;">
+                    <!-- Faint ambient emoji bg -->
+                    <div style="position:absolute;right:-2px;bottom:-10px;font-size:60px;opacity:0.08;line-height:1;pointer-events:none;user-select:none;">${th.emoji}</div>
                     <div style="position:relative;z-index:1;">
-                        <!-- Top row: mood emoji left, days number right -->
+                        <!-- Top: mood emoji + days counter -->
                         <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:6px;margin-bottom:10px;">
-                            <span style="font-size:28px;line-height:1;">${th.emoji}</span>
+                            <span style="font-size:26px;line-height:1;">${th.emoji}</span>
                             <div style="text-align:right;flex-shrink:0;">
-                                <div style="font-size:${days >= 0 && days < 100 ? '2rem' : '1.3rem'};font-weight:900;color:${th.text};line-height:1;">${days===0?'🔥':days<0?'✅':days}</div>
-                                <div style="font-size:11px;font-weight:800;color:${th.sub};letter-spacing:0.04em;text-transform:uppercase;">${days<0?'passed':days===0?'':days===1?'day':'days'}</div>
+                                <div style="font-size:${days >= 0 && days < 100 ? '2rem' : '1.3rem'};font-weight:900;color:${daysColour};line-height:1;">${days===0?'🔥':days<0?'✅':days}</div>
+                                <div style="font-size:11px;font-weight:800;color:${daysColour};opacity:0.7;letter-spacing:0.04em;text-transform:uppercase;">${days<0?'passed':days===0?'':days===1?'day':'days'}</div>
                             </div>
                         </div>
-                        <!-- Exam name — bold, never tiny -->
-                        <p style="font-size:14px;font-weight:900;color:${th.text};line-height:1.35;margin-bottom:4px;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;">${exam.name}</p>
+                        <!-- Exam name -->
+                        <p style="font-size:14px;font-weight:900;color:${nameColour};line-height:1.35;margin-bottom:4px;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;">${exam.name}</p>
                         <!-- Date -->
-                        <p style="font-size:12px;font-weight:700;color:${th.sub};margin-bottom:8px;">${dateStr}</p>
+                        <p style="font-size:12px;font-weight:600;color:${dateColour};margin-bottom:8px;">${dateStr}</p>
                         <!-- Mood pill -->
-                        <div style="display:inline-block;padding:3px 10px;border-radius:999px;background:rgba(255,255,255,0.22);font-size:11px;font-weight:800;color:${th.text};margin-bottom:9px;letter-spacing:0.01em;">${th.mood}</div>
+                        <div style="display:inline-block;padding:3px 10px;border-radius:999px;background:${moodBg};border:1px solid ${tileBorder};font-size:11px;font-weight:800;color:${moodCol};margin-bottom:9px;">${th.mood}</div>
                         <!-- Progress bar -->
-                        <div style="height:4px;border-radius:999px;background:rgba(255,255,255,0.2);overflow:hidden;">
-                            <div style="height:100%;border-radius:999px;background:rgba(255,255,255,0.75);width:${progPct}%;transition:width 0.9s ease;"></div>
+                        <div style="height:4px;border-radius:999px;background:${progTrack};overflow:hidden;">
+                            <div style="height:100%;border-radius:999px;background:${progFill};width:${progPct}%;transition:width 0.9s ease;"></div>
                         </div>
                     </div>
                 </div>`;
