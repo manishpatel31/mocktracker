@@ -3163,9 +3163,8 @@ Respond ONLY in this exact JSON (no markdown, no backticks):
             const mocks = getFilteredMocks ? getFilteredMocks() : state.mocks;
             const debriefs = JSON.parse(localStorage.getItem(DEBRIEF_KEY) || '[]');
 
-            if (!mocks || mocks.length === 0) { card.style.display = 'none'; return; }
-
-            card.style.display = 'block';
+            if (!mocks || mocks.length === 0) { return; }
+            if (card) card.style.display = 'none'; // always keep stub hidden
 
             // Show loading state
             content.innerHTML = '<p style="font-size:12px;color:#94a3b8;text-align:center;padding:8px;">Updating reminders...</p>';
@@ -3281,11 +3280,11 @@ Give a concise pre-mock briefing in this EXACT JSON (no markdown, no backticks):
             const mocks = getFilteredMocks ? getFilteredMocks() : state.mocks;
             const card = document.getElementById('premock-card');
             const content = document.getElementById('premock-content');
-            if (!card || !content) return;
-
-            // Always show card if there are mocks logged
-            if (!mocks || mocks.length === 0) { card.style.display = 'none'; return; }
-            card.style.display = 'block';
+            // premock-card is a hidden data stub — NEVER make it visible
+            if (card) card.style.display = 'none';
+            if (!content) return;
+            if (!mocks || mocks.length === 0) return;
+            // (card stays hidden — content is read by the CTA button)
 
             const debriefs = JSON.parse(localStorage.getItem(DEBRIEF_KEY) || '[]');
             const apiKey = localStorage.getItem(AI_KEY_STORAGE);
@@ -3888,8 +3887,8 @@ Give a concise pre-mock briefing in this EXACT JSON (no markdown, no backticks):
             const card = document.getElementById('ai-motivation-card');
             const textEl = document.getElementById('motivation-text');
             if (!card || !textEl) return;
-            if (!mocks || mocks.length === 0) { card.style.display = 'none'; return; }
-            card.style.display = 'block';
+            if (!mocks || mocks.length === 0) { return; }
+            if (card) card.style.display = 'none'; // always keep stub hidden
             const today = new Date().toISOString().slice(0,10);
             try {
                 const cached = JSON.parse(localStorage.getItem(MOTIV_KEY) || '{}');
@@ -4020,35 +4019,70 @@ Give a concise pre-mock briefing in this EXACT JSON (no markdown, no backticks):
                 const progTrack  = `rgba(${th.rgb}, 0.15)`;
                 const progFill   = `rgba(${th.rgb}, 0.6)`;
 
+                // Urgency-based animation: urgent exams pulse, others just reveal
+                const nameAnim = isUrgent
+                    ? `examNameReveal 0.5s cubic-bezier(0.16,1,0.3,1) both, examNamePulse 2.4s ease-in-out 0.6s infinite`
+                    : `examNameReveal 0.5s cubic-bezier(0.16,1,0.3,1) both`;
+                const nameDelay = `${0.08 + idx * 0.06}s`;
+
                 return `<div class="exam-tile ${isUrgent?'exam-urgent':''}"
                     style="background:${tileBg};border:2px solid ${tileBorder};animation-delay:${idx*0.07}s;">
-                    <!-- Faint ambient emoji (large, bottom-right) -->
-                    <div style="position:absolute;right:-4px;bottom:-12px;font-size:72px;opacity:0.07;line-height:1;pointer-events:none;user-select:none;">${th.emoji}</div>
-                    <div style="position:relative;z-index:1;height:100%;display:flex;flex-direction:column;gap:0;">
+                    <!-- Ghost emoji watermark bottom-right -->
+                    <div style="position:absolute;right:-6px;bottom:-14px;font-size:80px;opacity:0.06;line-height:1;pointer-events:none;user-select:none;">${th.emoji}</div>
 
-                        <!-- ROW 1: emoji on its own line above name -->
-                        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
-                            <span style="font-size:26px;line-height:1;">${th.emoji}</span>
-                            <!-- Days counter — top-right -->
-                            <div style="flex-shrink:0;text-align:right;">
-                                <div style="font-size:${days >= 0 && days < 100 ? '2.2rem' : '1.5rem'};font-weight:900;color:${daysColour};line-height:1;font-family:'Bebas Neue',sans-serif;letter-spacing:0.03em;">${days===0?'🔥':days<0?'✅':days}</div>
-                                <div style="font-size:10px;font-weight:800;color:${daysColour};opacity:0.75;letter-spacing:0.06em;text-transform:uppercase;">${days<0?'passed':days===0?'':days===1?'day':'days'}</div>
+                    <div style="position:relative;z-index:1;display:flex;flex-direction:column;height:100%;">
+
+                        <!-- TOP ROW: [mood emoji] [── BIG EXAM NAME ──] [days number] -->
+                        <div style="display:flex;align-items:flex-start;gap:10px;margin-bottom:10px;">
+
+                            <!-- Mood emoji — left anchor -->
+                            <span style="font-size:24px;line-height:1;flex-shrink:0;margin-top:3px;">${th.emoji}</span>
+
+                            <!-- Exam name — fills ALL the empty middle space -->
+                            <h3 style="
+                                flex:1;
+                                min-width:0;
+                                font-family:'Bebas Neue',sans-serif;
+                                font-size:clamp(20px,4.5vw,26px);
+                                font-weight:400;
+                                letter-spacing:0.05em;
+                                color:${nameColour};
+                                line-height:1.15;
+                                margin:0;
+                                overflow:hidden;
+                                display:-webkit-box;
+                                -webkit-line-clamp:3;
+                                -webkit-box-orient:vertical;
+                                word-break:break-word;
+                                animation:${nameAnim};
+                                animation-delay:${nameDelay};
+                            ">${exam.name}</h3>
+
+                            <!-- Days — right anchor, never shrinks -->
+                            <div style="flex-shrink:0;text-align:right;min-width:36px;">
+                                <div style="
+                                    font-family:'Bebas Neue',sans-serif;
+                                    font-size:${days >= 0 && days < 100 ? '2.4rem' : '1.6rem'};
+                                    font-weight:400;
+                                    letter-spacing:0.03em;
+                                    color:${daysColour};
+                                    line-height:1;
+                                ">${days===0?'🔥':days<0?'✅':days}</div>
+                                <div style="font-size:9px;font-weight:800;color:${daysColour};opacity:0.7;letter-spacing:0.07em;text-transform:uppercase;margin-top:1px;">
+                                    ${days<0?'done':days===0?'':days===1?'day':'days'}
+                                </div>
                             </div>
                         </div>
-                        <!-- Exam name — full width, large, Bebas Neue -->
-                        <p style="font-family:'Bebas Neue',sans-serif;font-size:clamp(18px,5vw,24px);font-weight:400;letter-spacing:0.04em;color:${nameColour};line-height:1.2;margin:0 0 8px 0;overflow:hidden;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;word-break:break-word;animation:examNameReveal 0.55s cubic-bezier(0.16,1,0.3,1) both;animation-delay:${0.1+idx*0.07}s;${isUrgent?'animation:examNameReveal 0.55s cubic-bezier(0.16,1,0.3,1) both, examNamePulse 2.2s ease-in-out 0.7s infinite;':''}">
-                            ${exam.name}
-                        </p>
 
-                        <!-- ROW 2: Date + mood pill -->
-                        <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:9px;">
-                            <span style="font-size:12px;font-weight:600;color:${dateColour};">${dateStr}</span>
-                            <span style="padding:2px 9px;border-radius:999px;background:${moodBg};border:1px solid ${tileBorder};font-size:11px;font-weight:800;color:${moodCol};">${th.mood}</span>
+                        <!-- BOTTOM ROW: date · mood pill — pushed to bottom -->
+                        <div style="display:flex;align-items:center;gap:7px;flex-wrap:wrap;margin-bottom:8px;margin-top:auto;">
+                            <span style="font-size:11px;font-weight:600;color:${dateColour};">${dateStr}</span>
+                            <span style="padding:2px 8px;border-radius:999px;background:${moodBg};border:1px solid ${tileBorder};font-size:10px;font-weight:800;color:${moodCol};">${th.mood}</span>
                         </div>
 
-                        <!-- ROW 3: Progress bar -->
-                        <div style="height:4px;border-radius:999px;background:${progTrack};overflow:hidden;margin-top:auto;">
-                            <div style="height:100%;border-radius:999px;background:${progFill};width:${progPct}%;transition:width 0.9s ease;"></div>
+                        <!-- Progress bar -->
+                        <div style="height:4px;border-radius:999px;background:${progTrack};overflow:hidden;">
+                            <div style="height:100%;border-radius:999px;background:${progFill};width:${progPct}%;transition:width 1s ease;"></div>
                         </div>
                     </div>
                 </div>`;
