@@ -19,6 +19,8 @@
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- AOS — Animate On Scroll -->
+    <link rel="stylesheet" href="https://unpkg.com/aos@2.3.1/dist/aos.css">
     <script>
         tailwind.config = {
             darkMode: 'class',
@@ -1156,12 +1158,14 @@
 
             <!-- Primary Stat Cards -->
             <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
-                <div class="glass-card shimmer-card p-6 rounded-[2rem] relative overflow-hidden group hover:scale-[1.02] transition-transform">
+                <div class="glass-card shimmer-card p-6 rounded-[2rem] relative overflow-hidden group hover:scale-[1.02] transition-transform"
+                     data-aos="fade-up" data-aos-duration="700" data-aos-delay="0">
                     <div class="absolute -right-4 -bottom-4 text-brand-500/8 text-7xl group-hover:scale-110 transition duration-500"><i class="fa-solid fa-layer-group"></i></div>
                     <p class="text-xs font-black text-slate-400 uppercase tracking-widest mb-1 flex items-center gap-1">📚 Mocks Attempted <span class="demo-badge">demo</span></p>
                     <h3 id="h-total" class="text-4xl font-black text-slate-900 dark:text-white">-</h3>
                 </div>
-                <div class="glass-card shimmer-card p-6 rounded-[2rem] relative overflow-hidden group hover:scale-[1.02] transition-transform">
+                <div class="glass-card shimmer-card p-6 rounded-[2rem] relative overflow-hidden group hover:scale-[1.02] transition-transform"
+                     data-aos="fade-up" data-aos-duration="700" data-aos-delay="100">
                     <div class="absolute -right-4 -bottom-4 text-emerald-500/8 text-7xl group-hover:scale-110 transition duration-500"><i class="fa-solid fa-bolt"></i></div>
                     <p class="text-xs font-black text-slate-400 uppercase tracking-widest mb-1 flex items-center gap-1">⚡ Avg Score <span class="demo-badge">demo</span></p>
                     <div class="flex items-end gap-2">
@@ -1169,11 +1173,13 @@
                         <span id="h-delta" class="text-xs font-black pb-1 hidden"></span>
                     </div>
                 </div>
-                <div class="glass-card shimmer-card p-6 rounded-[2rem] relative overflow-hidden group hover:scale-[1.02] transition-transform border-l-4 border-accent-500">
+                <div class="glass-card shimmer-card p-6 rounded-[2rem] relative overflow-hidden group hover:scale-[1.02] transition-transform border-l-4 border-accent-500"
+                     data-aos="fade-up" data-aos-duration="700" data-aos-delay="200">
                     <p class="text-xs font-black text-slate-400 uppercase tracking-widest mb-1 flex items-center gap-1">🎖️ Mean Percentile <span class="demo-badge">demo</span></p>
                     <h3 id="h-perc" class="text-4xl font-black text-accent-500">-</h3>
                 </div>
-                <div class="glass-card shimmer-card p-6 rounded-[2rem] relative overflow-hidden group hover:scale-[1.02] transition-transform border-l-4 border-amber-500">
+                <div class="glass-card shimmer-card p-6 rounded-[2rem] relative overflow-hidden group hover:scale-[1.02] transition-transform border-l-4 border-amber-500"
+                     data-aos="fade-up" data-aos-duration="700" data-aos-delay="300">
                     <p class="text-xs font-black text-slate-400 uppercase tracking-widest mb-1 flex items-center gap-1">🏆 High Score <span class="demo-badge">demo</span></p>
                     <h3 id="h-high" class="text-4xl font-black text-amber-500">-</h3>
                     <p id="h-high-sub" class="text-xs font-black text-amber-400/60 uppercase tracking-widest mt-1 truncate max-w-full">-</p>
@@ -1182,26 +1188,31 @@
 
             <!-- Secondary Mini Stats -->
             <div class="grid grid-cols-2 lg:grid-cols-4 gap-3">
-                <div class="glass-card p-4 rounded-[1.5rem] flex items-center gap-3 hover:scale-[1.04] transition-transform cursor-default">
+                <div class="glass-card p-4 rounded-[1.5rem] flex items-center gap-3 hover:scale-[1.04] transition-transform cursor-default"
+                     data-aos="fade-up" data-aos-duration="700" data-aos-delay="50">
                     <div class="w-10 h-10 rounded-xl bg-orange-100 dark:bg-orange-900/30 flex items-center justify-center text-lg" style="animation:floatBob 2.5s ease-in-out infinite;">🔥</div>
                     <div><p class="text-xs font-black text-slate-400 uppercase tracking-widest">Streak</p><h4 id="h-streak" class="text-xl font-black text-orange-500">- days</h4></div>
                 </div>
-                <div class="glass-card p-4 rounded-[1.5rem] flex items-center gap-3 hover:scale-[1.04] transition-transform cursor-default">
+                <div class="glass-card p-4 rounded-[1.5rem] flex items-center gap-3 hover:scale-[1.04] transition-transform cursor-default"
+                     data-aos="fade-up" data-aos-duration="700" data-aos-delay="150">
                     <div class="w-10 h-10 rounded-xl bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center text-lg" style="animation:floatBob 3s ease-in-out infinite 0.5s;">📈</div>
                     <div><p class="text-xs font-black text-slate-400 uppercase tracking-widest">Last Score</p><h4 id="h-last" class="text-xl font-black text-emerald-600">-</h4></div>
                 </div>
-                <div class="glass-card p-4 rounded-[1.5rem] flex items-center gap-3 hover:scale-[1.04] transition-transform cursor-default">
+                <div class="glass-card p-4 rounded-[1.5rem] flex items-center gap-3 hover:scale-[1.04] transition-transform cursor-default"
+                     data-aos="fade-up" data-aos-duration="700" data-aos-delay="250">
                     <div class="w-10 h-10 rounded-xl bg-rose-100 dark:bg-rose-900/30 flex items-center justify-center text-lg" style="animation:floatBob 2.8s ease-in-out infinite 1s;">🎯</div>
                     <div><p class="text-xs font-black text-slate-400 uppercase tracking-widest">Lowest</p><h4 id="h-low" class="text-xl font-black text-rose-500">-</h4></div>
                 </div>
-                <div class="glass-card p-4 rounded-[1.5rem] flex items-center gap-3 hover:scale-[1.04] transition-transform cursor-default">
+                <div class="glass-card p-4 rounded-[1.5rem] flex items-center gap-3 hover:scale-[1.04] transition-transform cursor-default"
+                     data-aos="fade-up" data-aos-duration="700" data-aos-delay="350">
                     <div class="w-10 h-10 rounded-xl bg-brand-100 dark:bg-brand-900/30 flex items-center justify-center text-lg" style="animation:floatBob 3.2s ease-in-out infinite 1.5s;">📅</div>
                     <div><p class="text-xs font-black text-slate-400 uppercase tracking-widest">This Month</p><h4 id="h-month" class="text-xl font-black text-brand-500">- mocks</h4></div>
                 </div>
             </div>
 
             <!-- TARGET SCORE WIDGET + PROJECTION (Features #1 & #4) -->
-            <div class="glass-card p-5 rounded-[2rem] flex flex-col md:flex-row items-center gap-5">
+            <div class="glass-card p-5 rounded-[2rem] flex flex-col md:flex-row items-center gap-5"
+                 data-aos="fade-up" data-aos-duration="800" data-aos-delay="100">
                 <!-- Ring -->
                 <div class="target-ring">
                     <svg viewBox="0 0 80 80" width="80" height="80">
@@ -1271,7 +1282,8 @@
 
             <!-- Chart + Resources Row -->
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                <div class="lg:col-span-2 glass-card p-7 rounded-[2rem]">
+                <div class="lg:col-span-2 glass-card p-7 rounded-[2rem]"
+                     data-aos="fade-up" data-aos-duration="800" data-aos-delay="0">
                     <h3 class="font-extrabold text-base mb-6 flex items-center gap-3 text-slate-900 dark:text-white">
                         <span class="w-1.5 h-5 bg-gradient-to-b from-brand-500 to-accent-500 rounded-full"></span>
                         Performance Index
@@ -1295,7 +1307,8 @@
             </div>
 
             <!-- Active Roadmap -->
-            <div class="glass-card p-7 rounded-[2rem]">
+            <div class="glass-card p-7 rounded-[2rem]"
+                 data-aos="fade-up" data-aos-duration="800" data-aos-delay="100">
                 <div class="flex justify-between items-center mb-6">
                     <h3 class="text-lg font-extrabold text-slate-900 dark:text-white flex items-center gap-2">Active Roadmap <span class="demo-badge">demo</span></h3>
                     <button onclick="openModal('modal-task')" class="btn-gradient text-white px-5 py-2 rounded-xl text-xs font-black shadow-lg hover:scale-105 transition">+ Create Task</button>
@@ -1326,7 +1339,8 @@
 
             <!-- ── AI PERFORMANCE COACH ── -->
             <!-- AI COACH — compact two-button card -->
-            <div class="glass-card rounded-[2rem] overflow-hidden" id="ai-coach-card">
+            <div class="glass-card rounded-[2rem] overflow-hidden" id="ai-coach-card"
+                 data-aos="fade-up" data-aos-duration="800" data-aos-delay="150">
                 <!-- Header -->
                 <div class="px-5 py-4 flex items-center gap-3" style="background:linear-gradient(135deg,rgba(99,102,241,0.09),rgba(168,85,247,0.06));border-bottom:1px solid rgba(255,255,255,0.2);">
                     <div class="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 shadow-md" style="background:linear-gradient(135deg,#6366f1,#a855f7);">
@@ -1405,7 +1419,8 @@
             <form id="form-score" class="space-y-4">
 
                 <!-- ── CARD 1: Mock Identity ── -->
-                <div class="glass-card rounded-[1.8rem] overflow-hidden">
+                <div class="glass-card rounded-[1.8rem] overflow-hidden"
+                     data-aos="fade-right" data-aos-duration="700" data-aos-delay="0">
                     <div class="px-6 py-4 border-b border-white/30 dark:border-white/5 flex items-center gap-3">
                         <span class="w-7 h-7 rounded-xl bg-gradient-to-br from-brand-500 to-accent-500 text-white flex items-center justify-center text-xs font-black shadow-lg">1</span>
                         <span class="text-sm font-black text-slate-700 dark:text-slate-200 uppercase tracking-wider">Mock Identity</span>
@@ -1437,7 +1452,8 @@
                 </div>
 
                 <!-- ── CARD 2: Scores ── -->
-                <div class="glass-card rounded-[1.8rem] overflow-hidden">
+                <div class="glass-card rounded-[1.8rem] overflow-hidden"
+                     data-aos="fade-right" data-aos-duration="700" data-aos-delay="100">
                     <div class="px-6 py-4 border-b border-white/30 dark:border-white/5 flex items-center justify-between">
                         <div class="flex items-center gap-3">
                             <span class="w-7 h-7 rounded-xl bg-gradient-to-br from-emerald-500 to-cyan-500 text-white flex items-center justify-center text-xs font-black shadow-lg">2</span>
@@ -1504,7 +1520,8 @@
                 </div>
 
                 <!-- ── CARD 3: Performance Metrics ── -->
-                <div class="glass-card rounded-[1.8rem] overflow-hidden">
+                <div class="glass-card rounded-[1.8rem] overflow-hidden"
+                     data-aos="fade-right" data-aos-duration="700" data-aos-delay="200">
                     <div class="px-6 py-4 border-b border-white/30 dark:border-white/5 flex items-center gap-3">
                         <span class="w-7 h-7 rounded-xl bg-gradient-to-br from-accent-500 to-purple-500 text-white flex items-center justify-center text-xs font-black shadow-lg">3</span>
                         <span class="text-sm font-black text-slate-700 dark:text-slate-200 uppercase tracking-wider">Performance Metrics</span>
@@ -1522,7 +1539,8 @@
                 </div>
 
                 <!-- ── CARD 4: Error Debrief ── -->
-                <div class="glass-card rounded-[1.8rem] overflow-hidden">
+                <div class="glass-card rounded-[1.8rem] overflow-hidden"
+                     data-aos="fade-right" data-aos-duration="700" data-aos-delay="300">
                     <div class="px-6 py-4 border-b border-white/30 dark:border-white/5 flex items-center gap-3">
                         <span class="w-7 h-7 rounded-xl bg-gradient-to-br from-rose-500 to-orange-500 text-white flex items-center justify-center text-xs font-black shadow-lg">4</span>
                         <span class="text-sm font-black text-slate-700 dark:text-slate-200 uppercase tracking-wider">Error Debrief</span>
@@ -1541,7 +1559,8 @@
                 </div>
 
                 <!-- ── SAVE BUTTON ── -->
-                <button type="submit" class="w-full py-5 rounded-2xl btn-gradient text-white text-base font-black shadow-xl shadow-brand-500/30 transition active:scale-[0.98] flex items-center justify-center gap-3">
+                <button type="submit" class="w-full py-5 rounded-2xl btn-gradient text-white text-base font-black shadow-xl shadow-brand-500/30 transition active:scale-[0.98] flex items-center justify-center gap-3"
+                        data-aos="zoom-in" data-aos-duration="600" data-aos-delay="350">
                     <i class="fa-solid fa-floppy-disk text-lg"></i>
                     Save Mock to Vault
                 </button>
@@ -1553,7 +1572,8 @@
         <div id="tab-history" class="tab-content max-w-6xl mx-auto pt-5 pb-28 space-y-5">
 
             <!-- Header card -->
-            <div class="glass-card rounded-[2rem] overflow-hidden">
+            <div class="glass-card rounded-[2rem] overflow-hidden"
+                 data-aos="fade-up" data-aos-duration="700">
                 <div class="p-5 flex flex-col md:flex-row gap-4 justify-between items-start md:items-center" style="background:linear-gradient(135deg,rgba(99,102,241,0.09),rgba(168,85,247,0.06));border-bottom:1px solid rgba(255,255,255,0.2);">
                     <div class="flex items-center gap-3">
                         <div class="w-11 h-11 rounded-2xl flex items-center justify-center shadow-lg flex-shrink-0" style="background:linear-gradient(135deg,#6366f1,#a855f7);">
@@ -1627,14 +1647,16 @@
 
             <!-- RADAR + SCATTER row (Features #5 & #7) -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div class="glass-card p-7 rounded-[2rem]">
+                <div class="glass-card p-7 rounded-[2rem]"
+                     data-aos="fade-up" data-aos-duration="700" data-aos-delay="0">
                     <h3 class="text-sm font-black text-slate-800 dark:text-white mb-4 uppercase tracking-widest flex items-center gap-2">
                         <i class="fa-solid fa-chart-simple text-brand-500"></i> 🕸️ Subject Radar
                         <span class="demo-badge">demo</span>
                     </h3>
                     <div class="h-56 relative"><canvas id="chart-radar"></canvas></div>
                 </div>
-                <div class="glass-card p-7 rounded-[2rem]">
+                <div class="glass-card p-7 rounded-[2rem]"
+                     data-aos="fade-up" data-aos-duration="700" data-aos-delay="150">
                     <h3 class="text-sm font-black text-slate-800 dark:text-white mb-4 uppercase tracking-widest flex items-center gap-2">
                         <i class="fa-solid fa-braille text-accent-500"></i> Score vs Percentile
                         <span class="demo-badge">demo</span>
@@ -1644,7 +1666,8 @@
             </div>
 
             <!-- SCORE DISTRIBUTION HISTOGRAM (New) -->
-            <div class="glass-card p-7 rounded-[2rem]">
+            <div class="glass-card p-7 rounded-[2rem]"
+                 data-aos="fade-up" data-aos-duration="700">
                 <h3 class="text-sm font-black text-slate-800 dark:text-white mb-4 uppercase tracking-widest flex items-center gap-2">
                     <i class="fa-solid fa-chart-column text-indigo-500"></i> 📊 Score Distribution
                     <span class="demo-badge">demo</span>
@@ -1655,7 +1678,8 @@
             </div>
 
             <!-- NEGATIVE MARKING DAMAGE (New) -->
-            <div class="glass-card p-7 rounded-[2rem]">
+            <div class="glass-card p-7 rounded-[2rem]"
+                 data-aos="fade-up" data-aos-duration="700">
                 <h3 class="text-sm font-black text-slate-800 dark:text-white mb-4 uppercase tracking-widest flex items-center gap-2">
                         <i class="fa-solid fa-skull text-rose-500"></i> 🩸 Negative Marking Damage
                     <span class="demo-badge">demo</span>
@@ -1666,7 +1690,8 @@
             </div>
 
             <!-- BEST DAY OF WEEK (Feature #8) -->
-            <div class="glass-card p-7 rounded-[2rem]">
+            <div class="glass-card p-7 rounded-[2rem]"
+                 data-aos="fade-up" data-aos-duration="700">
                 <h3 class="text-sm font-black text-slate-800 dark:text-white mb-5 uppercase tracking-widest flex items-center gap-2">
                     <i class="fa-solid fa-calendar-star text-amber-500"></i> 📅 Best Day of Week
                     <span class="demo-badge">demo</span>
@@ -1675,7 +1700,8 @@
                 <p id="best-day-insight" class="text-xs text-brand-600 dark:text-brand-400 font-black mt-4 text-center"></p>
             </div>
 
-            <div class="glass-card rounded-[2rem] overflow-hidden">
+            <div class="glass-card rounded-[2rem] overflow-hidden"
+                 data-aos="fade-up" data-aos-duration="700">
                 <div class="p-5 border-b border-white/30 dark:border-white/5" style="background:rgba(255,255,255,0.2)">
                     <h3 class="text-base font-bold text-gray-900 dark:text-white flex items-center gap-2">
                         <i class="fa-solid fa-table-cells text-brand-500"></i> 🧮 Subject Mastery Matrix
@@ -1699,20 +1725,23 @@
                 </div>
             </div>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div class="glass-card p-7 rounded-[2rem] border-t-4 border-rose-500">
+                <div class="glass-card p-7 rounded-[2rem] border-t-4 border-rose-500"
+                     data-aos="fade-up" data-aos-duration="700" data-aos-delay="0">
                     <h3 class="text-base font-bold text-rose-500 mb-5 flex items-center gap-2 uppercase tracking-widest">
                         <i class="fa-solid fa-bug"></i> 🐛 Silly Error Audit <span class="demo-badge">demo</span>
                     </h3>
                     <div id="ana-silly-log-body" class="space-y-3"></div>
                 </div>
-                <div class="glass-card p-7 rounded-[2rem] border-t-4 border-brand-500">
+                <div class="glass-card p-7 rounded-[2rem] border-t-4 border-brand-500"
+                     data-aos="fade-up" data-aos-duration="700" data-aos-delay="150">
                     <h3 class="text-base font-bold text-brand-600 dark:text-brand-400 mb-5 uppercase tracking-widest flex items-center gap-2">
                         <i class="fa-solid fa-scale-balanced"></i> 🏆 Platform Performance <span class="demo-badge">demo</span>
                     </h3>
                     <div class="h-60 relative"><canvas id="chart-plat"></canvas></div>
                 </div>
             </div>
-            <div class="glass-card rounded-[2rem] overflow-hidden" id="weak-areas-outer" style="position:relative;">
+            <div class="glass-card rounded-[2rem] overflow-hidden" id="weak-areas-outer" style="position:relative;"
+                 data-aos="fade-up" data-aos-duration="700">
                 <!-- floating decos -->
                 <span class="float-deco" style="right:18px;top:8px;font-size:22px;">💪</span>
                 <span class="float-deco float-deco-b" style="right:50px;top:14px;font-size:14px;">📌</span>
@@ -1732,7 +1761,8 @@
             </div>
 
             <!-- AI PATTERN INSIGHTS — placed at bottom for deep dive after all charts -->
-            <div id="ai-insights-card" class="glass-card rounded-[2rem] overflow-hidden" style="border:1px solid rgba(99,102,241,0.18);">
+            <div id="ai-insights-card" class="glass-card rounded-[2rem] overflow-hidden" style="border:1px solid rgba(99,102,241,0.18);"
+                 data-aos="fade-up" data-aos-duration="700">
                 <div class="p-5 flex items-center justify-between flex-wrap gap-3" style="background:linear-gradient(135deg,rgba(99,102,241,0.1),rgba(168,85,247,0.07));border-bottom:1px solid rgba(255,255,255,0.2);">
                     <div class="flex items-center gap-3">
                         <div class="w-11 h-11 rounded-2xl flex items-center justify-center flex-shrink-0 shadow-lg" style="background:linear-gradient(135deg,#6366f1,#a855f7);">
@@ -1769,7 +1799,8 @@
         <div id="tab-tools" class="tab-content max-w-4xl mx-auto space-y-6 pt-5 pb-28">
 
             <!-- ── AI MODE TOGGLE CARD ── -->
-            <div class="glass-card rounded-[2rem] overflow-hidden" id="ai-mode-card">
+            <div class="glass-card rounded-[2rem] overflow-hidden" id="ai-mode-card"
+                 data-aos="fade-up" data-aos-duration="700" data-aos-delay="0">
                 <!-- Compact single-row header -->
                 <div class="px-5 py-4" style="background:linear-gradient(135deg,rgba(99,102,241,0.1),rgba(168,85,247,0.07));">
                     <div class="flex items-center gap-3">
@@ -1917,14 +1948,16 @@
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div class="glass-card p-8 rounded-[2.5rem] text-center hover:scale-[1.03] transition group card-pop" style="position:relative;overflow:hidden;">
+                <div class="glass-card p-8 rounded-[2.5rem] text-center hover:scale-[1.03] transition group card-pop" style="position:relative;overflow:hidden;"
+                     data-aos="fade-up" data-aos-duration="700" data-aos-delay="0">
                     <span style="position:absolute;right:14px;top:12px;font-size:22px;opacity:0.15;animation:floatDrift 6s ease-in-out infinite;">💾</span>
                     <div class="w-14 h-14 rounded-2xl bg-indigo-100/60 dark:bg-indigo-950/60 text-indigo-600 mx-auto mb-4 flex items-center justify-center text-2xl group-hover:scale-110 group-hover:rotate-6 transition"><i class="fa-solid fa-download"></i></div>
                     <h3 class="text-lg font-bold mb-1 text-slate-900 dark:text-white">📦 Export Data</h3>
                     <p class="text-sm text-slate-500 mb-6">Save all your records to a JSON file.</p>
                     <button onclick="app.backup()" class="w-full py-3.5 rounded-2xl btn-gradient text-white font-black shadow-lg hover:scale-[1.02] transition">⬇️ Download JSON</button>
                 </div>
-                <div class="glass-card p-8 rounded-[2.5rem] text-center hover:scale-[1.03] transition group card-pop" style="position:relative;overflow:hidden;animation-delay:0.08s;">
+                <div class="glass-card p-8 rounded-[2.5rem] text-center hover:scale-[1.03] transition group card-pop" style="position:relative;overflow:hidden;animation-delay:0.08s;"
+                     data-aos="fade-up" data-aos-duration="700" data-aos-delay="150">
                     <span style="position:absolute;right:14px;top:12px;font-size:22px;opacity:0.15;animation:floatDrift 7s ease-in-out infinite 1s;">📂</span>
                     <div class="w-14 h-14 rounded-2xl bg-purple-100/60 dark:bg-purple-900/30 text-purple-600 mx-auto mb-4 flex items-center justify-center text-2xl group-hover:scale-110 group-hover:rotate-6 transition"><i class="fa-solid fa-upload"></i></div>
                     <h3 class="text-lg font-bold mb-1 text-slate-900 dark:text-white">🔄 Restore Data</h3>
@@ -4493,6 +4526,8 @@ Give a concise pre-mock briefing in this EXACT JSON (no markdown, no backticks):
                 currentTab = TABS.indexOf(tabId);
                 if (tabId === 'tools') { try { renderExamList(); } catch(e) {} }
                 processData();
+                // Re-trigger AOS on every tab switch so cards animate fresh each time
+                setTimeout(() => { if (typeof AOS !== 'undefined') AOS.refresh(); }, 80);
             },
             toggleTheme: () => {
                 const isDark = document.documentElement.classList.toggle('dark');
@@ -5999,6 +6034,35 @@ Give a concise pre-mock briefing in this EXACT JSON (no markdown, no backticks):
                 banner.classList.remove('show');
             });
         }
+    <!-- ══════════════════════════════════════════
+         AOS — Animate On Scroll  (loaded last so
+         all DOM elements are already in the page)
+    ══════════════════════════════════════════ -->
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script>
+        /* ── AOS init ──
+           • duration  : 800ms  (all animations)
+           • easing    : ease-in-out
+           • once:false : re-animates every time a tab is shown
+           • offset:60  : triggers 60px before element enters viewport
+           • container : the <main> scrollable area (not window),
+             because the app scrolls inside <main>, not the page itself
+        */
+        (function initAOS() {
+            const scrollContainer = document.querySelector('main.flex-1');
+
+            AOS.init({
+                duration : 800,
+                easing   : 'ease-in-out',
+                once     : false,   // re-animate each time tab is switched back
+                offset   : 60,
+                // Tell AOS to watch the inner scroll container, not window
+                ...(scrollContainer ? { container: scrollContainer } : {})
+            });
+
+            // Also refresh after the first data render so dynamic content is caught
+            setTimeout(() => AOS.refresh(), 600);
+        })();
     </script>
 
 </body>
