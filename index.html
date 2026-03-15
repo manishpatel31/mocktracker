@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MockTracker Pro — Ace Every Exam</title>
+  <meta name="description" content="The ultimate mock test tracker for SSC, RRB, and Bank exam aspirants. Track. Analyse. Conquer." />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: { DEFAULT: '#6366f1', dark: '#4f46e5', light: '#818cf8', pale: '#e0e7ff' },
+            accent: { DEFAULT: '#d946ef', dark: '#c026d3' },
+            grape: '#a855f7',
+          },
+          fontFamily: { sans: ['"Plus Jakarta Sans"', 'sans-serif'] },
+          animation: {
+            'float':      'float 6s ease-in-out infinite',
+            'float2':     'float2 8s ease-in-out infinite',
+            'pulse-slow': 'pulse 4s cubic-bezier(0.4,0,0.6,1) infinite',
+          },
+          keyframes: {
+            float:  { '0%,100%': { transform: 'translateY(0px)'   }, '50%': { transform: 'translateY(-18px)' } },
+            float2: { '0%,100%': { transform: 'translateY(0px)'   }, '50%': { transform: 'translateY(-12px)' } },
+          },
+        }
+      }
+    }
+  </script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=Bebas+Neue&display=swap');
+
+    *, *::before, *::after { box-sizing: border-box; -webkit-font-smoothing: antialiased; }
+    html { scroll-behavior: smooth; }
+    body { font-family: 'Plus Jakarta Sans', sans-serif; background: #06030f; color: #f1f5f9; overflow-x: hidden; }
+
+    /* ── Background mesh ── */
+    .hero-bg {
+      background-color: #06030f;
+      background-image:
+        radial-gradient(ellipse 100% 80% at 0% 0%,   rgba(99,102,241,0.55) 0%, transparent 50%),
+        radial-gradient(ellipse 80% 60%  at 100% 10%, rgba(168,85,247,0.40) 0%, transparent 50%),
+        radial-gradient(ellipse 60% 50%  at 50% 80%,  rgba(217,70,239,0.25) 0%, transparent 55%),
+        radial-gradient(ellipse 40% 30%  at 80% 50%,  rgba(99,102,241,0.20) 0%, transparent 45%);
+    }
+    .section-bg {
+      background-color: #08050f;
+      background-image:
+        radial-gradient(ellipse 70% 50% at 90% 20%, rgba(99,102,241,0.18) 0%, transparent 55%),
+        radial-gradient(ellipse 60% 40% at 10% 80%, rgba(168,85,247,0.14) 0%, transparent 55%);
+    }
+
+    /* ── Glassmorphism card ── */
+    .glass {
+      background: rgba(255,255,255,0.04);
+      backdrop-filter: blur(18px) saturate(180%);
+      -webkit-backdrop-filter: blur(18px) saturate(180%);
+      border: 1px solid rgba(255,255,255,0.08);
+      box-shadow: 0 8px 40px rgba(0,0,0,0.45), inset 0 1px 0 rgba(255,255,255,0.07);
+    }
+    .glass-hover { transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease; }
+    .glass-hover:hover {
+      transform: translateY(-6px);
+      border-color: rgba(99,102,241,0.45);
+      box-shadow: 0 20px 60px rgba(99,102,241,0.22), inset 0 1px 0 rgba(255,255,255,0.1);
+    }
+
+    /* ── Gradient text ── */
+    .grad-text {
+      background: linear-gradient(135deg, #818cf8 0%, #d946ef 50%, #a855f7 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    /* ── Gradient border ── */
+    .grad-border { position: relative; }
+    .grad-border::before {
+      content: '';
+      position: absolute;
+      inset: -1px;
+      border-radius: inherit;
+      background: linear-gradient(135deg, rgba(99,102,241,0.6), rgba(217,70,239,0.4), rgba(99,102,241,0.1));
+      z-index: -1;
+    }
+
+    /* ── CTA button glow ── */
+    .btn-glow {
+      background: linear-gradient(135deg, #6366f1, #a855f7, #d946ef);
+      box-shadow: 0 4px 24px rgba(99,102,241,0.55);
+      transition: box-shadow 0.3s ease, transform 0.2s ease;
+    }
+    .btn-glow:hover {
+      box-shadow: 0 8px 40px rgba(99,102,241,0.7), 0 0 0 6px rgba(99,102,241,0.15);
+      transform: translateY(-2px) scale(1.02);
+    }
+    .btn-glow:active { transform: translateY(0) scale(0.99); }
+
+    /* ── Secondary button ── */
+    .btn-outline {
+      border: 1.5px solid rgba(129,140,248,0.5);
+      color: #a5b4fc;
+      transition: all 0.3s ease;
+    }
+    .btn-outline:hover {
+      border-color: #6366f1;
+      background: rgba(99,102,241,0.12);
+      color: #c7d2fe;
+    }
+
+    /* ── Step number ── */
+    .step-num {
+      background: linear-gradient(135deg, #6366f1, #a855f7);
+      box-shadow: 0 0 20px rgba(99,102,241,0.45);
+    }
+
+    /* ── Floating orbs ── */
+    .orb {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(70px);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ── Nav scroll ── */
+    #navbar { transition: background 0.4s ease, box-shadow 0.4s ease; }
+    #navbar.scrolled {
+      background: rgba(6,3,15,0.85) !important;
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      box-shadow: 0 1px 0 rgba(255,255,255,0.06);
+    }
+
+    /* ── Scroll reveal ── */
+    .reveal { opacity: 0; transform: translateY(32px); transition: opacity 0.65s ease, transform 0.65s ease; }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+    .reveal-delay-1 { transition-delay: 0.1s; }
+    .reveal-delay-2 { transition-delay: 0.2s; }
+    .reveal-delay-3 { transition-delay: 0.3s; }
+    .reveal-delay-4 { transition-delay: 0.4s; }
+
+    /* ── Misc ── */
+    .stat-pill { background: rgba(99,102,241,0.12); border: 1px solid rgba(99,102,241,0.25); }
+    .icon-ring { background: linear-gradient(135deg, rgba(99,102,241,0.25), rgba(168,85,247,0.15)); border: 1px solid rgba(99,102,241,0.3); }
+    .divider   { height: 1px; background: linear-gradient(90deg, transparent, rgba(99,102,241,0.35), rgba(217,70,239,0.25), transparent); }
+    .grid-pattern {
+      background-image: linear-gradient(rgba(99,102,241,0.04) 1px, transparent 1px),
+                        linear-gradient(90deg, rgba(99,102,241,0.04) 1px, transparent 1px);
+      background-size: 48px 48px;
+    }
+    .exam-badge { background: rgba(99,102,241,0.12); border: 1px solid rgba(99,102,241,0.3); font-size: 0.72rem; font-weight: 700; letter-spacing: 0.05em; }
+    .mock-card  { background: rgba(14,10,31,0.9); border: 1px solid rgba(255,255,255,0.07); box-shadow: 0 30px 80px rgba(0,0,0,0.7), 0 0 60px rgba(99,102,241,0.12); }
+    .prog-bar   { height: 6px; border-radius: 4px; background: rgba(255,255,255,0.07); }
+    .prog-fill  { height: 100%; border-radius: 4px; background: linear-gradient(90deg, #6366f1, #d946ef); }
+  </style>
+</head>
+<body>
+
+<!-- ══════════════════ NAV ══════════════════ -->
+<nav id="navbar" class="fixed top-0 inset-x-0 z-50 py-4 px-4 md:px-8">
+  <div class="max-w-6xl mx-auto flex items-center justify-between">
+    <a href="#" class="flex items-center gap-2.5">
+      <div class="w-8 h-8 rounded-lg btn-glow flex items-center justify-center">
+        <i class="fa-solid fa-chart-line text-white text-sm"></i>
+      </div>
+      <span class="font-extrabold text-white text-lg tracking-tight">MockTracker <span class="grad-text">Pro</span></span>
+    </a>
+    <div class="hidden md:flex items-center gap-6 text-sm font-medium text-slate-400">
+      <a href="#features" class="hover:text-white transition-colors">Features</a>
+      <a href="#how"      class="hover:text-white transition-colors">How it works</a>
+      <a href="#exams"    class="hover:text-white transition-colors">Exams</a>
+    </div>
+    <a href="app.html" class="btn-glow px-4 py-2 rounded-xl text-white text-sm font-bold">
+      Start Free &nbsp;<i class="fa-solid fa-arrow-right text-xs"></i>
+    </a>
+  </div>
+</nav>
+
+
+<!-- ══════════════════ HERO ══════════════════ -->
+<section class="hero-bg grid-pattern relative min-h-screen flex items-center pt-24 pb-16 overflow-hidden">
+  <div class="orb w-96 h-96 bg-indigo-500/30 top-10 -left-32 animate-float"></div>
+  <div class="orb w-72 h-72 bg-purple-500/25 top-1/3 right-0 animate-float2" style="animation-delay:2s"></div>
+  <div class="orb w-56 h-56 bg-fuchsia-500/20 bottom-20 left-1/3 animate-pulse-slow"></div>
+
+  <div class="max-w-6xl mx-auto px-4 md:px-8 relative z-10 w-full">
+    <div class="grid lg:grid-cols-2 gap-12 items-center">
+
+      <!-- Copy -->
+      <div>
+        <div class="flex flex-wrap gap-2 mb-6">
+          <span class="exam-badge px-3 py-1 rounded-full text-indigo-300 uppercase">SSC CGL</span>
+          <span class="exam-badge px-3 py-1 rounded-full text-purple-300 uppercase">RRB NTPC</span>
+          <span class="exam-badge px-3 py-1 rounded-full text-fuchsia-300 uppercase">Bank PO</span>
+          <span class="exam-badge px-3 py-1 rounded-full text-indigo-300 uppercase">CHSL</span>
+        </div>
+
+        <h1 class="font-black text-5xl md:text-6xl leading-[1.08] tracking-tight text-white mb-5">
+          Stop Guessing.<br />
+          <span class="grad-text">Start Winning</span><br />
+          Every Mock.
+        </h1>
+        <p class="text-slate-400 text-lg leading-relaxed mb-8 max-w-lg">
+          The smartest mock test tracker for Indian competitive exams. Log every attempt, uncover your weak spots, and watch your rank soar — all in one gorgeous dashboard.
+        </p>
+
+        <div class="flex flex-wrap gap-3 mb-10">
+          <a href="app.html" class="btn-glow px-7 py-3.5 rounded-2xl text-white font-bold text-base flex items-center gap-2">
+            <i class="fa-solid fa-rocket"></i> Start Tracking Free
+          </a>
+          <a href="#how" class="btn-outline px-7 py-3.5 rounded-2xl font-bold text-base flex items-center gap-2">
+            <i class="fa-solid fa-play text-xs"></i> How It Works
+          </a>
+        </div>
+
+        <div class="flex flex-wrap gap-3">
+          <div class="stat-pill px-4 py-2 rounded-full flex items-center gap-2 text-sm">
+            <i class="fa-solid fa-users text-indigo-400 text-xs"></i>
+            <span class="text-slate-300 font-semibold">10,000+ aspirants</span>
+          </div>
+          <div class="stat-pill px-4 py-2 rounded-full flex items-center gap-2 text-sm">
+            <i class="fa-solid fa-star text-yellow-400 text-xs"></i>
+            <span class="text-slate-300 font-semibold">4.9 / 5 rating</span>
+          </div>
+          <div class="stat-pill px-4 py-2 rounded-full flex items-center gap-2 text-sm">
+            <i class="fa-solid fa-shield-check text-green-400 text-xs"></i>
+            <span class="text-slate-300 font-semibold">100% Free</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Dashboard mockup -->
+      <div class="flex justify-center lg:justify-end animate-float2">
+        <div class="mock-card rounded-3xl p-5 w-full max-w-sm">
+          <div class="flex items-center justify-between mb-4">
+            <div>
+              <p class="text-xs text-slate-500 uppercase tracking-widest font-semibold">This Week</p>
+              <p class="text-white font-bold text-lg">SSC CGL Tier-I</p>
+            </div>
+            <div class="px-3 py-1 rounded-full text-xs font-bold" style="background:rgba(34,197,94,0.15);color:#4ade80;border:1px solid rgba(34,197,94,0.25)">
+              <i class="fa-solid fa-arrow-trend-up mr-1"></i>+5.2%
+            </div>
+          </div>
+          <!-- Score ring -->
+          <div class="flex items-center gap-4 mb-4">
+            <div class="relative w-20 h-20 flex-shrink-0">
+              <svg viewBox="0 0 80 80" class="w-full h-full -rotate-90">
+                <circle cx="40" cy="40" r="30" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="8"/>
+                <circle cx="40" cy="40" r="30" fill="none" stroke="url(#sg)" stroke-width="8"
+                  stroke-dasharray="188.5" stroke-dashoffset="47" stroke-linecap="round"/>
+                <defs>
+                  <linearGradient id="sg" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%"   stop-color="#6366f1"/>
+                    <stop offset="100%" stop-color="#d946ef"/>
+                  </linearGradient>
+                </defs>
+              </svg>
+              <div class="absolute inset-0 flex flex-col items-center justify-center">
+                <span class="text-white font-black text-lg leading-none">152</span>
+                <span class="text-slate-500 text-xs">/ 200</span>
+              </div>
+            </div>
+            <div class="flex-1 space-y-2.5">
+              <div>
+                <div class="flex justify-between text-xs mb-1"><span class="text-slate-400">Quantitative</span><span class="text-slate-300 font-semibold">82%</span></div>
+                <div class="prog-bar"><div class="prog-fill" style="width:82%"></div></div>
+              </div>
+              <div>
+                <div class="flex justify-between text-xs mb-1"><span class="text-slate-400">English</span><span class="text-slate-300 font-semibold">76%</span></div>
+                <div class="prog-bar"><div class="prog-fill" style="width:76%"></div></div>
+              </div>
+              <div>
+                <div class="flex justify-between text-xs mb-1"><span class="text-slate-400">Reasoning</span><span class="text-slate-300 font-semibold">91%</span></div>
+                <div class="prog-bar"><div class="prog-fill" style="width:91%"></div></div>
+              </div>
+            </div>
+          </div>
+          <!-- Mini bar chart -->
+          <div class="flex items-end gap-1.5 h-14 mt-2">
+            <p class="text-xs text-slate-600 self-end mb-1 mr-1 whitespace-nowrap">Score trend →</p>
+            <div class="flex items-end gap-1.5 flex-1">
+              <div class="flex-1 rounded-sm" style="height:50%;background:rgba(99,102,241,0.3)"></div>
+              <div class="flex-1 rounded-sm" style="height:62%;background:rgba(99,102,241,0.4)"></div>
+              <div class="flex-1 rounded-sm" style="height:45%;background:rgba(99,102,241,0.3)"></div>
+              <div class="flex-1 rounded-sm" style="height:72%;background:rgba(99,102,241,0.5)"></div>
+              <div class="flex-1 rounded-sm" style="height:68%;background:rgba(99,102,241,0.4)"></div>
+              <div class="flex-1 rounded-sm" style="height:85%;background:linear-gradient(180deg,#d946ef,#6366f1)"></div>
+            </div>
+          </div>
+          <div class="divider mt-4 mb-3"></div>
+          <div class="flex justify-between text-xs text-slate-500">
+            <span><span class="text-white font-bold">12</span> tests logged</span>
+            <span>Rank est. <span class="text-green-400 font-bold">~3,200</span></span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="absolute bottom-0 inset-x-0 h-32 bg-gradient-to-t from-[#06030f] to-transparent pointer-events-none"></div>
+</section>
+
+
+<!-- ══════════════════ STATS TICKER ══════════════════ -->
+<div class="bg-[#08050f] border-y border-white/5 py-5 overflow-hidden relative z-10">
+  <div class="flex gap-8 md:gap-12 items-center justify-center flex-wrap px-6 text-sm font-semibold text-slate-500 text-center">
+    <span><span class="text-white text-2xl font-black grad-text">50K+</span><br/>Tests Logged</span>
+    <div class="w-px h-8 bg-white/10 hidden md:block"></div>
+    <span><span class="text-white text-2xl font-black grad-text">2.1 Lakh</span><br/>Questions Analyzed</span>
+    <div class="w-px h-8 bg-white/10 hidden md:block"></div>
+    <span><span class="text-white text-2xl font-black grad-text">10,000+</span><br/>Aspirants Active</span>
+    <div class="w-px h-8 bg-white/10 hidden md:block"></div>
+    <span><span class="text-white text-2xl font-black grad-text">4.9★</span><br/>Average Rating</span>
+    <div class="w-px h-8 bg-white/10 hidden md:block"></div>
+    <span><span class="text-white text-2xl font-black grad-text">Free</span><br/>Forever</span>
+  </div>
+</div>
+
+
+<!-- ══════════════════ FEATURES ══════════════════ -->
+<section id="features" class="section-bg py-24 px-4 md:px-8 relative overflow-hidden">
+  <div class="orb w-80 h-80 bg-indigo-500/15 top-0 right-0 animate-pulse-slow"></div>
+
+  <div class="max-w-6xl mx-auto relative z-10">
+    <div class="text-center mb-16 reveal">
+      <span class="exam-badge px-4 py-1.5 rounded-full text-indigo-300 uppercase inline-block mb-4">Features</span>
+      <h2 class="font-black text-4xl md:text-5xl text-white mb-4 leading-tight">
+        Everything You Need to<br /><span class="grad-text">Crack the Exam</span>
+      </h2>
+      <p class="text-slate-400 text-lg max-w-xl mx-auto">
+        Built specifically for Indian competitive exam aspirants — no bloat, just what matters.
+      </p>
+    </div>
+
+    <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-5">
+
+      <div class="glass rounded-2xl p-6 glass-hover grad-border reveal reveal-delay-1">
+        <div class="icon-ring w-12 h-12 rounded-xl flex items-center justify-center mb-4">
+          <i class="fa-solid fa-chart-mixed text-indigo-300 text-lg"></i>
+        </div>
+        <h3 class="font-bold text-white text-lg mb-2">Deep Score Analytics</h3>
+        <p class="text-slate-400 text-sm leading-relaxed">Track accuracy, speed, subject-wise performance, and percentile trends across every mock you take.</p>
+        <div class="mt-4 flex gap-1.5 flex-wrap">
+          <span class="text-xs px-2 py-0.5 rounded-full bg-indigo-500/15 text-indigo-300 border border-indigo-500/20">Accuracy</span>
+          <span class="text-xs px-2 py-0.5 rounded-full bg-indigo-500/15 text-indigo-300 border border-indigo-500/20">Percentile</span>
+        </div>
+      </div>
+
+      <div class="glass rounded-2xl p-6 glass-hover grad-border reveal reveal-delay-2">
+        <div class="icon-ring w-12 h-12 rounded-xl flex items-center justify-center mb-4">
+          <i class="fa-solid fa-brain text-purple-300 text-lg"></i>
+        </div>
+        <h3 class="font-bold text-white text-lg mb-2">Weakness Radar</h3>
+        <p class="text-slate-400 text-sm leading-relaxed">Instantly pinpoint which topics and sections drag your score down so you study smarter, not harder.</p>
+        <div class="mt-4 flex gap-1.5 flex-wrap">
+          <span class="text-xs px-2 py-0.5 rounded-full bg-purple-500/15 text-purple-300 border border-purple-500/20">Topic Map</span>
+          <span class="text-xs px-2 py-0.5 rounded-full bg-purple-500/15 text-purple-300 border border-purple-500/20">Insights</span>
+        </div>
+      </div>
+
+      <div class="glass rounded-2xl p-6 glass-hover grad-border reveal reveal-delay-3">
+        <div class="icon-ring w-12 h-12 rounded-xl flex items-center justify-center mb-4">
+          <i class="fa-solid fa-trophy text-yellow-400 text-lg"></i>
+        </div>
+        <h3 class="font-bold text-white text-lg mb-2">Exam Leaderboard</h3>
+        <p class="text-slate-400 text-sm leading-relaxed">Compare your progress against real cut-offs for SSC, RRB, and Bank exams. Know exactly where you stand.</p>
+        <div class="mt-4 flex gap-1.5 flex-wrap">
+          <span class="text-xs px-2 py-0.5 rounded-full bg-yellow-400/10 text-yellow-400 border border-yellow-400/20">Cut-off</span>
+          <span class="text-xs px-2 py-0.5 rounded-full bg-yellow-400/10 text-yellow-400 border border-yellow-400/20">Rank</span>
+        </div>
+      </div>
+
+      <div class="glass rounded-2xl p-6 glass-hover grad-border reveal reveal-delay-4">
+        <div class="icon-ring w-12 h-12 rounded-xl flex items-center justify-center mb-4">
+          <i class="fa-solid fa-bolt text-fuchsia-300 text-lg"></i>
+        </div>
+        <h3 class="font-bold text-white text-lg mb-2">Instant Entry</h3>
+        <p class="text-slate-400 text-sm leading-relaxed">Log a full mock in under 30 seconds. Score, time, subject splits — done. Focus on revision, not admin work.</p>
+        <div class="mt-4 flex gap-1.5 flex-wrap">
+          <span class="text-xs px-2 py-0.5 rounded-full bg-fuchsia-500/10 text-fuchsia-300 border border-fuchsia-500/20">Fast</span>
+          <span class="text-xs px-2 py-0.5 rounded-full bg-fuchsia-500/10 text-fuchsia-300 border border-fuchsia-500/20">Simple</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<div class="divider max-w-5xl mx-auto px-8"></div>
+
+
+<!-- ══════════════════ EXAM COVERAGE ══════════════════ -->
+<section id="exams" class="py-20 px-4 md:px-8 bg-[#06030f]">
+  <div class="max-w-6xl mx-auto">
+    <div class="text-center mb-12 reveal">
+      <h2 class="font-black text-3xl md:text-4xl text-white mb-3">
+        All Your Exams, <span class="grad-text">One Dashboard</span>
+      </h2>
+      <p class="text-slate-400 max-w-md mx-auto">Supports every major government exam — and more being added regularly.</p>
+    </div>
+    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3 reveal">
+      <div class="glass rounded-2xl p-4 text-center glass-hover">
+        <div class="w-10 h-10 rounded-xl mx-auto mb-2 flex items-center justify-center bg-indigo-500/20">
+          <i class="fa-solid fa-landmark text-indigo-400 text-sm"></i>
+        </div>
+        <p class="text-white font-bold text-sm">SSC CGL</p>
+        <p class="text-slate-500 text-xs">Tier I & II</p>
+      </div>
+      <div class="glass rounded-2xl p-4 text-center glass-hover">
+        <div class="w-10 h-10 rounded-xl mx-auto mb-2 flex items-center justify-center bg-purple-500/20">
+          <i class="fa-solid fa-train text-purple-400 text-sm"></i>
+        </div>
+        <p class="text-white font-bold text-sm">RRB NTPC</p>
+        <p class="text-slate-500 text-xs">CBT 1 & 2</p>
+      </div>
+      <div class="glass rounded-2xl p-4 text-center glass-hover">
+        <div class="w-10 h-10 rounded-xl mx-auto mb-2 flex items-center justify-center bg-fuchsia-500/20">
+          <i class="fa-solid fa-building-columns text-fuchsia-400 text-sm"></i>
+        </div>
+        <p class="text-white font-bold text-sm">IBPS PO</p>
+        <p class="text-slate-500 text-xs">Pre & Mains</p>
+      </div>
+      <div class="glass rounded-2xl p-4 text-center glass-hover">
+        <div class="w-10 h-10 rounded-xl mx-auto mb-2 flex items-center justify-center bg-indigo-500/20">
+          <i class="fa-solid fa-file-contract text-indigo-300 text-sm"></i>
+        </div>
+        <p class="text-white font-bold text-sm">SSC CHSL</p>
+        <p class="text-slate-500 text-xs">10+2</p>
+      </div>
+      <div class="glass rounded-2xl p-4 text-center glass-hover">
+        <div class="w-10 h-10 rounded-xl mx-auto mb-2 flex items-center justify-center bg-green-500/15">
+          <i class="fa-solid fa-coins text-green-400 text-sm"></i>
+        </div>
+        <p class="text-white font-bold text-sm">SBI PO</p>
+        <p class="text-slate-500 text-xs">Pre & Mains</p>
+      </div>
+      <div class="glass rounded-2xl p-4 text-center glass-hover">
+        <div class="w-10 h-10 rounded-xl mx-auto mb-2 flex items-center justify-center bg-orange-500/15">
+          <i class="fa-solid fa-plus text-orange-400 text-sm"></i>
+        </div>
+        <p class="text-white font-bold text-sm">& More</p>
+        <p class="text-slate-500 text-xs">Custom too</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider max-w-5xl mx-auto px-8"></div>
+
+
+<!-- ══════════════════ HOW IT WORKS ══════════════════ -->
+<section id="how" class="section-bg py-24 px-4 md:px-8 relative overflow-hidden">
+  <div class="orb w-72 h-72 bg-fuchsia-500/10 bottom-10 left-10 animate-float"></div>
+
+  <div class="max-w-5xl mx-auto relative z-10">
+    <div class="text-center mb-16 reveal">
+      <span class="exam-badge px-4 py-1.5 rounded-full text-indigo-300 uppercase inline-block mb-4">How It Works</span>
+      <h2 class="font-black text-4xl md:text-5xl text-white mb-4">
+        Ready in <span class="grad-text">3 Simple Steps</span>
+      </h2>
+      <p class="text-slate-400 text-lg max-w-lg mx-auto">
+        No tutorials needed. Start tracking your first mock in under two minutes.
+      </p>
+    </div>
+
+    <div class="relative">
+      <!-- Connector line -->
+      <div class="hidden md:block absolute top-12 left-[16.66%] right-[16.66%] h-px"
+        style="background: linear-gradient(90deg, #6366f1, #a855f7, #d946ef)"></div>
+
+      <div class="grid md:grid-cols-3 gap-8">
+
+        <div class="relative text-center reveal">
+          <div class="step-num w-14 h-14 rounded-full flex items-center justify-center mx-auto mb-6 text-white font-black text-xl relative z-10">1</div>
+          <div class="glass rounded-2xl p-6 glass-hover">
+            <div class="icon-ring w-14 h-14 rounded-2xl flex items-center justify-center mx-auto mb-4">
+              <i class="fa-solid fa-user-plus text-indigo-300 text-xl"></i>
+            </div>
+            <h3 class="font-bold text-white text-xl mb-2">Create Your Account</h3>
+            <p class="text-slate-400 text-sm leading-relaxed">
+              Sign up for free with Google or email. Pick your target exam — SSC, RRB, Bank — and you're in.
+            </p>
+            <div class="mt-5 flex justify-center">
+              <div class="flex gap-2 items-center text-xs text-green-400 font-semibold">
+                <i class="fa-solid fa-circle-check"></i> Takes &lt; 1 minute
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="relative text-center reveal reveal-delay-2">
+          <div class="step-num w-14 h-14 rounded-full flex items-center justify-center mx-auto mb-6 text-white font-black text-xl relative z-10">2</div>
+          <div class="glass rounded-2xl p-6 glass-hover">
+            <div class="icon-ring w-14 h-14 rounded-2xl flex items-center justify-center mx-auto mb-4">
+              <i class="fa-solid fa-keyboard text-purple-300 text-xl"></i>
+            </div>
+            <h3 class="font-bold text-white text-xl mb-2">Log Your Mock Tests</h3>
+            <p class="text-slate-400 text-sm leading-relaxed">
+              After each mock, enter your score, time, correct/incorrect counts per subject — done in 30 seconds.
+            </p>
+            <div class="mt-5 flex justify-center">
+              <div class="flex gap-2 items-center text-xs text-green-400 font-semibold">
+                <i class="fa-solid fa-circle-check"></i> Super quick entry
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="relative text-center reveal reveal-delay-3">
+          <div class="step-num w-14 h-14 rounded-full flex items-center justify-center mx-auto mb-6 text-white font-black text-xl relative z-10">3</div>
+          <div class="glass rounded-2xl p-6 glass-hover">
+            <div class="icon-ring w-14 h-14 rounded-2xl flex items-center justify-center mx-auto mb-4">
+              <i class="fa-solid fa-magnifying-glass-chart text-fuchsia-300 text-xl"></i>
+            </div>
+            <h3 class="font-bold text-white text-xl mb-2">Analyse &amp; Improve</h3>
+            <p class="text-slate-400 text-sm leading-relaxed">
+              View your trend charts, subject heat-maps, and weakness reports. Focus your revision exactly where it counts.
+            </p>
+            <div class="mt-5 flex justify-center">
+              <div class="flex gap-2 items-center text-xs text-green-400 font-semibold">
+                <i class="fa-solid fa-circle-check"></i> Smart insights
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider max-w-5xl mx-auto px-8"></div>
+
+
+<!-- ══════════════════ TESTIMONIALS ══════════════════ -->
+<section class="py-24 px-4 md:px-8 bg-[#06030f]">
+  <div class="max-w-5xl mx-auto">
+    <div class="text-center mb-14 reveal">
+      <h2 class="font-black text-3xl md:text-4xl text-white mb-3">
+        Loved by <span class="grad-text">Toppers</span>
+      </h2>
+      <p class="text-slate-400">Real students, real results.</p>
+    </div>
+
+    <div class="grid md:grid-cols-3 gap-5">
+      <div class="glass rounded-2xl p-6 glass-hover reveal">
+        <div class="flex gap-1 mb-3">
+          <i class="fa-solid fa-star text-yellow-400 text-xs"></i><i class="fa-solid fa-star text-yellow-400 text-xs"></i>
+          <i class="fa-solid fa-star text-yellow-400 text-xs"></i><i class="fa-solid fa-star text-yellow-400 text-xs"></i>
+          <i class="fa-solid fa-star text-yellow-400 text-xs"></i>
+        </div>
+        <p class="text-slate-300 text-sm leading-relaxed mb-4">"MockTracker Pro showed me I was losing 15 marks in Quant every test. After fixing that, my SSC CGL score jumped by 22 marks in just 3 weeks."</p>
+        <div class="flex items-center gap-3">
+          <div class="w-9 h-9 rounded-full flex items-center justify-center font-bold text-white text-sm" style="background:linear-gradient(135deg,#6366f1,#a855f7)">A</div>
+          <div><p class="text-white font-semibold text-sm">Aarav Sharma</p><p class="text-slate-500 text-xs">SSC CGL 2024 — Rank 847</p></div>
+        </div>
+      </div>
+
+      <div class="glass rounded-2xl p-6 glass-hover reveal reveal-delay-2">
+        <div class="flex gap-1 mb-3">
+          <i class="fa-solid fa-star text-yellow-400 text-xs"></i><i class="fa-solid fa-star text-yellow-400 text-xs"></i>
+          <i class="fa-solid fa-star text-yellow-400 text-xs"></i><i class="fa-solid fa-star text-yellow-400 text-xs"></i>
+          <i class="fa-solid fa-star text-yellow-400 text-xs"></i>
+        </div>
+        <p class="text-slate-300 text-sm leading-relaxed mb-4">"Best free tool I've used in 2 years of prep. The score trend graph keeps me motivated. I recommend it to everyone in my study group."</p>
+        <div class="flex items-center gap-3">
+          <div class="w-9 h-9 rounded-full flex items-center justify-center font-bold text-white text-sm" style="background:linear-gradient(135deg,#a855f7,#d946ef)">P</div>
+          <div><p class="text-white font-semibold text-sm">Priya Nair</p><p class="text-slate-500 text-xs">IBPS PO 2024 — Selected</p></div>
+        </div>
+      </div>
+
+      <div class="glass rounded-2xl p-6 glass-hover reveal reveal-delay-3">
+        <div class="flex gap-1 mb-3">
+          <i class="fa-solid fa-star text-yellow-400 text-xs"></i><i class="fa-solid fa-star text-yellow-400 text-xs"></i>
+          <i class="fa-solid fa-star text-yellow-400 text-xs"></i><i class="fa-solid fa-star text-yellow-400 text-xs"></i>
+          <i class="fa-solid fa-star text-yellow-400 text-xs"></i>
+        </div>
+        <p class="text-slate-300 text-sm leading-relaxed mb-4">"Finally an app made for Indian exams! I track all my RRB mocks here. The cut-off comparison is genuinely useful — no other app does this."</p>
+        <div class="flex items-center gap-3">
+          <div class="w-9 h-9 rounded-full flex items-center justify-center font-bold text-white text-sm" style="background:linear-gradient(135deg,#d946ef,#6366f1)">R</div>
+          <div><p class="text-white font-semibold text-sm">Rohit Verma</p><p class="text-slate-500 text-xs">RRB NTPC 2024 — Qualified</p></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ══════════════════ CTA BANNER ══════════════════ -->
+<section class="py-16 px-4 md:px-8">
+  <div class="max-w-4xl mx-auto">
+    <div class="glass rounded-3xl p-10 md:p-14 text-center relative overflow-hidden reveal grad-border">
+      <div class="orb w-96 h-48 top-0 left-1/2 -translate-x-1/2 -translate-y-1/2" style="background:rgba(99,102,241,0.3);filter:blur(60px)"></div>
+      <div class="relative z-10">
+        <p class="exam-badge px-4 py-1.5 rounded-full inline-block mb-4 text-indigo-300 uppercase">Free Forever</p>
+        <h2 class="font-black text-4xl md:text-5xl text-white mb-4 leading-tight">
+          Your Rank is Waiting.<br /><span class="grad-text">Start Now.</span>
+        </h2>
+        <p class="text-slate-400 text-lg mb-8 max-w-md mx-auto">
+          Join thousands of aspirants already using MockTracker Pro to crack SSC, RRB, and Bank exams.
+        </p>
+        <a href="app.html" class="btn-glow inline-flex items-center gap-2.5 px-10 py-4 rounded-2xl text-white font-bold text-lg">
+          <i class="fa-solid fa-rocket"></i> Start Tracking Free <i class="fa-solid fa-arrow-right text-sm"></i>
+        </a>
+        <p class="text-slate-600 text-xs mt-4">No sign-up required to explore &nbsp;·&nbsp; Google sign-in available</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ══════════════════ FOOTER ══════════════════ -->
+<footer class="bg-[#04020b] border-t border-white/5 py-12 px-4 md:px-8">
+  <div class="max-w-6xl mx-auto">
+    <div class="grid md:grid-cols-4 gap-8 mb-10">
+      <div class="md:col-span-2">
+        <div class="flex items-center gap-2.5 mb-4">
+          <div class="w-8 h-8 rounded-lg btn-glow flex items-center justify-center">
+            <i class="fa-solid fa-chart-line text-white text-sm"></i>
+          </div>
+          <span class="font-extrabold text-white text-lg tracking-tight">MockTracker <span class="grad-text">Pro</span></span>
+        </div>
+        <p class="text-slate-500 text-sm leading-relaxed max-w-xs">
+          Built with ❤️ for Indian government exam aspirants. Track smarter, score higher.
+        </p>
+        <div class="flex gap-3 mt-5">
+          <a href="#" class="w-8 h-8 rounded-lg glass flex items-center justify-center text-slate-500 hover:text-white transition-colors text-sm"><i class="fa-brands fa-twitter"></i></a>
+          <a href="#" class="w-8 h-8 rounded-lg glass flex items-center justify-center text-slate-500 hover:text-white transition-colors text-sm"><i class="fa-brands fa-telegram"></i></a>
+          <a href="#" class="w-8 h-8 rounded-lg glass flex items-center justify-center text-slate-500 hover:text-white transition-colors text-sm"><i class="fa-brands fa-youtube"></i></a>
+        </div>
+      </div>
+      <div>
+        <p class="text-white font-semibold text-sm mb-4 uppercase tracking-wider">Exams Covered</p>
+        <ul class="space-y-2 text-slate-500 text-sm">
+          <li><a href="app.html" class="hover:text-slate-300 transition-colors">SSC CGL</a></li>
+          <li><a href="app.html" class="hover:text-slate-300 transition-colors">SSC CHSL</a></li>
+          <li><a href="app.html" class="hover:text-slate-300 transition-colors">RRB NTPC</a></li>
+          <li><a href="app.html" class="hover:text-slate-300 transition-colors">IBPS PO / Clerk</a></li>
+          <li><a href="app.html" class="hover:text-slate-300 transition-colors">SBI PO</a></li>
+        </ul>
+      </div>
+      <div>
+        <p class="text-white font-semibold text-sm mb-4 uppercase tracking-wider">App</p>
+        <ul class="space-y-2 text-slate-500 text-sm">
+          <li><a href="app.html"   class="hover:text-slate-300 transition-colors">Dashboard</a></li>
+          <li><a href="#features"    class="hover:text-slate-300 transition-colors">Features</a></li>
+          <li><a href="#how"         class="hover:text-slate-300 transition-colors">How It Works</a></li>
+          <li><a href="app.html"   class="hover:text-slate-300 transition-colors">Start Free</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="divider mb-6"></div>
+
+    <div class="flex flex-col md:flex-row items-center justify-between gap-3 text-slate-600 text-xs">
+      <p>© 2025 MockTracker Pro. Made for aspirants, by aspirants.</p>
+      <p>Not affiliated with any official exam body · Free to use</p>
+    </div>
+  </div>
+</footer>
+
+
+<script>
+  // Navbar scroll effect
+  const navbar = document.getElementById('navbar');
+  window.addEventListener('scroll', () => {
+    navbar.classList.toggle('scrolled', window.scrollY > 40);
+  });
+
+  // Scroll reveal
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) { e.target.classList.add('visible'); observer.unobserve(e.target); }
+    });
+  }, { threshold: 0.12 });
+  document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+  // Smooth anchor scroll
+  document.querySelectorAll('a[href^="#"]').forEach(a => {
+    a.addEventListener('click', e => {
+      const id = a.getAttribute('href').slice(1);
+      const target = document.getElementById(id);
+      if (target) { e.preventDefault(); target.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
+    });
+  });
+</script>
+</body>
+</html>
