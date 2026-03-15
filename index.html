@@ -7,6 +7,8 @@
   <meta name="description" content="The ultimate mock test tracker for SSC, RRB, and Bank exam aspirants. Track. Analyse. Conquer." />
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <!-- AOS — Animate On Scroll -->
+  <link rel="stylesheet" href="https://unpkg.com/aos@2.3.1/dist/aos.css" />
   <script>
     tailwind.config = {
       theme: {
@@ -135,13 +137,8 @@
       box-shadow: 0 1px 0 rgba(255,255,255,0.06);
     }
 
-    /* ── Scroll reveal ── */
-    .reveal { opacity: 0; transform: translateY(32px); transition: opacity 0.65s ease, transform 0.65s ease; }
-    .reveal.visible { opacity: 1; transform: translateY(0); }
-    .reveal-delay-1 { transition-delay: 0.1s; }
-    .reveal-delay-2 { transition-delay: 0.2s; }
-    .reveal-delay-3 { transition-delay: 0.3s; }
-    .reveal-delay-4 { transition-delay: 0.4s; }
+    /* ── AOS override — ensure glass-hover transform still works after AOS completes ── */
+    [data-aos].aos-animate.glass-hover:hover { transform: translateY(-6px) !important; }
 
     /* ── Misc ── */
     .stat-pill { background: rgba(99,102,241,0.12); border: 1px solid rgba(99,102,241,0.25); }
@@ -192,23 +189,32 @@
 
       <!-- Copy -->
       <div>
-        <div class="flex flex-wrap gap-2 mb-6">
+        <!-- Exam badges: fade-up first -->
+        <div class="flex flex-wrap gap-2 mb-6"
+             data-aos="fade-up" data-aos-duration="800" data-aos-delay="100">
           <span class="exam-badge px-3 py-1 rounded-full text-indigo-300 uppercase">SSC CGL</span>
           <span class="exam-badge px-3 py-1 rounded-full text-purple-300 uppercase">RRB NTPC</span>
           <span class="exam-badge px-3 py-1 rounded-full text-fuchsia-300 uppercase">Bank PO</span>
           <span class="exam-badge px-3 py-1 rounded-full text-indigo-300 uppercase">CHSL</span>
         </div>
 
-        <h1 class="font-black text-5xl md:text-6xl leading-[1.08] tracking-tight text-white mb-5">
+        <!-- Headline: fade-up, slightly delayed -->
+        <h1 class="font-black text-5xl md:text-6xl leading-[1.08] tracking-tight text-white mb-5"
+            data-aos="fade-up" data-aos-duration="800" data-aos-delay="250">
           Stop Guessing.<br />
           <span class="grad-text">Start Winning</span><br />
           Every Mock.
         </h1>
-        <p class="text-slate-400 text-lg leading-relaxed mb-8 max-w-lg">
+
+        <!-- Subtitle: fade-up -->
+        <p class="text-slate-400 text-lg leading-relaxed mb-8 max-w-lg"
+           data-aos="fade-up" data-aos-duration="800" data-aos-delay="400">
           The smartest mock test tracker for Indian competitive exams. Log every attempt, uncover your weak spots, and watch your rank soar — all in one gorgeous dashboard.
         </p>
 
-        <div class="flex flex-wrap gap-3 mb-10">
+        <!-- CTA buttons: fade-up -->
+        <div class="flex flex-wrap gap-3 mb-10"
+             data-aos="fade-up" data-aos-duration="800" data-aos-delay="550">
           <a href="app.html" class="btn-glow px-7 py-3.5 rounded-2xl text-white font-bold text-base flex items-center gap-2">
             <i class="fa-solid fa-rocket"></i> Start Tracking Free
           </a>
@@ -217,7 +223,9 @@
           </a>
         </div>
 
-        <div class="flex flex-wrap gap-3">
+        <!-- Trust pills: fade-up last -->
+        <div class="flex flex-wrap gap-3"
+             data-aos="fade-up" data-aos-duration="800" data-aos-delay="700">
           <div class="stat-pill px-4 py-2 rounded-full flex items-center gap-2 text-sm">
             <i class="fa-solid fa-users text-indigo-400 text-xs"></i>
             <span class="text-slate-300 font-semibold">10,000+ aspirants</span>
@@ -233,8 +241,9 @@
         </div>
       </div>
 
-      <!-- Dashboard mockup -->
-      <div class="flex justify-center lg:justify-end animate-float2">
+      <!-- Dashboard mockup: fade from right -->
+      <div class="flex justify-center lg:justify-end animate-float2"
+           data-aos="fade-left" data-aos-duration="900" data-aos-delay="300">
         <div class="mock-card rounded-3xl p-5 w-full max-w-sm">
           <div class="flex items-center justify-between mb-4">
             <div>
@@ -305,7 +314,8 @@
 
 
 <!-- ══════════════════ STATS TICKER ══════════════════ -->
-<div class="bg-[#08050f] border-y border-white/5 py-5 overflow-hidden relative z-10">
+<div class="bg-[#08050f] border-y border-white/5 py-5 overflow-hidden relative z-10"
+     data-aos="fade-up" data-aos-duration="800">
   <div class="flex gap-8 md:gap-12 items-center justify-center flex-wrap px-6 text-sm font-semibold text-slate-500 text-center">
     <span><span class="text-white text-2xl font-black grad-text">50K+</span><br/>Tests Logged</span>
     <div class="w-px h-8 bg-white/10 hidden md:block"></div>
@@ -325,7 +335,8 @@
   <div class="orb w-80 h-80 bg-indigo-500/15 top-0 right-0 animate-pulse-slow"></div>
 
   <div class="max-w-6xl mx-auto relative z-10">
-    <div class="text-center mb-16 reveal">
+    <div class="text-center mb-16"
+         data-aos="fade-up" data-aos-duration="800">
       <span class="exam-badge px-4 py-1.5 rounded-full text-indigo-300 uppercase inline-block mb-4">Features</span>
       <h2 class="font-black text-4xl md:text-5xl text-white mb-4 leading-tight">
         Everything You Need to<br /><span class="grad-text">Crack the Exam</span>
@@ -337,7 +348,8 @@
 
     <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-5">
 
-      <div class="glass rounded-2xl p-6 glass-hover grad-border reveal reveal-delay-1">
+      <div class="glass rounded-2xl p-6 glass-hover grad-border"
+           data-aos="fade-up" data-aos-duration="800" data-aos-delay="100">
         <div class="icon-ring w-12 h-12 rounded-xl flex items-center justify-center mb-4">
           <i class="fa-solid fa-chart-mixed text-indigo-300 text-lg"></i>
         </div>
@@ -349,7 +361,8 @@
         </div>
       </div>
 
-      <div class="glass rounded-2xl p-6 glass-hover grad-border reveal reveal-delay-2">
+      <div class="glass rounded-2xl p-6 glass-hover grad-border"
+           data-aos="fade-up" data-aos-duration="800" data-aos-delay="200">
         <div class="icon-ring w-12 h-12 rounded-xl flex items-center justify-center mb-4">
           <i class="fa-solid fa-brain text-purple-300 text-lg"></i>
         </div>
@@ -361,7 +374,8 @@
         </div>
       </div>
 
-      <div class="glass rounded-2xl p-6 glass-hover grad-border reveal reveal-delay-3">
+      <div class="glass rounded-2xl p-6 glass-hover grad-border"
+           data-aos="fade-up" data-aos-duration="800" data-aos-delay="300">
         <div class="icon-ring w-12 h-12 rounded-xl flex items-center justify-center mb-4">
           <i class="fa-solid fa-trophy text-yellow-400 text-lg"></i>
         </div>
@@ -373,7 +387,8 @@
         </div>
       </div>
 
-      <div class="glass rounded-2xl p-6 glass-hover grad-border reveal reveal-delay-4">
+      <div class="glass rounded-2xl p-6 glass-hover grad-border"
+           data-aos="fade-up" data-aos-duration="800" data-aos-delay="400">
         <div class="icon-ring w-12 h-12 rounded-xl flex items-center justify-center mb-4">
           <i class="fa-solid fa-bolt text-fuchsia-300 text-lg"></i>
         </div>
@@ -395,49 +410,56 @@
 <!-- ══════════════════ EXAM COVERAGE ══════════════════ -->
 <section id="exams" class="py-20 px-4 md:px-8 bg-[#06030f]">
   <div class="max-w-6xl mx-auto">
-    <div class="text-center mb-12 reveal">
+    <div class="text-center mb-12"
+         data-aos="fade-up" data-aos-duration="800">
       <h2 class="font-black text-3xl md:text-4xl text-white mb-3">
         All Your Exams, <span class="grad-text">One Dashboard</span>
       </h2>
       <p class="text-slate-400 max-w-md mx-auto">Supports every major government exam — and more being added regularly.</p>
     </div>
-    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3 reveal">
-      <div class="glass rounded-2xl p-4 text-center glass-hover">
+    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3">
+      <div class="glass rounded-2xl p-4 text-center glass-hover"
+           data-aos="zoom-in" data-aos-duration="600" data-aos-delay="100">
         <div class="w-10 h-10 rounded-xl mx-auto mb-2 flex items-center justify-center bg-indigo-500/20">
           <i class="fa-solid fa-landmark text-indigo-400 text-sm"></i>
         </div>
         <p class="text-white font-bold text-sm">SSC CGL</p>
         <p class="text-slate-500 text-xs">Tier I & II</p>
       </div>
-      <div class="glass rounded-2xl p-4 text-center glass-hover">
+      <div class="glass rounded-2xl p-4 text-center glass-hover"
+           data-aos="zoom-in" data-aos-duration="600" data-aos-delay="180">
         <div class="w-10 h-10 rounded-xl mx-auto mb-2 flex items-center justify-center bg-purple-500/20">
           <i class="fa-solid fa-train text-purple-400 text-sm"></i>
         </div>
         <p class="text-white font-bold text-sm">RRB NTPC</p>
         <p class="text-slate-500 text-xs">CBT 1 & 2</p>
       </div>
-      <div class="glass rounded-2xl p-4 text-center glass-hover">
+      <div class="glass rounded-2xl p-4 text-center glass-hover"
+           data-aos="zoom-in" data-aos-duration="600" data-aos-delay="260">
         <div class="w-10 h-10 rounded-xl mx-auto mb-2 flex items-center justify-center bg-fuchsia-500/20">
           <i class="fa-solid fa-building-columns text-fuchsia-400 text-sm"></i>
         </div>
         <p class="text-white font-bold text-sm">IBPS PO</p>
         <p class="text-slate-500 text-xs">Pre & Mains</p>
       </div>
-      <div class="glass rounded-2xl p-4 text-center glass-hover">
+      <div class="glass rounded-2xl p-4 text-center glass-hover"
+           data-aos="zoom-in" data-aos-duration="600" data-aos-delay="340">
         <div class="w-10 h-10 rounded-xl mx-auto mb-2 flex items-center justify-center bg-indigo-500/20">
           <i class="fa-solid fa-file-contract text-indigo-300 text-sm"></i>
         </div>
         <p class="text-white font-bold text-sm">SSC CHSL</p>
         <p class="text-slate-500 text-xs">10+2</p>
       </div>
-      <div class="glass rounded-2xl p-4 text-center glass-hover">
+      <div class="glass rounded-2xl p-4 text-center glass-hover"
+           data-aos="zoom-in" data-aos-duration="600" data-aos-delay="420">
         <div class="w-10 h-10 rounded-xl mx-auto mb-2 flex items-center justify-center bg-green-500/15">
           <i class="fa-solid fa-coins text-green-400 text-sm"></i>
         </div>
         <p class="text-white font-bold text-sm">SBI PO</p>
         <p class="text-slate-500 text-xs">Pre & Mains</p>
       </div>
-      <div class="glass rounded-2xl p-4 text-center glass-hover">
+      <div class="glass rounded-2xl p-4 text-center glass-hover"
+           data-aos="zoom-in" data-aos-duration="600" data-aos-delay="500">
         <div class="w-10 h-10 rounded-xl mx-auto mb-2 flex items-center justify-center bg-orange-500/15">
           <i class="fa-solid fa-plus text-orange-400 text-sm"></i>
         </div>
@@ -456,7 +478,8 @@
   <div class="orb w-72 h-72 bg-fuchsia-500/10 bottom-10 left-10 animate-float"></div>
 
   <div class="max-w-5xl mx-auto relative z-10">
-    <div class="text-center mb-16 reveal">
+    <div class="text-center mb-16"
+         data-aos="fade-up" data-aos-duration="800">
       <span class="exam-badge px-4 py-1.5 rounded-full text-indigo-300 uppercase inline-block mb-4">How It Works</span>
       <h2 class="font-black text-4xl md:text-5xl text-white mb-4">
         Ready in <span class="grad-text">3 Simple Steps</span>
@@ -473,7 +496,8 @@
 
       <div class="grid md:grid-cols-3 gap-8">
 
-        <div class="relative text-center reveal">
+        <div class="relative text-center"
+             data-aos="fade-right" data-aos-duration="800" data-aos-delay="100">
           <div class="step-num w-14 h-14 rounded-full flex items-center justify-center mx-auto mb-6 text-white font-black text-xl relative z-10">1</div>
           <div class="glass rounded-2xl p-6 glass-hover">
             <div class="icon-ring w-14 h-14 rounded-2xl flex items-center justify-center mx-auto mb-4">
@@ -491,7 +515,8 @@
           </div>
         </div>
 
-        <div class="relative text-center reveal reveal-delay-2">
+        <div class="relative text-center"
+             data-aos="fade-right" data-aos-duration="800" data-aos-delay="250">
           <div class="step-num w-14 h-14 rounded-full flex items-center justify-center mx-auto mb-6 text-white font-black text-xl relative z-10">2</div>
           <div class="glass rounded-2xl p-6 glass-hover">
             <div class="icon-ring w-14 h-14 rounded-2xl flex items-center justify-center mx-auto mb-4">
@@ -509,7 +534,8 @@
           </div>
         </div>
 
-        <div class="relative text-center reveal reveal-delay-3">
+        <div class="relative text-center"
+             data-aos="fade-right" data-aos-duration="800" data-aos-delay="400">
           <div class="step-num w-14 h-14 rounded-full flex items-center justify-center mx-auto mb-6 text-white font-black text-xl relative z-10">3</div>
           <div class="glass rounded-2xl p-6 glass-hover">
             <div class="icon-ring w-14 h-14 rounded-2xl flex items-center justify-center mx-auto mb-4">
@@ -538,7 +564,8 @@
 <!-- ══════════════════ TESTIMONIALS ══════════════════ -->
 <section class="py-24 px-4 md:px-8 bg-[#06030f]">
   <div class="max-w-5xl mx-auto">
-    <div class="text-center mb-14 reveal">
+    <div class="text-center mb-14"
+         data-aos="fade-up" data-aos-duration="800">
       <h2 class="font-black text-3xl md:text-4xl text-white mb-3">
         Loved by <span class="grad-text">Toppers</span>
       </h2>
@@ -546,7 +573,8 @@
     </div>
 
     <div class="grid md:grid-cols-3 gap-5">
-      <div class="glass rounded-2xl p-6 glass-hover reveal">
+      <div class="glass rounded-2xl p-6 glass-hover"
+           data-aos="fade-up" data-aos-duration="800" data-aos-delay="100">
         <div class="flex gap-1 mb-3">
           <i class="fa-solid fa-star text-yellow-400 text-xs"></i><i class="fa-solid fa-star text-yellow-400 text-xs"></i>
           <i class="fa-solid fa-star text-yellow-400 text-xs"></i><i class="fa-solid fa-star text-yellow-400 text-xs"></i>
@@ -559,7 +587,8 @@
         </div>
       </div>
 
-      <div class="glass rounded-2xl p-6 glass-hover reveal reveal-delay-2">
+      <div class="glass rounded-2xl p-6 glass-hover"
+           data-aos="fade-up" data-aos-duration="800" data-aos-delay="250">
         <div class="flex gap-1 mb-3">
           <i class="fa-solid fa-star text-yellow-400 text-xs"></i><i class="fa-solid fa-star text-yellow-400 text-xs"></i>
           <i class="fa-solid fa-star text-yellow-400 text-xs"></i><i class="fa-solid fa-star text-yellow-400 text-xs"></i>
@@ -572,7 +601,8 @@
         </div>
       </div>
 
-      <div class="glass rounded-2xl p-6 glass-hover reveal reveal-delay-3">
+      <div class="glass rounded-2xl p-6 glass-hover"
+           data-aos="fade-up" data-aos-duration="800" data-aos-delay="400">
         <div class="flex gap-1 mb-3">
           <i class="fa-solid fa-star text-yellow-400 text-xs"></i><i class="fa-solid fa-star text-yellow-400 text-xs"></i>
           <i class="fa-solid fa-star text-yellow-400 text-xs"></i><i class="fa-solid fa-star text-yellow-400 text-xs"></i>
@@ -592,7 +622,8 @@
 <!-- ══════════════════ CTA BANNER ══════════════════ -->
 <section class="py-16 px-4 md:px-8">
   <div class="max-w-4xl mx-auto">
-    <div class="glass rounded-3xl p-10 md:p-14 text-center relative overflow-hidden reveal grad-border">
+    <div class="glass rounded-3xl p-10 md:p-14 text-center relative overflow-hidden grad-border"
+         data-aos="zoom-in" data-aos-duration="900">
       <div class="orb w-96 h-48 top-0 left-1/2 -translate-x-1/2 -translate-y-1/2" style="background:rgba(99,102,241,0.3);filter:blur(60px)"></div>
       <div class="relative z-10">
         <p class="exam-badge px-4 py-1.5 rounded-full inline-block mb-4 text-indigo-300 uppercase">Free Forever</p>
@@ -615,7 +646,8 @@
 <!-- ══════════════════ FOOTER ══════════════════ -->
 <footer class="bg-[#04020b] border-t border-white/5 py-12 px-4 md:px-8">
   <div class="max-w-6xl mx-auto">
-    <div class="grid md:grid-cols-4 gap-8 mb-10">
+    <div class="grid md:grid-cols-4 gap-8 mb-10"
+         data-aos="fade-up" data-aos-duration="800">
       <div class="md:col-span-2">
         <div class="flex items-center gap-2.5 mb-4">
           <div class="w-8 h-8 rounded-lg btn-glow flex items-center justify-center">
@@ -663,22 +695,23 @@
 </footer>
 
 
+<script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
 <script>
-  // Navbar scroll effect
+  // ── AOS init ──
+  AOS.init({
+    duration: 800,       // default animation duration in ms
+    easing:   'ease-in-out',
+    once:     true,      // animate only once (won't replay on scroll back up)
+    offset:   80,        // px from bottom of viewport before triggering
+  });
+
+  // ── Navbar scroll effect ──
   const navbar = document.getElementById('navbar');
   window.addEventListener('scroll', () => {
     navbar.classList.toggle('scrolled', window.scrollY > 40);
   });
 
-  // Scroll reveal
-  const observer = new IntersectionObserver((entries) => {
-    entries.forEach(e => {
-      if (e.isIntersecting) { e.target.classList.add('visible'); observer.unobserve(e.target); }
-    });
-  }, { threshold: 0.12 });
-  document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
-
-  // Smooth anchor scroll
+  // ── Smooth anchor scroll ──
   document.querySelectorAll('a[href^="#"]').forEach(a => {
     a.addEventListener('click', e => {
       const id = a.getAttribute('href').slice(1);
