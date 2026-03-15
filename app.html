@@ -152,6 +152,90 @@
         }
 
         /* ═══════════════════════════════════════
+           MOBILE-FIRST HEADER FIXES
+           Prevents wrap/overflow on 360px screens
+        ═══════════════════════════════════════ */
+
+        /* Header is a fixed-height flex row — never wrap, never overflow */
+        header.glass-nav {
+            flex-wrap: nowrap;
+            overflow: hidden;
+            /* Shrink height on very small screens */
+            height: 60px;
+            padding-left: 12px;
+            padding-right: 12px;
+        }
+        @media (min-width: 640px) {
+            header.glass-nav { height: 80px; padding-left: 24px; padding-right: 24px; }
+        }
+
+        /* Logo section — allow it to shrink but not wrap */
+        header.glass-nav .logo-group {
+            min-width: 0;
+            flex-shrink: 1;
+            overflow: hidden;
+        }
+        /* Hide the "Demo" badge on very narrow screens to save space */
+        @media (max-width: 400px) {
+            header.glass-nav .demo-badge { display: none !important; }
+            /* Trim subtitle exam badge on tiny screens */
+            #selected-exam-badge { max-width: 72px !important; }
+        }
+
+        /* Right-side icon group — never shrink, never wrap, gap of 6px minimum */
+        header.glass-nav .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex-shrink: 0;
+            flex-wrap: nowrap;
+            overflow: hidden;
+        }
+
+        /* All icon buttons in header — minimum 44×44 tap target */
+        header.glass-nav .header-actions a,
+        header.glass-nav .header-actions button {
+            min-width: 44px;
+            min-height: 44px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Home link — icon + "Home" text on mobile */
+        .home-back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            min-height: 44px;
+            min-width: 44px;
+            padding: 0 8px;
+            border-radius: 10px;
+            font-size: 12px;
+            font-weight: 800;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+
+        /* ═══════════════════════════════════════
+           GLOBAL MOBILE SAFEGUARDS
+        ═══════════════════════════════════════ */
+        /* No element should ever cause horizontal scroll */
+        html, body { overflow-x: hidden; max-width: 100%; }
+
+        /* Minimum font size — nothing below 13px */
+        @media (max-width: 767px) {
+            * { min-font-size: 13px; }
+            /* Ensure cards have side padding on small screens */
+            .glass-card { padding-left: 16px; padding-right: 16px; }
+        }
+
+        /* All interactive elements — minimum tap target */
+        button, a, [role="button"] {
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        /* ═══════════════════════════════════════
            TAB ANIMATION
         ═══════════════════════════════════════ */
         .tab-content { display: none; animation: scaleUp 0.35s cubic-bezier(0.16, 1, 0.3, 1); }
@@ -1058,59 +1142,99 @@
     </div>
 
     <!-- NAVBAR -->
-    <header class="glass-nav h-20 flex-none px-6 flex items-center justify-between z-50 flex-shrink-0">
-        <div class="flex items-center gap-3 min-w-0">
-            <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-brand-600 to-accent-500 text-white flex items-center justify-center shadow-xl shadow-brand-500/30 flex-shrink-0">
-                <i class="fa-solid fa-chart-pie text-xl"></i>
+    <!--
+      Mobile  (< 768px): logo group (left) + compact icon actions (right)
+                          "Home" back button is icon + text label, 44px tall
+      Desktop (≥ 768px): logo group + desktop tab nav + full icon actions
+      flex-wrap:nowrap + flex-shrink on all groups prevents overflow at 360px
+    -->
+    <header class="glass-nav flex-none flex items-center justify-between z-50 flex-shrink-0">
+
+        <!-- LEFT: Logo group — shrinks gracefully, never wraps -->
+        <div class="logo-group flex items-center gap-2 md:gap-3 min-w-0">
+            <div class="w-10 h-10 md:w-12 md:h-12 rounded-2xl bg-gradient-to-tr from-brand-600 to-accent-500 text-white flex items-center justify-center shadow-xl shadow-brand-500/30 flex-shrink-0">
+                <i class="fa-solid fa-chart-pie text-base md:text-xl"></i>
             </div>
             <div class="min-w-0">
-                <div class="flex items-center gap-2">
-                    <h1 class="text-xl font-extrabold tracking-tight text-slate-900 dark:text-white leading-none whitespace-nowrap">MockTracker <span class="text-brand-500">Pro</span></h1>
+                <div class="flex items-center gap-1.5 md:gap-2">
+                    <h1 class="text-base md:text-xl font-extrabold tracking-tight text-slate-900 dark:text-white leading-none whitespace-nowrap">
+                        MockTracker <span class="text-brand-500">Pro</span>
+                    </h1>
                     <span class="demo-badge flex-shrink-0">Demo</span>
                 </div>
-                <div class="flex items-center gap-1.5 mt-0.5 min-w-0">
-                    <span id="selected-exam-badge" style="font-size:9px" class="font-black uppercase tracking-wider px-2 py-0.5 rounded bg-brand-100 dark:bg-brand-900/30 text-brand-600 dark:text-brand-400 truncate max-w-[120px]">-</span>
+                <div class="flex items-center gap-1 md:gap-1.5 mt-0.5 min-w-0">
+                    <span id="selected-exam-badge" style="font-size:9px" class="font-black uppercase tracking-wider px-2 py-0.5 rounded bg-brand-100 dark:bg-brand-900/30 text-brand-600 dark:text-brand-400 truncate max-w-[90px] md:max-w-[120px]">-</span>
                     <span id="status-indicator" class="w-2 h-2 rounded-full bg-gray-400 ml-0.5 flex-shrink-0"></span>
                     <span id="status-text" style="font-size:9px" class="font-bold uppercase text-gray-400 tracking-wide hidden sm:inline">Offline</span>
                 </div>
             </div>
         </div>
 
-        <!-- Desktop Nav -->
-        <nav class="hidden md:flex items-center glass-card rounded-2xl p-1">
-            <button onclick="window.app.nav('home')" id="nav-home" class="nav-link active px-5 py-2.5 rounded-xl transition-all duration-300">Overview</button>
-            <button onclick="window.app.nav('log')" id="nav-log" class="nav-link px-5 py-2.5 rounded-xl transition-all duration-300">Log Score</button>
-            <button onclick="window.app.nav('history')" id="nav-history" class="nav-link px-5 py-2.5 rounded-xl transition-all duration-300">Mock Vault</button>
+        <!-- CENTER: Desktop tab nav (hidden on mobile) -->
+        <nav class="hidden md:flex items-center glass-card rounded-2xl p-1 mx-2">
+            <button onclick="window.app.nav('home')"     id="nav-home"     class="nav-link active px-5 py-2.5 rounded-xl transition-all duration-300">Overview</button>
+            <button onclick="window.app.nav('log')"      id="nav-log"      class="nav-link px-5 py-2.5 rounded-xl transition-all duration-300">Log Score</button>
+            <button onclick="window.app.nav('history')"  id="nav-history"  class="nav-link px-5 py-2.5 rounded-xl transition-all duration-300">Mock Vault</button>
             <button onclick="window.app.nav('analysis')" id="nav-analysis" class="nav-link px-5 py-2.5 rounded-xl transition-all duration-300">Deep Analysis</button>
-            <button onclick="window.app.nav('tools')" id="nav-tools" class="nav-link px-5 py-2.5 rounded-xl transition-all duration-300">Tools</button>
+            <button onclick="window.app.nav('tools')"    id="nav-tools"    class="nav-link px-5 py-2.5 rounded-xl transition-all duration-300">Tools</button>
         </nav>
 
-        <div class="flex items-center gap-2">
-            <!-- Home / Landing Page link -->
-            <a href="index.html" title="Back to Home" class="w-10 h-10 rounded-xl btn-glass flex items-center justify-center hover:scale-105 transition text-brand-500" >
-                <i class="fa-solid fa-house" style="font-size:15px;"></i>
+        <!-- RIGHT: Action buttons — flex-nowrap, 44px each, 6px gap -->
+        <div class="header-actions">
+
+            <!-- Back to Home — icon + "Home" label, compact on mobile -->
+            <a href="index.html"
+               title="Back to landing page"
+               class="home-back-btn btn-glass text-brand-500 dark:text-brand-400">
+                <i class="fa-solid fa-arrow-left" style="font-size:13px;"></i>
+                <span class="text-xs font-black">Home</span>
             </a>
-            <!-- Theme Toggle (Feature #14 — animated) -->
-            <button onclick="window.app.toggleTheme()" class="w-10 h-10 rounded-xl btn-glass flex items-center justify-center relative overflow-hidden hover:scale-105 transition" title="Toggle theme">
+
+            <!-- Theme Toggle -->
+            <button onclick="window.app.toggleTheme()"
+                    class="btn-glass rounded-xl relative overflow-hidden hover:scale-105 transition"
+                    title="Toggle theme"
+                    style="width:44px;height:44px;">
                 <i class="fa-solid fa-sun theme-icon theme-sun text-amber-400"></i>
                 <i class="fa-solid fa-moon theme-icon theme-moon text-indigo-400"></i>
             </button>
+
             <!-- Auth -->
-            <div id="auth-box">
-                <button id="btn-login" onclick="app.login()" class="btn-glass rounded-xl transition flex items-center gap-2 px-3 py-2.5 md:px-5">
+            <div id="auth-box" class="flex-shrink-0">
+                <button id="btn-login"
+                        onclick="app.login()"
+                        class="btn-glass rounded-xl transition flex items-center gap-1.5 md:gap-2"
+                        style="min-height:44px;padding:0 10px 0 10px;">
                     <i class="fa-brands fa-google text-base text-red-500"></i>
                     <span class="hidden md:inline text-xs font-bold">Sign in</span>
                 </button>
-                <div id="user-profile" class="hidden flex items-center gap-3 border-l border-white/30 dark:border-white/10 pl-3">
-                    <img id="user-avatar" class="w-9 h-9 rounded-full border-2 border-white/50 shadow-lg">
-                    <button onclick="app.logout()" class="text-slate-400 hover:text-red-500 transition"><i class="fa-solid fa-power-off"></i></button>
+                <div id="user-profile" class="hidden flex items-center gap-2 md:gap-3 border-l border-white/30 dark:border-white/10 pl-2 md:pl-3">
+                    <img id="user-avatar" class="w-8 h-8 md:w-9 md:h-9 rounded-full border-2 border-white/50 shadow-lg">
+                    <button onclick="app.logout()"
+                            class="text-slate-400 hover:text-red-500 transition"
+                            style="min-width:44px;min-height:44px;display:inline-flex;align-items:center;justify-content:center;">
+                        <i class="fa-solid fa-power-off"></i>
+                    </button>
                 </div>
             </div>
-            <button onclick="showExamSelector()" class="hidden md:flex items-center gap-1.5 px-3 py-2.5 rounded-xl btn-glass text-xs font-bold hover:scale-105 transition"><i class="fa-solid fa-exchange-alt"></i><span class="ml-1.5">Switch</span></button>
-            <button id="nav-exams-btn" class="w-10 h-10 rounded-xl btn-glass flex items-center justify-center relative hover:scale-105 transition flex-shrink-0" title="Upcoming Exams">
+
+            <!-- Switch Exam (desktop only) -->
+            <button onclick="showExamSelector()"
+                    class="hidden md:flex items-center gap-1.5 px-3 rounded-xl btn-glass text-xs font-bold hover:scale-105 transition"
+                    style="min-height:44px;">
+                <i class="fa-solid fa-exchange-alt"></i>
+                <span class="ml-1.5">Switch</span>
+            </button>
+
+            <!-- Upcoming Exams -->
+            <button id="nav-exams-btn"
+                    class="btn-glass rounded-xl flex items-center justify-center relative hover:scale-105 transition flex-shrink-0"
+                    title="Upcoming Exams"
+                    style="width:44px;height:44px;">
                 <i class="fa-solid fa-calendar-days text-brand-500" style="font-size:15px;pointer-events:none;"></i>
                 <span id="exam-count-badge" style="display:none;position:absolute;top:-3px;right:-3px;min-width:16px;height:16px;background:#ef4444;color:white;font-size:9px;font-weight:900;border-radius:999px;align-items:center;justify-content:center;padding:0 3px;"></span>
             </button>
+
         </div>
     </header>
 
