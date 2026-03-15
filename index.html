@@ -39,14 +39,14 @@
     html { scroll-behavior: smooth; }
     body { font-family: 'Plus Jakarta Sans', sans-serif; background: #06030f; color: #f1f5f9; overflow-x: hidden; }
 
-    /* ── Background mesh ── */
+    /* ── Background mesh — kept subtle so animated blobs are the main light ── */
     .hero-bg {
       background-color: #06030f;
       background-image:
-        radial-gradient(ellipse 100% 80% at 0% 0%,   rgba(99,102,241,0.55) 0%, transparent 50%),
-        radial-gradient(ellipse 80% 60%  at 100% 10%, rgba(168,85,247,0.40) 0%, transparent 50%),
-        radial-gradient(ellipse 60% 50%  at 50% 80%,  rgba(217,70,239,0.25) 0%, transparent 55%),
-        radial-gradient(ellipse 40% 30%  at 80% 50%,  rgba(99,102,241,0.20) 0%, transparent 45%);
+        radial-gradient(ellipse 100% 80% at 0% 0%,   rgba(99,102,241,0.12) 0%, transparent 50%),
+        radial-gradient(ellipse 80% 60%  at 100% 10%, rgba(168,85,247,0.08) 0%, transparent 50%),
+        radial-gradient(ellipse 60% 50%  at 50% 80%,  rgba(217,70,239,0.06) 0%, transparent 55%),
+        radial-gradient(ellipse 40% 30%  at 80% 50%,  rgba(99,102,241,0.05) 0%, transparent 45%);
     }
     .section-bg {
       background-color: #08050f;
@@ -167,104 +167,101 @@
       border-radius: 50%;
       filter: blur(80px);
       pointer-events: none;
-      will-change: transform;   /* GPU-accelerated, no layout thrash */
+      will-change: transform;
+      z-index: 0;
     }
 
     /* ── Blob 1 — Indigo — top-left ── */
     .hero-blob-1 {
-      width: 520px;
-      height: 520px;
-      top:  -120px;
-      left: -140px;
+      width: 600px;
+      height: 600px;
+      top:  -150px;
+      left: -150px;
       background: radial-gradient(circle at 40% 40%,
-        rgba(99, 102, 241, 0.45) 0%,
-        rgba(99, 102, 241, 0.15) 45%,
+        rgba(99, 102, 241, 0.80) 0%,
+        rgba(99, 102, 241, 0.35) 40%,
         transparent 70%);
-      opacity: 0.38;
+      opacity: 0.55;
       animation: hero-blob-drift-1 11s ease-in-out infinite;
     }
 
     /* ── Blob 2 — Purple — top-right ── */
     .hero-blob-2 {
-      width: 460px;
-      height: 460px;
-      top:  -80px;
-      right: -100px;
+      width: 560px;
+      height: 560px;
+      top:  -100px;
+      right: -120px;
       background: radial-gradient(circle at 55% 45%,
-        rgba(168, 85, 247, 0.45) 0%,
-        rgba(168, 85, 247, 0.15) 45%,
+        rgba(168, 85, 247, 0.80) 0%,
+        rgba(168, 85, 247, 0.30) 40%,
         transparent 70%);
-      opacity: 0.36;
+      opacity: 0.50;
       animation: hero-blob-drift-2 13s ease-in-out infinite;
-      animation-delay: -4s;     /* stagger so they don't move in sync */
+      animation-delay: -4s;
     }
 
     /* ── Blob 3 — Pink/Fuchsia — bottom-center ── */
     .hero-blob-3 {
-      width: 380px;
-      height: 380px;
-      bottom: 40px;
-      left:   38%;
+      width: 480px;
+      height: 480px;
+      bottom: 0px;
+      left: 35%;
       background: radial-gradient(circle at 50% 50%,
-        rgba(217, 70, 239, 0.42) 0%,
-        rgba(217, 70, 239, 0.12) 45%,
+        rgba(217, 70, 239, 0.75) 0%,
+        rgba(217, 70, 239, 0.25) 45%,
         transparent 70%);
-      opacity: 0.32;
+      opacity: 0.45;
       animation: hero-blob-drift-3 9s ease-in-out infinite;
       animation-delay: -2s;
     }
 
     /* ── Blob 4 — Violet mix — center-left ── */
     .hero-blob-4 {
-      width: 400px;
-      height: 400px;
-      top:  42%;
-      left: 18%;
+      width: 440px;
+      height: 440px;
+      top:  40%;
+      left: 15%;
       background: radial-gradient(circle at 50% 50%,
-        rgba(139, 92, 246, 0.38) 0%,
-        rgba(99, 102, 241, 0.10) 50%,
+        rgba(139, 92, 246, 0.70) 0%,
+        rgba(99, 102, 241, 0.20) 50%,
         transparent 70%);
-      opacity: 0.30;
+      opacity: 0.40;
       animation: hero-blob-drift-4 10s ease-in-out infinite;
       animation-delay: -6s;
     }
 
-    /* ── Keyframes — each blob follows a unique organic path ── */
+    /* ── Keyframes — unique organic paths per blob ── */
 
-    /* Blob 1: drifts right → down-right → down → back */
     @keyframes hero-blob-drift-1 {
       0%   { transform: translate(  0px,   0px); }
-      20%  { transform: translate( 55px,  25px); }
-      45%  { transform: translate( 70px,  75px); }
-      70%  { transform: translate( 20px,  90px); }
-      85%  { transform: translate(-20px,  50px); }
+      20%  { transform: translate( 70px,  35px); }
+      45%  { transform: translate( 90px,  95px); }
+      70%  { transform: translate( 30px, 110px); }
+      85%  { transform: translate(-25px,  60px); }
       100% { transform: translate(  0px,   0px); }
     }
 
-    /* Blob 2: drifts left → down-left → up → back */
     @keyframes hero-blob-drift-2 {
       0%   { transform: translate(  0px,   0px); }
-      25%  { transform: translate(-60px,  50px); }
-      50%  { transform: translate(-80px,  90px); }
-      75%  { transform: translate(-40px, -20px); }
+      25%  { transform: translate(-80px,  65px); }
+      50%  { transform: translate(-100px, 110px); }
+      75%  { transform: translate(-50px, -25px); }
       100% { transform: translate(  0px,   0px); }
     }
 
-    /* Blob 3: floats up-left → up-right → settles */
     @keyframes hero-blob-drift-3 {
       0%   { transform: translate(  0px,   0px); }
-      30%  { transform: translate(-60px, -65px); }
-      55%  { transform: translate( 40px, -80px); }
-      80%  { transform: translate( 55px, -30px); }
+      30%  { transform: translate(-75px, -80px); }
+      55%  { transform: translate( 55px, -95px); }
+      80%  { transform: translate( 65px, -40px); }
       100% { transform: translate(  0px,   0px); }
     }
 
-    /* Blob 4: gentle figure-of-8 drift */
     @keyframes hero-blob-drift-4 {
       0%   { transform: translate(  0px,   0px); }
-      25%  { transform: translate( 80px, -40px); }
-      50%  { transform: translate(100px,  40px); }
-      75%  { transform: translate( 45px,  70px); }
+      25%  { transform: translate(100px, -50px); }
+      50%  { transform: translate(120px,  50px); }
+      75%  { transform: translate( 55px,  85px); }
       100% { transform: translate(  0px,   0px); }
     }
 
