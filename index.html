@@ -153,6 +153,125 @@
     .mock-card  { background: rgba(14,10,31,0.9); border: 1px solid rgba(255,255,255,0.07); box-shadow: 0 30px 80px rgba(0,0,0,0.7), 0 0 60px rgba(99,102,241,0.12); }
     .prog-bar   { height: 6px; border-radius: 4px; background: rgba(255,255,255,0.07); }
     .prog-fill  { height: 100%; border-radius: 4px; background: linear-gradient(90deg, #6366f1, #d946ef); }
+
+    /* ════════════════════════════════════════════
+       HERO — ANIMATED GRADIENT BLOBS
+       4 blobs, each with a unique drift path.
+       All clipped by overflow:hidden on the section.
+       z-index:0 keeps them behind z-index:10 content.
+    ════════════════════════════════════════════ */
+
+    /* Shared blob base */
+    .hero-blob {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(80px);
+      pointer-events: none;
+      will-change: transform;   /* GPU-accelerated, no layout thrash */
+    }
+
+    /* ── Blob 1 — Indigo — top-left ── */
+    .hero-blob-1 {
+      width: 520px;
+      height: 520px;
+      top:  -120px;
+      left: -140px;
+      background: radial-gradient(circle at 40% 40%,
+        rgba(99, 102, 241, 0.45) 0%,
+        rgba(99, 102, 241, 0.15) 45%,
+        transparent 70%);
+      opacity: 0.38;
+      animation: hero-blob-drift-1 11s ease-in-out infinite;
+    }
+
+    /* ── Blob 2 — Purple — top-right ── */
+    .hero-blob-2 {
+      width: 460px;
+      height: 460px;
+      top:  -80px;
+      right: -100px;
+      background: radial-gradient(circle at 55% 45%,
+        rgba(168, 85, 247, 0.45) 0%,
+        rgba(168, 85, 247, 0.15) 45%,
+        transparent 70%);
+      opacity: 0.36;
+      animation: hero-blob-drift-2 13s ease-in-out infinite;
+      animation-delay: -4s;     /* stagger so they don't move in sync */
+    }
+
+    /* ── Blob 3 — Pink/Fuchsia — bottom-center ── */
+    .hero-blob-3 {
+      width: 380px;
+      height: 380px;
+      bottom: 40px;
+      left:   38%;
+      background: radial-gradient(circle at 50% 50%,
+        rgba(217, 70, 239, 0.42) 0%,
+        rgba(217, 70, 239, 0.12) 45%,
+        transparent 70%);
+      opacity: 0.32;
+      animation: hero-blob-drift-3 9s ease-in-out infinite;
+      animation-delay: -2s;
+    }
+
+    /* ── Blob 4 — Violet mix — center-left ── */
+    .hero-blob-4 {
+      width: 400px;
+      height: 400px;
+      top:  42%;
+      left: 18%;
+      background: radial-gradient(circle at 50% 50%,
+        rgba(139, 92, 246, 0.38) 0%,
+        rgba(99, 102, 241, 0.10) 50%,
+        transparent 70%);
+      opacity: 0.30;
+      animation: hero-blob-drift-4 10s ease-in-out infinite;
+      animation-delay: -6s;
+    }
+
+    /* ── Keyframes — each blob follows a unique organic path ── */
+
+    /* Blob 1: drifts right → down-right → down → back */
+    @keyframes hero-blob-drift-1 {
+      0%   { transform: translate(  0px,   0px); }
+      20%  { transform: translate( 55px,  25px); }
+      45%  { transform: translate( 70px,  75px); }
+      70%  { transform: translate( 20px,  90px); }
+      85%  { transform: translate(-20px,  50px); }
+      100% { transform: translate(  0px,   0px); }
+    }
+
+    /* Blob 2: drifts left → down-left → up → back */
+    @keyframes hero-blob-drift-2 {
+      0%   { transform: translate(  0px,   0px); }
+      25%  { transform: translate(-60px,  50px); }
+      50%  { transform: translate(-80px,  90px); }
+      75%  { transform: translate(-40px, -20px); }
+      100% { transform: translate(  0px,   0px); }
+    }
+
+    /* Blob 3: floats up-left → up-right → settles */
+    @keyframes hero-blob-drift-3 {
+      0%   { transform: translate(  0px,   0px); }
+      30%  { transform: translate(-60px, -65px); }
+      55%  { transform: translate( 40px, -80px); }
+      80%  { transform: translate( 55px, -30px); }
+      100% { transform: translate(  0px,   0px); }
+    }
+
+    /* Blob 4: gentle figure-of-8 drift */
+    @keyframes hero-blob-drift-4 {
+      0%   { transform: translate(  0px,   0px); }
+      25%  { transform: translate( 80px, -40px); }
+      50%  { transform: translate(100px,  40px); }
+      75%  { transform: translate( 45px,  70px); }
+      100% { transform: translate(  0px,   0px); }
+    }
+
+    /* Respect reduced-motion preference */
+    @media (prefers-reduced-motion: reduce) {
+      .hero-blob { animation: none !important; }
+    }
   </style>
 </head>
 <body>
@@ -180,9 +299,12 @@
 
 <!-- ══════════════════ HERO ══════════════════ -->
 <section class="hero-bg grid-pattern relative min-h-screen flex items-center pt-24 pb-16 overflow-hidden">
-  <div class="orb w-96 h-96 bg-indigo-500/30 top-10 -left-32 animate-float"></div>
-  <div class="orb w-72 h-72 bg-purple-500/25 top-1/3 right-0 animate-float2" style="animation-delay:2s"></div>
-  <div class="orb w-56 h-56 bg-fuchsia-500/20 bottom-20 left-1/3 animate-pulse-slow"></div>
+
+  <!-- ── Animated gradient blobs ── z-index:0, clipped by overflow:hidden above -->
+  <div class="hero-blob hero-blob-1"></div>
+  <div class="hero-blob hero-blob-2"></div>
+  <div class="hero-blob hero-blob-3"></div>
+  <div class="hero-blob hero-blob-4"></div>
 
   <div class="max-w-6xl mx-auto px-4 md:px-8 relative z-10 w-full">
     <div class="grid lg:grid-cols-2 gap-12 items-center">
