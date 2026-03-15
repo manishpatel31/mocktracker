@@ -137,6 +137,52 @@
       box-shadow: 0 1px 0 rgba(255,255,255,0.06);
     }
 
+    /* ── Navbar height: 64px on mobile, 68px on desktop ── */
+    #navbar { height: 64px; display: flex; align-items: center; }
+    @media (min-width: 768px) { #navbar { height: 68px; } }
+
+    /* ── Body offset so fixed navbar never covers content ── */
+    body { padding-top: 64px; }
+    @media (min-width: 768px) { body { padding-top: 68px; } }
+
+    /* ── Navbar CTA button — min 44px tap target ── */
+    .nav-cta {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      min-height: 44px;
+      padding: 0 18px;
+      border-radius: 12px;
+      font-size: 0.875rem;
+      font-weight: 700;
+      color: white;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    /* ── Desktop nav links — min 44px tap target ── */
+    .nav-link-item {
+      min-height: 44px;
+      display: inline-flex;
+      align-items: center;
+      padding: 0 4px;
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: #94a3b8;
+      transition: color 0.2s;
+    }
+    .nav-link-item:hover { color: #fff; }
+
+    /* ── Global mobile safeguards ── */
+    * { min-height: 0; }                          /* prevent accidental min-height stretch */
+    button, a { -webkit-tap-highlight-color: transparent; }
+    @media (max-width: 767px) {
+      /* Enforce 13px minimum font-size everywhere */
+      body { font-size: 14px; }
+      /* Prevent any element from causing horizontal scroll */
+      section, div, nav, footer { max-width: 100%; }
+    }
+
     /* ── AOS override — ensure glass-hover transform still works after AOS completes ── */
     [data-aos].aos-animate.glass-hover:hover { transform: translateY(-6px) !important; }
 
@@ -274,28 +320,44 @@
 <body>
 
 <!-- ══════════════════ NAV ══════════════════ -->
-<nav id="navbar" class="fixed top-0 inset-x-0 z-50 py-4 px-4 md:px-8">
-  <div class="max-w-6xl mx-auto flex items-center justify-between">
-    <a href="#" class="flex items-center gap-2.5">
-      <div class="w-8 h-8 rounded-lg btn-glow flex items-center justify-center">
+<!--
+  Mobile  (< 768px): logo/name  +  "Open App" button only — nothing else
+  Desktop (≥ 768px): logo/name  +  nav links  +  "Open App" button
+  Fixed at top. Body has padding-top:64px so content is never hidden under it.
+-->
+<nav id="navbar" class="fixed top-0 inset-x-0 z-50 px-4 md:px-8">
+  <div class="max-w-6xl mx-auto w-full flex items-center justify-between gap-3">
+
+    <!-- Logo + name (always visible) -->
+    <a href="#" class="flex items-center gap-2 flex-shrink-0" style="min-height:44px;">
+      <div class="w-8 h-8 rounded-lg btn-glow flex items-center justify-center flex-shrink-0">
         <i class="fa-solid fa-chart-line text-white text-sm"></i>
       </div>
-      <span class="font-extrabold text-white text-lg tracking-tight">MockTracker <span class="grad-text">Pro</span></span>
+      <span class="font-extrabold text-white text-base md:text-lg tracking-tight whitespace-nowrap">
+        MockTracker <span class="grad-text">Pro</span>
+      </span>
     </a>
-    <div class="hidden md:flex items-center gap-6 text-sm font-medium text-slate-400">
-      <a href="#features" class="hover:text-white transition-colors">Features</a>
-      <a href="#how"      class="hover:text-white transition-colors">How it works</a>
-      <a href="#exams"    class="hover:text-white transition-colors">Exams</a>
+
+    <!-- Desktop-only nav links (hidden on mobile) -->
+    <div class="hidden md:flex items-center gap-2 flex-1 justify-center">
+      <a href="#features" class="nav-link-item">Features</a>
+      <a href="#how"      class="nav-link-item">How it works</a>
+      <a href="#exams"    class="nav-link-item">Exams</a>
     </div>
-    <a href="app.html" class="btn-glow px-4 py-2 rounded-xl text-white text-sm font-bold">
-      Start Free &nbsp;<i class="fa-solid fa-arrow-right text-xs"></i>
+
+    <!-- CTA button — "Open App" on mobile, "Start Free" on desktop -->
+    <a href="app.html" class="nav-cta btn-glow flex-shrink-0">
+      <span class="md:hidden">Open App</span>
+      <span class="hidden md:inline">Start Free</span>
+      <i class="fa-solid fa-arrow-right text-xs"></i>
     </a>
+
   </div>
 </nav>
 
 
 <!-- ══════════════════ HERO ══════════════════ -->
-<section class="hero-bg grid-pattern relative min-h-screen flex items-center pt-24 pb-16 overflow-hidden">
+<section class="hero-bg grid-pattern relative min-h-screen flex items-center pt-8 pb-16 overflow-hidden">
 
   <!-- ── Animated gradient blobs ── z-index:0, clipped by overflow:hidden above -->
   <div class="hero-blob hero-blob-1"></div>
