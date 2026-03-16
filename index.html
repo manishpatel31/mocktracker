@@ -5,825 +5,517 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>MockTracker Pro — Ace Every Exam</title>
   <meta name="description" content="The ultimate mock test tracker for SSC, RRB, and Bank exam aspirants."/>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet"/>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+
   <style>
     /* ─── RESET ─── */
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    html { font-size: 16px; scroll-behavior: smooth; }
+    html, body { height: 100%; width: 100%; overflow: hidden; }
+
+    :root {
+      --brand:   #6366f1;
+      --purple:  #a855f7;
+      --fuchsia: #d946ef;
+      --bg:      #06030f;
+      --nav-h:   54px;
+    }
+
     body {
       font-family: 'Plus Jakarta Sans', sans-serif;
-      background: #06030f; color: #f1f5f9;
-      overflow-x: hidden; -webkit-font-smoothing: antialiased;
-    }
-    button { font-family: inherit; background: none; border: none; cursor: pointer; }
-    a { text-decoration: none; }
-    ::-webkit-scrollbar { width: 3px; }
-    ::-webkit-scrollbar-thumb { background: rgba(99,102,241,0.4); border-radius: 2px; }
-
-    /* ─── VARS ─── */
-    :root {
-      --brand: #6366f1;
-      --purple: #a855f7;
-      --fuchsia: #d946ef;
-      --bg: #06030f;
-      --glass: rgba(255,255,255,0.04);
-      --border: rgba(255,255,255,0.07);
-      --nav-h: 58px;
+      background: var(--bg);
+      color: #f1f5f9;
+      -webkit-font-smoothing: antialiased;
+      display: flex;
+      flex-direction: column;
+      height: 100dvh;
+      overflow: hidden;
     }
 
-    /* ─── UTILS ─── */
+    /* ─── NOISE TEXTURE OVERLAY ─── */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+      background-size: 200px 200px;
+      pointer-events: none;
+      z-index: 0;
+      opacity: 0.5;
+    }
+
+    /* ─── GRAD UTILS ─── */
     .grad-text {
-      background: linear-gradient(135deg, #818cf8, #d946ef, #a855f7);
-      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
-    }
-    .btn-glow {
-      background: linear-gradient(135deg, #6366f1, #a855f7, #d946ef);
-      box-shadow: 0 4px 20px rgba(99,102,241,0.4);
-      transition: box-shadow .3s, transform .2s;
-      color: white;
-    }
-    .btn-glow:hover { box-shadow: 0 6px 32px rgba(99,102,241,0.6); transform: translateY(-1px); }
-    .btn-outline {
-      border: 1.5px solid rgba(129,140,248,0.4); color: #a5b4fc;
-      transition: all .25s;
-    }
-    .btn-outline:hover { border-color: #6366f1; background: rgba(99,102,241,0.1); color: #c7d2fe; }
-
-    /* ─── LAYOUT ─── */
-    body { padding-top: var(--nav-h); }
-    .page-wrap { display: flex; flex-direction: column; min-height: calc(100dvh - var(--nav-h)); }
-
-    /* Lock desktop to one viewport — mobile scrolls naturally */
-    @media (min-width: 900px) {
-      .page-wrap { height: calc(100dvh - var(--nav-h)); overflow: hidden; }
+      background: linear-gradient(130deg, #818cf8 0%, #d946ef 55%, #a855f7 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
     }
 
     /* ─── NAVBAR ─── */
-    #navbar {
-      position: fixed; top: 0; inset-x: 0; z-index: 100;
-      height: var(--nav-h); display: flex; align-items: center;
-      padding: 0 20px;
-      transition: background .35s, box-shadow .35s;
-    }
-    #navbar.scrolled {
-      background: rgba(6,3,15,0.88);
-      backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-      box-shadow: 0 1px 0 rgba(255,255,255,0.05);
+    nav {
+      position: relative; z-index: 10;
+      height: var(--nav-h);
+      display: flex; align-items: center;
+      padding: 0 24px;
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+      flex-shrink: 0;
     }
     .nav-inner {
-      max-width: 1100px; width: 100%; margin: 0 auto;
-      display: flex; align-items: center; justify-content: space-between; gap: 12px;
+      max-width: 900px; width: 100%; margin: 0 auto;
+      display: flex; align-items: center; justify-content: space-between;
     }
-    .nav-logo { display: flex; align-items: center; gap: 8px; }
-    .nav-logo-icon {
-      width: 30px; height: 30px; border-radius: 8px; flex-shrink: 0;
+    .nav-logo {
+      display: flex; align-items: center; gap: 9px;
+      text-decoration: none;
+    }
+    .nav-icon {
+      width: 32px; height: 32px; border-radius: 9px; flex-shrink: 0;
+      background: linear-gradient(135deg, #6366f1, #a855f7, #d946ef);
+      box-shadow: 0 4px 14px rgba(99,102,241,0.45);
       display: flex; align-items: center; justify-content: center;
-      font-size: 12px;
+      font-size: 13px; color: white;
     }
-    .nav-brand { font-weight: 800; font-size: .95rem; color: white; white-space: nowrap; }
-    .nav-links { display: none; }
-    @media (min-width: 768px) {
-      .nav-links {
-        display: flex; align-items: center; gap: 2px; flex: 1; justify-content: center;
-      }
-      .nav-link {
-        padding: 6px 11px; border-radius: 8px; color: #64748b;
-        font-size: .82rem; font-weight: 600; transition: color .2s, background .2s;
-      }
-      .nav-link:hover { color: white; background: rgba(255,255,255,0.05); }
+    .nav-brand {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800; font-size: 1rem; color: white; white-space: nowrap;
     }
-    .nav-cta {
-      display: inline-flex; align-items: center; gap: 6px;
-      padding: 7px 15px; border-radius: 10px;
-      font-size: .8rem; font-weight: 700; white-space: nowrap;
+    .nav-brand span { color: #6366f1; }
+
+    .nav-badge {
+      font-size: 0.68rem; font-weight: 700;
+      padding: 4px 11px; border-radius: 999px;
+      background: rgba(99,102,241,0.1);
+      border: 1px solid rgba(99,102,241,0.25);
+      color: #a5b4fc;
+      letter-spacing: 0.04em;
     }
 
     /* ─── HERO ─── */
     .hero {
-      flex: 0 0 auto; padding: 28px 20px 20px;
-      position: relative; overflow: hidden;
-      background-image:
-        radial-gradient(ellipse 80% 70% at 0% 0%, rgba(99,102,241,0.13) 0%, transparent 55%),
-        radial-gradient(ellipse 60% 50% at 100% 0%, rgba(168,85,247,0.10) 0%, transparent 55%);
+      flex: 1;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 0 24px;
+      overflow: hidden;
+      z-index: 1;
     }
-    .hero-blob {
-      position: absolute; border-radius: 50%; filter: blur(80px);
-      pointer-events: none; z-index: 0;
+
+    /* Animated background blobs */
+    .blob {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(90px);
+      pointer-events: none;
+      will-change: transform;
     }
     .blob-1 {
-      width: 380px; height: 380px; top: -120px; left: -80px; opacity: .38;
-      background: radial-gradient(circle, rgba(99,102,241,.6) 0%, transparent 70%);
-      animation: bd1 12s ease-in-out infinite;
+      width: min(500px, 80vw);
+      height: min(500px, 80vw);
+      background: radial-gradient(circle, rgba(99,102,241,0.22) 0%, transparent 70%);
+      top: -20%; left: -15%;
+      animation: drift1 16s ease-in-out infinite;
     }
     .blob-2 {
-      width: 320px; height: 320px; top: -80px; right: -60px; opacity: .32;
-      background: radial-gradient(circle, rgba(168,85,247,.6) 0%, transparent 70%);
-      animation: bd1 14s ease-in-out infinite reverse; animation-delay: -5s;
+      width: min(420px, 70vw);
+      height: min(420px, 70vw);
+      background: radial-gradient(circle, rgba(168,85,247,0.18) 0%, transparent 70%);
+      bottom: -15%; right: -10%;
+      animation: drift2 18s ease-in-out infinite;
     }
-    @keyframes bd1 { 0%,100%{transform:translate(0,0)} 50%{transform:translate(40px,50px)} }
+    .blob-3 {
+      width: min(300px, 55vw);
+      height: min(300px, 55vw);
+      background: radial-gradient(circle, rgba(217,70,239,0.10) 0%, transparent 70%);
+      top: 40%; left: 50%; transform: translateX(-50%);
+      animation: drift1 12s ease-in-out infinite reverse;
+    }
+    @keyframes drift1 { 0%,100%{transform:translate(0,0)} 50%{transform:translate(30px,40px)} }
+    @keyframes drift2 { 0%,100%{transform:translate(0,0)} 50%{transform:translate(-40px,-30px)} }
 
-    .hero-inner {
-      max-width: 1100px; margin: 0 auto; position: relative; z-index: 1;
-      display: grid; grid-template-columns: 1fr; gap: 20px; align-items: center;
-    }
-    @media (min-width: 900px) {
-      .hero-inner { grid-template-columns: 1.1fr 0.9fr; gap: 36px; }
-    }
-
-    .eyebrow { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 10px; }
-    .epill {
-      padding: 3px 9px; border-radius: 999px;
-      font-size: .68rem; font-weight: 700; letter-spacing: .05em; text-transform: uppercase;
-    }
-    .ep1 { background: rgba(99,102,241,.12); border: 1px solid rgba(99,102,241,.3); color: #a5b4fc; }
-    .ep2 { background: rgba(168,85,247,.10); border: 1px solid rgba(168,85,247,.3); color: #c4b5fd; }
-    .ep3 { background: rgba(217,70,239,.10); border: 1px solid rgba(217,70,239,.3); color: #f0abfc; }
-
-    h1 {
-      font-size: clamp(1.8rem, 4.5vw, 2.8rem);
-      font-weight: 900; line-height: 1.1; letter-spacing: -.025em; color: white;
-      margin-bottom: 10px;
-    }
-    .hero-sub {
-      font-size: .88rem; color: #64748b; line-height: 1.65; margin-bottom: 16px; max-width: 420px;
-    }
-    .hero-ctas {
-      display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px;
-    }
-    .hero-ctas a {
-      display: inline-flex; align-items: center; gap: 6px;
-      padding: 9px 20px; border-radius: 11px;
-      font-size: .84rem; font-weight: 700;
-    }
-    .trust-row { display: flex; flex-wrap: wrap; gap: 6px; }
-    .tpill {
-      display: flex; align-items: center; gap: 5px;
-      padding: 4px 10px; border-radius: 999px;
-      background: rgba(99,102,241,.08); border: 1px solid rgba(99,102,241,.2);
-      font-size: .73rem; font-weight: 600; color: #94a3b8;
-    }
-    .tpill i { font-size: .65rem; }
-
-    /* ─── MOCKUP CARD ─── */
-    .hero-card {
-      display: none;
-      background: rgba(12,8,28,.92);
-      border: 1px solid rgba(255,255,255,.07);
-      box-shadow: 0 20px 70px rgba(0,0,0,.6), 0 0 40px rgba(99,102,241,.08);
-      border-radius: 20px; padding: 18px;
-      animation: cardFloat 7s ease-in-out infinite;
-    }
-    @media (min-width: 900px) { .hero-card { display: block; } }
-    @keyframes cardFloat { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-9px)} }
-    .pb { height: 4px; border-radius: 2px; background: rgba(255,255,255,.07); margin-top: 3px; }
-    .pf { height: 100%; border-radius: 2px; background: linear-gradient(90deg,#6366f1,#d946ef); }
-    .dthin { height: 1px; background: linear-gradient(90deg,transparent,rgba(99,102,241,.3),transparent); margin: 10px 0; }
-
-    /* ─── HUB SECTION ─── */
-    .hub {
-      flex: 1; position: relative; overflow: hidden;
-      display: flex; flex-direction: column;
-      padding: 0 20px 16px;
-    }
-    @media (min-width: 900px) { .hub { overflow: hidden; } }
-
-    /* SVG canvas for lines */
-    #lineSvg {
-      position: absolute; inset: 0; width: 100%; height: 100%;
-      pointer-events: none; z-index: 1;
-      opacity: 0; transition: opacity .4s;
-    }
-    #lineSvg.ready { opacity: 1; }
-    @media (max-width: 767px) { #lineSvg { display: none; } }
-
-    /* Node buttons row */
-    .hub-nodes {
-      display: flex; justify-content: center; align-items: center;
-      gap: 6px; flex-wrap: wrap;
-      padding: 14px 0 0; position: relative; z-index: 3;
-    }
-    .hbtn {
-      position: relative;
-      display: inline-flex; align-items: center; gap: 6px;
-      padding: 8px 14px; border-radius: 999px;
-      font-size: .77rem; font-weight: 700; color: #64748b; white-space: nowrap;
-      background: rgba(255,255,255,.035); border: 1.5px solid rgba(255,255,255,.07);
-      transition: color .2s, border-color .25s, background .25s, box-shadow .25s;
-    }
-    .hbtn:hover { color: #cbd5e1; border-color: rgba(99,102,241,.4); background: rgba(99,102,241,.06); }
-    .hbtn.active {
-      color: white; border-color: transparent;
-      background: linear-gradient(#06030f,#06030f) padding-box,
-                  linear-gradient(135deg,#6366f1,#a855f7,#d946ef) border-box;
-      box-shadow: 0 0 18px rgba(99,102,241,.28);
-    }
-    .hbtn.active i { color: #a5b4fc; }
-    /* active dot below button (connects to line) */
-    .hbtn-dot {
-      position: absolute; bottom: -11px; left: 50%; transform: translateX(-50%);
-      width: 5px; height: 5px; border-radius: 50%;
-      background: linear-gradient(135deg,#6366f1,#d946ef);
-      box-shadow: 0 0 6px rgba(99,102,241,.8);
-      opacity: 0; transition: opacity .25s;
-    }
-    .hbtn.active .hbtn-dot { opacity: 1; }
-
-    /* ─── CONTENT PANELS ─── */
-    .hub-wrap {
-      flex: 1; position: relative; z-index: 2;
-      margin-top: 20px; min-height: 0;
-    }
-    @media (max-width: 899px) { .hub-wrap { min-height: 260px; } }
-
-    .panel {
+    /* Subtle grid lines */
+    .hero::after {
+      content: '';
       position: absolute; inset: 0;
-      background: rgba(255,255,255,.025);
-      border: 1px solid rgba(255,255,255,.06);
-      border-radius: 18px; padding: 18px 20px;
-      overflow-y: auto;
-      opacity: 0; transform: translateY(10px) scale(.995);
-      transition: opacity .32s ease, transform .32s ease;
+      background-image:
+        linear-gradient(rgba(99,102,241,0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(99,102,241,0.04) 1px, transparent 1px);
+      background-size: 60px 60px;
+      mask-image: radial-gradient(ellipse 70% 70% at 50% 50%, black 0%, transparent 100%);
       pointer-events: none;
     }
-    .panel.show {
-      opacity: 1; transform: translateY(0) scale(1); pointer-events: all;
+
+    /* Content wrapper */
+    .hero-content {
+      position: relative; z-index: 2;
+      display: flex; flex-direction: column;
+      align-items: center; gap: 0;
+      max-width: 580px; width: 100%;
+      /* stagger-in animation */
+      animation: contentIn 0.9s cubic-bezier(0.22, 1, 0.36, 1) both;
     }
-    /* top glow edge on active panel */
-    .panel.show::before {
+    @keyframes contentIn {
+      from { opacity: 0; transform: translateY(24px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Eyebrow */
+    .eyebrow {
+      display: flex; gap: 6px; flex-wrap: wrap; justify-content: center;
+      margin-bottom: 20px;
+      animation: contentIn 0.9s 0.05s cubic-bezier(0.22, 1, 0.36, 1) both;
+    }
+    .epill {
+      font-size: 0.66rem; font-weight: 700;
+      letter-spacing: 0.07em; text-transform: uppercase;
+      padding: 3px 10px; border-radius: 999px;
+    }
+    .ep1 { background: rgba(99,102,241,0.1);  border: 1px solid rgba(99,102,241,0.28); color: #a5b4fc; }
+    .ep2 { background: rgba(168,85,247,0.09); border: 1px solid rgba(168,85,247,0.28); color: #c4b5fd; }
+    .ep3 { background: rgba(217,70,239,0.09); border: 1px solid rgba(217,70,239,0.28); color: #f0abfc; }
+
+    /* Headline */
+    h1 {
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(2rem, 6.5vw, 3.4rem);
+      font-weight: 900;
+      line-height: 1.08;
+      letter-spacing: -0.03em;
+      color: white;
+      margin-bottom: 14px;
+      animation: contentIn 0.9s 0.1s cubic-bezier(0.22, 1, 0.36, 1) both;
+    }
+
+    /* Subtitle */
+    .sub {
+      font-size: clamp(0.82rem, 2.2vw, 0.96rem);
+      color: #4a5568;
+      line-height: 1.6;
+      max-width: 360px;
+      margin-bottom: 22px;
+      animation: contentIn 0.9s 0.18s cubic-bezier(0.22, 1, 0.36, 1) both;
+    }
+
+    /* Trust pills */
+    .trust {
+      display: flex; gap: 7px; flex-wrap: wrap; justify-content: center;
+      margin-bottom: 32px;
+      animation: contentIn 0.9s 0.26s cubic-bezier(0.22, 1, 0.36, 1) both;
+    }
+    .tpill {
+      display: flex; align-items: center; gap: 5px;
+      padding: 5px 12px; border-radius: 999px;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.08);
+      font-size: 0.72rem; font-weight: 600; color: #64748b;
+    }
+    .tpill i { font-size: 0.62rem; }
+
+    /* ─── CTA BUTTON ─── */
+    .cta-wrap {
+      animation: contentIn 0.9s 0.34s cubic-bezier(0.22, 1, 0.36, 1) both;
+    }
+    .cta-btn {
+      position: relative;
+      display: inline-flex; align-items: center; gap: 10px;
+      padding: 15px 36px;
+      border-radius: 16px;
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(0.88rem, 2.5vw, 1rem);
+      font-weight: 800;
+      color: white;
+      background: linear-gradient(135deg, #6366f1, #a855f7, #d946ef);
+      box-shadow:
+        0 0 0 1px rgba(99,102,241,0.3),
+        0 8px 32px rgba(99,102,241,0.4),
+        0 0 60px rgba(168,85,247,0.15);
+      border: none; cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.3s;
+      overflow: hidden;
+      min-width: 220px;
+      justify-content: center;
+    }
+    .cta-btn::before {
       content: '';
-      position: absolute; top: 0; left: 10%; right: 10%; height: 1px;
-      background: linear-gradient(90deg, transparent, rgba(99,102,241,.5), rgba(217,70,239,.3), transparent);
-      border-radius: 0 0 4px 4px;
+      position: absolute; inset: 0;
+      background: linear-gradient(135deg, rgba(255,255,255,0.12), transparent 60%);
+      border-radius: inherit;
     }
+    .cta-btn:hover {
+      transform: translateY(-2px) scale(1.02);
+      box-shadow:
+        0 0 0 1px rgba(99,102,241,0.4),
+        0 12px 40px rgba(99,102,241,0.55),
+        0 0 80px rgba(168,85,247,0.25);
+    }
+    .cta-btn:active { transform: translateY(0) scale(0.99); }
 
-    .ptag {
-      display: inline-flex; align-items: center; gap: 5px;
-      font-size: .65rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase;
-      color: var(--brand); margin-bottom: 13px;
+    /* Shimmer sweep on button */
+    .cta-btn::after {
+      content: '';
+      position: absolute;
+      top: 0; left: -100%; width: 60%; height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent);
+      transform: skewX(-15deg);
+      animation: shimmer 3.5s ease-in-out infinite;
     }
+    @keyframes shimmer { 0%,100%{left:-100%} 50%{left:160%} }
 
-    /* Empty state */
-    .empty-state {
-      height: 100%; display: flex; flex-direction: column;
-      align-items: center; justify-content: center; gap: 8px;
-      opacity: .3;
-    }
-    .empty-state i { font-size: 1.4rem; color: #6366f1; }
-    .empty-state p { font-size: .8rem; color: #475569; }
-
-    /* Features grid */
-    .feat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-    @media (min-width: 640px) { .feat-grid { grid-template-columns: repeat(4,1fr); } }
-    .fcard {
-      background: rgba(255,255,255,.03); border: 1px solid rgba(255,255,255,.06);
-      border-radius: 13px; padding: 13px 11px;
-      transition: border-color .2s, transform .2s;
-    }
-    .fcard:hover { border-color: rgba(99,102,241,.3); transform: translateY(-2px); }
-    .fcard i { font-size: .95rem; margin-bottom: 7px; display: block; }
-    .fcard h4 { font-size: .8rem; font-weight: 700; color: white; margin-bottom: 3px; }
-    .fcard p { font-size: .71rem; color: #475569; line-height: 1.55; }
-
-    /* How it works */
-    .steps {
-      display: flex; align-items: flex-start;
-      flex-direction: column; gap: 12px;
-    }
-    @media (min-width: 640px) { .steps { flex-direction: row; gap: 0; } }
-    .step { flex: 1; display: flex; gap: 11px; align-items: flex-start; }
-    @media (min-width: 640px) {
-      .step { flex-direction: column; align-items: center; text-align: center; padding: 0 16px; }
-    }
-    .snum {
-      width: 28px; height: 28px; border-radius: 50%; flex-shrink: 0;
+    .cta-icon {
+      width: 22px; height: 22px; border-radius: 6px;
+      background: rgba(255,255,255,0.15);
       display: flex; align-items: center; justify-content: center;
-      font-weight: 900; font-size: .76rem; color: white;
+      font-size: 0.65rem;
+      transition: transform 0.2s;
     }
-    .step-txt h4 { font-size: .8rem; font-weight: 700; color: white; margin-bottom: 3px; }
-    .step-txt p  { font-size: .71rem; color: #475569; line-height: 1.55; }
-    .step-sep {
-      display: none;
-      width: 1px; align-self: stretch; margin: 28px 0;
-      background: linear-gradient(180deg, rgba(99,102,241,.4), rgba(217,70,239,.3));
-    }
-    @media (min-width: 640px) { .step-sep { display: block; } }
+    .cta-btn:hover .cta-icon { transform: translateX(2px); }
 
-    /* Reviews */
-    .rev-grid { display: grid; grid-template-columns: 1fr; gap: 10px; }
-    @media (min-width: 640px) { .rev-grid { grid-template-columns: repeat(3,1fr); } }
-    .rcard {
-      background: rgba(255,255,255,.03); border: 1px solid rgba(255,255,255,.06);
-      border-radius: 13px; padding: 13px;
+    /* Small note under button */
+    .cta-note {
+      margin-top: 11px;
+      font-size: 0.68rem; color: #1e293b;
+      animation: contentIn 0.9s 0.4s cubic-bezier(0.22, 1, 0.36, 1) both;
     }
-    .rstars { color: #facc15; font-size: .62rem; letter-spacing: 1px; margin-bottom: 7px; }
-    .rtext { font-size: .75rem; color: #94a3b8; line-height: 1.55; margin-bottom: 10px; }
-    .rauthor { display: flex; align-items: center; gap: 8px; }
-    .ravatar {
-      width: 26px; height: 26px; border-radius: 50%;
+
+    /* ─── LAUNCH TRANSITION OVERLAY ─── */
+    /* 
+      Animation: "Supernova Burst"
+      1. A radial ring of light erupts from the button's exact position
+      2. It expands rapidly, eating the screen
+      3. At full cover, a reverse-spin vortex of lines briefly appears
+      4. Then the whole thing fades to the brand gradient → navigates
+    */
+
+    #launch-overlay {
+      position: fixed; inset: 0; z-index: 9999;
+      pointer-events: none;
+      opacity: 0;
+    }
+    #launch-overlay.active { pointer-events: all; }
+
+    /* The expanding circle */
+    #launch-circle {
+      position: absolute;
+      border-radius: 50%;
+      background: radial-gradient(circle at center,
+        #ffffff 0%,
+        #d946ef 20%,
+        #a855f7 40%,
+        #6366f1 65%,
+        #06030f 100%
+      );
+      transform: scale(0);
+      transform-origin: center center;
+      transition: transform 0s; /* set by JS */
+      will-change: transform;
+    }
+
+    /* Scan lines that appear during the burst */
+    #launch-lines {
+      position: absolute; inset: 0;
+      background: repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 3px,
+        rgba(99,102,241,0.06) 3px,
+        rgba(99,102,241,0.06) 4px
+      );
+      opacity: 0;
+      transition: opacity 0.15s;
+    }
+    #launch-overlay.lines-show #launch-lines { opacity: 1; }
+
+    /* Center logo pulse during launch */
+    #launch-logo {
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%) scale(0);
+      width: 64px; height: 64px; border-radius: 18px;
+      background: linear-gradient(135deg, #6366f1, #a855f7, #d946ef);
+      box-shadow: 0 0 60px rgba(99,102,241,0.9), 0 0 120px rgba(168,85,247,0.5);
       display: flex; align-items: center; justify-content: center;
-      font-weight: 800; font-size: .72rem; color: white; flex-shrink: 0;
+      color: white; font-size: 1.4rem;
+      opacity: 0;
+      transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1), opacity 0.3s;
     }
-    .rname { font-size: .75rem; font-weight: 700; color: white; }
-    .rmeta { font-size: .65rem; color: #334155; margin-top: 1px; }
-
-    /* Exams */
-    .exam-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 8px; }
-    @media (min-width: 640px) { .exam-grid { grid-template-columns: repeat(6,1fr); } }
-    .ecard {
-      background: rgba(255,255,255,.03); border: 1px solid rgba(255,255,255,.06);
-      border-radius: 12px; padding: 12px 6px; text-align: center;
-      transition: border-color .2s, transform .2s;
-    }
-    .ecard:hover { border-color: rgba(99,102,241,.3); transform: translateY(-2px); }
-    .ecard i { font-size: .95rem; margin-bottom: 5px; display: block; }
-    .ecard .en { font-size: .76rem; font-weight: 700; color: white; }
-    .ecard .es { font-size: .63rem; color: #334155; margin-top: 1px; }
-
-    /* Stats */
-    .stat-grid { display: grid; grid-template-columns: repeat(2,1fr); gap: 10px; }
-    @media (min-width: 640px) { .stat-grid { grid-template-columns: repeat(4,1fr); } }
-    .scard {
-      background: rgba(255,255,255,.03); border: 1px solid rgba(255,255,255,.06);
-      border-radius: 13px; padding: 16px 12px; text-align: center;
-    }
-    .sval { font-size: 1.55rem; font-weight: 900; line-height: 1; margin-bottom: 4px; }
-    .slbl { font-size: .68rem; color: #475569; font-weight: 600; }
-
-    /* CTA strip */
-    .cstrip {
-      margin-top: 12px; padding: 11px 14px;
-      background: rgba(99,102,241,.06); border: 1px solid rgba(99,102,241,.15);
-      border-radius: 12px;
-      display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px;
-    }
-    .cstrip p { font-size: .78rem; color: #64748b; }
-    .cstrip a {
-      display: inline-flex; align-items: center; gap: 6px;
-      padding: 7px 16px; border-radius: 9px;
-      font-size: .78rem; font-weight: 700; color: white;
+    #launch-overlay.logo-show #launch-logo {
+      transform: translate(-50%, -50%) scale(1);
+      opacity: 1;
     }
 
-    /* ─── FOOTER ─── */
-    footer {
-      flex: 0 0 auto; padding: 10px 20px;
-      border-top: 1px solid rgba(255,255,255,.04);
-      display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 6px;
-      background: #04020b; font-size: .68rem; color: #1e293b;
+    /* Mobile full-width CTA */
+    @media (max-width: 400px) {
+      .cta-btn { width: 90vw; }
     }
-    footer a { color: #334155; transition: color .2s; }
-    footer a:hover { color: #64748b; }
-    .fsoc { display: flex; gap: 12px; }
 
-    /* ─── SVG line animations ─── */
-    .hub-line { transition: stroke .3s, stroke-width .3s, opacity .3s; }
-    .hub-line.active-line {
-      stroke: url(#lgrad) !important;
-      stroke-dasharray: 6 3 !important;
-      animation: dashFlow .6s linear infinite;
+    /* ─── BOTTOM MICRO DETAIL ─── */
+    .corner-detail {
+      position: absolute;
+      font-size: 0.6rem; color: #1a1a2e;
+      font-weight: 600; letter-spacing: 0.08em;
+      text-transform: uppercase;
+      z-index: 2;
+      animation: contentIn 1.2s 0.6s both;
     }
-    @keyframes dashFlow { to { stroke-dashoffset: -9; } }
+    .corner-detail.bl { bottom: 16px; left: 22px; }
+    .corner-detail.br { bottom: 16px; right: 22px; }
+
+    /* Animated dot */
+    .live-dot {
+      display: inline-block;
+      width: 5px; height: 5px; border-radius: 50%;
+      background: #4ade80;
+      box-shadow: 0 0 6px #4ade80;
+      margin-right: 5px;
+      animation: pulse-dot 2s ease-in-out infinite;
+      vertical-align: middle;
+    }
+    @keyframes pulse-dot {
+      0%,100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.5; transform: scale(0.7); }
+    }
+
+    /* ─── SCROLL HINT (hidden, just for feel) ─── */
+    /* nothing — truly scroll-free */
+
   </style>
 </head>
 <body>
 
-<!-- ══ NAVBAR ══ -->
-<nav id="navbar">
-  <div class="nav-inner">
-    <a href="#" class="nav-logo">
-      <div class="nav-logo-icon btn-glow">
-        <i class="fa-solid fa-chart-line"></i>
-      </div>
-      <span class="nav-brand">MockTracker <span class="grad-text">Pro</span></span>
-    </a>
-    <div class="nav-links">
-      <a href="#" class="nav-link" onclick="activate('features');return false">Features</a>
-      <a href="#" class="nav-link" onclick="activate('how');return false">How It Works</a>
-      <a href="#" class="nav-link" onclick="activate('exams');return false">Exams</a>
-      <a href="#" class="nav-link" onclick="activate('reviews');return false">Reviews</a>
+  <!-- ══ NAVBAR ══ -->
+  <nav>
+    <div class="nav-inner">
+      <a href="#" class="nav-logo">
+        <div class="nav-icon">
+          <i class="fa-solid fa-chart-line"></i>
+        </div>
+        <span class="nav-brand">MockTracker <span>Pro</span></span>
+      </a>
+      <span class="nav-badge">100% Free</span>
     </div>
-    <a href="app.html" class="nav-cta btn-glow">
-      Start Free <i class="fa-solid fa-arrow-right" style="font-size:.65rem"></i>
-    </a>
-  </div>
-</nav>
-
-<div class="page-wrap">
+  </nav>
 
   <!-- ══ HERO ══ -->
   <section class="hero">
-    <div class="hero-blob blob-1"></div>
-    <div class="hero-blob blob-2"></div>
-    <div class="hero-inner">
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+    <div class="blob blob-3"></div>
 
-      <!-- Copy -->
-      <div>
-        <div class="eyebrow">
-          <span class="epill ep1">SSC CGL</span>
-          <span class="epill ep2">RRB NTPC</span>
-          <span class="epill ep3">Bank PO</span>
+    <div class="hero-content">
+
+      <!-- Eyebrow pills -->
+      <div class="eyebrow">
+        <span class="epill ep1">SSC CGL</span>
+        <span class="epill ep2">RRB NTPC</span>
+        <span class="epill ep3">Bank PO</span>
+      </div>
+
+      <!-- Headline -->
+      <h1>Stop Guessing.<br/><span class="grad-text">Start Winning</span><br/>Every Mock.</h1>
+
+      <!-- Subtitle -->
+      <p class="sub">The smartest mock tracker for Indian competitive exams.</p>
+
+      <!-- Trust pills -->
+      <div class="trust">
+        <div class="tpill">
+          <i class="fa-solid fa-users" style="color:#818cf8"></i>
+          10,000+ Aspirants
         </div>
-        <h1>Stop Guessing.<br/><span class="grad-text">Start Winning</span> Every Mock.</h1>
-        <p class="hero-sub">The smartest mock tracker for Indian competitive exams. Log attempts, uncover weak spots, watch your rank soar.</p>
-        <div class="hero-ctas">
-          <a href="app.html" class="btn-glow">
-            <i class="fa-solid fa-rocket"></i> Start Tracking Free
-          </a>
-          <a href="#" class="btn-outline" style="padding:9px 18px;border-radius:11px;font-size:.84rem;font-weight:700" onclick="activate('how');return false">
-            <i class="fa-solid fa-play" style="font-size:.7rem"></i> How It Works
-          </a>
+        <div class="tpill">
+          <i class="fa-solid fa-star" style="color:#facc15"></i>
+          4.9 Rating
         </div>
-        <div class="trust-row">
-          <div class="tpill"><i class="fa-solid fa-users" style="color:#818cf8"></i> 10,000+ Aspirants</div>
-          <div class="tpill"><i class="fa-solid fa-star" style="color:#facc15"></i> 4.9 Rating</div>
-          <div class="tpill"><i class="fa-solid fa-shield-check" style="color:#4ade80"></i> 100% Free</div>
+        <div class="tpill">
+          <i class="fa-solid fa-shield-halved" style="color:#4ade80"></i>
+          Always Free
         </div>
       </div>
 
-      <!-- Mockup card (desktop only) -->
-      <div class="hero-card">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
-          <div>
-            <p style="font-size:.62rem;color:#334155;text-transform:uppercase;letter-spacing:.08em;font-weight:600">This Week</p>
-            <p style="font-weight:700;color:white;font-size:.9rem">SSC CGL Tier-I</p>
-          </div>
-          <div style="padding:3px 9px;border-radius:999px;background:rgba(34,197,94,.12);border:1px solid rgba(34,197,94,.25);color:#4ade80;font-size:.68rem;font-weight:700">
-            <i class="fa-solid fa-arrow-trend-up"></i> +5.2%
-          </div>
-        </div>
-        <div style="display:flex;gap:12px;align-items:center;margin-bottom:12px">
-          <div style="position:relative;width:66px;height:66px;flex-shrink:0">
-            <svg viewBox="0 0 80 80" style="width:100%;height:100%;transform:rotate(-90deg)">
-              <circle cx="40" cy="40" r="30" fill="none" stroke="rgba(255,255,255,.05)" stroke-width="8"/>
-              <circle cx="40" cy="40" r="30" fill="none" stroke="url(#sg)" stroke-width="8"
-                stroke-dasharray="188.5" stroke-dashoffset="47" stroke-linecap="round"/>
-              <defs>
-                <linearGradient id="sg" x1="0%" y1="0%" x2="100%" y2="0%">
-                  <stop offset="0%" stop-color="#6366f1"/><stop offset="100%" stop-color="#d946ef"/>
-                </linearGradient>
-              </defs>
-            </svg>
-            <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center">
-              <span style="font-weight:900;font-size:1rem;color:white;line-height:1">152</span>
-              <span style="font-size:.6rem;color:#334155">/ 200</span>
-            </div>
-          </div>
-          <div style="flex:1;display:flex;flex-direction:column;gap:7px">
-            <div>
-              <div style="display:flex;justify-content:space-between;font-size:.67rem;margin-bottom:2px">
-                <span style="color:#475569">Quantitative</span><span style="color:#cbd5e1;font-weight:600">82%</span>
-              </div>
-              <div class="pb"><div class="pf" style="width:82%"></div></div>
-            </div>
-            <div>
-              <div style="display:flex;justify-content:space-between;font-size:.67rem;margin-bottom:2px">
-                <span style="color:#475569">English</span><span style="color:#cbd5e1;font-weight:600">76%</span>
-              </div>
-              <div class="pb"><div class="pf" style="width:76%"></div></div>
-            </div>
-            <div>
-              <div style="display:flex;justify-content:space-between;font-size:.67rem;margin-bottom:2px">
-                <span style="color:#475569">Reasoning</span><span style="color:#cbd5e1;font-weight:600">91%</span>
-              </div>
-              <div class="pb"><div class="pf" style="width:91%"></div></div>
-            </div>
-          </div>
-        </div>
-        <div style="display:flex;align-items:flex-end;gap:3px;height:36px">
-          <span style="font-size:.58rem;color:#1e293b;white-space:nowrap;align-self:flex-end;margin-right:2px;padding-bottom:1px">Score →</span>
-          <div style="flex:1;height:48%;border-radius:2px;background:rgba(99,102,241,.3)"></div>
-          <div style="flex:1;height:62%;border-radius:2px;background:rgba(99,102,241,.4)"></div>
-          <div style="flex:1;height:44%;border-radius:2px;background:rgba(99,102,241,.3)"></div>
-          <div style="flex:1;height:74%;border-radius:2px;background:rgba(99,102,241,.5)"></div>
-          <div style="flex:1;height:68%;border-radius:2px;background:rgba(99,102,241,.4)"></div>
-          <div style="flex:1;height:90%;border-radius:2px;background:linear-gradient(180deg,#d946ef,#6366f1)"></div>
-        </div>
-        <div class="dthin"></div>
-        <div style="display:flex;justify-content:space-between;font-size:.67rem;color:#334155">
-          <span><span style="color:white;font-weight:700">12</span> tests logged</span>
-          <span>Est. rank <span style="color:#4ade80;font-weight:700">~3,200</span></span>
-        </div>
+      <!-- CTA -->
+      <div class="cta-wrap">
+        <button class="cta-btn" id="startBtn" onclick="triggerLaunch(event)">
+          <span class="cta-icon"><i class="fa-solid fa-rocket"></i></span>
+          Start Tracking Free
+        </button>
       </div>
+      <p class="cta-note">No account needed &nbsp;·&nbsp; Works on any device</p>
 
+    </div><!-- /hero-content -->
+
+    <!-- Corner micro-details -->
+    <div class="corner-detail bl">
+      <span class="live-dot"></span>10K+ active
     </div>
+    <div class="corner-detail br">v2.0 &nbsp;·&nbsp; 2025</div>
+
   </section>
 
-  <!-- ══ HUB ══ -->
-  <section class="hub" id="hubSec">
-
-    <!-- SVG Lines Layer -->
-    <svg id="lineSvg" xmlns="http://www.w3.org/2000/svg">
-      <defs>
-        <linearGradient id="lgrad" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stop-color="#6366f1"/>
-          <stop offset="100%" stop-color="#d946ef"/>
-        </linearGradient>
-        <filter id="lglow" x="-50%" y="-50%" width="200%" height="200%">
-          <feGaussianBlur stdDeviation="2.5" result="blur"/>
-          <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
-        </filter>
-      </defs>
-      <line id="l-features" class="hub-line" stroke="rgba(99,102,241,.1)" stroke-width="1" stroke-dasharray="4 5"/>
-      <line id="l-how"      class="hub-line" stroke="rgba(99,102,241,.1)" stroke-width="1" stroke-dasharray="4 5"/>
-      <line id="l-exams"    class="hub-line" stroke="rgba(99,102,241,.1)" stroke-width="1" stroke-dasharray="4 5"/>
-      <line id="l-reviews"  class="hub-line" stroke="rgba(99,102,241,.1)" stroke-width="1" stroke-dasharray="4 5"/>
-      <line id="l-stats"    class="hub-line" stroke="rgba(99,102,241,.1)" stroke-width="1" stroke-dasharray="4 5"/>
-      <!-- anchor circle at panel top -->
-      <circle id="anchorDot" r="4" fill="url(#lgrad)" filter="url(#lglow)" opacity="0"/>
-    </svg>
-
-    <!-- Node buttons -->
-    <div class="hub-nodes" id="hubNodes">
-      <button class="hbtn" data-id="features" onclick="activate('features')">
-        <i class="fa-solid fa-chart-mixed"></i> Features
-        <span class="hbtn-dot"></span>
-      </button>
-      <button class="hbtn" data-id="how" onclick="activate('how')">
-        <i class="fa-solid fa-shoe-prints"></i> How It Works
-        <span class="hbtn-dot"></span>
-      </button>
-      <button class="hbtn" data-id="exams" onclick="activate('exams')">
-        <i class="fa-solid fa-graduation-cap"></i> Exams Covered
-        <span class="hbtn-dot"></span>
-      </button>
-      <button class="hbtn" data-id="reviews" onclick="activate('reviews')">
-        <i class="fa-solid fa-star"></i> Reviews
-        <span class="hbtn-dot"></span>
-      </button>
-      <button class="hbtn" data-id="stats" onclick="activate('stats')">
-        <i class="fa-solid fa-fire"></i> Stats
-        <span class="hbtn-dot"></span>
-      </button>
+  <!-- ══ LAUNCH TRANSITION OVERLAY ══ -->
+  <div id="launch-overlay">
+    <div id="launch-circle"></div>
+    <div id="launch-lines"></div>
+    <div id="launch-logo">
+      <i class="fa-solid fa-chart-line"></i>
     </div>
+  </div>
 
-    <!-- Panels container -->
-    <div class="hub-wrap" id="hubWrap">
+  <script>
+    function triggerLaunch(e) {
+      const btn    = document.getElementById('startBtn');
+      const overlay = document.getElementById('launch-overlay');
+      const circle  = document.getElementById('launch-circle');
 
-      <!-- Default / prompt state -->
-      <div class="panel show" id="p-default">
-        <div class="empty-state">
-          <i class="fa-solid fa-hand-pointer"></i>
-          <p>Tap a button above to explore</p>
-        </div>
-      </div>
+      // Get button center in viewport coords
+      const rect = btn.getBoundingClientRect();
+      const cx   = rect.left + rect.width  / 2;
+      const cy   = rect.top  + rect.height / 2;
 
-      <!-- Features -->
-      <div class="panel" id="p-features">
-        <p class="ptag"><i class="fa-solid fa-chart-mixed"></i>&nbsp; Features</p>
-        <div class="feat-grid">
-          <div class="fcard">
-            <i class="fa-solid fa-chart-mixed" style="color:#818cf8"></i>
-            <h4>Deep Analytics</h4>
-            <p>Accuracy, speed & subject-wise performance across every mock.</p>
-          </div>
-          <div class="fcard">
-            <i class="fa-solid fa-brain" style="color:#c084fc"></i>
-            <h4>Weakness Radar</h4>
-            <p>Pinpoint topics dragging your score down — fix them fast.</p>
-          </div>
-          <div class="fcard">
-            <i class="fa-solid fa-trophy" style="color:#facc15"></i>
-            <h4>Leaderboard</h4>
-            <p>Compare against real cut-offs. Know where you stand, always.</p>
-          </div>
-          <div class="fcard">
-            <i class="fa-solid fa-bolt" style="color:#f0abfc"></i>
-            <h4>Instant Entry</h4>
-            <p>Log a full mock in under 30 seconds. Study, not admin.</p>
-          </div>
-        </div>
-        <div class="cstrip">
-          <p>All features — 100% free, forever.</p>
-          <a href="app.html" class="btn-glow"><i class="fa-solid fa-rocket"></i> Try Now</a>
-        </div>
-      </div>
+      // Size the circle: needs to cover the entire viewport from the button's position
+      // Max distance from button center to any corner
+      const dx = Math.max(cx, window.innerWidth  - cx);
+      const dy = Math.max(cy, window.innerHeight - cy);
+      const radius = Math.sqrt(dx * dx + dy * dy) * 2.1; // diameter
 
-      <!-- How It Works -->
-      <div class="panel" id="p-how">
-        <p class="ptag"><i class="fa-solid fa-shoe-prints"></i>&nbsp; How It Works — 3 Simple Steps</p>
-        <div class="steps">
-          <div class="step">
-            <div class="snum" style="background:linear-gradient(135deg,#6366f1,#a855f7)">1</div>
-            <div class="step-txt">
-              <h4>Create Your Account</h4>
-              <p>Sign up free with Google or email. Pick your target exam. Done in &lt;1 min.</p>
-            </div>
-          </div>
-          <div class="step-sep"></div>
-          <div class="step">
-            <div class="snum" style="background:linear-gradient(135deg,#a855f7,#d946ef)">2</div>
-            <div class="step-txt">
-              <h4>Log Your Mocks</h4>
-              <p>After each test, enter score, time, and subject splits in 30 seconds flat.</p>
-            </div>
-          </div>
-          <div class="step-sep"></div>
-          <div class="step">
-            <div class="snum" style="background:linear-gradient(135deg,#d946ef,#6366f1)">3</div>
-            <div class="step-txt">
-              <h4>Analyse & Improve</h4>
-              <p>Trend charts, weakness maps, rank estimates. Improve where it matters.</p>
-            </div>
-          </div>
-        </div>
-        <div class="cstrip" style="margin-top:14px">
-          <p>Ready in 2 minutes — zero tutorials needed.</p>
-          <a href="app.html" class="btn-glow"><i class="fa-solid fa-play"></i> Get Started</a>
-        </div>
-      </div>
+      // Position circle centered on button
+      circle.style.width  = radius + 'px';
+      circle.style.height = radius + 'px';
+      circle.style.left   = (cx - radius / 2) + 'px';
+      circle.style.top    = (cy - radius / 2) + 'px';
+      circle.style.transform = 'scale(0)';
+      circle.style.transition = 'none';
 
-      <!-- Exams Covered -->
-      <div class="panel" id="p-exams">
-        <p class="ptag"><i class="fa-solid fa-graduation-cap"></i>&nbsp; Exams Covered</p>
-        <div class="exam-grid">
-          <div class="ecard">
-            <i class="fa-solid fa-landmark" style="color:#818cf8"></i>
-            <div class="en">SSC CGL</div><div class="es">Tier I & II</div>
-          </div>
-          <div class="ecard">
-            <i class="fa-solid fa-train" style="color:#c084fc"></i>
-            <div class="en">RRB NTPC</div><div class="es">CBT 1 & 2</div>
-          </div>
-          <div class="ecard">
-            <i class="fa-solid fa-building-columns" style="color:#f0abfc"></i>
-            <div class="en">IBPS PO</div><div class="es">Pre & Mains</div>
-          </div>
-          <div class="ecard">
-            <i class="fa-solid fa-file-contract" style="color:#a5b4fc"></i>
-            <div class="en">SSC CHSL</div><div class="es">10+2</div>
-          </div>
-          <div class="ecard">
-            <i class="fa-solid fa-coins" style="color:#4ade80"></i>
-            <div class="en">SBI PO</div><div class="es">Pre & Mains</div>
-          </div>
-          <div class="ecard">
-            <i class="fa-solid fa-plus" style="color:#fb923c"></i>
-            <div class="en">& More</div><div class="es">Custom too</div>
-          </div>
-        </div>
-        <div class="cstrip" style="margin-top:10px">
-          <p>More exams added regularly.</p>
-          <a href="app.html" class="btn-glow"><i class="fa-solid fa-arrow-right"></i> Open Dashboard</a>
-        </div>
-      </div>
+      // Activate overlay
+      overlay.classList.add('active');
+      overlay.style.opacity = '1';
 
-      <!-- Reviews -->
-      <div class="panel" id="p-reviews">
-        <p class="ptag"><i class="fa-solid fa-star"></i>&nbsp; Loved by Toppers</p>
-        <div class="rev-grid">
-          <div class="rcard">
-            <div class="rstars">★★★★★</div>
-            <p class="rtext">"Showed me I was losing 15 marks in Quant. Fixed it — my SSC CGL score jumped 22 marks in 3 weeks."</p>
-            <div class="rauthor">
-              <div class="ravatar" style="background:linear-gradient(135deg,#6366f1,#a855f7)">A</div>
-              <div><div class="rname">Aarav Sharma</div><div class="rmeta">SSC CGL 2024 · Rank 847</div></div>
-            </div>
-          </div>
-          <div class="rcard">
-            <div class="rstars">★★★★★</div>
-            <p class="rtext">"Best free tool in 2 years of prep. Score trend graph keeps me motivated. I recommend it to everyone."</p>
-            <div class="rauthor">
-              <div class="ravatar" style="background:linear-gradient(135deg,#a855f7,#d946ef)">P</div>
-              <div><div class="rname">Priya Nair</div><div class="rmeta">IBPS PO 2024 · Selected</div></div>
-            </div>
-          </div>
-          <div class="rcard">
-            <div class="rstars">★★★★★</div>
-            <p class="rtext">"Finally an app made for Indian exams! The cut-off comparison is genuinely useful — nothing else does this."</p>
-            <div class="rauthor">
-              <div class="ravatar" style="background:linear-gradient(135deg,#d946ef,#6366f1)">R</div>
-              <div><div class="rname">Rohit Verma</div><div class="rmeta">RRB NTPC 2024 · Qualified</div></div>
-            </div>
-          </div>
-        </div>
-      </div>
+      // Force reflow
+      circle.getBoundingClientRect();
 
-      <!-- Stats -->
-      <div class="panel" id="p-stats">
-        <p class="ptag"><i class="fa-solid fa-fire"></i>&nbsp; By the Numbers</p>
-        <div class="stat-grid">
-          <div class="scard">
-            <div class="sval grad-text">50K+</div>
-            <div class="slbl">Tests Logged</div>
-          </div>
-          <div class="scard">
-            <div class="sval grad-text">2.1L</div>
-            <div class="slbl">Questions Analysed</div>
-          </div>
-          <div class="scard">
-            <div class="sval grad-text">10K+</div>
-            <div class="slbl">Active Aspirants</div>
-          </div>
-          <div class="scard">
-            <div class="sval grad-text">4.9★</div>
-            <div class="slbl">Average Rating</div>
-          </div>
-        </div>
-        <div class="cstrip" style="margin-top:12px">
-          <p>Join thousands already improving their rank.</p>
-          <a href="app.html" class="btn-glow"><i class="fa-solid fa-rocket"></i> Start Free</a>
-        </div>
-      </div>
+      // Phase 1: Expand circle (600ms)
+      circle.style.transition = 'transform 620ms cubic-bezier(0.55, 0, 0.1, 1)';
+      circle.style.transform  = 'scale(1)';
 
-    </div><!-- /hub-wrap -->
-  </section>
+      // Phase 2: Show scanlines at 300ms
+      setTimeout(() => {
+        overlay.classList.add('lines-show');
+      }, 300);
 
-  <!-- ══ FOOTER ══ -->
-  <footer>
-    <span>© 2025 MockTracker Pro · Made for aspirants, by aspirants · Not affiliated with any exam body</span>
-    <div class="fsoc">
-      <a href="#"><i class="fa-brands fa-twitter"></i></a>
-      <a href="#"><i class="fa-brands fa-telegram"></i></a>
-      <a href="#"><i class="fa-brands fa-youtube"></i></a>
-    </div>
-  </footer>
+      // Phase 3: Show center logo pulse at 450ms
+      setTimeout(() => {
+        overlay.classList.add('logo-show');
+      }, 450);
 
-</div><!-- /page-wrap -->
+      // Phase 4: Navigate at 750ms
+      setTimeout(() => {
+        window.location.href = 'app.html';
+      }, 750);
+    }
+  </script>
 
-<script>
-  /* ── Navbar scroll tint ── */
-  const nav = document.getElementById('navbar');
-  window.addEventListener('scroll', () => nav.classList.toggle('scrolled', scrollY > 10), { passive: true });
-
-  /* ── Hub state ── */
-  let current = 'default';
-
-  function activate(id) {
-    if (id === current) return;
-
-    /* Update buttons */
-    document.querySelectorAll('.hbtn').forEach(b => b.classList.toggle('active', b.dataset.id === id));
-
-    /* Fade out old panel */
-    const oldPanel = document.getElementById('p-' + current);
-    if (oldPanel) oldPanel.classList.remove('show');
-
-    /* Fade in new panel */
-    const newPanel = document.getElementById('p-' + id);
-    if (newPanel) requestAnimationFrame(() => setTimeout(() => newPanel.classList.add('show'), 30));
-
-    current = id;
-    drawLines(id);
-  }
-
-  /* ── SVG Lines ── */
-  function drawLines(activeId) {
-    const svg = document.getElementById('lineSvg');
-    if (!svg || window.innerWidth < 768) return;
-
-    const wrap   = document.getElementById('hubWrap');
-    const svgR   = svg.getBoundingClientRect();
-    const wrapR  = wrap.getBoundingClientRect();
-
-    /* Anchor = top-center of the panel wrap */
-    const ax = wrapR.left + wrapR.width / 2 - svgR.left;
-    const ay = wrapR.top - svgR.top + 1;
-
-    /* Animate anchor dot */
-    const dot = document.getElementById('anchorDot');
-    dot.setAttribute('cx', ax);
-    dot.setAttribute('cy', ay);
-    dot.setAttribute('opacity', activeId === 'default' ? '0' : '1');
-
-    document.querySelectorAll('.hbtn').forEach(btn => {
-      const bid = btn.dataset.id;
-      const line = document.getElementById('l-' + bid);
-      if (!line) return;
-
-      const bR = btn.getBoundingClientRect();
-      const bx = bR.left + bR.width  / 2 - svgR.left;
-      const by = bR.bottom             - svgR.top;
-
-      line.setAttribute('x1', bx); line.setAttribute('y1', by);
-      line.setAttribute('x2', ax); line.setAttribute('y2', ay);
-
-      const isActive = bid === activeId;
-      line.classList.toggle('active-line', isActive);
-
-      if (isActive) {
-        line.setAttribute('stroke', 'url(#lgrad)');
-        line.setAttribute('stroke-width', '1.5');
-        line.setAttribute('filter', 'url(#lglow)');
-        line.style.opacity = '1';
-      } else {
-        line.setAttribute('stroke', activeId === 'default' ? 'rgba(99,102,241,.1)' : 'rgba(99,102,241,.07)');
-        line.setAttribute('stroke-width', '1');
-        line.removeAttribute('filter');
-        line.style.opacity = '1';
-      }
-    });
-
-    svg.classList.add('ready');
-  }
-
-  /* Initial draw + redraw on resize */
-  function initLines() {
-    drawLines(current);
-  }
-
-  window.addEventListener('resize', () => drawLines(current), { passive: true });
-  window.addEventListener('load', () => setTimeout(initLines, 120));
-  document.fonts.ready.then(() => setTimeout(initLines, 80));
-</script>
 </body>
 </html>
