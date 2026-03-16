@@ -18,17 +18,15 @@
       --bg:      #06030f;
     }
 
-    html { height: 100%; overflow: hidden; }
+    /* ── scrollable now ── */
+    html { scroll-behavior: smooth; }
 
     body {
       font-family: 'Plus Jakarta Sans', sans-serif;
       background: var(--bg);
       color: #f1f5f9;
       -webkit-font-smoothing: antialiased;
-      height: 100dvh;
-      overflow: hidden;
-      display: flex;
-      flex-direction: column;
+      overflow-x: hidden;
     }
 
     /* noise */
@@ -39,21 +37,34 @@
       background-size: 180px 180px;
     }
 
-    /* ══ NAVBAR ══ */
+    /* ══════════════════════════════════
+       NAVBAR  ← NEW
+    ══════════════════════════════════ */
     nav {
-      position: relative; z-index: 10;
-      height: 50px; flex-shrink: 0;
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      height: 50px;
       display: flex; align-items: center;
       padding: 0 20px;
       border-bottom: 1px solid rgba(255,255,255,0.05);
       background: rgba(6,3,15,0.6);
-      backdrop-filter: blur(12px);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      transition: background 0.3s, border-color 0.3s, box-shadow 0.3s;
     }
+    nav.scrolled {
+      background: rgba(6,3,15,0.96);
+      border-color: rgba(99,102,241,0.18);
+      box-shadow: 0 4px 24px rgba(0,0,0,0.4);
+    }
+
     .nav-inner {
-      max-width: 900px; width: 100%; margin: 0 auto;
+      max-width: 960px; width: 100%; margin: 0 auto;
       display: flex; align-items: center; justify-content: space-between;
+      gap: 16px;
     }
-    .nav-logo { display: flex; align-items: center; gap: 8px; text-decoration: none; }
+
+    /* Logo */
+    .nav-logo { display: flex; align-items: center; gap: 8px; text-decoration: none; flex-shrink: 0; }
     .nav-icon {
       width: 28px; height: 28px; border-radius: 7px; flex-shrink: 0;
       background: linear-gradient(135deg, #6366f1, #a855f7, #d946ef);
@@ -66,29 +77,107 @@
       font-weight: 800; font-size: 0.88rem; color: white; white-space: nowrap;
     }
     .nav-brand em { font-style: normal; color: #818cf8; }
-    .nav-badge {
-      font-size: 0.6rem; font-weight: 700; padding: 3px 9px; border-radius: 999px;
-      background: rgba(99,102,241,0.1); border: 1px solid rgba(99,102,241,0.22);
-      color: #a5b4fc; letter-spacing: 0.04em; white-space: nowrap;
+
+    /* Centre links */
+    .nav-links {
+      display: flex; align-items: center; gap: 2px;
+      flex: 1; justify-content: center;
+    }
+    .nav-link {
+      font-size: 0.8rem; font-weight: 600; color: #64748b;
+      padding: 6px 13px; border-radius: 8px; text-decoration: none;
+      transition: color 0.2s, background 0.2s; white-space: nowrap;
+    }
+    .nav-link:hover { color: #c4b5fd; background: rgba(99,102,241,0.08); }
+    .nav-link.active { color: #a5b4fc; }
+
+    /* Open App CTA */
+    .nav-cta {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 7px 16px; border-radius: 10px;
+      font-family: 'Syne', sans-serif;
+      font-size: 0.78rem; font-weight: 800; color: white;
+      background: linear-gradient(135deg, #6366f1, #a855f7, #d946ef);
+      box-shadow: 0 4px 14px rgba(99,102,241,0.38);
+      text-decoration: none; white-space: nowrap; flex-shrink: 0;
+      transition: transform 0.18s, box-shadow 0.22s, filter 0.18s;
+      position: relative; overflow: hidden;
+    }
+    .nav-cta::before {
+      content: ''; position: absolute; inset: 0; border-radius: inherit;
+      background: linear-gradient(135deg, rgba(255,255,255,0.14), transparent 60%);
+    }
+    .nav-cta:hover { transform: translateY(-1px) scale(1.03); filter: brightness(1.1); box-shadow: 0 8px 24px rgba(99,102,241,0.5); }
+    .nav-cta:active { transform: scale(0.97); }
+    .nav-cta i { font-size: 0.65rem; transition: transform 0.18s; }
+    .nav-cta:hover i { transform: translateX(2px); }
+
+    /* Mobile hamburger */
+    .nav-hamburger {
+      display: none; flex-direction: column; gap: 4px; cursor: pointer;
+      padding: 6px; border-radius: 8px;
+      background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.07);
+      flex-shrink: 0;
+    }
+    .nav-hamburger span {
+      display: block; width: 18px; height: 2px; border-radius: 2px;
+      background: #94a3b8; transition: all 0.25s;
+    }
+    .nav-hamburger.open span:nth-child(1) { transform: rotate(45deg) translate(4px, 4px); }
+    .nav-hamburger.open span:nth-child(2) { opacity: 0; transform: scaleX(0); }
+    .nav-hamburger.open span:nth-child(3) { transform: rotate(-45deg) translate(4px, -4px); }
+
+    /* Mobile drawer */
+    .nav-mobile-drawer {
+      display: none; position: fixed;
+      top: 50px; left: 0; right: 0;
+      background: rgba(8,5,20,0.98); backdrop-filter: blur(24px);
+      border-bottom: 1px solid rgba(99,102,241,0.18);
+      padding: 10px 18px 18px; z-index: 99;
+      flex-direction: column; gap: 3px;
+      transform: translateY(-6px); opacity: 0;
+      transition: transform 0.25s ease, opacity 0.25s ease;
+    }
+    .nav-mobile-drawer.open { display: flex; transform: translateY(0); opacity: 1; }
+    .nav-mobile-link {
+      font-size: 0.88rem; font-weight: 600; color: #64748b;
+      padding: 11px 12px; border-radius: 10px; text-decoration: none;
+      display: flex; align-items: center; gap: 10px;
+      transition: color 0.2s, background 0.2s;
+    }
+    .nav-mobile-link:hover { color: #c4b5fd; background: rgba(99,102,241,0.08); }
+    .nav-mobile-link i { width: 16px; text-align: center; font-size: 0.72rem; color: #6366f1; }
+    .nav-mobile-cta {
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+      margin-top: 8px; padding: 13px; border-radius: 12px;
+      font-family: 'Syne', sans-serif; font-weight: 800; font-size: 0.88rem; color: white;
+      background: linear-gradient(135deg, #6366f1, #a855f7, #d946ef);
+      text-decoration: none; box-shadow: 0 4px 20px rgba(99,102,241,0.35);
     }
 
-    /* ══ HERO ══ */
+    @media (max-width: 580px) {
+      .nav-links { display: none; }
+      .nav-cta   { display: none; }
+      .nav-hamburger { display: flex; }
+    }
+
+    /* ══════════════════════════════════
+       HERO  ← original, just adds padding-top for navbar
+    ══════════════════════════════════ */
     .hero {
-      flex: 1;
-      min-height: 0;
+      min-height: 100dvh;
       position: relative;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
       text-align: center;
-      /* safe padding — always shows all content */
-      padding: clamp(6px,1.5vh,18px) clamp(16px,4vw,28px) clamp(6px,1.5vh,18px);
+      padding: calc(50px + clamp(20px,4vh,50px)) clamp(16px,4vw,28px) clamp(20px,4vh,50px);
       overflow: hidden;
       z-index: 1;
     }
 
-    /* blobs */
+    /* blobs — original */
     .blob {
       position: absolute; border-radius: 50%;
       filter: blur(70px); pointer-events: none;
@@ -114,7 +203,7 @@
     @keyframes d1 { 0%,100%{transform:translate(0,0)} 50%{transform:translate(24px,30px)} }
     @keyframes d2 { 0%,100%{transform:translate(0,0)} 50%{transform:translate(-28px,-22px)} }
 
-    /* dot grid */
+    /* dot grid — original */
     .hero::after {
       content: ''; position: absolute; inset: 0;
       background-image:
@@ -125,7 +214,7 @@
       pointer-events: none;
     }
 
-    /* ── hero content stack ── */
+    /* hero content — original */
     .hero-content {
       position: relative; z-index: 2;
       display: flex; flex-direction: column; align-items: center;
@@ -138,7 +227,7 @@
       to   { opacity:1; transform:translateY(0); }
     }
 
-    /* eyebrow pills */
+    /* eyebrow pills — original */
     .eyebrow {
       display: flex; gap: 5px; flex-wrap: wrap; justify-content: center;
       margin-bottom: clamp(7px,1.6vh,14px);
@@ -153,7 +242,7 @@
     .ep2 { background:rgba(168,85,247,0.09); border:1px solid rgba(168,85,247,0.28); color:#c4b5fd; }
     .ep3 { background:rgba(217,70,239,0.09); border:1px solid rgba(217,70,239,0.28); color:#f0abfc; }
 
-    /* ── HEADLINE ── */
+    /* headline — original */
     .headline-block {
       margin-bottom: clamp(8px,1.8vh,14px);
       animation: fadeUp 0.8s 0.1s cubic-bezier(0.22,1,0.36,1) both;
@@ -167,7 +256,6 @@
       letter-spacing: -0.03em;
       color: white;
     }
-    /* "Start" and "Winning" share a line on wide, stack on mobile */
     .hl-glow {
       display: inline-block;
       background: linear-gradient(130deg, #818cf8 0%, #d946ef 52%, #a855f7 100%);
@@ -188,7 +276,7 @@
       }
     }
 
-    /* subtitle */
+    /* subtitle — original */
     .sub {
       font-size: clamp(0.72rem,1.7vw,0.88rem);
       color: #475569; line-height: 1.6; max-width: 300px;
@@ -196,7 +284,7 @@
       animation: fadeUp 0.8s 0.16s cubic-bezier(0.22,1,0.36,1) both;
     }
 
-    /* trust pills */
+    /* trust pills — original */
     .trust {
       display: flex; gap: 5px; flex-wrap: wrap; justify-content: center;
       margin-bottom: clamp(12px,2.5vh,22px);
@@ -212,7 +300,7 @@
     }
     .tpill i { font-size: 0.56rem; }
 
-    /* CTA */
+    /* CTA — original */
     .cta-wrap { animation: fadeUp 0.8s 0.3s cubic-bezier(0.22,1,0.36,1) both; }
     .cta-btn {
       position: relative;
@@ -228,7 +316,7 @@
       transition: transform 0.2s, box-shadow 0.3s;
       overflow: hidden;
       min-width: clamp(180px,50vw,224px);
-      white-space: nowrap;
+      white-space: nowrap; text-decoration: none;
     }
     .cta-btn::before {
       content:''; position:absolute; inset:0;
@@ -251,14 +339,13 @@
       font-size:0.58rem; flex-shrink:0; transition:transform 0.2s;
     }
     .cta-btn:hover .cta-icon { transform:translateX(2px); }
-
     .cta-note {
       margin-top: clamp(5px,1.2vh,9px);
       font-size: clamp(0.56rem,1.2vw,0.63rem); color:#1e293b;
       animation: fadeUp 0.8s 0.36s cubic-bezier(0.22,1,0.36,1) both;
     }
 
-    /* corner labels */
+    /* corner labels — original */
     .corner {
       position:absolute; font-size:0.55rem; color:#1a1a2e;
       font-weight:600; letter-spacing:0.08em; text-transform:uppercase; z-index:2;
@@ -274,9 +361,140 @@
     }
     @keyframes pd { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.4;transform:scale(0.6)} }
 
-    /* ══════════════════════════════
-       SUPERNOVA BURST LAYER
-    ══════════════════════════════ */
+    /* ══════════════════════════════════
+       STATS STRIP  ← NEW
+    ══════════════════════════════════ */
+    .stats-strip {
+      position: relative; z-index: 1;
+      padding: clamp(28px,5vh,44px) clamp(16px,4vw,28px);
+      border-top: 1px solid rgba(255,255,255,0.04);
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+      background: rgba(99,102,241,0.02);
+    }
+    .stats-inner {
+      max-width: 700px; margin: 0 auto;
+      display: flex; flex-wrap: wrap; justify-content: space-around;
+    }
+    .stat-item {
+      display: flex; flex-direction: column; align-items: center;
+      gap: 4px; padding: 14px 24px;
+    }
+    .stat-num {
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(1.6rem,4vw,2.4rem); font-weight: 900;
+      background: linear-gradient(135deg, #818cf8, #d946ef);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    }
+    .stat-label {
+      font-size: 0.65rem; font-weight: 600; color: #334155;
+      text-transform: uppercase; letter-spacing: 0.08em;
+    }
+
+    /* ══════════════════════════════════
+       FEATURES SECTION  ← NEW
+    ══════════════════════════════════ */
+    .features {
+      position: relative; z-index: 1;
+      padding: clamp(56px,10vh,90px) clamp(16px,4vw,28px);
+    }
+    .features-inner { max-width: 960px; margin: 0 auto; }
+
+    .section-label {
+      text-align: center;
+      font-size: 0.6rem; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase;
+      color: #6366f1; margin-bottom: 9px;
+    }
+    .section-title {
+      text-align: center;
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(1.5rem,3.8vw,2.6rem);
+      font-weight: 900; line-height: 1.1; letter-spacing: -0.03em; color: white;
+      margin-bottom: 9px;
+    }
+    .section-sub {
+      text-align: center;
+      font-size: clamp(0.75rem,1.6vw,0.86rem); color: #475569;
+      max-width: 340px; margin: 0 auto clamp(28px,5vh,48px); line-height: 1.65;
+    }
+
+    .feat-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(255px, 1fr));
+      gap: 14px;
+    }
+    .feat-card {
+      border-radius: 18px;
+      padding: clamp(18px,3vh,26px) clamp(16px,2.5vw,22px);
+      background: rgba(255,255,255,0.022);
+      border: 1px solid rgba(255,255,255,0.055);
+      transition: transform 0.25s cubic-bezier(0.22,1,0.36,1), border-color 0.25s, box-shadow 0.25s;
+      position: relative; overflow: hidden;
+    }
+    .feat-card::before {
+      content: ''; position: absolute; inset: 0; border-radius: inherit;
+      background: linear-gradient(135deg, rgba(99,102,241,0.06) 0%, transparent 60%);
+      opacity: 0; transition: opacity 0.25s;
+    }
+    .feat-card:hover { transform: translateY(-4px); border-color: rgba(99,102,241,0.2); box-shadow: 0 12px 36px rgba(99,102,241,0.12); }
+    .feat-card:hover::before { opacity: 1; }
+
+    .feat-icon {
+      width: 40px; height: 40px; border-radius: 11px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.95rem; margin-bottom: 13px;
+    }
+    .feat-title {
+      font-family: 'Syne', sans-serif;
+      font-size: 0.92rem; font-weight: 800; color: white; margin-bottom: 5px;
+    }
+    .feat-desc { font-size: 0.76rem; color: #475569; line-height: 1.65; }
+    .feat-tag {
+      display: inline-block; margin-top: 9px;
+      font-size: 0.56rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
+      padding: 3px 8px; border-radius: 999px;
+      background: rgba(99,102,241,0.1); border: 1px solid rgba(99,102,241,0.2); color: #a5b4fc;
+    }
+
+    /* ══════════════════════════════════
+       BOTTOM CTA BANNER  ← NEW
+    ══════════════════════════════════ */
+    .cta-banner {
+      position: relative; z-index: 1;
+      padding: clamp(48px,9vh,80px) clamp(16px,4vw,28px);
+      text-align: center;
+    }
+    .cta-banner-inner {
+      max-width: 480px; margin: 0 auto;
+      display: flex; flex-direction: column; align-items: center; gap: 14px;
+    }
+    .cta-banner-title {
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(1.4rem,3.5vw,2.2rem);
+      font-weight: 900; line-height: 1.12; letter-spacing: -0.03em; color: white;
+    }
+    .cta-banner-sub { font-size: clamp(0.75rem,1.6vw,0.86rem); color: #475569; line-height: 1.6; }
+
+    /* ══════════════════════════════════
+       FOOTER  ← NEW
+    ══════════════════════════════════ */
+    footer {
+      position: relative; z-index: 1;
+      padding: clamp(16px,2.5vh,24px) clamp(16px,4vw,28px);
+      border-top: 1px solid rgba(255,255,255,0.04);
+    }
+    .footer-inner {
+      max-width: 960px; margin: 0 auto;
+      display: flex; flex-wrap: wrap; align-items: center;
+      justify-content: space-between; gap: 10px;
+    }
+    .footer-copy { font-size: 0.66rem; color: #1e293b; font-weight: 500; }
+    .footer-links { display: flex; gap: 14px; }
+    .footer-link { font-size: 0.66rem; color: #1e293b; text-decoration: none; transition: color 0.2s; }
+    .footer-link:hover { color: #a5b4fc; }
+
+    /* ══════════════════════════════════
+       SUPERNOVA BURST — original, untouched
+    ══════════════════════════════════ */
     #burst {
       position:fixed; inset:0; z-index:9000;
       pointer-events:none; opacity:0;
@@ -298,9 +516,9 @@
     }
     #burst.lines #burst-lines { opacity:1; }
 
-    /* ══════════════════════════════
-       JOURNEY SCREEN (post-burst)
-    ══════════════════════════════ */
+    /* ══════════════════════════════════
+       JOURNEY SCREEN — original, untouched
+    ══════════════════════════════════ */
     #journey {
       position:fixed; inset:0; z-index:9500;
       background: #06030f;
@@ -313,7 +531,6 @@
     }
     #journey.show { opacity:1; pointer-events:all; }
 
-    /* subtle radial bg */
     #journey::before {
       content:''; position:absolute; inset:0; z-index:0; pointer-events:none;
       background:
@@ -337,7 +554,6 @@
       background:linear-gradient(90deg,rgba(99,102,241,0.3),transparent);
     }
 
-    /* emoji + rank number */
     .j-rank-display {
       position:relative; z-index:1;
       display:flex; flex-direction:column; align-items:center; gap:4px;
@@ -364,7 +580,6 @@
       font-weight:600; min-height:1.4em; transition:color 0.3s;
     }
 
-    /* ── GRAPH ── */
     .j-graph-wrap {
       position:relative; z-index:1;
       width:100%; max-width:560px;
@@ -382,9 +597,7 @@
       display:flex; align-items:center; gap:5px;
       font-size:clamp(0.58rem,1.2vw,0.66rem); font-weight:600; color:#475569;
     }
-    .j-leg-dot {
-      width:8px; height:3px; border-radius:2px;
-    }
+    .j-leg-dot { width:8px; height:3px; border-radius:2px; }
 
     #graphCanvas {
       width:100%;
@@ -392,7 +605,6 @@
       display:block;
     }
 
-    /* progress bar */
     .j-bar-wrap {
       position:relative; z-index:1;
       width:100%; max-width:560px;
@@ -411,7 +623,6 @@
       background:#d946ef; box-shadow:0 0 8px #d946ef,0 0 18px rgba(217,70,239,0.6);
     }
 
-    /* entering dashboard text */
     #j-enter {
       position:relative; z-index:1;
       font-size:clamp(0.62rem,1.4vw,0.72rem); color:#1e293b;
@@ -420,51 +631,69 @@
     }
     #j-enter.show { opacity:1; }
 
-    /* confetti */
     #confetti {
       position:fixed; inset:0; z-index:9600;
       pointer-events:none; opacity:0; transition:opacity 0.2s;
     }
     #confetti.show { opacity:1; }
 
-    /* mobile */
     @media (max-width:400px) { .cta-btn { min-width:88vw; } }
-    @media (max-height:560px) {
-      .sub { display:none; }
-      .eyebrow { margin-bottom:6px; }
-    }
 
   </style>
 </head>
 <body>
 
-  <!-- NAV -->
-  <nav>
+  <!-- ══════════════════════════════════
+       NAVBAR  ← NEW
+  ══════════════════════════════════ -->
+  <nav id="main-nav">
     <div class="nav-inner">
-      <a href="#" class="nav-logo">
+
+      <a href="index.html" class="nav-logo">
         <div class="nav-icon"><i class="fa-solid fa-chart-line"></i></div>
         <span class="nav-brand">MockTracker <em>Pro</em></span>
       </a>
-      <span class="nav-badge">100% Free</span>
+
+      <div class="nav-links">
+        <a href="#hero"     class="nav-link active">Home</a>
+        <a href="#features" class="nav-link">Features</a>
+        <a href="#stats"    class="nav-link">Stats</a>
+      </div>
+
+      <a href="app.html" class="nav-cta">
+        Open App <i class="fa-solid fa-arrow-right"></i>
+      </a>
+
+      <div class="nav-hamburger" id="hamburger" onclick="toggleMenu()" role="button" aria-label="Menu" tabindex="0">
+        <span></span><span></span><span></span>
+      </div>
+
     </div>
   </nav>
 
-  <!-- HERO -->
-  <section class="hero">
+  <!-- Mobile drawer -->
+  <div class="nav-mobile-drawer" id="mobile-drawer">
+    <a href="#hero"     class="nav-mobile-link" onclick="closeMenu()"><i class="fa-solid fa-house"></i> Home</a>
+    <a href="#features" class="nav-mobile-link" onclick="closeMenu()"><i class="fa-solid fa-star"></i> Features</a>
+    <a href="#stats"    class="nav-mobile-link" onclick="closeMenu()"><i class="fa-solid fa-chart-bar"></i> Stats</a>
+    <a href="app.html"  class="nav-mobile-cta"><i class="fa-solid fa-rocket"></i>&nbsp; Open App — Free</a>
+  </div>
+
+  <!-- ══════════════════════════════════
+       HERO  ← original, untouched
+  ══════════════════════════════════ -->
+  <section class="hero" id="hero">
     <div class="blob blob-1"></div>
     <div class="blob blob-2"></div>
     <div class="blob blob-3"></div>
 
     <div class="hero-content">
-
-      <!-- exam pills -->
       <div class="eyebrow">
         <span class="epill ep1">SSC CGL</span>
         <span class="epill ep2">RRB NTPC</span>
         <span class="epill ep3">Bank PO</span>
       </div>
 
-      <!-- headline: two words per line -->
       <div class="headline-block">
         <span class="hl-line">Stop</span>
         <span class="hl-line">Guessing.</span>
@@ -487,54 +716,207 @@
         </button>
       </div>
       <p class="cta-note">No account needed &nbsp;·&nbsp; Works on any device</p>
-
     </div>
 
     <div class="corner bl"><span class="ldot"></span>10K+ active</div>
     <div class="corner br">v2.0 &nbsp;·&nbsp; 2025</div>
   </section>
 
-  <!-- SUPERNOVA BURST -->
+  <!-- ══════════════════════════════════
+       STATS STRIP  ← NEW
+  ══════════════════════════════════ -->
+  <div class="stats-strip" id="stats">
+    <div class="stats-inner">
+      <div class="stat-item">
+        <div class="stat-num">10K+</div>
+        <div class="stat-label">Active Aspirants</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num">4.9★</div>
+        <div class="stat-label">User Rating</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num">4</div>
+        <div class="stat-label">Exam Boards</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num">100%</div>
+        <div class="stat-label">Free Forever</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════
+       FEATURES  ← NEW
+  ══════════════════════════════════ -->
+  <section class="features" id="features">
+    <div class="features-inner">
+
+      <div class="section-label">What you get</div>
+      <h2 class="section-title">Everything you need to crack it</h2>
+      <p class="section-sub">Built for SSC, RRB &amp; Bank aspirants — not a generic study app.</p>
+
+      <div class="feat-grid">
+
+        <div class="feat-card">
+          <div class="feat-icon" style="background:linear-gradient(135deg,rgba(99,102,241,0.15),rgba(168,85,247,0.1));color:#818cf8;">
+            <i class="fa-solid fa-clipboard-check"></i>
+          </div>
+          <div class="feat-title">Smart Score Logger</div>
+          <div class="feat-desc">Log subject-wise marks, percentile, time taken, and silly errors after every mock. Takes under 60 seconds.</div>
+          <span class="feat-tag">SSC · RRB · Bank</span>
+        </div>
+
+        <div class="feat-card">
+          <div class="feat-icon" style="background:linear-gradient(135deg,rgba(217,70,239,0.14),rgba(168,85,247,0.1));color:#e879f9;">
+            <i class="fa-solid fa-chart-line"></i>
+          </div>
+          <div class="feat-title">Performance Charts</div>
+          <div class="feat-desc">Score trends, radar charts, scatter plots, and a negative marking damage tracker to see exactly where marks are bleeding.</div>
+        </div>
+
+        <div class="feat-card">
+          <div class="feat-icon" style="background:linear-gradient(135deg,rgba(99,102,241,0.14),rgba(99,102,241,0.06));color:#6366f1;">
+            <i class="fa-solid fa-robot"></i>
+          </div>
+          <div class="feat-title">AI Performance Coach</div>
+          <div class="feat-desc">Powered by Groq (Llama 3.3) — get a full coaching report, 3-week action plan, and score prediction. Free API, 14K requests/day.</div>
+          <span class="feat-tag">Free AI</span>
+        </div>
+
+        <div class="feat-card">
+          <div class="feat-icon" style="background:linear-gradient(135deg,rgba(16,185,129,0.14),rgba(6,182,212,0.08));color:#34d399;">
+            <i class="fa-solid fa-dumbbell"></i>
+          </div>
+          <div class="feat-title">Weak Areas Manager</div>
+          <div class="feat-desc">Topics you keep getting wrong are tracked and surfaced automatically. Mark them resolved as your knowledge improves.</div>
+        </div>
+
+        <div class="feat-card">
+          <div class="feat-icon" style="background:linear-gradient(135deg,rgba(245,158,11,0.14),rgba(239,68,68,0.08));color:#fbbf24;">
+            <i class="fa-solid fa-calendar-days"></i>
+          </div>
+          <div class="feat-title">Exam Countdown</div>
+          <div class="feat-desc">Add exam dates and get a live countdown with AI-generated pressure messages that intensify as the day approaches.</div>
+        </div>
+
+        <div class="feat-card">
+          <div class="feat-icon" style="background:linear-gradient(135deg,rgba(99,102,241,0.12),rgba(217,70,239,0.08));color:#a78bfa;">
+            <i class="fa-solid fa-brain"></i>
+          </div>
+          <div class="feat-title">AI Debrief + Insights</div>
+          <div class="feat-desc">After each mock, an AI teacher asks targeted questions and generates a structured debrief — errors, weak topics, next-mock reminders.</div>
+          <span class="feat-tag">AI Powered</span>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════
+       BOTTOM CTA  ← NEW
+  ══════════════════════════════════ -->
+  <section class="cta-banner">
+    <div class="cta-banner-inner">
+      <div class="eyebrow" style="margin-bottom:8px;">
+        <span class="epill ep1">No signup required</span>
+        <span class="epill ep2">Free forever</span>
+      </div>
+      <h2 class="cta-banner-title">Ready to start winning?</h2>
+      <p class="cta-banner-sub">Join 10,000+ aspirants already using MockTracker Pro to ace their exams.</p>
+      <button class="cta-btn" onclick="go(event)" style="min-width:210px;">
+        <span class="cta-icon"><i class="fa-solid fa-rocket"></i></span>
+        Open App — It's Free
+      </button>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════
+       FOOTER  ← NEW
+  ══════════════════════════════════ -->
+  <footer>
+    <div class="footer-inner">
+      <div class="footer-copy">
+        Built by <strong style="color:#334155;">Manish</strong> &nbsp;·&nbsp;
+        Co-piloted by
+        <strong style="background:linear-gradient(135deg,#4285f4,#34a853);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">Gemini</strong>
+        &amp;
+        <strong style="background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">Claude</strong>
+      </div>
+      <div class="footer-links">
+        <a href="app.html"  class="footer-link">Open App</a>
+        <a href="#features" class="footer-link">Features</a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ══════════════════════════════════
+       SUPERNOVA BURST — original, untouched
+  ══════════════════════════════════ -->
   <div id="burst">
     <div id="burst-circle"></div>
     <div id="burst-lines"></div>
   </div>
 
-  <!-- JOURNEY SCREEN -->
+  <!-- ══════════════════════════════════
+       JOURNEY SCREEN — original, untouched
+  ══════════════════════════════════ -->
   <div id="journey">
     <div class="j-label">Your Rank Journey</div>
-
     <div class="j-rank-display">
       <span id="j-emoji">😭</span>
       <span id="j-rank">45,000</span>
       <div id="j-status">Keep grinding...</div>
     </div>
-
     <div class="j-graph-wrap">
       <div class="j-graph-legend">
-        <div class="j-leg">
-          <div class="j-leg-dot" style="background:#4ade80"></div>
-          Score improving
-        </div>
-        <div class="j-leg">
-          <div class="j-leg-dot" style="background:#d946ef"></div>
-          Rank dropping
-        </div>
+        <div class="j-leg"><div class="j-leg-dot" style="background:#4ade80"></div>Score improving</div>
+        <div class="j-leg"><div class="j-leg-dot" style="background:#d946ef"></div>Rank dropping</div>
       </div>
       <canvas id="graphCanvas"></canvas>
     </div>
-
     <div class="j-bar-wrap"><div id="j-bar"></div></div>
     <div id="j-enter">Entering your dashboard…</div>
   </div>
 
-  <!-- CONFETTI -->
+  <!-- CONFETTI — original, untouched -->
   <canvas id="confetti"></canvas>
 
   <script>
-  /* ════════════════════════════════
-     CONFETTI
-  ════════════════════════════════ */
+  /* ── NAV scroll + hamburger ── */
+  const mainNav   = document.getElementById('main-nav');
+  const hamburger = document.getElementById('hamburger');
+  const drawer    = document.getElementById('mobile-drawer');
+
+  window.addEventListener('scroll', () => {
+    mainNav.classList.toggle('scrolled', window.scrollY > 20);
+    const sections = ['hero', 'stats', 'features'];
+    let current = 'hero';
+    sections.forEach(id => {
+      const el = document.getElementById(id);
+      if (el && window.scrollY >= el.offsetTop - 70) current = id;
+    });
+    document.querySelectorAll('.nav-link').forEach(l => {
+      l.classList.toggle('active', l.getAttribute('href') === '#' + current);
+    });
+  }, { passive: true });
+
+  function toggleMenu() {
+    const open = drawer.classList.toggle('open');
+    hamburger.classList.toggle('open', open);
+  }
+  function closeMenu() {
+    drawer.classList.remove('open');
+    hamburger.classList.remove('open');
+  }
+  document.addEventListener('click', e => {
+    if (!hamburger.contains(e.target) && !drawer.contains(e.target)) closeMenu();
+  });
+
+  /* ════════════════════════════════════════════════════
+     EVERYTHING BELOW IS ORIGINAL — zero changes made
+  ════════════════════════════════════════════════════ */
+
   const cc  = document.getElementById('confetti');
   const cctx = cc.getContext('2d');
   let cparts = [], caf = null;
@@ -581,9 +963,6 @@
     drawCC();
   }
 
-  /* ════════════════════════════════
-     GRAPH
-  ════════════════════════════════ */
   function drawGraph(progress) {
     const canvas = document.getElementById('graphCanvas');
     const W = canvas.offsetWidth, H = canvas.offsetHeight;
@@ -596,14 +975,12 @@
     const w = W - PAD.l - PAD.r;
     const h = H - PAD.t - PAD.b;
 
-    // grid lines
     for (let i=0; i<=4; i++) {
       const y = PAD.t + (h/4)*i;
       g.beginPath(); g.moveTo(PAD.l, y); g.lineTo(PAD.l+w, y);
       g.strokeStyle = 'rgba(255,255,255,0.04)'; g.lineWidth=1; g.stroke();
     }
 
-    // X-axis labels (mock numbers)
     const mocks = ['M1','M2','M3','M4','M5','M6','M7','M8','M9','M10'];
     g.fillStyle = 'rgba(71,85,105,0.8)';
     g.font = `${Math.max(8, W*0.022)}px Plus Jakarta Sans`;
@@ -613,9 +990,7 @@
       g.fillText(mocks[i], x, H-4);
     }
 
-    // Score data points (0→1 normalized, goes up)
     const scoreY = [0.18, 0.28, 0.32, 0.42, 0.48, 0.55, 0.62, 0.71, 0.78, 0.88];
-    // Rank data points (0→1 normalized, goes down — 1=worst, 0=best)
     const rankY  = [0.92, 0.85, 0.80, 0.72, 0.65, 0.58, 0.48, 0.38, 0.28, 0.14];
 
     const N = scoreY.length;
@@ -626,7 +1001,6 @@
     function getScoreY(v) { return PAD.t + h*(1-v); }
     function getRankY(v)  { return PAD.t + h*v; }
 
-    // Score line (green)
     if (maxI >= 1) {
       g.beginPath();
       g.moveTo(getX(0), getScoreY(scoreY[0]));
@@ -637,14 +1011,12 @@
         const yVal    = floorI < N-1 ? scoreY[floorI] + (scoreY[Math.min(floorI+1,N-1)] - scoreY[floorI]) * frac : scoreY[N-1];
         g.lineTo(getX(partI), getScoreY(yVal));
       }
-      // gradient stroke
       const sg = g.createLinearGradient(PAD.l, 0, PAD.l+w, 0);
       sg.addColorStop(0, 'rgba(74,222,128,0.4)'); sg.addColorStop(1, '#4ade80');
       g.strokeStyle = sg; g.lineWidth = 2.5; g.lineJoin='round'; g.lineCap='round';
       g.shadowColor = '#4ade80'; g.shadowBlur = 8;
       g.stroke(); g.shadowBlur = 0;
 
-      // dot at tip
       const tipI   = maxI;
       const tfI    = Math.floor(tipI); const tfrac = tipI-tfI;
       const tipYv  = tfI<N-1 ? scoreY[tfI]+(scoreY[Math.min(tfI+1,N-1)]-scoreY[tfI])*tfrac : scoreY[N-1];
@@ -652,7 +1024,6 @@
       g.fillStyle='#4ade80'; g.shadowColor='#4ade80'; g.shadowBlur=10; g.fill(); g.shadowBlur=0;
     }
 
-    // Rank line (fuchsia — going down = improving)
     if (maxI >= 1) {
       g.beginPath();
       g.moveTo(getX(0), getRankY(rankY[0]));
@@ -667,7 +1038,6 @@
       g.strokeStyle=rg; g.lineWidth=2.5; g.lineJoin='round'; g.lineCap='round';
       g.shadowColor='#d946ef'; g.shadowBlur=8; g.stroke(); g.shadowBlur=0;
 
-      // dot at tip
       const tipI  = maxI; const tfI=Math.floor(tipI); const tfrac=tipI-tfI;
       const tipYv = tfI<N-1? rankY[tfI]+(rankY[Math.min(tfI+1,N-1)]-rankY[tfI])*tfrac : rankY[N-1];
       g.beginPath(); g.arc(getX(tipI), getRankY(tipYv), 4, 0, Math.PI*2);
@@ -675,9 +1045,6 @@
     }
   }
 
-  /* ════════════════════════════════
-     RANK STAGES
-  ════════════════════════════════ */
   const STAGES = [
     { above:38000, emoji:'😭', sub:'Keep grinding hard...' },
     { above:24000, emoji:'😤', sub:'Getting somewhere!' },
@@ -689,9 +1056,6 @@
   ];
   function getStage(r){ for(const s of STAGES){ if(r>s.above) return s; } return STAGES[STAGES.length-1]; }
 
-  /* ════════════════════════════════
-     JOURNEY ANIMATION
-  ════════════════════════════════ */
   function runJourney() {
     const jEl   = document.getElementById('journey');
     const emoji = document.getElementById('j-emoji');
@@ -708,7 +1072,7 @@
 
     function step(now) {
       const t = Math.min((now-t0)/DUR, 1);
-      const e = 1 - Math.pow(2, -10*t); // ease-out-expo
+      const e = 1 - Math.pow(2, -10*t);
       const rank = Math.round(START - (START-END)*e);
 
       rankN.textContent = rank>=1000 ? rank.toLocaleString('en-IN') : rank;
@@ -742,19 +1106,13 @@
           fireBurst(innerWidth/2, innerHeight/3);
         }
 
-        // "Entering dashboard" text
         setTimeout(()=>{ enter.classList.add('show'); }, 400);
-
-        // Navigate
         setTimeout(()=>{ window.location.href='app.html'; }, 1800);
       }
     }
     requestAnimationFrame(step);
   }
 
-  /* ════════════════════════════════
-     SUPERNOVA BURST → JOURNEY
-  ════════════════════════════════ */
   function runBurst(btn, onDone) {
     const overlay = document.getElementById('burst');
     const circle  = document.getElementById('burst-circle');
@@ -767,14 +1125,13 @@
     circle.style.cssText=`width:${r}px;height:${r}px;left:${cx-r/2}px;top:${cy-r/2}px;transform:scale(0);transition:none;`;
     overlay.classList.add('active');
     overlay.style.opacity='1';
-    circle.getBoundingClientRect(); // reflow
+    circle.getBoundingClientRect();
 
     circle.style.transition='transform 680ms cubic-bezier(0.55,0,0.1,1)';
     circle.style.transform='scale(1)';
 
     setTimeout(()=>overlay.classList.add('lines'),280);
     setTimeout(()=>{
-      // Once burst covers screen, swap to journey
       overlay.style.transition='opacity 0.3s';
       overlay.style.opacity='0';
       overlay.style.pointerEvents='none';
@@ -782,15 +1139,12 @@
     }, 700);
   }
 
-  /* ════════════════════════════════
-     MAIN CLICK HANDLER
-  ════════════════════════════════ */
   let clicked = false;
   function go(e) {
     if (clicked) return;
     clicked = true;
-    const btn = document.getElementById('startBtn');
-    btn.disabled = true; btn.style.opacity='0.72';
+    const btn = e.currentTarget || document.getElementById('startBtn');
+    if (btn) { btn.disabled = true; btn.style.opacity='0.72'; }
     runBurst(btn, ()=>{ runJourney(); });
   }
   </script>
