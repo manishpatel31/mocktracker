@@ -1,0 +1,1483 @@
+<!DOCTYPE html>
+<html lang="en" class="light">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
+  <title>MockTracker Pro · Stats</title>
+
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=Bebas+Neue&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+
+  <!-- Tailwind -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            dark: { bg:'#06040f', card:'#0e0a1f', text:'#f1f5f9', border:'#1e1535' },
+            brand: { 500:'#6366f1', 600:'#4f46e5', 400:'#818cf8', 100:'#e0e7ff' },
+            accent: { 500:'#d946ef', 600:'#c026d3' }
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- Chart.js annotation plugin for target line -->
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@3.0.1/dist/chartjs-plugin-annotation.min.js"></script>
+
+  <style>
+    /* ─── base ─── */
+    * { -webkit-font-smoothing: antialiased; box-sizing: border-box; }
+    body { font-family: 'Plus Jakarta Sans', sans-serif; }
+
+    /* ─── same app-bg as app.html ─── */
+    .app-bg {
+      background-color: #eef0ff;
+      background-image:
+        radial-gradient(ellipse 90% 70% at 0% 0%,   rgba(99,102,241,0.28) 0%, transparent 55%),
+        radial-gradient(ellipse 80% 60% at 100% 100%,rgba(217,70,239,0.22) 0%, transparent 55%),
+        radial-gradient(ellipse 60% 40% at 60% 20%, rgba(139,92,246,0.15) 0%, transparent 50%),
+        radial-gradient(ellipse 50% 40% at 20% 80%, rgba(99,102,241,0.10) 0%, transparent 45%);
+      background-attachment: fixed;
+    }
+    .dark .app-bg {
+      background-color: #06040f;
+      background-image:
+        radial-gradient(ellipse 90% 70% at 0% 0%,    rgba(79,70,229,0.45)  0%, transparent 50%),
+        radial-gradient(ellipse 80% 60% at 100% 100%, rgba(192,38,211,0.35) 0%, transparent 50%),
+        radial-gradient(ellipse 60% 50% at 50% 50%,  rgba(109,40,217,0.20) 0%, transparent 55%),
+        radial-gradient(ellipse 40% 30% at 80% 10%,  rgba(99,102,241,0.25) 0%, transparent 40%);
+    }
+
+    /* ─── glass-card — exact copy from app.html ─── */
+    .glass-card {
+      background: rgba(255,255,255,0.55);
+      backdrop-filter: blur(24px) saturate(180%);
+      -webkit-backdrop-filter: blur(24px) saturate(180%);
+      border: 1px solid rgba(255,255,255,0.70);
+      box-shadow: 0 8px 32px rgba(99,102,241,0.10), inset 0 1px 0 rgba(255,255,255,0.80);
+      transition: all 0.3s ease;
+    }
+    .dark .glass-card {
+      background: rgba(14,10,31,0.55);
+      border: 1px solid rgba(139,92,246,0.18);
+      box-shadow: 0 8px 32px rgba(0,0,0,0.50), inset 0 1px 0 rgba(255,255,255,0.05);
+    }
+    .glass-card:hover {
+      box-shadow: 0 12px 40px rgba(99,102,241,0.18), inset 0 1px 0 rgba(255,255,255,0.90);
+    }
+    .dark .glass-card:hover {
+      box-shadow: 0 12px 40px rgba(99,102,241,0.25), inset 0 1px 0 rgba(255,255,255,0.07);
+    }
+
+    /* ─── glass-nav ─── */
+    .glass-nav {
+      background: rgba(255,255,255,0.65);
+      backdrop-filter: blur(24px) saturate(200%);
+      -webkit-backdrop-filter: blur(24px) saturate(200%);
+      border-bottom: 1px solid rgba(255,255,255,0.60);
+      box-shadow: 0 4px 24px rgba(99,102,241,0.08);
+    }
+    .dark .glass-nav {
+      background: rgba(6,4,15,0.70);
+      border-bottom: 1px solid rgba(139,92,246,0.15);
+      box-shadow: 0 4px 24px rgba(0,0,0,0.40);
+    }
+
+    /* ─── gradients ─── */
+    .text-gradient  { background: linear-gradient(135deg,#6366f1,#d946ef); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+    .text-gradient-green { background: linear-gradient(135deg,#10b981,#06b6d4); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+    .text-gradient-amber { background: linear-gradient(135deg,#f59e0b,#ef4444); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+    .btn-gradient  { background: linear-gradient(135deg,#6366f1,#d946ef); color:white; transition:all 0.3s; }
+    .btn-gradient:hover { filter:brightness(1.12); transform:translateY(-1px); box-shadow:0 8px 24px rgba(99,102,241,0.40); }
+    .btn-glass {
+      background: rgba(255,255,255,0.40);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255,255,255,0.60);
+      color: #475569; transition: all 0.2s;
+    }
+    .dark .btn-glass { background:rgba(255,255,255,0.05); border-color:rgba(139,92,246,0.20); color:#94a3b8; }
+    .btn-glass:hover { background:rgba(255,255,255,0.65); transform:scale(1.04); }
+    .dark .btn-glass:hover { background:rgba(99,102,241,0.12); }
+
+    /* ─── scrollbar ─── */
+    ::-webkit-scrollbar { width:5px; }
+    ::-webkit-scrollbar-thumb { background:rgba(99,102,241,0.30); border-radius:10px; }
+    .dark ::-webkit-scrollbar-thumb { background:rgba(139,92,246,0.30); }
+
+    /* ─── pill ─── */
+    .pill { padding:2px 10px; border-radius:100px; font-size:10px; font-weight:800; letter-spacing:0.05em; text-transform:uppercase; }
+
+    /* ─── shimmer card ─── */
+    .shimmer-card { position:relative; overflow:hidden; }
+    .shimmer-card::after {
+      content:''; position:absolute; inset:0; pointer-events:none;
+      background:linear-gradient(105deg,transparent 40%,rgba(255,255,255,0.35) 50%,transparent 60%);
+      transform:translateX(-100%);
+    }
+    .shimmer-card:hover::after { animation:shimmerSlide 0.7s ease forwards; }
+    .dark .shimmer-card::after { background:linear-gradient(105deg,transparent 40%,rgba(255,255,255,0.08) 50%,transparent 60%); }
+    @keyframes shimmerSlide { 0%{transform:translateX(-100%)} 100%{transform:translateX(200%)} }
+
+    /* ─── page-level entrance animations ─── */
+    @keyframes fadeUp {
+      from { opacity:0; transform:translateY(20px); }
+      to   { opacity:1; transform:translateY(0); }
+    }
+    @keyframes scaleIn {
+      from { opacity:0; transform:scale(0.95); }
+      to   { opacity:1; transform:scale(1); }
+    }
+    @keyframes floatBob {
+      0%,100% { transform:translateY(0); }
+      50%      { transform:translateY(-6px); }
+    }
+    @keyframes countUp {
+      from { opacity:0; transform:translateY(8px); }
+      to   { opacity:1; transform:translateY(0); }
+    }
+    @keyframes spin { to { transform:rotate(360deg); } }
+
+    .anim-1 { animation:fadeUp 0.55s cubic-bezier(0.22,1,0.36,1) 0.05s both; }
+    .anim-2 { animation:fadeUp 0.55s cubic-bezier(0.22,1,0.36,1) 0.12s both; }
+    .anim-3 { animation:fadeUp 0.55s cubic-bezier(0.22,1,0.36,1) 0.19s both; }
+    .anim-4 { animation:fadeUp 0.55s cubic-bezier(0.22,1,0.36,1) 0.26s both; }
+    .anim-5 { animation:fadeUp 0.55s cubic-bezier(0.22,1,0.36,1) 0.33s both; }
+    .anim-6 { animation:fadeUp 0.55s cubic-bezier(0.22,1,0.36,1) 0.40s both; }
+    .anim-7 { animation:fadeUp 0.55s cubic-bezier(0.22,1,0.36,1) 0.47s both; }
+
+    /* ─── streak flame animation ─── */
+    @keyframes flamePulse {
+      0%,100% { filter:drop-shadow(0 0 4px rgba(251,146,60,0.5)); transform:scale(1); }
+      50%      { filter:drop-shadow(0 0 12px rgba(251,146,60,0.9)) drop-shadow(0 0 24px rgba(239,68,68,0.4)); transform:scale(1.12); }
+    }
+    .flame { display:inline-block; animation:flamePulse 1.8s ease-in-out infinite; }
+
+    /* ─── stat number count animation ─── */
+    .stat-num { animation:countUp 0.6s cubic-bezier(0.22,1,0.36,1) 0.3s both; }
+
+    /* ─── empty state ─── */
+    .empty-icon { font-size:3.5rem; animation:floatBob 2.8s ease-in-out infinite; }
+
+    /* ─── performance bar ─── */
+    .perf-bar-track {
+      height: 6px; border-radius: 999px; overflow: hidden;
+      background: rgba(99,102,241,0.10);
+    }
+    .dark .perf-bar-track { background: rgba(139,92,246,0.12); }
+    .perf-bar-fill {
+      height: 100%; border-radius: 999px;
+      background: linear-gradient(90deg, #6366f1, #d946ef);
+      transition: width 1.2s cubic-bezier(0.34,1.2,0.64,1);
+    }
+
+    /* ─── day heatmap cells ─── */
+    .day-cell {
+      border-radius: 8px; aspect-ratio:1;
+      transition: transform 0.2s, box-shadow 0.2s;
+      cursor: default;
+    }
+    .day-cell:hover { transform:scale(1.18); z-index:10; position:relative; }
+
+    /* ─── nav theme toggle ─── */
+    .theme-icon { position:absolute; transition:transform 0.45s cubic-bezier(0.34,1.56,0.64,1), opacity 0.35s ease; }
+    .theme-sun  { opacity:1;  transform:rotate(0deg) scale(1); }
+    .theme-moon { opacity:0;  transform:rotate(90deg) scale(0.4); }
+    .dark .theme-sun  { opacity:0;  transform:rotate(-90deg) scale(0.4); }
+    .dark .theme-moon { opacity:1;  transform:rotate(0deg) scale(1); }
+
+    /* ─── mobile safe area ─── */
+    html, body { overflow-x:hidden; max-width:100%; }
+
+    /* ─── score ring SVG ─── */
+    .ring-bg   { fill:none; stroke:rgba(99,102,241,0.12); stroke-width:8; }
+    .ring-fill { fill:none; stroke:url(#statsRingGrad); stroke-width:8; stroke-linecap:round; transition:stroke-dashoffset 1.4s cubic-bezier(0.34,1,0.64,1); }
+
+    /* ─── trend badge ─── */
+    .trend-up   { background:rgba(16,185,129,0.12);  color:#10b981; border:1px solid rgba(16,185,129,0.25); }
+    .trend-down { background:rgba(239,68,68,0.10);   color:#ef4444; border:1px solid rgba(239,68,68,0.20); }
+    .trend-flat { background:rgba(99,102,241,0.10);  color:#6366f1; border:1px solid rgba(99,102,241,0.20); }
+    .dark .trend-up   { background:rgba(16,185,129,0.18); color:#6ee7b7; }
+    .dark .trend-down { background:rgba(239,68,68,0.18);  color:#fca5a5; }
+    .dark .trend-flat { background:rgba(99,102,241,0.18); color:#a5b4fc; }
+
+    /* ─── toast ─── */
+    #toast {
+      position:fixed; bottom:24px; left:50%; transform:translateX(-50%);
+      z-index:999; pointer-events:none;
+      padding:10px 20px; border-radius:14px;
+      background:linear-gradient(135deg,#6366f1,#a855f7);
+      color:white; font-size:13px; font-weight:800;
+      box-shadow:0 8px 32px rgba(99,102,241,0.45);
+      opacity:0; transition:opacity 0.4s;
+      white-space:nowrap;
+    }
+    #toast.show { opacity:1; }
+
+    /* ─── loading spinner ─── */
+    .spinner {
+      width:36px; height:36px; border-radius:50%;
+      border:3px solid rgba(99,102,241,0.15);
+      border-top-color:#6366f1;
+      animation:spin 0.8s linear infinite;
+    }
+  </style>
+
+  <!-- SVG gradient defs -->
+  <svg width="0" height="0" style="position:absolute">
+    <defs>
+      <linearGradient id="statsRingGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+        <stop offset="0%"   stop-color="#6366f1"/>
+        <stop offset="100%" stop-color="#d946ef"/>
+      </linearGradient>
+    </defs>
+  </svg>
+</head>
+
+<body class="app-bg text-slate-800 dark:text-slate-100 min-h-screen transition-colors duration-500">
+
+<!-- ═══════════════════════════════════════════════
+     NAVBAR
+═══════════════════════════════════════════════ -->
+<header class="glass-nav sticky top-0 z-50 flex-none flex items-center justify-between px-4 md:px-6"
+        style="height:64px;">
+
+  <!-- Left: logo -->
+  <div class="flex items-center gap-2.5 min-w-0">
+    <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-brand-600 to-accent-500
+                text-white flex items-center justify-center shadow-lg flex-shrink-0">
+      <i class="fa-solid fa-chart-pie text-base"></i>
+    </div>
+    <div class="min-w-0">
+      <div class="flex items-center gap-2">
+        <h1 class="text-base font-extrabold tracking-tight text-slate-900 dark:text-white whitespace-nowrap">
+          MockTracker <span class="text-brand-500">Stats</span>
+        </h1>
+      </div>
+      <div id="exam-badge-wrap" class="mt-0.5">
+        <span id="nav-exam-badge"
+              class="text-[9px] font-black uppercase tracking-wider px-2 py-0.5 rounded
+                     bg-brand-100 dark:bg-brand-900/30 text-brand-600 dark:text-brand-400">
+          Loading…
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Right: actions -->
+  <div class="flex items-center gap-2 flex-shrink-0">
+
+    <!-- Back to App -->
+    <a href="app.html"
+       class="btn-glass rounded-xl flex items-center gap-1.5 px-3 font-black text-xs text-brand-500
+              dark:text-brand-400 hover:scale-105 transition"
+       style="height:40px;">
+      <i class="fa-solid fa-arrow-left" style="font-size:12px;"></i>
+      <span class="hidden sm:inline">Back to App</span>
+    </a>
+
+    <!-- Theme toggle -->
+    <button onclick="toggleTheme()"
+            class="btn-glass rounded-xl relative overflow-hidden hover:scale-105 transition"
+            style="width:40px;height:40px;">
+      <i class="fa-solid fa-sun  theme-icon theme-sun  text-amber-400 absolute inset-0 flex items-center justify-center"
+         style="display:flex;align-items:center;justify-content:center;"></i>
+      <i class="fa-solid fa-moon theme-icon theme-moon text-indigo-400 absolute inset-0 flex items-center justify-center"
+         style="display:flex;align-items:center;justify-content:center;"></i>
+    </button>
+
+    <!-- Refresh data -->
+    <button onclick="loadAndRender()"
+            class="btn-glass rounded-xl flex items-center justify-center hover:scale-105 transition"
+            style="width:40px;height:40px;" title="Refresh data">
+      <i class="fa-solid fa-rotate-right text-brand-500" style="font-size:14px;"></i>
+    </button>
+
+  </div>
+</header>
+
+
+<!-- ═══════════════════════════════════════════════
+     MAIN CONTENT
+═══════════════════════════════════════════════ -->
+<main class="max-w-7xl mx-auto px-4 md:px-6 pb-16 pt-6 space-y-6">
+
+  <!-- ── LOADING STATE ── -->
+  <div id="loading-state" class="flex flex-col items-center justify-center py-28 gap-4">
+    <div class="spinner"></div>
+    <p class="text-sm font-black text-slate-400 uppercase tracking-widest">Loading your stats…</p>
+  </div>
+
+  <!-- ── EMPTY STATE ── -->
+  <div id="empty-state" class="hidden glass-card rounded-[2rem] py-24 text-center">
+    <div class="empty-icon mb-3">📊</div>
+    <p class="text-xl font-black text-slate-600 dark:text-slate-300 mb-2">No mocks logged yet</p>
+    <p class="text-sm text-slate-400 max-w-xs mx-auto mb-6">
+      Head back to the app and log your first mock — your stats will appear here automatically.
+    </p>
+    <a href="app.html"
+       class="btn-gradient inline-flex items-center gap-2 px-6 py-3 rounded-xl font-black text-sm shadow-lg">
+      <i class="fa-solid fa-circle-plus"></i> Log First Mock
+    </a>
+  </div>
+
+  <!-- ═══════════ STATS CONTENT (hidden until data loads) ═══════════ -->
+  <div id="stats-content" class="hidden space-y-6">
+
+    <!-- ── PAGE HEADER ── -->
+    <div class="anim-1 flex items-center justify-between flex-wrap gap-3">
+      <div>
+        <h2 class="text-2xl md:text-3xl font-black text-gradient leading-tight">Performance Dashboard</h2>
+        <p id="page-subtitle" class="text-xs font-semibold text-slate-400 mt-1">
+          Your complete mock test analytics
+        </p>
+      </div>
+      <div class="flex items-center gap-2 flex-wrap">
+        <span id="last-updated-badge"
+              class="text-[10px] font-bold px-3 py-1.5 rounded-xl
+                     bg-emerald-50 dark:bg-emerald-900/20
+                     text-emerald-600 dark:text-emerald-400
+                     border border-emerald-200/40 dark:border-emerald-800/30">
+          <i class="fa-solid fa-circle text-[6px] mr-1 animate-pulse"></i>Live data
+        </span>
+        <span id="exam-group-badge"
+              class="text-[10px] font-black uppercase tracking-wider px-3 py-1.5 rounded-xl
+                     bg-brand-100 dark:bg-brand-900/30 text-brand-600 dark:text-brand-400">
+          —
+        </span>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════════════
+         ROW 1 — 4 SUMMARY STAT CARDS
+    ══════════════════════════════════════════════════ -->
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+
+      <!-- Best Score -->
+      <div class="anim-2 glass-card shimmer-card p-5 md:p-6 rounded-[2rem] relative overflow-hidden
+                  hover:scale-[1.02] transition-transform border-l-4 border-amber-400">
+        <div class="absolute -right-3 -bottom-3 text-amber-400/10 text-7xl pointer-events-none">
+          <i class="fa-solid fa-trophy"></i>
+        </div>
+        <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1 flex items-center gap-1">
+          🏆 Best Score
+        </p>
+        <h3 id="stat-best" class="stat-num text-3xl md:text-4xl font-black text-amber-500">—</h3>
+        <p id="stat-best-sub" class="text-[10px] font-bold text-amber-400/70 uppercase mt-1 truncate">—</p>
+      </div>
+
+      <!-- Average Score -->
+      <div class="anim-2 glass-card shimmer-card p-5 md:p-6 rounded-[2rem] relative overflow-hidden
+                  hover:scale-[1.02] transition-transform">
+        <div class="absolute -right-3 -bottom-3 text-brand-500/8 text-7xl pointer-events-none">
+          <i class="fa-solid fa-bolt"></i>
+        </div>
+        <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">⚡ Avg Score</p>
+        <h3 id="stat-avg" class="stat-num text-3xl md:text-4xl font-black text-gradient">—</h3>
+        <div id="stat-avg-trend" class="mt-1 hidden">
+          <span id="stat-trend-badge"
+                class="text-[10px] font-black px-2 py-0.5 rounded-lg">—</span>
+        </div>
+      </div>
+
+      <!-- Total Mocks -->
+      <div class="anim-3 glass-card shimmer-card p-5 md:p-6 rounded-[2rem] relative overflow-hidden
+                  hover:scale-[1.02] transition-transform">
+        <div class="absolute -right-3 -bottom-3 text-brand-500/8 text-7xl pointer-events-none">
+          <i class="fa-solid fa-layer-group"></i>
+        </div>
+        <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">📚 Mocks Logged</p>
+        <h3 id="stat-total" class="stat-num text-3xl md:text-4xl font-black text-slate-800 dark:text-white">—</h3>
+        <p id="stat-total-sub" class="text-[10px] font-bold text-slate-400 mt-1">—</p>
+      </div>
+
+      <!-- Streak -->
+      <div class="anim-3 glass-card shimmer-card p-5 md:p-6 rounded-[2rem] relative overflow-hidden
+                  hover:scale-[1.02] transition-transform border-l-4 border-orange-400">
+        <div class="absolute -right-3 -bottom-3 text-orange-400/10 text-7xl pointer-events-none">
+          <i class="fa-solid fa-fire"></i>
+        </div>
+        <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">
+          <span class="flame">🔥</span> Current Streak
+        </p>
+        <h3 id="stat-streak" class="stat-num text-3xl md:text-4xl font-black text-orange-500">—</h3>
+        <p id="stat-streak-sub" class="text-[10px] font-bold text-orange-400/70 uppercase mt-1">—</p>
+      </div>
+
+    </div>
+
+    <!-- ══════════════════════════════════════════════════
+         ROW 2 — SECONDARY CARDS (percentile, low, this month, accuracy)
+    ══════════════════════════════════════════════════ -->
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-3 anim-4">
+
+      <div class="glass-card p-4 rounded-[1.5rem] flex items-center gap-3 hover:scale-[1.03] transition-transform">
+        <div class="w-10 h-10 rounded-xl bg-accent-500/10 flex items-center justify-center text-lg flex-shrink-0">🎖️</div>
+        <div class="min-w-0">
+          <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Avg Percentile</p>
+          <h4 id="mini-perc" class="text-lg font-black text-accent-500">—</h4>
+        </div>
+      </div>
+
+      <div class="glass-card p-4 rounded-[1.5rem] flex items-center gap-3 hover:scale-[1.03] transition-transform">
+        <div class="w-10 h-10 rounded-xl bg-rose-100 dark:bg-rose-900/20 flex items-center justify-center text-lg flex-shrink-0">🎯</div>
+        <div class="min-w-0">
+          <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Lowest Score</p>
+          <h4 id="mini-low" class="text-lg font-black text-rose-500">—</h4>
+        </div>
+      </div>
+
+      <div class="glass-card p-4 rounded-[1.5rem] flex items-center gap-3 hover:scale-[1.03] transition-transform">
+        <div class="w-10 h-10 rounded-xl bg-brand-100 dark:bg-brand-900/20 flex items-center justify-center text-lg flex-shrink-0">📅</div>
+        <div class="min-w-0">
+          <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">This Month</p>
+          <h4 id="mini-month" class="text-lg font-black text-brand-500">— mocks</h4>
+        </div>
+      </div>
+
+      <div class="glass-card p-4 rounded-[1.5rem] flex items-center gap-3 hover:scale-[1.03] transition-transform">
+        <div class="w-10 h-10 rounded-xl bg-emerald-100 dark:bg-emerald-900/20 flex items-center justify-center text-lg flex-shrink-0">✅</div>
+        <div class="min-w-0">
+          <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Overall Accuracy</p>
+          <h4 id="mini-acc" class="text-lg font-black text-emerald-600">—%</h4>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ══════════════════════════════════════════════════
+         ROW 3 — SCORE TREND (large) + TARGET RING (small)
+    ══════════════════════════════════════════════════ -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 anim-5">
+
+      <!-- Score trend chart — 2/3 width -->
+      <div class="lg:col-span-2 glass-card p-6 md:p-7 rounded-[2rem]">
+        <div class="flex items-center justify-between mb-5 flex-wrap gap-3">
+          <h3 class="font-extrabold text-sm text-slate-800 dark:text-white uppercase tracking-widest flex items-center gap-2">
+            <span class="w-1.5 h-5 bg-gradient-to-b from-brand-500 to-accent-500 rounded-full"></span>
+            Score Trend
+            <span class="text-[10px] font-bold text-slate-400 normal-case tracking-normal">last 10 mocks</span>
+          </h3>
+          <div class="flex items-center gap-1.5 flex-wrap" id="chart-legend">
+            <!-- injected by JS -->
+          </div>
+        </div>
+        <div style="height:260px; position:relative;">
+          <canvas id="chart-trend"></canvas>
+        </div>
+        <!-- Insight strip below chart -->
+        <div id="trend-insight"
+             class="mt-4 p-3 rounded-2xl text-xs font-semibold text-center leading-relaxed"
+             style="background:rgba(99,102,241,0.05);border:1px solid rgba(99,102,241,0.10);
+                    color:#6366f1; display:none;">
+        </div>
+      </div>
+
+      <!-- Target ring + score breakdown — 1/3 width -->
+      <div class="glass-card p-6 rounded-[2rem] flex flex-col gap-5">
+
+        <!-- Ring -->
+        <div class="flex flex-col items-center gap-1">
+          <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">🎯 vs Target</p>
+          <div style="position:relative;width:110px;height:110px;">
+            <svg viewBox="0 0 110 110" width="110" height="110" style="transform:rotate(-90deg);">
+              <circle class="ring-bg" cx="55" cy="55" r="46"/>
+              <circle id="ring-fill" class="ring-fill" cx="55" cy="55" r="46"
+                      stroke-dasharray="289" stroke-dashoffset="289"/>
+            </svg>
+            <div style="position:absolute;inset:0;display:flex;flex-direction:column;
+                        align-items:center;justify-content:center;gap:2px;">
+              <span id="ring-pct" class="text-xl font-black text-gradient leading-none">0%</span>
+              <span style="font-size:9px;" class="font-black text-slate-400 uppercase tracking-wide">of target</span>
+            </div>
+          </div>
+          <div class="text-center mt-1">
+            <span id="ring-label" class="text-xs font-bold text-slate-500 dark:text-slate-400"></span>
+          </div>
+        </div>
+
+        <div style="height:1px;background:rgba(99,102,241,0.10);border-radius:1px;"></div>
+
+        <!-- Quick score breakdown -->
+        <div class="space-y-3">
+          <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Score Breakdown</p>
+
+          <div>
+            <div class="flex justify-between items-center mb-1">
+              <span class="text-xs font-bold text-slate-600 dark:text-slate-300">Best</span>
+              <span id="bd-best" class="text-xs font-black text-amber-500">—</span>
+            </div>
+            <div class="perf-bar-track">
+              <div id="bd-best-bar" class="perf-bar-fill" style="width:0%;background:linear-gradient(90deg,#f59e0b,#ef4444);"></div>
+            </div>
+          </div>
+
+          <div>
+            <div class="flex justify-between items-center mb-1">
+              <span class="text-xs font-bold text-slate-600 dark:text-slate-300">Average</span>
+              <span id="bd-avg" class="text-xs font-black text-brand-500">—</span>
+            </div>
+            <div class="perf-bar-track">
+              <div id="bd-avg-bar" class="perf-bar-fill" style="width:0%;"></div>
+            </div>
+          </div>
+
+          <div>
+            <div class="flex justify-between items-center mb-1">
+              <span class="text-xs font-bold text-slate-600 dark:text-slate-300">Lowest</span>
+              <span id="bd-low" class="text-xs font-black text-rose-500">—</span>
+            </div>
+            <div class="perf-bar-track">
+              <div id="bd-low-bar" class="perf-bar-fill" style="width:0%;background:linear-gradient(90deg,#ef4444,#dc2626);"></div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════════════
+         ROW 4 — SUBJECT DONUT + SUBJECT ACCURACY TABLE
+    ══════════════════════════════════════════════════ -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 anim-6">
+
+      <!-- Donut chart -->
+      <div class="glass-card p-6 md:p-7 rounded-[2rem]">
+        <h3 class="font-extrabold text-sm text-slate-800 dark:text-white uppercase tracking-widest mb-5 flex items-center gap-2">
+          <i class="fa-solid fa-chart-pie text-accent-500"></i>
+          Subject Accuracy
+        </h3>
+        <div class="flex items-center gap-6 flex-wrap">
+          <div style="position:relative;width:160px;height:160px;flex-shrink:0;">
+            <canvas id="chart-donut"></canvas>
+            <!-- centre label -->
+            <div id="donut-center"
+                 style="position:absolute;inset:0;display:flex;flex-direction:column;
+                        align-items:center;justify-content:center;pointer-events:none;">
+              <span id="donut-pct"  class="text-xl font-black text-gradient leading-none">—%</span>
+              <span class="text-[9px] font-black text-slate-400 uppercase tracking-wide mt-0.5">accuracy</span>
+            </div>
+          </div>
+          <!-- Legend -->
+          <div id="donut-legend" class="flex flex-col gap-2 flex-1 min-w-0"></div>
+        </div>
+        <p id="donut-insight" class="mt-4 text-xs font-semibold text-center leading-relaxed
+                                      text-slate-500 dark:text-slate-400 hidden"></p>
+      </div>
+
+      <!-- Subject table -->
+      <div class="glass-card rounded-[2rem] overflow-hidden">
+        <div class="px-5 py-4 border-b border-white/30 dark:border-white/5"
+             style="background:rgba(255,255,255,0.20);">
+          <h3 class="text-sm font-extrabold text-slate-800 dark:text-white uppercase tracking-widest flex items-center gap-2">
+            <i class="fa-solid fa-table-cells text-brand-500"></i> Subject Mastery
+          </h3>
+        </div>
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-xs">
+            <thead class="font-black text-slate-400 uppercase tracking-widest"
+                   style="background:rgba(255,255,255,0.18);">
+              <tr>
+                <th class="px-4 py-3">Subject</th>
+                <th class="px-3 py-3 text-center">Accuracy</th>
+                <th class="px-3 py-3 text-center">Avg Score</th>
+                <th class="px-3 py-3 text-center">Status</th>
+              </tr>
+            </thead>
+            <tbody id="subject-table-body"
+                   class="divide-y divide-white/20 dark:divide-white/5"
+                   style="background:rgba(255,255,255,0.08);">
+            </tbody>
+          </table>
+        </div>
+        <p id="subject-empty"
+           class="hidden text-center text-xs font-bold text-slate-400 py-8 uppercase tracking-widest opacity-50">
+          Subject data not available (quick-entry mocks only)
+        </p>
+      </div>
+
+    </div>
+
+    <!-- ══════════════════════════════════════════════════
+         ROW 5 — STREAK CALENDAR + BEST DAY HEATMAP
+    ══════════════════════════════════════════════════ -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 anim-7">
+
+      <!-- 8-week activity calendar -->
+      <div class="glass-card p-6 md:p-7 rounded-[2rem]">
+        <div class="flex items-center justify-between mb-4">
+          <h3 class="font-extrabold text-sm text-slate-800 dark:text-white uppercase tracking-widest flex items-center gap-2">
+            <i class="fa-solid fa-calendar-check text-emerald-500"></i> Activity Calendar
+          </h3>
+          <div class="flex items-center gap-2">
+            <span class="text-[10px] font-bold text-slate-400">Less</span>
+            <div class="flex gap-1">
+              <div class="w-3 h-3 rounded-sm" style="background:rgba(99,102,241,0.10);"></div>
+              <div class="w-3 h-3 rounded-sm" style="background:rgba(99,102,241,0.35);"></div>
+              <div class="w-3 h-3 rounded-sm" style="background:rgba(99,102,241,0.60);"></div>
+              <div class="w-3 h-3 rounded-sm" style="background:#6366f1;"></div>
+            </div>
+            <span class="text-[10px] font-bold text-slate-400">More</span>
+          </div>
+        </div>
+
+        <!-- Day-of-week labels -->
+        <div class="grid gap-1 mb-1" style="grid-template-columns:repeat(7,1fr);">
+          <div class="text-[8px] font-black text-center text-slate-400 uppercase">S</div>
+          <div class="text-[8px] font-black text-center text-slate-400 uppercase">M</div>
+          <div class="text-[8px] font-black text-center text-slate-400 uppercase">T</div>
+          <div class="text-[8px] font-black text-center text-slate-400 uppercase">W</div>
+          <div class="text-[8px] font-black text-center text-slate-400 uppercase">T</div>
+          <div class="text-[8px] font-black text-center text-slate-400 uppercase">F</div>
+          <div class="text-[8px] font-black text-center text-slate-400 uppercase">S</div>
+        </div>
+
+        <!-- Calendar grid (8 weeks = 56 cells) -->
+        <div id="calendar-grid" class="grid gap-1" style="grid-template-columns:repeat(7,1fr);"></div>
+
+        <div class="flex items-center justify-between mt-3">
+          <p id="streak-summary"
+             class="text-xs font-black text-slate-500 dark:text-slate-400"></p>
+          <p id="longest-streak"
+             class="text-xs font-black text-brand-500"></p>
+        </div>
+      </div>
+
+      <!-- Best day of week + time analysis -->
+      <div class="glass-card p-6 md:p-7 rounded-[2rem]">
+        <h3 class="font-extrabold text-sm text-slate-800 dark:text-white uppercase tracking-widest mb-4 flex items-center gap-2">
+          <i class="fa-solid fa-calendar-star text-amber-500"></i> Best Day of Week
+        </h3>
+        <div id="best-day-grid" class="grid grid-cols-7 gap-2 mb-3"></div>
+        <p id="best-day-insight"
+           class="text-xs font-black text-brand-500 dark:text-brand-400 text-center mt-2"></p>
+
+        <div style="height:1px;background:rgba(99,102,241,0.08);margin:20px 0;border-radius:1px;"></div>
+
+        <!-- Platform breakdown mini chart -->
+        <h3 class="font-extrabold text-xs text-slate-800 dark:text-white uppercase tracking-widest mb-3 flex items-center gap-2">
+          <i class="fa-solid fa-building text-purple-500"></i> Platform Scores
+        </h3>
+        <div id="platform-list" class="space-y-2"></div>
+      </div>
+
+    </div>
+
+    <!-- ══════════════════════════════════════════════════
+         ROW 6 — NEGATIVE MARKING INSIGHT + MOCK LIST MINI
+    ══════════════════════════════════════════════════ -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+      <!-- Negative marking / silly errors -->
+      <div class="glass-card p-6 rounded-[2rem]" style="animation:fadeUp 0.55s cubic-bezier(0.22,1,0.36,1) 0.52s both;">
+        <h3 class="font-extrabold text-sm text-slate-800 dark:text-white uppercase tracking-widest mb-4 flex items-center gap-2">
+          <i class="fa-solid fa-skull text-rose-500"></i> Marks Lost to Errors
+        </h3>
+        <div class="flex items-end gap-4 mb-4">
+          <div class="text-center flex-1 p-4 rounded-2xl"
+               style="background:rgba(239,68,68,0.06);border:1px solid rgba(239,68,68,0.14);">
+            <p class="text-[10px] font-black text-rose-500 uppercase tracking-widest mb-1">Total Silly Marks Lost</p>
+            <h3 id="silly-total" class="text-2xl font-black text-rose-500">—</h3>
+          </div>
+          <div class="text-center flex-1 p-4 rounded-2xl"
+               style="background:rgba(245,158,11,0.06);border:1px solid rgba(245,158,11,0.14);">
+            <p class="text-[10px] font-black text-amber-500 uppercase tracking-widest mb-1">Avg Per Mock</p>
+            <h3 id="silly-avg" class="text-2xl font-black text-amber-500">—</h3>
+          </div>
+        </div>
+        <div id="silly-bar-list" class="space-y-2"></div>
+        <p id="silly-insight"
+           class="mt-3 text-xs text-center font-semibold text-slate-500 dark:text-slate-400 leading-relaxed"></p>
+      </div>
+
+      <!-- Recent mocks mini list -->
+      <div class="glass-card p-6 rounded-[2rem]" style="animation:fadeUp 0.55s cubic-bezier(0.22,1,0.36,1) 0.58s both;">
+        <div class="flex items-center justify-between mb-4">
+          <h3 class="font-extrabold text-sm text-slate-800 dark:text-white uppercase tracking-widest flex items-center gap-2">
+            <i class="fa-solid fa-list text-brand-500"></i> Recent Mocks
+          </h3>
+          <a href="app.html#history"
+             class="text-[10px] font-black text-brand-500 hover:text-brand-600 transition uppercase tracking-widest">
+            View All →
+          </a>
+        </div>
+        <div id="recent-list" class="space-y-2"></div>
+      </div>
+
+    </div>
+
+  </div><!-- /stats-content -->
+
+</main>
+
+<!-- toast -->
+<div id="toast"></div>
+
+
+<!-- ═══════════════════════════════════════════════
+     FIREBASE + DATA LOGIC
+═══════════════════════════════════════════════ -->
+<script type="module">
+import { initializeApp }    from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+import { getFirestore, collection, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+/* ── Firebase config (same as app.html) ── */
+const firebaseConfig = {
+  apiKey: "AIzaSyCLvZzZ-Hx9LsvuL1zK4xuZcF_1P28h4sI",
+  authDomain: "mock-analysis-aaf4b.firebaseapp.com",
+  projectId: "mock-analysis-aaf4b",
+  storageBucket: "mock-analysis-aaf4b.firebasestorage.app",
+  messagingSenderId: "88057484168",
+  appId: "1:88057484168:web:70e580fe70573a4866a03d"
+};
+const APP_ID = 'mock-tracker-pro-final';
+
+/* ── exam configs (same as app.html) ── */
+const EXAM_GROUPS = {
+  "SSC_CGL_CHSL": { name:"SSC CGL/CHSL", subjects:["Reasoning","GK","Quant","English"], c:2, w:0.5, total:200 },
+  "RRB_NTPC":     { name:"RRB NTPC",     subjects:["GK/Science","Maths","Reasoning"],   c:1, w:0.33, total:100 },
+  "SSC_MTS":      { name:"SSC MTS",       subjects:["Maths","Reasoning","GK","English"], c:3, w:1,    total:270 },
+  "BANK_PO":      { name:"Bank PO",       subjects:["English","Quant","Reasoning"],      c:1, w:0.25, total:100 }
+};
+
+/* ── chart palette ── */
+const PALETTE = [
+  '#6366f1','#d946ef','#10b981','#f59e0b','#3b82f6','#ec4899','#14b8a6','#8b5cf6'
+];
+
+/* ── state ── */
+let allMocks = [];
+let charts   = { trend: null, donut: null };
+let currentExamGroup = null;
+
+/* ── helpers ── */
+const el  = id => document.getElementById(id);
+const fmt = n  => parseFloat(n).toFixed(1);
+const pct = (v, max) => max > 0 ? Math.min(100, (v / max) * 100) : 0;
+
+function showToast(msg) {
+  const t = el('toast');
+  if (!t) return;
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+function isDark() { return document.documentElement.classList.contains('dark'); }
+
+/* ── theme ── */
+window.toggleTheme = function() {
+  const dark = document.documentElement.classList.toggle('dark');
+  localStorage.setItem('theme', dark ? 'dark' : 'light');
+  // re-render charts with new colours
+  if (allMocks.length) renderCharts(allMocks);
+};
+if (localStorage.getItem('theme') === 'dark') {
+  document.documentElement.classList.add('dark');
+}
+
+/* ── get exam group ── */
+function getExamGroup() {
+  return localStorage.getItem('selected_exam_group') || null;
+}
+function getTargetScore(examGroup) {
+  if (!examGroup) return 160;
+  const v = parseInt(localStorage.getItem('mockpro_target_' + examGroup) || '0');
+  return v || (EXAM_GROUPS[examGroup]?.total ? Math.round(EXAM_GROUPS[examGroup].total * 0.8) : 160);
+}
+
+/* ── offline queue mocks (fallback when not signed in) ── */
+function getQueueMocks() {
+  try { return JSON.parse(localStorage.getItem('mockpro_offline_queue') || '[]'); } catch { return []; }
+}
+
+/* ── demo data detection ── */
+function getDemoMocks() {
+  // app.html demo data signature check (platform = Testbook/Oliveboard/The Pundits/Adda247)
+  return [];
+}
+
+/* ═══════════════════════════════════
+   MAIN: load data then render
+═══════════════════════════════════ */
+window.loadAndRender = async function() {
+  el('loading-state').classList.remove('hidden');
+  el('empty-state').classList.add('hidden');
+  el('stats-content').classList.add('hidden');
+
+  currentExamGroup = getExamGroup();
+
+  // Try Firebase
+  try {
+    const fApp  = initializeApp(firebaseConfig, 'stats-page-' + Math.random());
+    const auth  = getAuth(fApp);
+    const db    = getFirestore(fApp);
+
+    onAuthStateChanged(auth, user => {
+      if (user) {
+        // Signed in — pull from Firestore
+        onSnapshot(
+          collection(db, 'artifacts', APP_ID, 'users', user.uid, 'mocks'),
+          snapshot => {
+            allMocks = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+            // filter to current exam
+            if (currentExamGroup) {
+              const allowed = EXAM_GROUPS[currentExamGroup]?.subjects ? currentExamGroup : null;
+              if (allowed) {
+                allMocks = allMocks.filter(m => m.examGroup === currentExamGroup);
+              }
+            }
+            render(allMocks);
+          }
+        );
+      } else {
+        // Not signed in — use offline queue
+        const queue = getQueueMocks();
+        if (currentExamGroup) {
+          allMocks = queue.filter(m => m.examGroup === currentExamGroup);
+        } else {
+          allMocks = queue;
+        }
+        render(allMocks);
+      }
+    });
+  } catch (e) {
+    console.warn('Firebase error:', e);
+    // Fallback to queue only
+    const queue = getQueueMocks();
+    allMocks = currentExamGroup ? queue.filter(m => m.examGroup === currentExamGroup) : queue;
+    render(allMocks);
+  }
+};
+
+/* ═══════════════════════════════════
+   RENDER
+═══════════════════════════════════ */
+function render(mocks) {
+  el('loading-state').classList.add('hidden');
+
+  if (!mocks || mocks.length === 0) {
+    el('empty-state').classList.remove('hidden');
+    return;
+  }
+
+  el('stats-content').classList.remove('hidden');
+
+  const sorted = mocks.slice().sort((a, b) => new Date(a.date) - new Date(b.date));
+  const examGroup = currentExamGroup;
+  const group     = EXAM_GROUPS[examGroup] || { c:2, w:0.5, total:200, name:'All Exams' };
+  const target    = getTargetScore(examGroup);
+
+  // ── badges ──
+  const examLabel = group.name || examGroup || 'All Exams';
+  el('nav-exam-badge').textContent   = examLabel;
+  el('exam-group-badge').textContent = examLabel;
+  el('page-subtitle').textContent    =
+    `${sorted.length} mock${sorted.length !== 1 ? 's' : ''} · ${examLabel} · Target: ${target}`;
+
+  // ── computed stats ──
+  const scores  = sorted.map(m => m.score);
+  const best    = Math.max(...scores);
+  const worst   = Math.min(...scores);
+  const avg     = scores.reduce((a, b) => a + b, 0) / scores.length;
+  const percs   = sorted.filter(m => m.perc).map(m => m.perc);
+  const avgPerc = percs.length ? (percs.reduce((a, b) => a + b, 0) / percs.length).toFixed(1) : null;
+
+  const bestMock  = sorted.find(m => m.score === best);
+  const ym        = new Date().toISOString().slice(0, 7);
+  const thisMonth = sorted.filter(m => m.date?.startsWith(ym)).length;
+
+  // overall accuracy from subjects
+  let totalC = 0, totalCW = 0;
+  sorted.forEach(m => {
+    (m.subjects || []).forEach(s => { totalC += s.c; totalCW += (s.c + s.w); });
+  });
+  const overallAcc = totalCW > 0 ? ((totalC / totalCW) * 100).toFixed(1) : null;
+
+  // trend vs previous mock
+  const trendDelta = sorted.length >= 2
+    ? (sorted[sorted.length - 1].score - sorted[sorted.length - 2].score)
+    : null;
+
+  // ── fill summary cards ──
+  el('stat-best').textContent   = best;
+  el('stat-best-sub').textContent = bestMock
+    ? bestMock.name.substring(0, 22) + (bestMock.name.length > 22 ? '…' : '')
+    : '';
+  el('stat-avg').textContent   = fmt(avg);
+  el('stat-total').textContent = sorted.length;
+  el('stat-total-sub').textContent = `${thisMonth} this month`;
+  el('mini-perc').textContent  = avgPerc ? avgPerc + '%' : '—';
+  el('mini-low').textContent   = worst;
+  el('mini-month').textContent = thisMonth + ' mocks';
+  el('mini-acc').textContent   = overallAcc ? overallAcc + '%' : '—';
+
+  // trend badge
+  if (trendDelta !== null) {
+    const badge = el('stat-trend-badge');
+    const wrap  = el('stat-avg-trend');
+    const pos   = trendDelta >= 0;
+    badge.textContent = (pos ? '▲ +' : '▼ ') + fmt(trendDelta) + ' vs last mock';
+    badge.className = 'text-[10px] font-black px-2 py-0.5 rounded-lg ' +
+      (pos ? 'trend-up' : trendDelta < -2 ? 'trend-down' : 'trend-flat');
+    wrap.classList.remove('hidden');
+  }
+
+  // streak
+  const streak = calcStreak(sorted);
+  el('stat-streak').textContent     = streak.current + (streak.current === 1 ? ' day' : ' days');
+  el('stat-streak-sub').textContent = streak.current > 0
+    ? (streak.current >= 7 ? '🔥 On fire!' : 'Keep going!')
+    : 'Start your streak today';
+
+  // ── target ring ──
+  const ringPct = Math.min(100, (avg / target) * 100);
+  const circum  = 289;
+  const offset  = circum - (ringPct / 100) * circum;
+  setTimeout(() => {
+    const rf = el('ring-fill');
+    if (rf) rf.style.strokeDashoffset = offset;
+  }, 300);
+  el('ring-pct').textContent  = Math.round(ringPct) + '%';
+  el('ring-label').textContent = `Avg ${fmt(avg)} / Target ${target}`;
+
+  // ── score breakdown bars ──
+  const maxScore = group.total;
+  el('bd-best').textContent = best;
+  el('bd-avg').textContent  = fmt(avg);
+  el('bd-low').textContent  = worst;
+  setTimeout(() => {
+    el('bd-best-bar').style.width = pct(best, maxScore) + '%';
+    el('bd-avg-bar').style.width  = pct(avg,  maxScore) + '%';
+    el('bd-low-bar').style.width  = pct(worst, maxScore) + '%';
+  }, 400);
+
+  // ── charts ──
+  renderCharts(sorted, target, group, maxScore);
+
+  // ── subject table + donut ──
+  renderSubjectData(sorted, group);
+
+  // ── calendar ──
+  renderCalendar(sorted, streak);
+
+  // ── best day ──
+  renderBestDay(sorted, group);
+
+  // ── platform list ──
+  renderPlatforms(sorted, group);
+
+  // ── silly errors ──
+  renderSillyErrors(sorted, group);
+
+  // ── recent list ──
+  renderRecentList(sorted);
+}
+
+/* ═══════════════════════════════════
+   CHARTS
+═══════════════════════════════════ */
+function renderCharts(sorted, target, group, maxScore) {
+  const dark   = isDark();
+  const gcol   = dark ? 'rgba(139,92,246,0.10)' : 'rgba(99,102,241,0.06)';
+  const tcol   = dark ? '#64748b' : '#94a3b8';
+
+  // ── LINE CHART: score trend last 10 ──
+  const recent = sorted.slice(-10);
+  const labels = recent.map(m => m.date ? m.date.slice(5) : '');
+  const scores = recent.map(m => m.score);
+  const percs  = recent.map(m => m.perc || null);
+
+  // linear regression for trend line
+  const reg = linearRegression(scores);
+  const trendLine = reg ? scores.map((_, i) => parseFloat(reg.predict(i).toFixed(1))) : [];
+
+  if (charts.trend) charts.trend.destroy();
+  const ctxTrend = el('chart-trend');
+  if (ctxTrend) {
+    const datasets = [
+      {
+        label: 'Score',
+        data: scores,
+        borderColor: '#6366f1',
+        backgroundColor: 'rgba(99,102,241,0.07)',
+        fill: true,
+        tension: 0.42,
+        borderWidth: 3,
+        pointBackgroundColor: '#6366f1',
+        pointRadius: 5,
+        pointHoverRadius: 7,
+        order: 1
+      },
+      {
+        label: 'Percentile',
+        data: percs,
+        borderColor: '#d946ef',
+        borderDash: [5, 4],
+        fill: false,
+        tension: 0.4,
+        borderWidth: 2,
+        pointBackgroundColor: '#d946ef',
+        pointRadius: 3,
+        pointHoverRadius: 5,
+        order: 2,
+        spanGaps: true
+      }
+    ];
+
+    if (target) {
+      datasets.push({
+        label: 'Target',
+        data: recent.map(() => target),
+        borderColor: '#f59e0b',
+        borderDash: [4, 4],
+        fill: false,
+        borderWidth: 2,
+        pointRadius: 0,
+        tension: 0,
+        order: 3
+      });
+    }
+    if (trendLine.length) {
+      datasets.push({
+        label: 'Trend',
+        data: trendLine,
+        borderColor: 'rgba(16,185,129,0.65)',
+        borderDash: [2, 3],
+        fill: false,
+        borderWidth: 2,
+        pointRadius: 0,
+        tension: 0,
+        order: 4
+      });
+    }
+
+    charts.trend = new Chart(ctxTrend.getContext('2d'), {
+      type: 'line',
+      data: { labels, datasets },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        interaction: { mode: 'index', intersect: false },
+        scales: {
+          x: {
+            grid: { display: false },
+            ticks: { font: { weight: '800', size: 10 }, color: tcol }
+          },
+          y: {
+            beginAtZero: false,
+            grid: { color: gcol },
+            ticks: { font: { weight: '800', size: 10 }, color: tcol }
+          }
+        },
+        plugins: {
+          legend: {
+            display: true,
+            labels: {
+              usePointStyle: true,
+              pointStyle: 'line',
+              font: { size: 10, weight: 'bold' },
+              color: tcol,
+              boxWidth: 22,
+              padding: 12
+            }
+          },
+          tooltip: {
+            backgroundColor: dark ? 'rgba(14,10,31,0.92)' : 'rgba(255,255,255,0.95)',
+            titleColor: dark ? '#e2e8f0' : '#1e293b',
+            bodyColor: dark ? '#94a3b8' : '#475569',
+            borderColor: dark ? 'rgba(139,92,246,0.25)' : 'rgba(99,102,241,0.18)',
+            borderWidth: 1,
+            titleFont: { weight: '900', size: 12 },
+            bodyFont: { weight: '600', size: 11 },
+            padding: 12,
+            cornerRadius: 12,
+            callbacks: {
+              label: ctx => {
+                if (ctx.dataset.label === 'Target') return ` Target: ${ctx.parsed.y}`;
+                if (ctx.dataset.label === 'Trend')  return ` Trend: ${ctx.parsed.y}`;
+                return ` ${ctx.dataset.label}: ${ctx.parsed.y}`;
+              }
+            }
+          }
+        }
+      }
+    });
+
+    // insight
+    if (reg) {
+      const slope  = reg.m;
+      const gap    = target - (scores.reduce((a,b)=>a+b,0)/scores.length);
+      const ins    = el('trend-insight');
+      if (ins) {
+        const msg = slope > 1.5
+          ? `📈 Rising at +${slope.toFixed(1)} pts/mock — keep the momentum! ${gap > 0 ? `${Math.ceil(gap/slope)} more mocks to target.` : 'Target already met 🎉'}`
+          : slope < -1.5
+          ? `📉 Slipping by ${Math.abs(slope).toFixed(1)} pts/mock — time to review errors.`
+          : `➡️ Scores are stable. Push for +5 marks per mock with fewer silly errors.`;
+        ins.textContent = msg;
+        ins.style.display = '';
+      }
+    }
+  }
+}
+
+/* ─── Donut + subject table ─── */
+function renderSubjectData(sorted, group) {
+  const subAgg = {};
+  sorted.forEach(m => {
+    (m.subjects || []).forEach(s => {
+      if (!subAgg[s.name]) subAgg[s.name] = { c:0, w:0, score:0, n:0 };
+      subAgg[s.name].c     += s.c;
+      subAgg[s.name].w     += s.w;
+      subAgg[s.name].score += (s.c * group.c) - (s.w * group.w);
+      subAgg[s.name].n     ++;
+    });
+  });
+
+  const subjects = Object.keys(subAgg);
+  const hasData  = subjects.length > 0;
+  const tbl = el('subject-table-body');
+  const emp = el('subject-empty');
+  const ins = el('donut-insight');
+
+  if (!hasData) {
+    if (tbl) tbl.innerHTML = '';
+    if (emp) emp.classList.remove('hidden');
+    renderDonutEmpty();
+    return;
+  }
+  if (emp) emp.classList.add('hidden');
+
+  // accuracies for donut
+  const accArr = subjects.map(name => {
+    const d = subAgg[name];
+    return d.c + d.w > 0 ? d.c / (d.c + d.w) * 100 : 0;
+  });
+  const overallAcc = accArr.reduce((a,b)=>a+b,0) / accArr.length;
+  const weakest    = subjects[accArr.indexOf(Math.min(...accArr))];
+  const strongest  = subjects[accArr.indexOf(Math.max(...accArr))];
+
+  // donut
+  if (charts.donut) charts.donut.destroy();
+  const ctxD = el('chart-donut');
+  if (ctxD) {
+    charts.donut = new Chart(ctxD.getContext('2d'), {
+      type: 'doughnut',
+      data: {
+        labels: subjects,
+        datasets: [{
+          data: accArr.map(a => parseFloat(a.toFixed(1))),
+          backgroundColor: subjects.map((_, i) => PALETTE[i % PALETTE.length] + 'CC'),
+          borderColor:     subjects.map((_, i) => PALETTE[i % PALETTE.length]),
+          borderWidth: 2,
+          hoverOffset: 8
+        }]
+      },
+      options: {
+        responsive: false,
+        cutout: '68%',
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            callbacks: {
+              label: ctx => ` ${ctx.label}: ${ctx.parsed.toFixed(1)}% accuracy`
+            }
+          }
+        }
+      }
+    });
+    el('donut-pct').textContent = overallAcc.toFixed(1) + '%';
+
+    // legend
+    const leg = el('donut-legend');
+    if (leg) {
+      leg.innerHTML = subjects.map((name, i) => {
+        const col = PALETTE[i % PALETTE.length];
+        const acc = accArr[i];
+        return `<div class="flex items-center justify-between gap-2">
+          <div class="flex items-center gap-1.5 min-w-0">
+            <div style="width:10px;height:10px;border-radius:3px;background:${col};flex-shrink:0;"></div>
+            <span class="text-xs font-bold text-slate-600 dark:text-slate-300 truncate">${name}</span>
+          </div>
+          <span class="text-xs font-black flex-shrink-0" style="color:${col};">${acc.toFixed(0)}%</span>
+        </div>`;
+      }).join('');
+    }
+
+    if (ins) {
+      ins.textContent = `💡 Strongest: ${strongest} · Focus more on: ${weakest}`;
+      ins.classList.remove('hidden');
+    }
+  }
+
+  // table
+  if (tbl) {
+    tbl.innerHTML = subjects.map((name, i) => {
+      const d   = subAgg[name];
+      const acc = accArr[i];
+      const avg = (d.score / d.n).toFixed(1);
+      const col = PALETTE[i % PALETTE.length];
+      const status = acc > 85 ? 'Expert' : acc > 65 ? 'Solid' : 'Needs Work';
+      const statCol = acc > 85
+        ? 'bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400'
+        : acc > 65
+        ? 'bg-brand-100 dark:bg-brand-900/30 text-brand-700 dark:text-brand-400'
+        : 'bg-rose-100 dark:bg-rose-900/30 text-rose-700 dark:text-rose-400';
+      return `<tr class="transition-colors hover:bg-brand-500/5">
+        <td class="px-4 py-3">
+          <div class="flex items-center gap-2">
+            <div style="width:8px;height:8px;border-radius:50%;background:${col};flex-shrink:0;"></div>
+            <span class="font-black text-slate-700 dark:text-slate-200">${name}</span>
+          </div>
+        </td>
+        <td class="px-3 py-3 text-center font-black" style="color:${col};">${acc.toFixed(1)}%</td>
+        <td class="px-3 py-3 text-center font-bold text-slate-500 dark:text-slate-400">${avg}</td>
+        <td class="px-3 py-3 text-center">
+          <span class="pill ${statCol}">${status}</span>
+        </td>
+      </tr>`;
+    }).join('');
+  }
+}
+
+function renderDonutEmpty() {
+  if (charts.donut) charts.donut.destroy();
+  const ctxD = el('chart-donut');
+  if (!ctxD) return;
+  charts.donut = new Chart(ctxD.getContext('2d'), {
+    type: 'doughnut',
+    data: {
+      labels: ['No subject data'],
+      datasets: [{ data: [1], backgroundColor: ['rgba(99,102,241,0.1)'], borderColor: ['rgba(99,102,241,0.2)'], borderWidth: 1 }]
+    },
+    options: { responsive:false, cutout:'68%', plugins:{ legend:{display:false}, tooltip:{enabled:false} } }
+  });
+  el('donut-pct').textContent = '—';
+}
+
+/* ─── Calendar (8 weeks) ─── */
+function renderCalendar(sorted, streak) {
+  const grid = el('calendar-grid');
+  if (!grid) return;
+
+  // build date → count map
+  const dateMap = {};
+  sorted.forEach(m => {
+    if (m.date) dateMap[m.date] = (dateMap[m.date] || 0) + 1;
+  });
+
+  // 56 days = 8 weeks, ending today
+  const today = new Date(); today.setHours(0,0,0,0);
+  const cells  = [];
+  for (let i = 55; i >= 0; i--) {
+    const d = new Date(today);
+    d.setDate(d.getDate() - i);
+    cells.push(d.toISOString().slice(0, 10));
+  }
+
+  const maxCount = Math.max(...cells.map(d => dateMap[d] || 0), 1);
+
+  grid.innerHTML = cells.map(dateStr => {
+    const count   = dateMap[dateStr] || 0;
+    const opacity = count === 0 ? 0.08 : 0.2 + (count / maxCount) * 0.78;
+    const bg      = `rgba(99,102,241,${opacity})`;
+    const border  = count > 0 ? `rgba(99,102,241,${Math.min(1, opacity + 0.2)})` : 'transparent';
+    const title   = count > 0 ? `${dateStr}: ${count} mock${count > 1 ? 's' : ''}` : dateStr;
+    return `<div class="day-cell" title="${title}"
+              style="background:${bg};border:1px solid ${border};"></div>`;
+  }).join('');
+
+  el('streak-summary').textContent  = `Current streak: ${streak.current} day${streak.current !== 1 ? 's' : ''}`;
+  el('longest-streak').textContent  = `Longest: ${streak.longest} day${streak.longest !== 1 ? 's' : ''}`;
+}
+
+/* ─── Best day of week ─── */
+function renderBestDay(sorted, group) {
+  const days = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+  const dayData = days.map((_, i) => {
+    const mocks = sorted.filter(m => new Date(m.date).getDay() === i);
+    const avg = mocks.length ? mocks.reduce((a, m) => a + m.score, 0) / mocks.length : 0;
+    return { count: mocks.length, avg };
+  });
+  const maxAvg = Math.max(...dayData.map(d => d.avg), 1);
+  const bestIdx = dayData.findIndex(d => d.count > 0 && d.avg === maxAvg);
+
+  const grid = el('best-day-grid');
+  if (grid) {
+    grid.innerHTML = days.map((name, i) => {
+      const d      = dayData[i];
+      const isBest = i === bestIdx && d.count > 0;
+      const alpha  = d.count === 0 ? 0.07 : 0.12 + (d.avg / maxAvg) * 0.75;
+      return `<div class="rounded-2xl p-2 text-center transition hover:scale-110 cursor-default
+                ${isBest ? 'ring-2 ring-brand-500/60 shadow-lg shadow-brand-500/20' : ''}"
+              style="background:rgba(99,102,241,${alpha});">
+        <p class="text-[9px] font-black uppercase tracking-wide
+                  ${isBest ? 'text-brand-500' : 'text-slate-500 dark:text-slate-400'}">${name}</p>
+        <p class="text-sm font-black mt-0.5
+                  ${isBest ? 'text-gradient' : 'text-slate-400'}">${d.count ? d.avg.toFixed(0) : '–'}</p>
+        <p class="text-[8px] font-bold text-slate-400">${d.count || ''}</p>
+      </div>`;
+    }).join('');
+  }
+
+  const ins = el('best-day-insight');
+  if (ins && bestIdx >= 0) {
+    ins.textContent = `You perform best on ${days[bestIdx]}s — avg ${maxAvg.toFixed(1)} 💡`;
+  }
+}
+
+/* ─── Platform list ─── */
+function renderPlatforms(sorted, group) {
+  const platMap = {};
+  sorted.forEach(m => {
+    if (!platMap[m.platform]) platMap[m.platform] = [];
+    platMap[m.platform].push(m.max ? (m.score / m.max) * 100 : 0);
+  });
+  const plats = Object.entries(platMap)
+    .map(([name, arr]) => ({ name, avg: arr.reduce((a, b) => a + b, 0) / arr.length, n: arr.length }))
+    .sort((a, b) => b.avg - a.avg);
+
+  const list = el('platform-list');
+  if (!list) return;
+  const max = plats[0]?.avg || 1;
+  list.innerHTML = plats.slice(0, 5).map((p, i) => {
+    const col = PALETTE[i % PALETTE.length];
+    return `<div>
+      <div class="flex items-center justify-between mb-1">
+        <span class="text-xs font-bold text-slate-600 dark:text-slate-300 truncate">${p.name}</span>
+        <span class="text-xs font-black flex-shrink-0 ml-2" style="color:${col};">
+          ${p.avg.toFixed(1)}% <span class="text-slate-400 font-normal">(${p.n})</span>
+        </span>
+      </div>
+      <div class="perf-bar-track">
+        <div class="perf-bar-fill" style="width:${(p.avg/max)*100}%;background:${col};"></div>
+      </div>
+    </div>`;
+  }).join('') || '<p class="text-xs text-slate-400 text-center py-3">No platform data</p>';
+}
+
+/* ─── Silly errors ─── */
+function renderSillyErrors(sorted, group) {
+  const withSilly = sorted.filter(m => m.sillyMarks > 0);
+  const total     = sorted.reduce((a, m) => a + (m.sillyMarks || 0), 0);
+  const avg       = sorted.length ? (total / sorted.length).toFixed(1) : 0;
+
+  el('silly-total').textContent = total.toFixed(1);
+  el('silly-avg').textContent   = avg;
+
+  const list    = el('silly-bar-list');
+  const maxSily = Math.max(...withSilly.map(m => m.sillyMarks), 1);
+  if (list) {
+    list.innerHTML = withSilly.slice(-5).reverse().map(m => {
+      const w = (m.sillyMarks / maxSily) * 100;
+      return `<div>
+        <div class="flex items-center justify-between mb-0.5">
+          <span class="text-[10px] font-bold text-slate-600 dark:text-slate-300 truncate">${m.name.substring(0,28)}</span>
+          <span class="text-[10px] font-black text-rose-500 flex-shrink-0 ml-2">-${m.sillyMarks.toFixed(1)}</span>
+        </div>
+        <div class="perf-bar-track">
+          <div class="perf-bar-fill" style="width:${w}%;background:linear-gradient(90deg,#ef4444,#dc2626);"></div>
+        </div>
+      </div>`;
+    }).join('') || '<p class="text-xs text-slate-400 text-center py-2">No silly error data logged</p>';
+  }
+
+  const ins = el('silly-insight');
+  if (ins) {
+    const earned   = sorted.reduce((a, m) => {
+      if (m.quickEntry) return a + (m.quickCorrect || 0) * group.c;
+      return a + (m.subjects || []).reduce((b, s) => b + s.c * group.c, 0);
+    }, 0);
+    const ratio = earned > 0 ? ((total / earned) * 100).toFixed(1) : 0;
+    ins.textContent = `Silly errors = ${ratio}% of earned marks. ${
+      parseFloat(ratio) < 8  ? '✅ Very disciplined!' :
+      parseFloat(ratio) < 15 ? '⚠️ Room for improvement.' :
+      '🚨 Errors are hurting your score significantly.'
+    }`;
+  }
+}
+
+/* ─── Recent list ─── */
+function renderRecentList(sorted) {
+  const list = el('recent-list');
+  if (!list) return;
+  const recent = sorted.slice().reverse().slice(0, 6);
+  list.innerHTML = recent.map(m => {
+    const pct = m.max ? ((m.score / m.max) * 100).toFixed(0) : '—';
+    const col = parseFloat(pct) >= 70
+      ? '#10b981' : parseFloat(pct) >= 50
+      ? '#6366f1' : '#ef4444';
+    return `<div class="flex items-center justify-between p-3 rounded-2xl
+                        bg-white/30 dark:bg-white/5 hover:bg-white/50 dark:hover:bg-white/8
+                        transition border border-white/40 dark:border-white/5 gap-3">
+      <div class="min-w-0 flex-1">
+        <p class="text-xs font-black text-slate-700 dark:text-slate-200 truncate">${m.name}</p>
+        <p class="text-[10px] font-semibold text-slate-400 mt-0.5">${m.date} · ${m.platform}</p>
+      </div>
+      <div class="text-right flex-shrink-0">
+        <p class="text-sm font-black" style="color:${col};">${m.score}</p>
+        <p class="text-[9px] font-bold text-slate-400">${pct}%</p>
+      </div>
+    </div>`;
+  }).join('') || '<p class="text-xs text-slate-400 text-center py-4">No mocks yet</p>';
+}
+
+/* ─── Streak calculator ─── */
+function calcStreak(sorted) {
+  const dates  = [...new Set(sorted.map(m => m.date))].sort((a, b) => new Date(b) - new Date(a));
+  const today  = new Date().toISOString().slice(0, 10);
+  let current  = 0;
+  let check    = today;
+  for (const d of dates) {
+    if (d === check) {
+      current++;
+      const dt = new Date(check);
+      dt.setDate(dt.getDate() - 1);
+      check = dt.toISOString().slice(0, 10);
+    } else if (d < check) break;
+  }
+
+  // longest streak
+  let longest = 0, run = 0;
+  const allDates = [...new Set(sorted.map(m => m.date))].sort();
+  for (let i = 0; i < allDates.length; i++) {
+    if (i === 0) { run = 1; continue; }
+    const prev = new Date(allDates[i - 1]);
+    const curr = new Date(allDates[i]);
+    const diff = (curr - prev) / 86400000;
+    run = diff === 1 ? run + 1 : 1;
+    if (run > longest) longest = run;
+  }
+  if (run > longest) longest = run;
+
+  return { current, longest };
+}
+
+/* ─── Linear regression ─── */
+function linearRegression(ys) {
+  const n = ys.length;
+  if (n < 2) return null;
+  const xs  = ys.map((_, i) => i);
+  const sx  = xs.reduce((a, b) => a + b, 0);
+  const sy  = ys.reduce((a, b) => a + b, 0);
+  const sxy = xs.reduce((acc, x, i) => acc + x * ys[i], 0);
+  const sx2 = xs.reduce((acc, x) => acc + x * x, 0);
+  const m   = (n * sxy - sx * sy) / (n * sx2 - sx * sx);
+  const b   = (sy - m * sx) / n;
+  return { m, b, predict: x => Math.max(0, m * x + b) };
+}
+
+/* ── kick off ── */
+loadAndRender();
+</script>
+
+</body>
+</html>
