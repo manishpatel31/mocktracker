@@ -7,18 +7,22 @@
   <meta name="description" content="The ultimate mock test tracker for SSC, RRB, and Bank exam aspirants."/>
   <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet"/>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
-
   <style>
-    /* ─── RESET ─── */
+
+    /* ══ RESET ══ */
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    html, body { height: 100%; width: 100%; overflow: hidden; }
 
     :root {
       --brand:   #6366f1;
       --purple:  #a855f7;
       --fuchsia: #d946ef;
       --bg:      #06030f;
-      --nav-h:   54px;
+      --nav-h:   52px;
+    }
+
+    html {
+      height: 100%;
+      overflow: hidden;
     }
 
     body {
@@ -26,361 +30,414 @@
       background: var(--bg);
       color: #f1f5f9;
       -webkit-font-smoothing: antialiased;
+      /* dvh = viewport minus mobile browser chrome */
+      height: 100dvh;
+      max-height: 100dvh;
+      overflow: hidden;
       display: flex;
       flex-direction: column;
-      height: 100dvh;
-      overflow: hidden;
+      position: relative;
     }
 
-    /* ─── NOISE TEXTURE OVERLAY ─── */
+    /* Noise texture */
     body::before {
       content: '';
-      position: fixed;
-      inset: 0;
-      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
-      background-size: 200px 200px;
+      position: fixed; inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");
+      background-size: 180px 180px;
       pointer-events: none;
       z-index: 0;
-      opacity: 0.5;
     }
 
-    /* ─── GRAD UTILS ─── */
     .grad-text {
-      background: linear-gradient(130deg, #818cf8 0%, #d946ef 55%, #a855f7 100%);
+      background: linear-gradient(130deg, #818cf8 0%, #d946ef 52%, #a855f7 100%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
     }
 
-    /* ─── NAVBAR ─── */
+    /* ══ NAVBAR ══ */
     nav {
       position: relative; z-index: 10;
       height: var(--nav-h);
-      display: flex; align-items: center;
-      padding: 0 24px;
-      border-bottom: 1px solid rgba(255,255,255,0.04);
       flex-shrink: 0;
+      display: flex; align-items: center;
+      padding: 0 20px;
+      border-bottom: 1px solid rgba(255,255,255,0.04);
     }
     .nav-inner {
-      max-width: 900px; width: 100%; margin: 0 auto;
+      max-width: 860px; width: 100%; margin: 0 auto;
       display: flex; align-items: center; justify-content: space-between;
     }
-    .nav-logo {
-      display: flex; align-items: center; gap: 9px;
-      text-decoration: none;
-    }
+    .nav-logo { display: flex; align-items: center; gap: 8px; text-decoration: none; }
     .nav-icon {
-      width: 32px; height: 32px; border-radius: 9px; flex-shrink: 0;
+      width: 30px; height: 30px; border-radius: 8px; flex-shrink: 0;
       background: linear-gradient(135deg, #6366f1, #a855f7, #d946ef);
-      box-shadow: 0 4px 14px rgba(99,102,241,0.45);
+      box-shadow: 0 3px 12px rgba(99,102,241,0.45);
       display: flex; align-items: center; justify-content: center;
-      font-size: 13px; color: white;
+      font-size: 12px; color: white;
     }
     .nav-brand {
       font-family: 'Syne', sans-serif;
-      font-weight: 800; font-size: 1rem; color: white; white-space: nowrap;
+      font-weight: 800; font-size: 0.92rem; color: white; white-space: nowrap;
     }
-    .nav-brand span { color: #6366f1; }
-
+    .nav-brand span { color: #818cf8; }
     .nav-badge {
-      font-size: 0.68rem; font-weight: 700;
-      padding: 4px 11px; border-radius: 999px;
+      font-size: 0.63rem; font-weight: 700;
+      padding: 3px 10px; border-radius: 999px;
       background: rgba(99,102,241,0.1);
-      border: 1px solid rgba(99,102,241,0.25);
-      color: #a5b4fc;
-      letter-spacing: 0.04em;
+      border: 1px solid rgba(99,102,241,0.22);
+      color: #a5b4fc; letter-spacing: 0.04em; white-space: nowrap;
     }
 
-    /* ─── HERO ─── */
+    /* ══ HERO ══ */
     .hero {
+      /* flex: 1 means it takes ALL remaining height after nav */
       flex: 1;
+      /* CRITICAL: allow it to actually shrink on small screens */
+      min-height: 0;
       position: relative;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
       text-align: center;
-      padding: 0 24px;
+      /* clamp padding: 8px minimum so nothing touches the edge,
+         up to 24px on spacious screens */
+      padding: clamp(8px, 2.5vh, 24px) 20px clamp(28px, 5vh, 48px);
       overflow: hidden;
       z-index: 1;
     }
 
-    /* Animated background blobs */
+    /* Blobs */
     .blob {
-      position: absolute;
-      border-radius: 50%;
-      filter: blur(90px);
-      pointer-events: none;
-      will-change: transform;
+      position: absolute; border-radius: 50%;
+      filter: blur(75px); pointer-events: none; will-change: transform;
     }
     .blob-1 {
-      width: min(500px, 80vw);
-      height: min(500px, 80vw);
-      background: radial-gradient(circle, rgba(99,102,241,0.22) 0%, transparent 70%);
-      top: -20%; left: -15%;
+      width: clamp(180px, 45vw, 460px); height: clamp(180px, 45vw, 460px);
+      background: radial-gradient(circle, rgba(99,102,241,0.2) 0%, transparent 70%);
+      top: -15%; left: -10%;
       animation: drift1 16s ease-in-out infinite;
     }
     .blob-2 {
-      width: min(420px, 70vw);
-      height: min(420px, 70vw);
-      background: radial-gradient(circle, rgba(168,85,247,0.18) 0%, transparent 70%);
-      bottom: -15%; right: -10%;
+      width: clamp(150px, 38vw, 380px); height: clamp(150px, 38vw, 380px);
+      background: radial-gradient(circle, rgba(168,85,247,0.17) 0%, transparent 70%);
+      bottom: -10%; right: -8%;
       animation: drift2 18s ease-in-out infinite;
     }
     .blob-3 {
-      width: min(300px, 55vw);
-      height: min(300px, 55vw);
-      background: radial-gradient(circle, rgba(217,70,239,0.10) 0%, transparent 70%);
+      width: clamp(100px, 28vw, 260px); height: clamp(100px, 28vw, 260px);
+      background: radial-gradient(circle, rgba(217,70,239,0.1) 0%, transparent 70%);
       top: 40%; left: 50%; transform: translateX(-50%);
-      animation: drift1 12s ease-in-out infinite reverse;
+      animation: drift1 13s ease-in-out infinite reverse;
     }
-    @keyframes drift1 { 0%,100%{transform:translate(0,0)} 50%{transform:translate(30px,40px)} }
-    @keyframes drift2 { 0%,100%{transform:translate(0,0)} 50%{transform:translate(-40px,-30px)} }
+    @keyframes drift1 { 0%,100%{transform:translate(0,0)} 50%{transform:translate(26px,34px)} }
+    @keyframes drift2 { 0%,100%{transform:translate(0,0)} 50%{transform:translate(-34px,-26px)} }
 
-    /* Subtle grid lines */
+    /* Dot grid */
     .hero::after {
       content: '';
       position: absolute; inset: 0;
       background-image:
         linear-gradient(rgba(99,102,241,0.04) 1px, transparent 1px),
         linear-gradient(90deg, rgba(99,102,241,0.04) 1px, transparent 1px);
-      background-size: 60px 60px;
-      mask-image: radial-gradient(ellipse 70% 70% at 50% 50%, black 0%, transparent 100%);
+      background-size: 54px 54px;
+      mask-image: radial-gradient(ellipse 65% 65% at 50% 50%, black 0%, transparent 100%);
       pointer-events: none;
     }
 
-    /* Content wrapper */
+    /* Content */
     .hero-content {
       position: relative; z-index: 2;
-      display: flex; flex-direction: column;
-      align-items: center; gap: 0;
-      max-width: 580px; width: 100%;
-      /* stagger-in animation */
-      animation: contentIn 0.9s cubic-bezier(0.22, 1, 0.36, 1) both;
+      display: flex; flex-direction: column; align-items: center;
+      width: 100%; max-width: 540px;
+      animation: fadeUp 0.85s cubic-bezier(0.22,1,0.36,1) both;
     }
-    @keyframes contentIn {
-      from { opacity: 0; transform: translateY(24px); }
-      to   { opacity: 1; transform: translateY(0); }
+    @keyframes fadeUp {
+      from { opacity:0; transform:translateY(18px); }
+      to   { opacity:1; transform:translateY(0); }
     }
 
     /* Eyebrow */
     .eyebrow {
-      display: flex; gap: 6px; flex-wrap: wrap; justify-content: center;
-      margin-bottom: 20px;
-      animation: contentIn 0.9s 0.05s cubic-bezier(0.22, 1, 0.36, 1) both;
+      display: flex; gap: 5px; flex-wrap: wrap; justify-content: center;
+      margin-bottom: clamp(8px, 2vh, 16px);
+      animation: fadeUp 0.85s 0.06s cubic-bezier(0.22,1,0.36,1) both;
     }
     .epill {
-      font-size: 0.66rem; font-weight: 700;
-      letter-spacing: 0.07em; text-transform: uppercase;
-      padding: 3px 10px; border-radius: 999px;
+      font-size: clamp(0.56rem, 1.3vw, 0.65rem);
+      font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase;
+      padding: 3px 9px; border-radius: 999px;
     }
     .ep1 { background: rgba(99,102,241,0.1);  border: 1px solid rgba(99,102,241,0.28); color: #a5b4fc; }
     .ep2 { background: rgba(168,85,247,0.09); border: 1px solid rgba(168,85,247,0.28); color: #c4b5fd; }
     .ep3 { background: rgba(217,70,239,0.09); border: 1px solid rgba(217,70,239,0.28); color: #f0abfc; }
 
-    /* Headline */
+    /* Headline — aggressively clamped so it never overflows */
     h1 {
       font-family: 'Syne', sans-serif;
-      font-size: clamp(2rem, 6.5vw, 3.4rem);
-      font-weight: 900;
-      line-height: 1.08;
-      letter-spacing: -0.03em;
+      font-size: clamp(1.55rem, 4.8vw + 0.5vh, 3rem);
+      font-weight: 900; line-height: 1.09; letter-spacing: -0.03em;
       color: white;
-      margin-bottom: 14px;
-      animation: contentIn 0.9s 0.1s cubic-bezier(0.22, 1, 0.36, 1) both;
+      margin-bottom: clamp(7px, 1.5vh, 13px);
+      animation: fadeUp 0.85s 0.1s cubic-bezier(0.22,1,0.36,1) both;
     }
 
-    /* Subtitle */
     .sub {
-      font-size: clamp(0.82rem, 2.2vw, 0.96rem);
-      color: #4a5568;
-      line-height: 1.6;
-      max-width: 360px;
-      margin-bottom: 22px;
-      animation: contentIn 0.9s 0.18s cubic-bezier(0.22, 1, 0.36, 1) both;
+      font-size: clamp(0.75rem, 1.8vw, 0.92rem);
+      color: #475569; line-height: 1.6; max-width: 320px;
+      margin-bottom: clamp(10px, 2.2vh, 18px);
+      animation: fadeUp 0.85s 0.17s cubic-bezier(0.22,1,0.36,1) both;
     }
 
     /* Trust pills */
     .trust {
-      display: flex; gap: 7px; flex-wrap: wrap; justify-content: center;
-      margin-bottom: 32px;
-      animation: contentIn 0.9s 0.26s cubic-bezier(0.22, 1, 0.36, 1) both;
+      display: flex; gap: 5px; flex-wrap: wrap; justify-content: center;
+      margin-bottom: clamp(14px, 2.8vh, 26px);
+      animation: fadeUp 0.85s 0.24s cubic-bezier(0.22,1,0.36,1) both;
     }
     .tpill {
-      display: flex; align-items: center; gap: 5px;
-      padding: 5px 12px; border-radius: 999px;
+      display: flex; align-items: center; gap: 4px;
+      padding: 4px 10px; border-radius: 999px;
       background: rgba(255,255,255,0.03);
-      border: 1px solid rgba(255,255,255,0.08);
-      font-size: 0.72rem; font-weight: 600; color: #64748b;
+      border: 1px solid rgba(255,255,255,0.07);
+      font-size: clamp(0.62rem, 1.4vw, 0.7rem); font-weight: 600; color: #64748b;
     }
-    .tpill i { font-size: 0.62rem; }
+    .tpill i { font-size: 0.58rem; }
 
-    /* ─── CTA BUTTON ─── */
-    .cta-wrap {
-      animation: contentIn 0.9s 0.34s cubic-bezier(0.22, 1, 0.36, 1) both;
-    }
+    /* CTA */
+    .cta-wrap { animation: fadeUp 0.85s 0.32s cubic-bezier(0.22,1,0.36,1) both; }
     .cta-btn {
       position: relative;
-      display: inline-flex; align-items: center; gap: 10px;
-      padding: 15px 36px;
-      border-radius: 16px;
+      display: inline-flex; align-items: center; justify-content: center; gap: 9px;
+      padding: clamp(10px, 1.8vh, 14px) clamp(20px, 4.5vw, 34px);
+      border-radius: 13px;
       font-family: 'Syne', sans-serif;
-      font-size: clamp(0.88rem, 2.5vw, 1rem);
-      font-weight: 800;
-      color: white;
+      font-size: clamp(0.8rem, 2vw, 0.96rem);
+      font-weight: 800; color: white;
       background: linear-gradient(135deg, #6366f1, #a855f7, #d946ef);
-      box-shadow:
-        0 0 0 1px rgba(99,102,241,0.3),
-        0 8px 32px rgba(99,102,241,0.4),
-        0 0 60px rgba(168,85,247,0.15);
+      box-shadow: 0 0 0 1px rgba(99,102,241,0.3), 0 6px 26px rgba(99,102,241,0.42), 0 0 50px rgba(168,85,247,0.15);
       border: none; cursor: pointer;
       transition: transform 0.2s, box-shadow 0.3s;
       overflow: hidden;
-      min-width: 220px;
-      justify-content: center;
+      min-width: clamp(190px, 52vw, 228px);
+      white-space: nowrap;
     }
     .cta-btn::before {
       content: '';
       position: absolute; inset: 0;
-      background: linear-gradient(135deg, rgba(255,255,255,0.12), transparent 60%);
+      background: linear-gradient(135deg, rgba(255,255,255,0.13), transparent 60%);
       border-radius: inherit;
     }
     .cta-btn:hover {
       transform: translateY(-2px) scale(1.02);
-      box-shadow:
-        0 0 0 1px rgba(99,102,241,0.4),
-        0 12px 40px rgba(99,102,241,0.55),
-        0 0 80px rgba(168,85,247,0.25);
+      box-shadow: 0 0 0 1px rgba(99,102,241,0.4), 0 10px 36px rgba(99,102,241,0.55), 0 0 70px rgba(168,85,247,0.25);
     }
-    .cta-btn:active { transform: translateY(0) scale(0.99); }
-
-    /* Shimmer sweep on button */
+    .cta-btn:active { transform: scale(0.98); }
     .cta-btn::after {
       content: '';
-      position: absolute;
-      top: 0; left: -100%; width: 60%; height: 100%;
-      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent);
+      position: absolute; top: 0; left: -100%; width: 55%; height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.16), transparent);
       transform: skewX(-15deg);
-      animation: shimmer 3.5s ease-in-out infinite;
+      animation: shimmer 3.8s ease-in-out infinite;
     }
     @keyframes shimmer { 0%,100%{left:-100%} 50%{left:160%} }
-
     .cta-icon {
-      width: 22px; height: 22px; border-radius: 6px;
+      width: 20px; height: 20px; border-radius: 5px;
       background: rgba(255,255,255,0.15);
       display: flex; align-items: center; justify-content: center;
-      font-size: 0.65rem;
+      font-size: 0.6rem; flex-shrink: 0;
       transition: transform 0.2s;
     }
     .cta-btn:hover .cta-icon { transform: translateX(2px); }
 
-    /* Small note under button */
     .cta-note {
-      margin-top: 11px;
-      font-size: 0.68rem; color: #1e293b;
-      animation: contentIn 0.9s 0.4s cubic-bezier(0.22, 1, 0.36, 1) both;
+      margin-top: clamp(6px, 1.3vh, 10px);
+      font-size: clamp(0.58rem, 1.3vw, 0.66rem);
+      color: #1e293b;
+      animation: fadeUp 0.85s 0.38s cubic-bezier(0.22,1,0.36,1) both;
     }
 
-    /* ─── LAUNCH TRANSITION OVERLAY ─── */
-    /* 
-      Animation: "Supernova Burst"
-      1. A radial ring of light erupts from the button's exact position
-      2. It expands rapidly, eating the screen
-      3. At full cover, a reverse-spin vortex of lines briefly appears
-      4. Then the whole thing fades to the brand gradient → navigates
-    */
+    /* Corner labels */
+    .corner-detail {
+      position: absolute;
+      font-size: 0.57rem; color: #1a1a2e;
+      font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase;
+      z-index: 2;
+      animation: fadeUp 1.1s 0.55s both;
+    }
+    .corner-detail.bl { bottom: clamp(8px,1.8vh,14px); left: 16px; }
+    .corner-detail.br { bottom: clamp(8px,1.8vh,14px); right: 16px; }
+    .live-dot {
+      display: inline-block; width: 5px; height: 5px; border-radius: 50%;
+      background: #4ade80; box-shadow: 0 0 5px #4ade80;
+      margin-right: 4px; vertical-align: middle;
+      animation: pulseDot 2s ease-in-out infinite;
+    }
+    @keyframes pulseDot { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.45;transform:scale(0.65)} }
 
+    /* ══════════════════════════════
+       RANK COUNTDOWN CARD
+    ══════════════════════════════ */
+    #rank-card {
+      position: fixed;
+      /* starts below the screen */
+      bottom: -260px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 8000;
+      width: min(320px, 86vw);
+      background: rgba(8,4,22,0.97);
+      border: 1px solid rgba(99,102,241,0.28);
+      border-radius: 20px;
+      padding: clamp(16px,3vh,22px) clamp(18px,4vw,24px) clamp(14px,2.5vh,18px);
+      box-shadow:
+        0 20px 60px rgba(0,0,0,0.75),
+        0 0 40px rgba(99,102,241,0.18),
+        0 0 0 1px rgba(255,255,255,0.04) inset;
+      text-align: center;
+      /* spring-in transition */
+      transition: bottom 0.5s cubic-bezier(0.34,1.56,0.64,1);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+    }
+    #rank-card.visible { bottom: clamp(14px, 4vh, 36px); }
+
+    .rank-header {
+      display: flex; align-items: center; justify-content: center; gap: 6px;
+      margin-bottom: clamp(8px, 1.5vh, 12px);
+    }
+    .rank-dot {
+      width: 6px; height: 6px; border-radius: 50%;
+      background: linear-gradient(135deg, #6366f1, #d946ef);
+      box-shadow: 0 0 8px rgba(99,102,241,0.8);
+      animation: pulseDot 1.4s ease-in-out infinite;
+    }
+    .rank-label {
+      font-size: 0.6rem; font-weight: 700; letter-spacing: 0.1em;
+      text-transform: uppercase; color: #334155;
+    }
+
+    .rank-emoji-wrap {
+      font-size: clamp(2rem, 8vw, 2.8rem);
+      line-height: 1;
+      display: block;
+      margin-bottom: clamp(4px, 1vh, 7px);
+      transition: transform 0.18s cubic-bezier(0.34,1.56,0.64,1);
+      will-change: transform;
+    }
+    .rank-emoji-wrap.bump { transform: scale(1.4) rotate(-5deg); }
+
+    .rank-num {
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(1.9rem, 7vw, 2.7rem);
+      font-weight: 900; line-height: 1; color: white;
+      letter-spacing: -0.03em;
+      background: linear-gradient(130deg, #818cf8, #d946ef, #a855f7);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text;
+      display: block;
+      transition: transform 0.07s ease;
+      will-change: transform;
+    }
+    .rank-num.tick { transform: scale(1.08); }
+
+    .rank-sublabel {
+      font-size: clamp(0.68rem, 1.6vw, 0.75rem);
+      color: #475569; font-weight: 600;
+      margin-top: clamp(4px,0.8vh,6px);
+      min-height: 1.2em;
+      transition: color 0.3s;
+    }
+
+    /* Progress bar */
+    .rank-bar-wrap {
+      margin-top: clamp(10px,1.8vh,14px);
+      height: 3px; border-radius: 2px;
+      background: rgba(255,255,255,0.05); overflow: visible;
+      position: relative;
+    }
+    .rank-bar-fill {
+      height: 100%; width: 0%; border-radius: 2px;
+      background: linear-gradient(90deg, #6366f1, #d946ef);
+      transition: width 0.1s linear;
+      position: relative;
+    }
+    /* glowing head of the bar */
+    .rank-bar-fill::after {
+      content: '';
+      position: absolute; right: -2px; top: 50%;
+      transform: translateY(-50%);
+      width: 7px; height: 7px; border-radius: 50%;
+      background: #d946ef;
+      box-shadow: 0 0 8px #d946ef, 0 0 16px rgba(217,70,239,0.6);
+    }
+
+    /* ══════════════════════════════
+       CONFETTI CANVAS
+    ══════════════════════════════ */
+    #confetti-canvas {
+      position: fixed; inset: 0; z-index: 8100;
+      pointer-events: none; opacity: 0;
+      transition: opacity 0.2s;
+    }
+    #confetti-canvas.show { opacity: 1; }
+
+    /* ══════════════════════════════
+       SUPERNOVA OVERLAY
+    ══════════════════════════════ */
     #launch-overlay {
       position: fixed; inset: 0; z-index: 9999;
-      pointer-events: none;
-      opacity: 0;
+      pointer-events: none; opacity: 0;
     }
     #launch-overlay.active { pointer-events: all; }
 
-    /* The expanding circle */
     #launch-circle {
-      position: absolute;
-      border-radius: 50%;
+      position: absolute; border-radius: 50%;
       background: radial-gradient(circle at center,
-        #ffffff 0%,
-        #d946ef 20%,
-        #a855f7 40%,
-        #6366f1 65%,
-        #06030f 100%
+        #ffffff 0%, #d946ef 18%, #a855f7 38%, #6366f1 62%, #06030f 100%
       );
-      transform: scale(0);
-      transform-origin: center center;
-      transition: transform 0s; /* set by JS */
+      transform: scale(0); transform-origin: center;
       will-change: transform;
     }
-
-    /* Scan lines that appear during the burst */
     #launch-lines {
       position: absolute; inset: 0;
       background: repeating-linear-gradient(
-        0deg,
-        transparent,
-        transparent 3px,
-        rgba(99,102,241,0.06) 3px,
-        rgba(99,102,241,0.06) 4px
+        0deg, transparent, transparent 3px,
+        rgba(99,102,241,0.06) 3px, rgba(99,102,241,0.06) 4px
       );
-      opacity: 0;
-      transition: opacity 0.15s;
+      opacity: 0; transition: opacity 0.15s;
     }
     #launch-overlay.lines-show #launch-lines { opacity: 1; }
 
-    /* Center logo pulse during launch */
     #launch-logo {
-      position: absolute;
-      top: 50%; left: 50%;
-      transform: translate(-50%, -50%) scale(0);
-      width: 64px; height: 64px; border-radius: 18px;
+      position: absolute; top: 50%; left: 50%;
+      transform: translate(-50%,-50%) scale(0);
+      width: clamp(50px,8vw,66px); height: clamp(50px,8vw,66px);
+      border-radius: 16px;
       background: linear-gradient(135deg, #6366f1, #a855f7, #d946ef);
-      box-shadow: 0 0 60px rgba(99,102,241,0.9), 0 0 120px rgba(168,85,247,0.5);
+      box-shadow: 0 0 50px rgba(99,102,241,0.9), 0 0 100px rgba(168,85,247,0.5);
       display: flex; align-items: center; justify-content: center;
-      color: white; font-size: 1.4rem;
+      color: white; font-size: clamp(1rem, 2.8vw, 1.4rem);
       opacity: 0;
-      transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1), opacity 0.3s;
+      transition: transform 0.32s cubic-bezier(0.34,1.56,0.64,1), opacity 0.32s;
     }
     #launch-overlay.logo-show #launch-logo {
-      transform: translate(-50%, -50%) scale(1);
-      opacity: 1;
+      transform: translate(-50%,-50%) scale(1); opacity: 1;
     }
 
-    /* Mobile full-width CTA */
+    /* ══ Mobile overrides ══ */
     @media (max-width: 400px) {
-      .cta-btn { width: 90vw; }
+      .cta-btn { min-width: 88vw; }
+      .trust { gap: 4px; }
     }
-
-    /* ─── BOTTOM MICRO DETAIL ─── */
-    .corner-detail {
-      position: absolute;
-      font-size: 0.6rem; color: #1a1a2e;
-      font-weight: 600; letter-spacing: 0.08em;
-      text-transform: uppercase;
-      z-index: 2;
-      animation: contentIn 1.2s 0.6s both;
+    /* On very short screens (e.g. landscape phone) compress further */
+    @media (max-height: 580px) {
+      h1 { font-size: clamp(1.3rem, 4.5vw, 2rem); }
+      .sub { display: none; }
+      .eyebrow { margin-bottom: 8px; }
     }
-    .corner-detail.bl { bottom: 16px; left: 22px; }
-    .corner-detail.br { bottom: 16px; right: 22px; }
-
-    /* Animated dot */
-    .live-dot {
-      display: inline-block;
-      width: 5px; height: 5px; border-radius: 50%;
-      background: #4ade80;
-      box-shadow: 0 0 6px #4ade80;
-      margin-right: 5px;
-      animation: pulse-dot 2s ease-in-out infinite;
-      vertical-align: middle;
-    }
-    @keyframes pulse-dot {
-      0%,100% { opacity: 1; transform: scale(1); }
-      50% { opacity: 0.5; transform: scale(0.7); }
-    }
-
-    /* ─── SCROLL HINT (hidden, just for feel) ─── */
-    /* nothing — truly scroll-free */
 
   </style>
 </head>
@@ -390,9 +447,7 @@
   <nav>
     <div class="nav-inner">
       <a href="#" class="nav-logo">
-        <div class="nav-icon">
-          <i class="fa-solid fa-chart-line"></i>
-        </div>
+        <div class="nav-icon"><i class="fa-solid fa-chart-line"></i></div>
         <span class="nav-brand">MockTracker <span>Pro</span></span>
       </a>
       <span class="nav-badge">100% Free</span>
@@ -407,36 +462,22 @@
 
     <div class="hero-content">
 
-      <!-- Eyebrow pills -->
       <div class="eyebrow">
         <span class="epill ep1">SSC CGL</span>
         <span class="epill ep2">RRB NTPC</span>
         <span class="epill ep3">Bank PO</span>
       </div>
 
-      <!-- Headline -->
       <h1>Stop Guessing.<br/><span class="grad-text">Start Winning</span><br/>Every Mock.</h1>
 
-      <!-- Subtitle -->
       <p class="sub">The smartest mock tracker for Indian competitive exams.</p>
 
-      <!-- Trust pills -->
       <div class="trust">
-        <div class="tpill">
-          <i class="fa-solid fa-users" style="color:#818cf8"></i>
-          10,000+ Aspirants
-        </div>
-        <div class="tpill">
-          <i class="fa-solid fa-star" style="color:#facc15"></i>
-          4.9 Rating
-        </div>
-        <div class="tpill">
-          <i class="fa-solid fa-shield-halved" style="color:#4ade80"></i>
-          Always Free
-        </div>
+        <div class="tpill"><i class="fa-solid fa-users" style="color:#818cf8"></i>&nbsp;10,000+ Aspirants</div>
+        <div class="tpill"><i class="fa-solid fa-star" style="color:#facc15"></i>&nbsp;4.9 Rating</div>
+        <div class="tpill"><i class="fa-solid fa-shield-halved" style="color:#4ade80"></i>&nbsp;Always Free</div>
       </div>
 
-      <!-- CTA -->
       <div class="cta-wrap">
         <button class="cta-btn" id="startBtn" onclick="triggerLaunch(event)">
           <span class="cta-icon"><i class="fa-solid fa-rocket"></i></span>
@@ -445,77 +486,244 @@
       </div>
       <p class="cta-note">No account needed &nbsp;·&nbsp; Works on any device</p>
 
-    </div><!-- /hero-content -->
-
-    <!-- Corner micro-details -->
-    <div class="corner-detail bl">
-      <span class="live-dot"></span>10K+ active
     </div>
-    <div class="corner-detail br">v2.0 &nbsp;·&nbsp; 2025</div>
 
+    <div class="corner-detail bl"><span class="live-dot"></span>10K+ active</div>
+    <div class="corner-detail br">v2.0 &nbsp;·&nbsp; 2025</div>
   </section>
 
-  <!-- ══ LAUNCH TRANSITION OVERLAY ══ -->
+  <!-- ══ RANK COUNTDOWN CARD ══ -->
+  <div id="rank-card">
+    <div class="rank-header">
+      <div class="rank-dot"></div>
+      <div class="rank-label">Your Rank Improving...</div>
+      <div class="rank-dot"></div>
+    </div>
+    <span class="rank-emoji-wrap" id="rankEmoji">😭</span>
+    <span class="rank-num" id="rankNum">45,000</span>
+    <div class="rank-sublabel" id="rankSub">Keep grinding...</div>
+    <div class="rank-bar-wrap"><div class="rank-bar-fill" id="rankBar"></div></div>
+  </div>
+
+  <!-- ══ CONFETTI CANVAS ══ -->
+  <canvas id="confetti-canvas"></canvas>
+
+  <!-- ══ SUPERNOVA OVERLAY ══ -->
   <div id="launch-overlay">
     <div id="launch-circle"></div>
     <div id="launch-lines"></div>
-    <div id="launch-logo">
-      <i class="fa-solid fa-chart-line"></i>
-    </div>
+    <div id="launch-logo"><i class="fa-solid fa-chart-line"></i></div>
   </div>
 
   <script>
-    function triggerLaunch(e) {
-      const btn    = document.getElementById('startBtn');
-      const overlay = document.getElementById('launch-overlay');
-      const circle  = document.getElementById('launch-circle');
+  /* ─── CONFETTI ENGINE ─── */
+  const canvas  = document.getElementById('confetti-canvas');
+  const ctx     = canvas.getContext('2d');
+  let particles = [];
+  let animFrame = null;
 
-      // Get button center in viewport coords
-      const rect = btn.getBoundingClientRect();
-      const cx   = rect.left + rect.width  / 2;
-      const cy   = rect.top  + rect.height / 2;
+  function resizeCanvas() {
+    canvas.width  = window.innerWidth;
+    canvas.height = window.innerHeight;
+  }
+  resizeCanvas();
+  window.addEventListener('resize', resizeCanvas, { passive: true });
 
-      // Size the circle: needs to cover the entire viewport from the button's position
-      // Max distance from button center to any corner
-      const dx = Math.max(cx, window.innerWidth  - cx);
-      const dy = Math.max(cy, window.innerHeight - cy);
-      const radius = Math.sqrt(dx * dx + dy * dy) * 2.1; // diameter
+  const COLORS = ['#6366f1','#a855f7','#d946ef','#f0abfc','#818cf8','#facc15','#4ade80','#fff','#fb923c'];
 
-      // Position circle centered on button
-      circle.style.width  = radius + 'px';
-      circle.style.height = radius + 'px';
-      circle.style.left   = (cx - radius / 2) + 'px';
-      circle.style.top    = (cy - radius / 2) + 'px';
-      circle.style.transform = 'scale(0)';
-      circle.style.transition = 'none';
-
-      // Activate overlay
-      overlay.classList.add('active');
-      overlay.style.opacity = '1';
-
-      // Force reflow
-      circle.getBoundingClientRect();
-
-      // Phase 1: Expand circle (600ms)
-      circle.style.transition = 'transform 620ms cubic-bezier(0.55, 0, 0.1, 1)';
-      circle.style.transform  = 'scale(1)';
-
-      // Phase 2: Show scanlines at 300ms
-      setTimeout(() => {
-        overlay.classList.add('lines-show');
-      }, 300);
-
-      // Phase 3: Show center logo pulse at 450ms
-      setTimeout(() => {
-        overlay.classList.add('logo-show');
-      }, 450);
-
-      // Phase 4: Navigate at 750ms
-      setTimeout(() => {
-        window.location.href = 'app.html';
-      }, 750);
+  function spawnConfetti(cx, cy, count) {
+    particles = [];
+    for (let i = 0; i < count; i++) {
+      const angle = Math.random() * Math.PI * 2;
+      const speed = 3.5 + Math.random() * 9;
+      particles.push({
+        x: cx, y: cy,
+        vx: Math.cos(angle) * speed,
+        vy: Math.sin(angle) * speed - (3 + Math.random() * 7),
+        size: 4 + Math.random() * 6,
+        color: COLORS[Math.floor(Math.random() * COLORS.length)],
+        rotation: Math.random() * 360,
+        rotSpeed: (Math.random() - 0.5) * 9,
+        alpha: 1,
+        shape: Math.random() > 0.38 ? 'rect' : 'circle',
+        scaleX: 0.35 + Math.random() * 0.65,
+      });
     }
-  </script>
+  }
 
+  function drawConfetti() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    let alive = false;
+    for (const p of particles) {
+      if (p.alpha <= 0) continue;
+      alive = true;
+      p.x  += p.vx;
+      p.y  += p.vy;
+      p.vy += 0.3;
+      p.vx *= 0.992;
+      p.rotation += p.rotSpeed;
+      p.alpha = Math.max(0, p.alpha - 0.016);
+      ctx.save();
+      ctx.globalAlpha = p.alpha;
+      ctx.translate(p.x, p.y);
+      ctx.rotate((p.rotation * Math.PI) / 180);
+      ctx.fillStyle = p.color;
+      if (p.shape === 'rect') {
+        ctx.scale(p.scaleX, 1);
+        ctx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size);
+      } else {
+        ctx.beginPath();
+        ctx.arc(0, 0, p.size / 2, 0, Math.PI * 2);
+        ctx.fill();
+      }
+      ctx.restore();
+    }
+    if (alive) {
+      animFrame = requestAnimationFrame(drawConfetti);
+    } else {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+    }
+  }
+
+  function fireConfetti(cx, cy) {
+    canvas.classList.add('show');
+    if (animFrame) cancelAnimationFrame(animFrame);
+    spawnConfetti(cx, cy, 180);
+    drawConfetti();
+  }
+
+  /* ─── RANK STAGES ─── */
+  // Each stage triggers when rank drops BELOW its threshold from above
+  const STAGES = [
+    { above: 35000, emoji: '😭', sub: 'Keep grinding hard...' },
+    { above: 22000, emoji: '😤', sub: 'Getting somewhere!' },
+    { above: 12000, emoji: '😐', sub: 'Not bad, push more!' },
+    { above: 6000,  emoji: '🙂', sub: 'Looking good now!' },
+    { above: 2500,  emoji: '😄', sub: "You're on fire! 🔥" },
+    { above: 1200,  emoji: '🤩', sub: 'Almost there!!' },
+    { above: 0,     emoji: '🏆', sub: 'Rank Unlocked! 🎉' },
+  ];
+
+  function getStage(rank) {
+    for (const s of STAGES) {
+      if (rank > s.above) return s;
+    }
+    return STAGES[STAGES.length - 1];
+  }
+
+  let launched = false;
+
+  function animateRank(onDone) {
+    if (launched) return;
+    launched = true;
+
+    const card    = document.getElementById('rank-card');
+    const emojiEl = document.getElementById('rankEmoji');
+    const numEl   = document.getElementById('rankNum');
+    const subEl   = document.getElementById('rankSub');
+    const barEl   = document.getElementById('rankBar');
+
+    const START = 45000;
+    const END   = 847;
+    const DURATION = 2000; // ms
+
+    // Slide up card
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => { card.classList.add('visible'); });
+    });
+
+    const startTime = performance.now();
+    let lastStageEmoji = STAGES[0].emoji;
+
+    function step(now) {
+      const elapsed = now - startTime;
+      const t = Math.min(elapsed / DURATION, 1);
+      // ease-out expo for fast start, slow finish
+      const eased = t === 1 ? 1 : 1 - Math.pow(2, -10 * t);
+      const rank  = Math.round(START - (START - END) * eased);
+
+      // Update rank number
+      numEl.textContent = rank >= 1000 ? rank.toLocaleString('en-IN') : rank;
+      numEl.classList.add('tick');
+      setTimeout(() => numEl.classList.remove('tick'), 75);
+
+      // Progress bar
+      barEl.style.width = (eased * 100) + '%';
+
+      // Stage change
+      const stage = getStage(rank);
+      if (stage.emoji !== lastStageEmoji) {
+        lastStageEmoji = stage.emoji;
+        emojiEl.textContent = stage.emoji;
+        subEl.textContent   = stage.sub;
+        emojiEl.classList.add('bump');
+        setTimeout(() => emojiEl.classList.remove('bump'), 240);
+      }
+
+      if (t < 1) {
+        requestAnimationFrame(step);
+      } else {
+        // Final state
+        numEl.textContent   = END.toLocaleString('en-IN');
+        emojiEl.textContent = '🎉';
+        subEl.textContent   = "You made it! Let's go!";
+        barEl.style.width   = '100%';
+        emojiEl.classList.add('bump');
+        setTimeout(() => emojiEl.classList.remove('bump'), 280);
+
+        // Party popper confetti burst from card center
+        const rect = card.getBoundingClientRect();
+        fireConfetti(
+          rect.left + rect.width  / 2,
+          rect.top  + rect.height / 3
+        );
+
+        // Brief pause → supernova
+        setTimeout(onDone, 650);
+      }
+    }
+
+    requestAnimationFrame(step);
+  }
+
+  /* ─── SUPERNOVA ─── */
+  function runSupernova(btn) {
+    const overlay = document.getElementById('launch-overlay');
+    const circle  = document.getElementById('launch-circle');
+
+    const rect = btn.getBoundingClientRect();
+    const cx = rect.left + rect.width  / 2;
+    const cy = rect.top  + rect.height / 2;
+    const dx = Math.max(cx, window.innerWidth  - cx);
+    const dy = Math.max(cy, window.innerHeight - cy);
+    const r  = Math.sqrt(dx * dx + dy * dy) * 2.15;
+
+    circle.style.cssText = `
+      width:${r}px; height:${r}px;
+      left:${cx - r / 2}px; top:${cy - r / 2}px;
+      transform:scale(0); transition:none;
+    `;
+
+    overlay.classList.add('active');
+    overlay.style.opacity = '1';
+    circle.getBoundingClientRect(); // reflow
+
+    circle.style.transition = 'transform 650ms cubic-bezier(0.55,0,0.1,1)';
+    circle.style.transform  = 'scale(1)';
+
+    setTimeout(() => overlay.classList.add('lines-show'), 280);
+    setTimeout(() => overlay.classList.add('logo-show'),  460);
+    setTimeout(() => { window.location.href = 'app.html'; }, 760);
+  }
+
+  /* ─── MAIN TRIGGER ─── */
+  function triggerLaunch(e) {
+    const btn = document.getElementById('startBtn');
+    btn.disabled = true;
+    btn.style.opacity = '0.75';
+
+    animateRank(() => runSupernova(btn));
+  }
+  </script>
 </body>
 </html>
