@@ -936,6 +936,28 @@
             100% { opacity:0; transform:translate(calc(var(--dx)*1.8),calc(var(--dy)*1.8)) scale(0) rotate(360deg); }
         }
     </style>
+
+        /* ═══ TIER MODE STRIP ═══ */
+        .tier-pill { padding:8px 20px; border-radius:999px; font-size:11px; font-weight:900; cursor:pointer; transition:all 0.28s cubic-bezier(0.16,1,0.3,1); border:none; letter-spacing:0.07em; text-transform:uppercase; outline:none; -webkit-tap-highlight-color:transparent; white-space:nowrap; }
+        .tier-pill-t1-on { background:linear-gradient(135deg,#6366f1,#818cf8); color:white; box-shadow:0 4px 18px rgba(99,102,241,0.45); }
+        .tier-pill-t2-on { background:linear-gradient(135deg,#d946ef,#f59e0b); color:white; box-shadow:0 4px 18px rgba(217,70,239,0.45); }
+        .tier-pill-off   { background:rgba(255,255,255,0.38); color:#64748b; border:1px solid rgba(255,255,255,0.5); }
+        .dark .tier-pill-off { background:rgba(255,255,255,0.05); color:#64748b; border-color:rgba(139,92,246,0.2); }
+        .tier-pill:hover:not(.tier-pill-t1-on):not(.tier-pill-t2-on) { background:rgba(255,255,255,0.65); transform:scale(1.05); }
+        .dark .tier-pill:hover:not(.tier-pill-t1-on):not(.tier-pill-t2-on) { background:rgba(99,102,241,0.12); }
+        @keyframes confettiPop { 0%{opacity:0;transform:scale(0.5) translateY(20px) rotate(-5deg)} 60%{opacity:1;transform:scale(1.06) translateY(-4px) rotate(1deg)} 100%{opacity:1;transform:scale(1) translateY(0) rotate(0deg)} }
+        @keyframes tierBadgePop { 0%{transform:scale(0);opacity:0} 70%{transform:scale(1.2);opacity:1} 100%{transform:scale(1);opacity:1} }
+        .tier-qual-congrats { animation: confettiPop 0.55s cubic-bezier(0.34,1.56,0.64,1) both; }
+        .tier-badge-pop { animation: tierBadgePop 0.4s cubic-bezier(0.34,1.56,0.64,1) 0.2s both; }
+        .tier2-mode header.glass-nav { border-bottom-color:rgba(217,70,239,0.3)!important; }
+        .tier2-mode #selected-exam-badge { color:#d946ef!important; }
+
+        /* AI toggle */
+        .ai-toggle-track { width:56px;height:30px;border-radius:999px;background:rgba(148,163,184,0.2);border:2px solid rgba(148,163,184,0.3);cursor:pointer;position:relative;transition:all 0.3s;flex-shrink:0; }
+        .ai-toggle-track.on { background:linear-gradient(135deg,#6366f1,#a855f7);border-color:transparent;box-shadow:0 0 16px rgba(99,102,241,0.45); }
+        .ai-toggle-thumb { position:absolute;top:2px;left:2px;width:22px;height:22px;border-radius:50%;background:white;display:flex;align-items:center;justify-content:center;font-size:12px;transition:all 0.3s cubic-bezier(0.34,1.56,0.64,1);box-shadow:0 2px 6px rgba(0,0,0,0.2); }
+        .ai-toggle-track.on .ai-toggle-thumb { transform:translateX(26px); }
+
     <!-- SVG gradient defs for ring -->
     <svg width="0" height="0" style="position:absolute">
       <defs>
@@ -1289,6 +1311,9 @@
                 <div id="home-primary-exam" style="display:none;"></div>
                 <div id="home-other-exams" style="display:none;"></div>
             </div>
+
+            <!-- ══ TIER MODE STRIP ══ -->
+            <div id="tier-mode-strip" style="display:none;" class="w-full"></div>
 
             <!-- Primary Stat Cards -->
             <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
@@ -2195,7 +2220,7 @@
         let   currentTab = 0;
 
         // Per-exam target score helpers
-        function getTargetKey() { return 'mockpro_target_' + (state?.selectedExamGroup || 'default'); }
+        function getTargetKey() { return 'mockpro_target_' + (state?.selectedExamGroup || 'default') + '_' + (state?.currentTier || 'tier1'); }
         function loadTargetScore() {
             const v = parseInt(localStorage.getItem(getTargetKey()) || '0');
             state.targetScore = v || (EXAM_GROUPS[state.selectedExamGroup]?.total ? Math.round(EXAM_GROUPS[state.selectedExamGroup].total * 0.8) : 160);
@@ -2208,6 +2233,107 @@
             "SSC_MTS":      { name:"SSC MTS",       exams:["SSC MTS"],             subjects:["Maths","Reasoning","GK","English"],   c:3, w:1,    total:270, quickEntry:false },
             "BANK_PO":      { name:"Bank PO",        exams:["Bank PO"],             subjects:["English","Quant","Reasoning"],        c:1, w:0.25, total:100, quickEntry:false }
         };
+
+
+        // ── TIER 2 / MAINS EXAM CONFIGS ──
+        const EXAM_TIER2_GROUPS = {
+            "SSC_CGL_CHSL": { name:"SSC CGL/CHSL Tier 2", tierLabel:"Tier 2",  exams:["SSC CGL","SSC CHSL"], subjects:["Maths","Reasoning","English Language","GK / Current Affairs"], c:3, w:1,    total:390, quickEntry:false, info:"130Q · +3 / −1 · 390 marks",   examLabel:"SSC CGL/CHSL — Tier 2 (Mains)" },
+            "RRB_NTPC":     { name:"RRB NTPC CBT 2",       tierLabel:"CBT 2",   exams:["RRB NTPC"],           subjects:["GK / Awareness","Maths","Reasoning"],                          c:1, w:0.33, total:120, quickEntry:true,  info:"120Q · +1 / −0.33 · 120 marks", examLabel:"RRB NTPC — CBT 2"              },
+            "SSC_MTS":      { name:"SSC MTS Tier 2",       tierLabel:"Tier 2",  exams:["SSC MTS"],            subjects:["Essay","Letter / Application"],                                c:1, w:0,    total:50,  quickEntry:false, info:"Descriptive · 50 marks",         examLabel:"SSC MTS — Tier 2 (Descriptive)" },
+            "BANK_PO":      { name:"Bank PO Mains",         tierLabel:"Phase 2", exams:["Bank PO"],            subjects:["Reasoning & Computer","English Language","Data Analysis","GK / Banking"], c:1, w:0.25, total:200, quickEntry:false, info:"155Q · +1 / −0.25 · 200 marks", examLabel:"Bank PO — Phase 2 (Mains)" }
+        };
+
+        // ── TIER helpers ──
+        const TIER_STORAGE_KEY  = 'mockpro_tier_';
+        const TIER2_QUAL_PREFIX = 'mockpro_t2qual_';
+        function getTierStorageKey() { return TIER_STORAGE_KEY  + (state?.selectedExamGroup || 'def'); }
+        function getTier2QualKey()   { return TIER2_QUAL_PREFIX + (state?.selectedExamGroup || 'def'); }
+        function loadTier()          { state.currentTier = localStorage.getItem(getTierStorageKey()) || 'tier1'; }
+        function getCurrentTierConfig() {
+            if (!state.selectedExamGroup) return null;
+            if (state.currentTier === 'tier2') return EXAM_TIER2_GROUPS[state.selectedExamGroup] || EXAM_GROUPS[state.selectedExamGroup];
+            return EXAM_GROUPS[state.selectedExamGroup];
+        }
+        function activateTier(tier) {
+            state.currentTier = tier;
+            localStorage.setItem(getTierStorageKey(), tier);
+            document.documentElement.classList.toggle('tier2-mode', tier === 'tier2');
+            loadTargetScore(); updateExamBadge(); updateFormForExam(); renderTierStrip(); processData();
+        }
+        window.switchTier = function(tier) {
+            if (!state.selectedExamGroup || tier === state.currentTier) return;
+            if (tier === 'tier2') {
+                if (!localStorage.getItem(getTier2QualKey())) { showTier2QualModal(); return; }
+                activateTier('tier2');
+            } else { activateTier('tier1'); }
+        };
+        function showTier2QualModal() {
+            const m = document.getElementById('tier2-qual-modal'); if (!m) return;
+            const t2 = EXAM_TIER2_GROUPS[state.selectedExamGroup];
+            const e1 = document.getElementById('t2q-exam-name');
+            const e2 = document.getElementById('t2q-tier2-name');
+            const e3 = document.getElementById('t2q-info');
+            if (e1) e1.textContent = EXAM_GROUPS[state.selectedExamGroup]?.name || 'Tier 1';
+            if (e2) e2.textContent = t2 ? t2.examLabel : 'Tier 2 / Mains';
+            if (e3 && t2) e3.textContent = t2.info;
+            m.style.display = 'flex';
+        }
+        window.closeTier2QualModal = function() { const m = document.getElementById('tier2-qual-modal'); if (m) m.style.display = 'none'; };
+        window.confirmTier2Status = function(qualified) {
+            closeTier2QualModal();
+            const key = getTier2QualKey();
+            if (qualified) {
+                localStorage.setItem(key, 'yes');
+                activateTier('tier2');
+                setTimeout(showTierCongrats, 200);
+            } else {
+                localStorage.setItem(key, 'not_yet');
+                alert('No worries! Keep practising Tier 1 mocks. Switch to Mains mode once you clear Prelims.');
+            }
+        };
+        function showTierCongrats() {
+            if (typeof confetti !== 'undefined') {
+                confetti({ particleCount:120, spread:100, origin:{y:0.5}, colors:['#d946ef','#f59e0b','#6366f1','#34d399','white'] });
+                setTimeout(()=>confetti({ particleCount:60, spread:80, origin:{y:0.45,x:0.2} }), 250);
+                setTimeout(()=>confetti({ particleCount:60, spread:80, origin:{y:0.45,x:0.8} }), 450);
+            }
+            const toast = document.getElementById('welcome-toast');
+            const toastTxt = document.getElementById('welcome-toast-text');
+            if (toast && toastTxt) {
+                toastTxt.textContent = "🎉  Prelims cleared! Mains mode activated — let\'s go!";
+                toast.style.display = 'block';
+                setTimeout(()=>{ toast.style.transition='opacity 0.6s'; toast.style.opacity='0'; setTimeout(()=>{toast.style.display='none';toast.style.opacity='1';},600); }, 4000);
+            }
+        }
+        function renderTierStrip() {
+            const strip = document.getElementById('tier-mode-strip');
+            if (!strip || !state.selectedExamGroup) { if (strip) strip.style.display='none'; return; }
+            const t2cfg = EXAM_TIER2_GROUPS[state.selectedExamGroup];
+            if (!t2cfg) { strip.style.display='none'; return; }
+            strip.style.display = 'flex';
+            const t1cfg = EXAM_GROUPS[state.selectedExamGroup];
+            const isT1 = (state.currentTier !== 'tier2');
+            const qual = localStorage.getItem(getTier2QualKey());
+            strip.innerHTML = `
+            <div class="glass-card rounded-[2rem] p-4 flex items-center justify-between gap-4 w-full" style="${isT1?'':'border:2px solid rgba(217,70,239,0.35);box-shadow:0 0 0 3px rgba(217,70,239,0.1),0 8px 32px rgba(217,70,239,0.15);'}">
+                <div class="flex flex-col min-w-0">
+                    <div class="flex items-center gap-2 flex-wrap">
+                        <span class="text-xs font-black uppercase tracking-widest text-slate-400">Mode</span>
+                        <span class="tier-badge-pop px-3 py-1 rounded-full text-xs font-black text-white" style="background:${isT1?'linear-gradient(135deg,#6366f1,#818cf8)':'linear-gradient(135deg,#d946ef,#f59e0b)'};">
+                            ${isT1 ? '📝 '+(t1cfg?.name||'Tier 1') : '🏆 '+(t2cfg.tierLabel||'Tier 2')}
+                        </span>
+                        ${!isT1&&qual==='yes'?'<span style="font-size:13px;">✅</span>':''}
+                    </div>
+                    <p class="text-xs font-semibold text-slate-400 mt-1 truncate">
+                        ${isT1?(t1cfg?t1cfg.exams[0]+' · +'+ t1cfg.c+' / −'+t1cfg.w+' · '+t1cfg.total+' marks':''):t2cfg.info}
+                    </p>
+                </div>
+                <div class="flex gap-2 flex-shrink-0">
+                    <button onclick="window.switchTier('tier1')" class="tier-pill ${isT1?'tier-pill-t1-on':'tier-pill-off'}">📝 Pre</button>
+                    <button onclick="window.switchTier('tier2')" class="tier-pill ${!isT1?'tier-pill-t2-on':'tier-pill-off'}">🏆 Mains${qual==='yes'?' ✅':''}</button>
+                </div>
+            </div>`;
+        }
 
         // ── HARDCODED DEMO DATA (5 fixed mocks — SSC CGL Tier-1) ──
         // Marking: +2 correct, -0.5 wrong | 100 questions | Max 200 marks
@@ -2321,6 +2447,7 @@
             selectedExamGroup: null,
             mocks: [], tasks: [], links: [],
             editingId: null,
+            currentTier: 'tier1',
             charts: { home: null, week: null, plat: null, radar: null, scatter: null, histogram: null, damage: null },
             useQuickEntry: false,
             isDemoMode: false,
@@ -2347,6 +2474,7 @@
 
             state.isDemoMode = true;
             state.selectedExamGroup = 'SSC_CGL_CHSL';
+            state.currentTier = 'tier1';
             updateExamBadge();
             updateFormForExam();
 
@@ -2384,6 +2512,7 @@
 
             updateExamBadge();
             updateFormForExam();
+            renderTierStrip();
             processData();
             window.app.nav('home');
 
@@ -2418,9 +2547,10 @@
             m.style.display = '';
             m.classList.add('hidden');
             m.classList.remove('flex');
-            loadTargetScore();  // load per-exam target
+            loadTier(); loadTargetScore();
             updateExamBadge();
             updateFormForExam();
+            renderTierStrip();
             processData();
         };
 
@@ -2436,12 +2566,21 @@
 
         function updateExamBadge() {
             const badge = el('selected-exam-badge');
-            if (badge && state.selectedExamGroup) badge.textContent = state.isDemoMode ? '⚡ DEMO — ' + EXAM_GROUPS[state.selectedExamGroup].name : EXAM_GROUPS[state.selectedExamGroup].name;
+            if (badge && state.selectedExamGroup) {
+                const tierSuffix = (state.currentTier === 'tier2') ? ' · T2' : '';
+                badge.textContent = state.isDemoMode ? '⚡ DEMO — ' + EXAM_GROUPS[state.selectedExamGroup].name + tierSuffix : EXAM_GROUPS[state.selectedExamGroup].name + tierSuffix;
+                badge.style.color = (state.currentTier === 'tier2') ? '#d946ef' : '';
+            }
         }
 
         function updateFormForExam() {
-            const group = EXAM_GROUPS[state.selectedExamGroup];
+            const group = getCurrentTierConfig() || EXAM_GROUPS[state.selectedExamGroup];
             if (!group) return;
+            const logTitle = document.getElementById('log-title');
+            if (logTitle && state.currentTier === 'tier2') {
+                const t2n = EXAM_TIER2_GROUPS[state.selectedExamGroup];
+                logTitle.textContent = t2n ? 'Log ' + t2n.tierLabel + ' Mock' : 'Log Mains Mock';
+            } else if (logTitle) { logTitle.textContent = 'Log a Mock'; }
             loadTargetScore();  // reload target for this exam
             // reset target input to reflect loaded value
             const inp = el('target-input');
@@ -2457,7 +2596,8 @@
         function getFilteredMocks() {
             if (!state.selectedExamGroup) return state.mocks;
             const allowed = EXAM_GROUPS[state.selectedExamGroup].exams;
-            return state.mocks.filter(m => allowed.includes(m.exam));
+            const tier = state.currentTier || 'tier1';
+            return state.mocks.filter(m => allowed.includes(m.exam) && (m.tier||'tier1') === tier);
         }
 
         window.toggleQuickEntry = () => {
@@ -4817,7 +4957,7 @@ Give a concise pre-mock briefing in this EXACT JSON (no markdown, no backticks):
                 const hasEnough = subset.length >= 1;
                 if (emptyAna) emptyAna.classList.toggle('hidden', hasEnough);
                 if (anaContent) anaContent.classList.toggle('hidden', !hasEnough);
-                const group = EXAM_GROUPS[state.selectedExamGroup]; if (!group) return;
+                const group = getCurrentTierConfig() || EXAM_GROUPS[state.selectedExamGroup]; if (!group) return;
                 const ag = {}; let totalScoreSum=0, totalSillyLoss=0;
                 subset.forEach(m => {
                     let es = m.score, esi = (m.subjects||[]).reduce((acc,s) => acc + (s.s * (group.c + group.w)), 0);
@@ -5426,6 +5566,9 @@ Give a concise pre-mock briefing in this EXACT JSON (no markdown, no backticks):
             };
 
             // Score emoji
+            const tierTag = (m) => m.tier==='tier2'
+                ? '<span style="font-size:9px;font-weight:900;padding:1px 7px;border-radius:5px;background:linear-gradient(135deg,#d946ef,#f59e0b);color:white;text-transform:uppercase;letter-spacing:0.06em;margin-right:4px;">T2</span>'
+                : '<span style="font-size:9px;font-weight:900;padding:1px 7px;border-radius:5px;background:linear-gradient(135deg,#6366f1,#818cf8);color:white;text-transform:uppercase;letter-spacing:0.06em;margin-right:4px;">T1</span>';
             const scoreEmoji = (pct) => pct >= 85 ? '🏆' : pct >= 70 ? '⭐' : pct >= 55 ? '📈' : pct >= 40 ? '📉' : '💀';
 
             const circum = 220;
@@ -5467,7 +5610,7 @@ Give a concise pre-mock briefing in this EXACT JSON (no markdown, no backticks):
                         <div class="flex items-start justify-between gap-2">
                             <div class="min-w-0 flex-1">
                                 <div class="flex items-center gap-1.5 flex-wrap">
-                                    ${state.isDemoMode ? '<span class="demo-badge" style="display:inline-flex;">demo</span>' : ''}
+                                    ${tierTag(m)}${state.isDemoMode ? '<span class="demo-badge" style="display:inline-flex;">demo</span>' : ''}
                                     <span class="font-black text-slate-900 dark:text-white truncate" style="font-size:15px;">${m.name}</span>
                                 </div>
                                 <div class="flex items-center gap-1.5 flex-wrap mt-1">
@@ -5665,7 +5808,7 @@ Give a concise pre-mock briefing in this EXACT JSON (no markdown, no backticks):
         }
 
         function updateForm() {
-            const group = EXAM_GROUPS[state.selectedExamGroup]; if (!group) return;
+            const group = getCurrentTierConfig() || EXAM_GROUPS[state.selectedExamGroup]; if (!group) return;
             safeSetText('marking-scheme', `MARKING: +${group.c} / -${group.w}`);
             const sc = el('sec-checkboxes');
             if (sc) sc.innerHTML = group.subjects.map(s => `
@@ -5676,7 +5819,7 @@ Give a concise pre-mock briefing in this EXACT JSON (no markdown, no backticks):
         }
 
         window.renderFormRows = () => {
-            const catVal = el('inp-cat'), group = EXAM_GROUPS[state.selectedExamGroup];
+            const catVal = el('inp-cat'), group = getCurrentTierConfig() || EXAM_GROUPS[state.selectedExamGroup];
             if (!group || !catVal) return;
             let subs = group.subjects;
             const divSec = el('div-sec-select');
@@ -5759,7 +5902,7 @@ Give a concise pre-mock briefing in this EXACT JSON (no markdown, no backticks):
 
         function processData() {
             state.mocks.sort((a,b) => new Date(a.date)-new Date(b.date));
-            renderHome(); renderHistory(); window.app.renderMatrix();
+            renderTierStrip(); renderHome(); renderHistory(); window.app.renderMatrix();
         }
 
         // ── Firebase Auth ──
@@ -5788,7 +5931,7 @@ Give a concise pre-mock briefing in this EXACT JSON (no markdown, no backticks):
 
                     if (!state.selectedExamGroup) state.selectedExamGroup = localStorage.getItem('selected_exam_group');
                     if (!state.selectedExamGroup) showExamSelector();
-                    else { updateExamBadge(); updateFormForExam(); }
+                    else { loadTier(); updateExamBadge(); updateFormForExam(); renderTierStrip(); }
 
                     onSnapshot(collection(db,'artifacts',appId,'users',u.uid,'mocks'), s => { if (!state.isDemoMode) { state.mocks = s.docs.map(d=>({id:d.id,...d.data()})); processData(); } });
                     onSnapshot(collection(db,'artifacts',appId,'users',u.uid,'tasks'), s => { if (!state.isDemoMode) { state.tasks = s.docs.map(d=>({id:d.id,...d.data()})); renderTaskList(); } });
@@ -5801,7 +5944,7 @@ Give a concise pre-mock briefing in this EXACT JSON (no markdown, no backticks):
                     const si = el('status-indicator'); if (si) { si.classList.remove('bg-emerald-500','animate-pulse'); si.classList.add('bg-gray-400'); }
                     state.selectedExamGroup = localStorage.getItem('selected_exam_group');
                     if (!state.selectedExamGroup) showExamSelector();
-                    else { updateExamBadge(); updateFormForExam(); }
+                    else { loadTier(); updateExamBadge(); updateFormForExam(); renderTierStrip(); }
                     state.mocks=[]; state.tasks=[]; state.links=[];
                     processData();
                 }
@@ -5831,7 +5974,9 @@ Give a concise pre-mock briefing in this EXACT JSON (no markdown, no backticks):
             if (state.isDemoMode) { alert("Cannot save mocks in Demo Mode — exit demo first."); return; }
             const group = EXAM_GROUPS[state.selectedExamGroup]; if (!group) return alert("Select exam first!");
             let entry = {
-                platform: el('inp-platform').value, exam: group.exams[0], examGroup: state.selectedExamGroup,
+                platform: el('inp-platform').value,
+                exam: (state.currentTier==='tier2'&&EXAM_TIER2_GROUPS[state.selectedExamGroup])?EXAM_TIER2_GROUPS[state.selectedExamGroup].exams[0]:group.exams[0],
+                examGroup: state.selectedExamGroup, tier: state.currentTier||'tier1',
                 name: el('inp-name').value, category: el('inp-cat').value,
                 date: el('inp-date').value || new Date().toISOString().slice(0,10),
                 perc: parseFloat(el('inp-perc').value)||0, time: parseFloat(el('inp-time').value)||0,
@@ -5988,6 +6133,41 @@ Give a concise pre-mock briefing in this EXACT JSON (no markdown, no backticks):
             });
         })();
     </script>
+
+
+    <!-- TIER 2 QUALIFICATION MODAL -->
+    <div id="tier2-qual-modal" onclick="if(event.target===this)closeTier2QualModal()"
+         style="display:none;position:fixed;inset:0;z-index:28000;background:rgba(0,0,0,0.72);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);align-items:center;justify-content:center;padding:20px;">
+        <div class="glass-modal tier-qual-congrats" style="max-width:420px;width:100%;border-radius:2rem;overflow:hidden;box-shadow:0 32px 80px rgba(217,70,239,0.35);">
+            <div style="background:linear-gradient(135deg,#6366f1 0%,#a855f7 50%,#d946ef 100%);padding:28px 24px 22px;text-align:center;">
+                <div style="font-size:40px;margin-bottom:10px;">🏆</div>
+                <h2 style="font-size:20px;font-weight:900;color:white;margin-bottom:6px;">Switch to Mains Mode?</h2>
+                <p style="font-size:12px;color:rgba(255,255,255,0.7);font-weight:600;">Unlock Tier 2 / Mains tracking for</p>
+                <p id="t2q-tier2-name" style="font-size:13px;color:white;font-weight:900;margin-top:2px;"></p>
+            </div>
+            <div style="padding:22px 24px;">
+                <div style="background:rgba(217,70,239,0.06);border:1px solid rgba(217,70,239,0.2);border-radius:14px;padding:10px 14px;display:flex;align-items:center;gap:10px;margin-bottom:18px;">
+                    <span style="font-size:18px;flex-shrink:0;">📋</span>
+                    <div><p style="font-size:11px;font-weight:900;color:#d946ef;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:2px;">Exam Pattern</p><p id="t2q-info" style="font-size:13px;font-weight:700;color:#475569;"></p></div>
+                </div>
+                <p style="font-size:14px;font-weight:800;text-align:center;margin-bottom:18px;color:#1e293b;" class="dark:text-slate-200">
+                    Have you cleared Prelims / <span id="t2q-exam-name" style="color:#6366f1;"></span> Tier&nbsp;1?
+                </p>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px;">
+                    <button onclick="window.confirmTier2Status(true)"
+                        style="padding:14px 8px;border-radius:16px;background:linear-gradient(135deg,#d946ef,#f59e0b);color:white;font-size:14px;font-weight:900;border:none;cursor:pointer;box-shadow:0 4px 18px rgba(217,70,239,0.35);">
+                        🎉 Yes, I Cleared!
+                    </button>
+                    <button onclick="window.confirmTier2Status(false)"
+                        style="padding:14px 8px;border-radius:16px;background:rgba(148,163,184,0.12);color:#64748b;font-size:14px;font-weight:900;border:1px solid rgba(148,163,184,0.2);cursor:pointer;">
+                        Not Yet
+                    </button>
+                </div>
+                <p style="font-size:11px;text-align:center;color:#94a3b8;font-weight:600;">In Mains mode, all stats, charts &amp; AI analysis switch to Tier 2 data only.</p>
+                <button onclick="closeTier2QualModal()" style="display:block;margin:12px auto 0;background:none;border:none;color:#94a3b8;font-size:12px;font-weight:700;cursor:pointer;padding:6px 12px;">Cancel</button>
+            </div>
+        </div>
+    </div>
 
     <!-- AI DEBRIEF CHAT MODAL -->
     <!-- AI DEBRIEF MODAL -->
@@ -6184,6 +6364,7 @@ Give a concise pre-mock briefing in this EXACT JSON (no markdown, no backticks):
                 banner.classList.remove('show');
             });
         }
+    </script>
     <!-- ══════════════════════════════════════════
          AOS — Animate On Scroll  (loaded last so
          all DOM elements are already in the page)
@@ -6201,6 +6382,7 @@ Give a concise pre-mock briefing in this EXACT JSON (no markdown, no backticks):
         (function initAOS() {
             const scrollContainer = document.querySelector('main.flex-1');
 
+            if (typeof AOS === 'undefined') return;
             AOS.init({
                 duration : 800,
                 easing   : 'ease-in-out',
@@ -6211,7 +6393,7 @@ Give a concise pre-mock briefing in this EXACT JSON (no markdown, no backticks):
             });
 
             // Also refresh after the first data render so dynamic content is caught
-            setTimeout(() => AOS.refresh(), 600);
+            setTimeout(() => { if (typeof AOS !== 'undefined') AOS.refresh(); }, 600);
         })();
     </script>
 
