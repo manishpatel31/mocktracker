@@ -1150,9 +1150,12 @@
     -->
     <header class="glass-nav flex-none flex items-center justify-between z-50 flex-shrink-0">
 
-        <!-- LEFT: Logo group — shrinks gracefully, never wraps -->
-        <div class="logo-group flex items-center gap-2 md:gap-3 min-w-0">
-            <div class="w-10 h-10 md:w-12 md:h-12 rounded-2xl bg-gradient-to-tr from-brand-600 to-accent-500 text-white flex items-center justify-center shadow-xl shadow-brand-500/30 flex-shrink-0">
+        <!-- LEFT: Logo — clicking goes to home (index.html) -->
+        <a href="index.html"
+           title="Go to Home"
+           class="logo-group flex items-center gap-2 md:gap-3 min-w-0 no-underline cursor-pointer hover:opacity-85 transition-opacity"
+           style="text-decoration:none;">
+            <div class="w-10 h-10 md:w-12 md:h-12 rounded-2xl bg-gradient-to-tr from-brand-600 to-accent-500 text-white flex items-center justify-center shadow-xl shadow-brand-500/30 flex-shrink-0 transition-transform hover:scale-105">
                 <i class="fa-solid fa-chart-pie text-base md:text-xl"></i>
             </div>
             <div class="min-w-0">
@@ -1168,7 +1171,7 @@
                     <span id="status-text" style="font-size:9px" class="font-bold uppercase text-gray-400 tracking-wide hidden sm:inline">Offline</span>
                 </div>
             </div>
-        </div>
+        </a>
 
         <!-- CENTER: Desktop tab nav (hidden on mobile) -->
         <nav class="hidden md:flex items-center glass-card rounded-2xl p-1 mx-2">
@@ -1179,69 +1182,68 @@
             <button onclick="window.app.nav('tools')"    id="nav-tools"    class="nav-link px-5 py-2.5 rounded-xl transition-all duration-300">Tools</button>
         </nav>
 
-        <!-- RIGHT: Action buttons — flex-nowrap, 44px each, 6px gap -->
+        <!-- RIGHT: Action buttons -->
         <div class="header-actions">
 
-            <!-- Back to Home — icon + "Home" label, compact on mobile -->
-            <a href="index.html"
-               title="Back to landing page"
-               class="home-back-btn btn-glass text-brand-500 dark:text-brand-400">
-                <i class="fa-solid fa-arrow-left" style="font-size:13px;"></i>
-                <span class="text-xs font-black">Home</span>
+            <!-- Stats Page (desktop only) -->
+            <a href="stats.html"
+               class="hidden md:flex flex-col items-center justify-center px-2.5 rounded-xl btn-glass hover:scale-105 transition"
+               style="min-height:44px;min-width:44px;gap:1px;" title="Full Stats Dashboard">
+                <i class="fa-solid fa-chart-bar text-accent-500" style="font-size:13px;"></i>
+                <span style="font-size:7px;font-weight:900;letter-spacing:0.04em;text-transform:uppercase;color:#d946ef;line-height:1;">Stats</span>
             </a>
 
-            <!-- Theme Toggle -->
+            <!-- Switch Exam (desktop only) — compact two-line -->
+            <button onclick="showExamSelector()"
+                    class="hidden md:flex flex-col items-center justify-center px-2.5 rounded-xl btn-glass hover:scale-105 transition"
+                    style="min-height:44px;min-width:44px;gap:1px;" title="Switch Exam">
+                <i class="fa-solid fa-exchange-alt text-brand-500" style="font-size:13px;"></i>
+                <span style="font-size:7px;font-weight:900;letter-spacing:0.04em;text-transform:uppercase;color:#6366f1;line-height:1;">Switch</span>
+                <span style="font-size:6px;font-weight:800;letter-spacing:0.04em;text-transform:uppercase;color:#94a3b8;line-height:1;">Exam</span>
+            </button>
+
+            <!-- Auth — single compact button (sign in OR signed-in state) -->
+            <div id="auth-box" class="flex-shrink-0">
+                <!-- Not signed in -->
+                <button id="btn-login"
+                        onclick="app.login()"
+                        class="btn-glass rounded-xl transition flex flex-col items-center justify-center hover:scale-105"
+                        style="min-height:44px;min-width:44px;padding:0 10px;gap:2px;"
+                        title="Sign in with Google">
+                    <i class="fa-brands fa-google text-sm text-red-500"></i>
+                    <span style="font-size:7px;font-weight:900;letter-spacing:0.04em;text-transform:uppercase;color:#475569;line-height:1;">Sign in</span>
+                </button>
+                <!-- Signed in — avatar + name chip + logout on hover -->
+                <div id="user-profile" class="hidden">
+                    <button onclick="app.logout()"
+                            class="btn-glass rounded-xl transition flex flex-col items-center justify-center relative group overflow-hidden hover:scale-105"
+                            style="min-height:44px;min-width:44px;padding:4px 8px;gap:2px;"
+                            title="Signed in · Click to sign out">
+                        <img id="user-avatar"
+                             class="w-6 h-6 rounded-full border-2 border-white/60 shadow flex-shrink-0"
+                             style="object-fit:cover;">
+                        <span id="user-name-short"
+                              style="font-size:7px;font-weight:900;letter-spacing:0.03em;text-transform:uppercase;color:#10b981;line-height:1;max-width:44px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"></span>
+                        <!-- Hover overlay: shows sign-out icon -->
+                        <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity rounded-xl"
+                             style="background:rgba(239,68,68,0.88);">
+                            <i class="fa-solid fa-power-off text-white" style="font-size:14px;pointer-events:none;"></i>
+                        </div>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Theme Toggle — rightmost corner -->
             <button onclick="window.app.toggleTheme()"
                     class="btn-glass rounded-xl relative overflow-hidden hover:scale-105 transition"
-                    title="Toggle theme"
+                    title="Toggle dark / light mode"
                     style="width:44px;height:44px;">
                 <i class="fa-solid fa-sun theme-icon theme-sun text-amber-400"></i>
                 <i class="fa-solid fa-moon theme-icon theme-moon text-indigo-400"></i>
             </button>
 
-            <!-- Auth -->
-            <div id="auth-box" class="flex-shrink-0">
-                <button id="btn-login"
-                        onclick="app.login()"
-                        class="btn-glass rounded-xl transition flex items-center gap-1.5 md:gap-2"
-                        style="min-height:44px;padding:0 10px 0 10px;">
-                    <i class="fa-brands fa-google text-base text-red-500"></i>
-                    <span class="hidden md:inline text-xs font-bold">Sign in</span>
-                </button>
-                <div id="user-profile" class="hidden flex items-center gap-2 md:gap-3 border-l border-white/30 dark:border-white/10 pl-2 md:pl-3">
-                    <img id="user-avatar" class="w-8 h-8 md:w-9 md:h-9 rounded-full border-2 border-white/50 shadow-lg">
-                    <button onclick="app.logout()"
-                            class="text-slate-400 hover:text-red-500 transition"
-                            style="min-width:44px;min-height:44px;display:inline-flex;align-items:center;justify-content:center;">
-                        <i class="fa-solid fa-power-off"></i>
-                    </button>
-                </div>
-            </div>
-
-            <!-- Stats Page (desktop only) -->
-            <a href="stats.html"
-               class="hidden md:flex items-center gap-1.5 px-3 rounded-xl btn-glass text-xs font-bold hover:scale-105 transition text-accent-500 dark:text-accent-500"
-               style="min-height:44px;" title="Full Stats Dashboard">
-                <i class="fa-solid fa-chart-bar" style="font-size:13px;"></i>
-                <span class="ml-1.5">Stats</span>
-            </a>
-
-            <!-- Switch Exam (desktop only) -->
-            <button onclick="showExamSelector()"
-                    class="hidden md:flex items-center gap-1.5 px-3 rounded-xl btn-glass text-xs font-bold hover:scale-105 transition"
-                    style="min-height:44px;">
-                <i class="fa-solid fa-exchange-alt"></i>
-                <span class="ml-1.5">Switch</span>
-            </button>
-
-            <!-- Upcoming Exams -->
-            <button id="nav-exams-btn"
-                    class="btn-glass rounded-xl flex items-center justify-center relative hover:scale-105 transition flex-shrink-0"
-                    title="Upcoming Exams"
-                    style="width:44px;height:44px;">
-                <i class="fa-solid fa-calendar-days text-brand-500" style="font-size:15px;pointer-events:none;"></i>
-                <span id="exam-count-badge" style="display:none;position:absolute;top:-3px;right:-3px;min-width:16px;height:16px;background:#ef4444;color:white;font-size:9px;font-weight:900;border-radius:999px;align-items:center;justify-content:center;padding:0 3px;"></span>
-            </button>
+            <!-- Hidden stub for JS exam-count-badge compat — not visible -->
+            <span id="exam-count-badge" style="display:none;"></span>
 
         </div>
     </header>
@@ -5768,6 +5770,13 @@ Give a concise pre-mock briefing in this EXACT JSON (no markdown, no backticks):
                     el('btn-login')?.classList.add('hidden');
                     const up = el('user-profile'); if (up) { up.classList.remove('hidden'); up.style.display='flex'; }
                     const av = el('user-avatar'); if (av) av.src = u.photoURL || '';
+                    // Set first name in compact auth button
+                    const nameShort = el('user-name-short');
+                    if (nameShort && u.displayName) {
+                        nameShort.textContent = u.displayName.split(' ')[0].substring(0, 7);
+                    } else if (nameShort) {
+                        nameShort.textContent = u.isAnonymous ? 'Guest' : 'User';
+                    }
                     safeSetText('status-text', 'Cloud Sync');
                     const si = el('status-indicator'); if (si) { si.classList.remove('bg-gray-400'); si.classList.add('bg-emerald-500','animate-pulse'); }
 
