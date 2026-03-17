@@ -1218,6 +1218,14 @@
                 </div>
             </div>
 
+            <!-- Stats Page (desktop only) -->
+            <a href="stats.html"
+               class="hidden md:flex items-center gap-1.5 px-3 rounded-xl btn-glass text-xs font-bold hover:scale-105 transition text-accent-500 dark:text-accent-500"
+               style="min-height:44px;" title="Full Stats Dashboard">
+                <i class="fa-solid fa-chart-bar" style="font-size:13px;"></i>
+                <span class="ml-1.5">Stats</span>
+            </a>
+
             <!-- Switch Exam (desktop only) -->
             <button onclick="showExamSelector()"
                     class="hidden md:flex items-center gap-1.5 px-3 rounded-xl btn-glass text-xs font-bold hover:scale-105 transition"
@@ -1758,9 +1766,16 @@
                         <i class="fa-solid fa-bolt text-amber-500"></i> ⚡ Potential Score Analysis
                         <span class="demo-badge">demo</span>
                     </h3>
-                    <button onclick="openShareCard()" class="btn-gradient px-5 py-2.5 rounded-xl text-white text-xs font-black shadow-lg flex items-center gap-2 hover:scale-105 transition btn-glow-pulse">
-                        <i class="fa-solid fa-share-nodes"></i> Share Performance Card
-                    </button>
+                    <div class="flex items-center gap-2 flex-wrap">
+                        <a href="stats.html"
+                           class="px-5 py-2.5 rounded-xl text-white text-xs font-black shadow-lg flex items-center gap-2 hover:scale-105 transition"
+                           style="background:linear-gradient(135deg,#d946ef,#a855f7);">
+                            <i class="fa-solid fa-chart-bar"></i> Full Stats Page
+                        </a>
+                        <button onclick="openShareCard()" class="btn-gradient px-5 py-2.5 rounded-xl text-white text-xs font-black shadow-lg flex items-center gap-2 hover:scale-105 transition btn-glow-pulse">
+                            <i class="fa-solid fa-share-nodes"></i> Share Performance Card
+                        </button>
+                    </div>
                 </div>
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                     <div class="text-center p-5 rounded-2xl glass-card shimmer-card scroll-reveal"><p class="text-xs font-black text-slate-400 uppercase tracking-widest mb-1">📊 Real Average</p><h2 id="ana-real-avg" class="text-3xl font-black text-slate-800 dark:text-white">-</h2></div>
@@ -2155,6 +2170,7 @@
             <button id="hmenu-tools" class="hmenu-item" style="width:100%;display:flex;align-items:center;gap:14px;padding:13px 12px;border:none;background:none;cursor:pointer;border-radius:14px;text-align:left;touch-action:manipulation;-webkit-tap-highlight-color:transparent;"><span style="width:38px;height:38px;border-radius:11px;background:#ede9fe;display:flex;align-items:center;justify-content:center;flex-shrink:0;pointer-events:none;"><i class="fa-solid fa-wrench" style="font-size:16px;color:#7c3aed;pointer-events:none;"></i></span><div style="pointer-events:none;"><div style="font-size:14px;font-weight:800;color:#1e293b;">Tools</div><div style="font-size:11px;color:#94a3b8;margin-top:1px;">Export, restore &amp; offline queue</div></div></button>
             <button id="hmenu-switch" class="hmenu-item" style="width:100%;display:flex;align-items:center;gap:14px;padding:13px 12px;border:none;background:none;cursor:pointer;border-radius:14px;text-align:left;touch-action:manipulation;-webkit-tap-highlight-color:transparent;"><span style="width:38px;height:38px;border-radius:11px;background:#e0f2fe;display:flex;align-items:center;justify-content:center;flex-shrink:0;pointer-events:none;"><i class="fa-solid fa-exchange-alt" style="font-size:16px;color:#0284c7;pointer-events:none;"></i></span><div style="pointer-events:none;"><div style="font-size:14px;font-weight:800;color:#1e293b;">Switch Exam</div><div style="font-size:11px;color:#94a3b8;margin-top:1px;">Change exam — SSC, RRB, Bank PO</div></div></button>
             <button id="hmenu-exams" class="hmenu-item" style="width:100%;display:flex;align-items:center;gap:14px;padding:13px 12px;border:none;background:none;cursor:pointer;border-radius:14px;text-align:left;touch-action:manipulation;-webkit-tap-highlight-color:transparent;"><span style="width:38px;height:38px;border-radius:11px;background:linear-gradient(135deg,#ede9fe,#e0e7ff);display:flex;align-items:center;justify-content:center;flex-shrink:0;pointer-events:none;"><i class="fa-solid fa-calendar-days" style="font-size:16px;color:#6366f1;pointer-events:none;"></i></span><div style="pointer-events:none;"><div style="font-size:14px;font-weight:800;color:#1e293b;" class="dark:text-white">Upcoming Exams</div><div style="font-size:11px;color:#94a3b8;margin-top:1px;">Track exam dates &amp; get AI reminders</div></div></button>
+            <button id="hmenu-stats" class="hmenu-item" style="width:100%;display:flex;align-items:center;gap:14px;padding:13px 12px;border:none;background:none;cursor:pointer;border-radius:14px;text-align:left;touch-action:manipulation;-webkit-tap-highlight-color:transparent;"><span style="width:38px;height:38px;border-radius:11px;background:linear-gradient(135deg,#ede9fe,#fce7f3);display:flex;align-items:center;justify-content:center;flex-shrink:0;pointer-events:none;"><i class="fa-solid fa-chart-bar" style="font-size:16px;color:#d946ef;pointer-events:none;"></i></span><div style="pointer-events:none;"><div style="font-size:14px;font-weight:800;color:#1e293b;" class="dark:text-white">Full Stats Page</div><div style="font-size:11px;color:#94a3b8;margin-top:1px;">Deep analytics dashboard</div></div></button>
             <div style="height:1px;background:rgba(0,0,0,0.05);margin:6px 12px;"></div>
             <button id="hmenu-tour" class="hmenu-item" style="width:100%;display:flex;align-items:center;gap:14px;padding:13px 12px;border:none;background:none;cursor:pointer;border-radius:14px;text-align:left;touch-action:manipulation;-webkit-tap-highlight-color:transparent;"><span style="width:38px;height:38px;border-radius:11px;background:linear-gradient(135deg,#e0e7ff,#ede9fe);display:flex;align-items:center;justify-content:center;flex-shrink:0;pointer-events:none;font-size:18px;">🗺️</span><div style="pointer-events:none;"><div style="font-size:14px;font-weight:800;color:#1e293b;" class="dark:text-white">Take App Tour</div><div style="font-size:11px;color:#94a3b8;margin-top:1px;">Replay the full feature walkthrough</div></div></button>
             <button id="hmenu-demo" class="hmenu-item" style="width:100%;display:flex;align-items:center;gap:14px;padding:13px 12px;border:none;background:none;cursor:pointer;border-radius:14px;text-align:left;touch-action:manipulation;-webkit-tap-highlight-color:transparent;"><span style="width:38px;height:38px;border-radius:11px;background:linear-gradient(135deg,#fef3c7,#fee2e2);display:flex;align-items:center;justify-content:center;flex-shrink:0;pointer-events:none;"><i class="fa-solid fa-flask-vial" style="font-size:16px;color:#d97706;pointer-events:none;"></i></span><div style="pointer-events:none;"><div style="font-size:14px;font-weight:800;color:#1e293b;">Try Demo Mode</div><div style="font-size:11px;color:#94a3b8;margin-top:1px;">Explore with 5 sample SSC CGL mocks</div></div></button>
@@ -5872,6 +5888,7 @@ Give a concise pre-mock briefing in this EXACT JSON (no markdown, no backticks):
                        ['hmenu-tools',  function(){window.app.nav('tools');}],
                        ['hmenu-switch', function(){window.showExamSelector();}],
                        ['hmenu-exams', function(){window.app.nav('tools');}],
+                       ['hmenu-stats',  function(){window.location.href='stats.html';}],
                        ['hmenu-tour',  function(){window.startTour();}],
                        ['hmenu-demo',   function(){window.loadDemoMode();}]];
             pairs.forEach(function(p){
