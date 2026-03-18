@@ -652,6 +652,31 @@
 
     </div>
 
+    <!-- ROW 7: PER-EXAM BREAKDOWN -->
+    <div style="animation:fadeUp 0.55s cubic-bezier(0.22,1,0.36,1) 0.60s both;">
+      <div class="glass-card rounded-[2rem] overflow-hidden">
+        <div class="px-6 py-5 border-b border-white/30 dark:border-white/5 flex items-center justify-between flex-wrap gap-3"
+             style="background:linear-gradient(135deg,rgba(99,102,241,0.09),rgba(217,70,239,0.06));">
+          <div class="flex items-center gap-3">
+            <div class="w-11 h-11 rounded-2xl flex items-center justify-center shadow-lg"
+                 style="background:linear-gradient(135deg,#6366f1,#a855f7);">
+              <i class="fa-solid fa-layer-group text-white" style="font-size:18px;"></i>
+            </div>
+            <div>
+              <h3 class="text-base font-black text-slate-900 dark:text-white">Per-Exam Breakdown</h3>
+              <p class="text-xs font-bold text-slate-400 mt-0.5">Best · Average · Count across every exam you've attempted</p>
+            </div>
+          </div>
+          <span id="exam-breakdown-count"
+                class="text-[10px] font-black px-3 py-1.5 rounded-xl uppercase tracking-wider"
+                style="background:rgba(99,102,241,0.1);color:#6366f1;border:1px solid rgba(99,102,241,0.18);">
+            — exams
+          </span>
+        </div>
+        <div id="exam-breakdown-grid" class="p-4 grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+      </div>
+    </div>
+
   </div><!-- /stats-content -->
 
 </main>
@@ -660,11 +685,10 @@
 
 
 <!-- ═══════════════════════════════════════════════
-     FIREBASE + DATA LOGIC  (fixed)
+     FIREBASE + DATA LOGIC  — ALL EXAMS
 ═══════════════════════════════════════════════ -->
 <script type="module">
 
-/* ── Imports ── */
 import { initializeApp }
   from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
 import { getAuth, onAuthStateChanged,
@@ -674,7 +698,7 @@ import { getAuth, onAuthStateChanged,
 import { getFirestore, collection, onSnapshot }
   from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-/* ── Firebase config (same as app.html) ── */
+/* ─── Firebase config ─── */
 const firebaseConfig = {
   apiKey:            "AIzaSyCLvZzZ-Hx9LsvuL1zK4xuZcF_1P28h4sI",
   authDomain:        "mock-analysis-aaf4b.firebaseapp.com",
@@ -685,83 +709,77 @@ const firebaseConfig = {
 };
 const APP_ID = 'mock-tracker-pro-final';
 
-/* ── Exam configs (mirrored from app.html) ── */
+/* ─── Exam configs ─── */
 const EXAM_GROUPS = {
-  "SSC_CGL_CHSL": { name:"SSC CGL/CHSL", subjects:["Reasoning","GK","Quant","English"],  c:2,  w:0.5,  total:200 },
-  "RRB_NTPC":     { name:"RRB NTPC",     subjects:["GK/Science","Maths","Reasoning"],     c:1,  w:0.33, total:100 },
-  "SSC_MTS":      { name:"SSC MTS",      subjects:["Maths","Reasoning","GK","English"],   c:3,  w:1,    total:270 },
-  "BANK_PO":      { name:"Bank PO",      subjects:["English","Quant","Reasoning"],        c:1,  w:0.25, total:100 }
+  "SSC_CGL_CHSL": { name:"SSC CGL/CHSL", c:2,  w:0.5,  total:200, color:'#6366f1', icon:'🏛️' },
+  "RRB_NTPC":     { name:"RRB NTPC",     c:1,  w:0.33, total:100, color:'#10b981', icon:'🚆' },
+  "SSC_MTS":      { name:"SSC MTS",      c:3,  w:1,    total:270, color:'#a855f7', icon:'🏢' },
+  "BANK_PO":      { name:"Bank PO",      c:1,  w:0.25, total:100, color:'#f59e0b', icon:'🏦' }
+};
+/* normalised % score — makes cross-exam comparison fair */
+const normScore = (m) => {
+  const eg = EXAM_GROUPS[m.examGroup];
+  const max = eg ? eg.total : (m.max || 200);
+  return max > 0 ? (m.score / max) * 100 : 0;
 };
 
 const PALETTE = ['#6366f1','#d946ef','#10b981','#f59e0b','#3b82f6','#ec4899','#14b8a6','#8b5cf6'];
 
-/* ══════════════════════════════════════
-   FIREBASE — initialised ONCE at module level
-   This is the core fix: no more random-named
-   instances created on every loadAndRender call.
-══════════════════════════════════════ */
-const fApp    = initializeApp(firebaseConfig);
-const auth    = getAuth(fApp);
-const db      = getFirestore(fApp);
+/* ─── Firebase (initialised once) ─── */
+const fApp     = initializeApp(firebaseConfig);
+const auth     = getAuth(fApp);
+const db       = getFirestore(fApp);
 const provider = new GoogleAuthProvider();
 
-/* ── Module-level state ── */
-let allMocks         = [];
-let currentUser      = null;
-let currentExamGroup = null;
-let unsubMocks       = null;   // Firestore listener unsubscribe handle
-let charts           = { trend: null, donut: null };
+/* ─── State ─── */
+let allMocks    = [];   // ALL mocks — never filtered by exam
+let currentUser = null;
+let unsubMocks  = null;
+let charts      = { trend:null, donut:null, examBar:null };
 
-/* ── helpers ── */
+/* ─── DOM helpers ─── */
 const el  = id => document.getElementById(id);
 const fmt = n  => parseFloat(n).toFixed(1);
-const pct = (v, max) => max > 0 ? Math.min(100, (v / max) * 100) : 0;
 
 function isDark() { return document.documentElement.classList.contains('dark'); }
 
 function showToast(msg) {
-  const t = el('toast');
-  if (!t) return;
-  t.textContent = msg;
-  t.classList.add('show');
+  const t = el('toast'); if (!t) return;
+  t.textContent = msg; t.classList.add('show');
   setTimeout(() => t.classList.remove('show'), 2500);
 }
 
 function showState(which) {
-  // which: 'loading' | 'signin' | 'empty' | 'content'
   el('loading-state').classList.toggle('hidden', which !== 'loading');
   el('signin-state').classList.toggle('hidden',  which !== 'signin');
   el('empty-state').classList.toggle('hidden',   which !== 'empty');
   el('stats-content').classList.toggle('hidden', which !== 'content');
 }
 
-/* ── localStorage helpers ── */
-function getExamGroup() {
-  return localStorage.getItem('selected_exam_group') || null;
-}
-function getTargetScore(examGroup) {
-  if (!examGroup) return 160;
-  const v = parseInt(localStorage.getItem('mockpro_target_' + examGroup) || '0');
-  return v || (EXAM_GROUPS[examGroup]?.total
-    ? Math.round(EXAM_GROUPS[examGroup].total * 0.8)
-    : 160);
-}
+/* ─── localStorage helpers ─── */
 function getQueueMocks() {
   try { return JSON.parse(localStorage.getItem('mockpro_offline_queue') || '[]'); }
   catch { return []; }
 }
+// Best target per exam (for ring — use the currently-active exam's target)
+function getTargetScore(examGroup) {
+  if (!examGroup) return null;
+  const v = parseInt(localStorage.getItem('mockpro_target_' + examGroup) || '0');
+  return v || (EXAM_GROUPS[examGroup]?.total
+    ? Math.round(EXAM_GROUPS[examGroup].total * 0.8) : null);
+}
 
-/* ── theme ── */
+/* ─── Theme ─── */
 window.toggleTheme = function () {
   const dark = document.documentElement.classList.toggle('dark');
   localStorage.setItem('theme', dark ? 'dark' : 'light');
-  if (allMocks.length) renderCharts(allMocks);
+  if (allMocks.length) renderCharts(allMocks.slice().sort((a,b)=>new Date(a.date)-new Date(b.date)));
 };
 if (localStorage.getItem('theme') === 'dark') {
   document.documentElement.classList.add('dark');
 }
 
-/* ── Google sign-in (exposed globally for the button) ── */
+/* ─── Google sign-in ─── */
 window.signInWithGoogle = async function () {
   try {
     await signInWithPopup(auth, provider);
@@ -775,43 +793,28 @@ window.signInWithGoogle = async function () {
 };
 
 /* ════════════════════════════════════════════════
-   AUTH STATE LISTENER — set up ONCE at module level.
-   Reacts automatically whenever the user signs in/out,
-   or when the page first loads with an existing session.
+   AUTH STATE — loads ALL mocks, no exam filter
 ════════════════════════════════════════════════ */
 onAuthStateChanged(auth, user => {
   currentUser = user;
 
   if (user) {
-    /* ── Signed in ── */
-    // Show auth status chip
-    const chip = el('auth-status');
-    const name = el('auth-name');
+    const chip     = el('auth-status');
+    const nameEl   = el('auth-name');
     const signinBtn = el('btn-signin');
-    if (chip) { chip.classList.remove('hidden'); chip.classList.add('flex'); }
-    if (name) name.textContent = user.displayName
-      ? user.displayName.split(' ')[0] + ' · Synced'
-      : 'Synced';
+    if (chip)      { chip.classList.remove('hidden'); chip.classList.add('flex'); }
+    if (nameEl)    nameEl.textContent = user.displayName
+      ? user.displayName.split(' ')[0] + ' · Synced' : 'Synced';
     if (signinBtn) signinBtn.classList.add('hidden');
 
-    // Tear down any previous Firestore listener
     if (unsubMocks) { unsubMocks(); unsubMocks = null; }
-
     showState('loading');
-    currentExamGroup = getExamGroup();
 
-    // Real-time listener on the user's mocks collection
+    /* ── Load EVERY mock for this user — no exam group filter ── */
     unsubMocks = onSnapshot(
       collection(db, 'artifacts', APP_ID, 'users', user.uid, 'mocks'),
       snapshot => {
-        let mocks = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
-
-        // Filter to the selected exam group
-        if (currentExamGroup) {
-          mocks = mocks.filter(m => m.examGroup === currentExamGroup);
-        }
-
-        allMocks = mocks;
+        allMocks = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
         render(allMocks);
       },
       err => {
@@ -822,270 +825,394 @@ onAuthStateChanged(auth, user => {
     );
 
   } else {
-    /* ── Not signed in ── */
     if (unsubMocks) { unsubMocks(); unsubMocks = null; }
-
-    const chip = el('auth-status');
+    const chip     = el('auth-status');
     const signinBtn = el('btn-signin');
     if (chip)      { chip.classList.add('hidden'); chip.classList.remove('flex'); }
     if (signinBtn) { signinBtn.classList.remove('hidden'); signinBtn.classList.add('flex'); }
 
-    // Fall back to offline queue (mocks saved before sign-in)
-    currentExamGroup = getExamGroup();
-    const queue = getQueueMocks();
-    allMocks = currentExamGroup
-      ? queue.filter(m => m.examGroup === currentExamGroup)
-      : queue;
-
-    if (allMocks.length > 0) {
-      render(allMocks);
-    } else {
-      showState('signin');
-    }
+    // Fallback: offline queue (no filtering)
+    allMocks = getQueueMocks();
+    allMocks.length > 0 ? render(allMocks) : showState('signin');
   }
 });
 
-/* ════════════════════════════════════════
-   loadAndRender — now just re-triggers render
-   with current data (useful for manual refresh).
-   Firebase listener handles live updates automatically.
-════════════════════════════════════════ */
 window.loadAndRender = function () {
-  currentExamGroup = getExamGroup();
-
   if (currentUser) {
-    // Re-filter with potentially updated exam group
-    showState(allMocks.length ? 'content' : 'loading');
-    if (allMocks.length) render(allMocks);
+    showToast('🔄 Live data — updates automatically');
   } else {
-    const queue = getQueueMocks();
-    allMocks = currentExamGroup
-      ? queue.filter(m => m.examGroup === currentExamGroup)
-      : queue;
-    allMocks.length ? render(allMocks) : showState('signin');
+    allMocks = getQueueMocks();
+    allMocks.length > 0 ? render(allMocks) : showState('signin');
+    showToast('🔄 Refreshed');
   }
-  showToast('🔄 Refreshed');
 };
 
 /* ════════════════════════════════════════
-   RENDER — called whenever data changes
+   MAIN RENDER
 ════════════════════════════════════════ */
 function render(mocks) {
-  if (!mocks || mocks.length === 0) {
-    showState('empty');
-    return;
-  }
-
+  if (!mocks || mocks.length === 0) { showState('empty'); return; }
   showState('content');
 
-  const sorted      = mocks.slice().sort((a, b) => new Date(a.date) - new Date(b.date));
-  const examGroup   = currentExamGroup;
-  const group       = EXAM_GROUPS[examGroup] || { c:2, w:0.5, total:200, name:'All Exams' };
-  const target      = getTargetScore(examGroup);
-  const examLabel   = group.name || examGroup || 'All Exams';
+  const sorted = mocks.slice().sort((a,b) => new Date(a.date) - new Date(b.date));
 
-  // ── Badges ──
-  el('nav-exam-badge').textContent   = examLabel;
-  el('exam-group-badge').textContent = examLabel;
+  /* ── Which exams are present? ── */
+  const examGroups = [...new Set(sorted.map(m => m.examGroup).filter(Boolean))];
+  const examCount  = examGroups.length;
+
+  /* ── Header badges ── */
+  el('nav-exam-badge').textContent   = 'All Exams';
+  el('exam-group-badge').textContent = examCount + ' exam' + (examCount !== 1 ? 's' : '');
   el('page-subtitle').textContent    =
-    `${sorted.length} mock${sorted.length !== 1 ? 's' : ''} · ${examLabel} · Target: ${target}`;
+    `${sorted.length} total mock${sorted.length !== 1 ? 's' : ''} · ${examCount} exam${examCount !== 1 ? 's' : ''} · All-time stats`;
 
-  // ── Core stats ──
+  /* ── Global stats (raw scores — for display beside exam name) ── */
   const scores   = sorted.map(m => m.score);
   const best     = Math.max(...scores);
   const worst    = Math.min(...scores);
-  const avg      = scores.reduce((a, b) => a + b, 0) / scores.length;
+  const avg      = scores.reduce((a,b) => a+b, 0) / scores.length;
+  const bestMock = sorted.reduce((b, m) => m.score > (b?.score||0) ? m : b, null);
   const percs    = sorted.filter(m => m.perc).map(m => m.perc);
-  const avgPerc  = percs.length
-    ? (percs.reduce((a, b) => a + b, 0) / percs.length).toFixed(1)
-    : null;
-  const bestMock = sorted.find(m => m.score === best);
+  const avgPerc  = percs.length ? (percs.reduce((a,b)=>a+b,0)/percs.length).toFixed(1) : null;
   const ym       = new Date().toISOString().slice(0, 7);
   const thisMonth = sorted.filter(m => m.date?.startsWith(ym)).length;
 
-  // Overall accuracy from subjects
-  let totalC = 0, totalCW = 0;
-  sorted.forEach(m => {
-    (m.subjects || []).forEach(s => { totalC += s.c; totalCW += (s.c + s.w); });
-  });
-  const overallAcc = totalCW > 0 ? ((totalC / totalCW) * 100).toFixed(1) : null;
+  /* ── Normalised % scores (fair cross-exam comparison) ── */
+  const normScores    = sorted.map(normScore);
+  const bestNorm      = Math.max(...normScores);
+  const avgNorm       = normScores.reduce((a,b)=>a+b,0) / normScores.length;
+  const worstNorm     = Math.min(...normScores);
+  const bestNormMock  = sorted[normScores.indexOf(bestNorm)];
 
-  // Trend vs previous mock
+  /* ── Accuracy from subjects ── */
+  let totalC = 0, totalCW = 0;
+  sorted.forEach(m => { (m.subjects||[]).forEach(s => { totalC += s.c; totalCW += (s.c+s.w); }); });
+  const overallAcc = totalCW > 0 ? ((totalC/totalCW)*100).toFixed(1) : null;
+
+  /* ── Trend ── */
   const trendDelta = sorted.length >= 2
-    ? (sorted[sorted.length - 1].score - sorted[sorted.length - 2].score)
+    ? (normScore(sorted[sorted.length-1]) - normScore(sorted[sorted.length-2])).toFixed(1)
     : null;
 
-  // ── Fill summary cards ──
-  el('stat-best').textContent      = best;
-  el('stat-best-sub').textContent  = bestMock
-    ? bestMock.name.substring(0, 22) + (bestMock.name.length > 22 ? '…' : '')
+  /* ── Fill top summary cards ── */
+  // Best score shown as "X / MaxMarks (ExamName)"
+  el('stat-best').textContent = best;
+  el('stat-best-sub').textContent = bestMock
+    ? (bestMock.name||'').substring(0,20) + (bestMock.examGroup ? ' · ' + (EXAM_GROUPS[bestMock.examGroup]?.name||bestMock.examGroup) : '')
     : '';
-  el('stat-avg').textContent       = fmt(avg);
-  el('stat-total').textContent     = sorted.length;
-  el('stat-total-sub').textContent = `${thisMonth} this month`;
-  el('mini-perc').textContent      = avgPerc ? avgPerc + '%' : '—';
-  el('mini-low').textContent       = worst;
-  el('mini-month').textContent     = thisMonth + ' mocks';
-  el('mini-acc').textContent       = overallAcc ? overallAcc + '%' : '—';
+  el('stat-avg').textContent   = bestNorm.toFixed(1) + '%';  // show normalised best %
+  el('stat-total').textContent = sorted.length;
+  el('stat-total-sub').textContent = thisMonth + ' this month · ' + examCount + ' exam' + (examCount!==1?'s':'');
+  el('mini-perc').textContent  = avgPerc ? avgPerc + '%' : '—';
+  el('mini-low').textContent   = worst;
+  el('mini-month').textContent = thisMonth + ' mocks';
+  el('mini-acc').textContent   = overallAcc ? overallAcc + '%' : '—';
 
-  // Trend badge
+  // Stat avg card label — change to "Best %" across exams
+  const avgCard = el('stat-avg');
+  if (avgCard) {
+    const label = avgCard.previousElementSibling;
+    if (label) label.textContent = '🏅 Best % (Normalised)';
+  }
+
+  /* ── Trend badge ── */
   if (trendDelta !== null) {
     const badge = el('stat-trend-badge');
     const wrap  = el('stat-avg-trend');
-    const pos   = trendDelta >= 0;
-    badge.textContent = (pos ? '▲ +' : '▼ ') + fmt(trendDelta) + ' vs last mock';
+    const pos   = parseFloat(trendDelta) >= 0;
+    badge.textContent = (pos ? '▲ +' : '▼ ') + trendDelta + '% vs last mock';
     badge.className   = 'text-[10px] font-black px-2 py-0.5 rounded-lg ' +
-      (pos ? 'trend-up' : trendDelta < -2 ? 'trend-down' : 'trend-flat');
+      (pos ? 'trend-up' : parseFloat(trendDelta) < -2 ? 'trend-down' : 'trend-flat');
     wrap.classList.remove('hidden');
   }
 
-  // Streak
+  /* ── Streak ── */
   const streak = calcStreak(sorted);
-  el('stat-streak').textContent     = streak.current + (streak.current === 1 ? ' day' : ' days');
+  el('stat-streak').textContent     = streak.current + (streak.current===1?' day':' days');
   el('stat-streak-sub').textContent = streak.current > 0
-    ? (streak.current >= 7 ? '🔥 On fire!' : 'Keep going!')
-    : 'Start your streak today';
+    ? (streak.current >= 7 ? '🔥 On fire!' : 'Keep going!') : 'Start your streak today';
 
-  // ── Target ring ──
-  const ringPct = Math.min(100, (avg / target) * 100);
+  /* ── Target ring — use avg normalised % vs 100% ── */
+  const ringPct = Math.min(100, avgNorm);
   const circum  = 289;
-  const offset  = circum - (ringPct / 100) * circum;
   setTimeout(() => {
     const rf = el('ring-fill');
-    if (rf) rf.style.strokeDashoffset = offset;
+    if (rf) rf.style.strokeDashoffset = circum - (ringPct/100)*circum;
   }, 300);
-  el('ring-pct').textContent   = Math.round(ringPct) + '%';
-  el('ring-label').textContent = `Avg ${fmt(avg)} / Target ${target}`;
+  el('ring-pct').textContent   = ringPct.toFixed(1) + '%';
+  el('ring-label').textContent = `Avg ${ringPct.toFixed(1)}% across all exams`;
 
-  // ── Score breakdown bars ──
-  const maxScore = group.total;
-  el('bd-best').textContent = best;
-  el('bd-avg').textContent  = fmt(avg);
-  el('bd-low').textContent  = worst;
+  /* ── Score breakdown bars (use normalised %) ── */
+  el('bd-best').textContent = bestNorm.toFixed(1) + '%';
+  el('bd-avg').textContent  = avgNorm.toFixed(1) + '%';
+  el('bd-low').textContent  = worstNorm.toFixed(1) + '%';
   setTimeout(() => {
-    el('bd-best-bar').style.width = pct(best, maxScore) + '%';
-    el('bd-avg-bar').style.width  = pct(avg, maxScore) + '%';
-    el('bd-low-bar').style.width  = pct(worst, maxScore) + '%';
+    el('bd-best-bar').style.width = bestNorm + '%';
+    el('bd-avg-bar').style.width  = avgNorm + '%';
+    el('bd-low-bar').style.width  = worstNorm + '%';
   }, 400);
 
-  // ── Charts + sections ──
-  renderCharts(sorted, target, group, maxScore);
-  renderSubjectData(sorted, group);
+  // Update the breakdown section labels
+  const bdTitle = document.querySelector('.space-y-3 > p.text-\\[10px\\]');
+  if (bdTitle) bdTitle.textContent = 'Score % (normalised per exam)';
+
+  /* ── Render all sections ── */
+  renderCharts(sorted);
+  renderSubjectData(sorted);
   renderCalendar(sorted, streak);
   renderBestDay(sorted);
-  renderPlatforms(sorted, group);
-  renderSillyErrors(sorted, group);
+  renderPlatforms(sorted);
+  renderSillyErrors(sorted);
   renderRecentList(sorted);
+  renderExamBreakdown(sorted, examGroups);
 }
 
-/* ════════════════════════════════════
-   CHARTS
-════════════════════════════════════ */
-function renderCharts(sorted, target, group, maxScore) {
-  const dark  = isDark();
-  const gcol  = dark ? 'rgba(139,92,246,0.10)' : 'rgba(99,102,241,0.06)';
-  const tcol  = dark ? '#64748b' : '#94a3b8';
+/* ════════════════════════════════════════
+   PER-EXAM BREAKDOWN SECTION
+════════════════════════════════════════ */
+function renderExamBreakdown(sorted, examGroups) {
+  const grid  = el('exam-breakdown-grid');
+  const badge = el('exam-breakdown-count');
+  if (!grid) return;
 
-  const recent = sorted.slice(-10);
-  const labels = recent.map(m => m.date ? m.date.slice(5) : '');
-  const scores = recent.map(m => m.score);
-  const percs  = recent.map(m => m.perc || null);
-  const reg    = linearRegression(scores);
-  const trendLine = reg ? scores.map((_, i) => parseFloat(reg.predict(i).toFixed(1))) : [];
+  if (badge) badge.textContent = examGroups.length + ' exam' + (examGroups.length!==1?'s':'');
+
+  if (examGroups.length === 0) {
+    grid.innerHTML = '<p class="text-xs text-slate-400 text-center py-6 col-span-2">No exam data yet</p>';
+    return;
+  }
+
+  const dark = isDark();
+  const tc   = dark ? '#e2e8f0' : '#1e293b';
+
+  grid.innerHTML = examGroups.map((eg, idx) => {
+    const cfg     = EXAM_GROUPS[eg] || { name: eg, total: 200, color:'#6366f1', icon:'📝', c:2, w:0.5 };
+    const mocks   = sorted.filter(m => m.examGroup === eg);
+    const scores  = mocks.map(m => m.score);
+    const norms   = mocks.map(normScore);
+    const best    = Math.max(...scores);
+    const worst   = Math.min(...scores);
+    const avg     = scores.reduce((a,b)=>a+b,0) / scores.length;
+    const avgN    = norms.reduce((a,b)=>a+b,0) / norms.length;
+    const bestN   = Math.max(...norms);
+    const percs   = mocks.filter(m=>m.perc).map(m=>m.perc);
+    const avgPerc = percs.length ? (percs.reduce((a,b)=>a+b,0)/percs.length).toFixed(1) : null;
+    const sillies = mocks.reduce((a,m)=>a+(m.sillyMarks||0),0).toFixed(1);
+    const target  = getTargetScore(eg);
+    const aboveTgt = target ? mocks.filter(m=>m.score>=target).length : null;
+    const last3   = mocks.slice(-3).map(m=>m.score).join(', ');
+
+    // Streak/trend for this exam
+    const reg = linearRegression(scores);
+    const trendArrow = reg
+      ? (reg.m > 1.5 ? '📈 Rising' : reg.m < -1.5 ? '📉 Falling' : '➡️ Stable')
+      : '—';
+    const trendColor = reg
+      ? (reg.m > 1.5 ? '#10b981' : reg.m < -1.5 ? '#ef4444' : '#6366f1')
+      : '#94a3b8';
+
+    // Mini sparkline data for this exam's last 5
+    const last5N = mocks.slice(-5).map(normScore);
+
+    const color = cfg.color || PALETTE[idx % PALETTE.length];
+
+    return `
+    <div class="rounded-2xl overflow-hidden transition hover:scale-[1.01]"
+         style="background:rgba(255,255,255,0.5);backdrop-filter:blur(16px);
+                border:1px solid rgba(255,255,255,0.6);
+                box-shadow:0 4px 20px rgba(0,0,0,0.06);">
+
+      <!-- Card header -->
+      <div class="px-5 py-4 flex items-center justify-between"
+           style="background:linear-gradient(135deg,${color}18,${color}08);
+                  border-bottom:1px solid rgba(255,255,255,0.25);">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-2xl flex items-center justify-center text-lg shadow-md flex-shrink-0"
+               style="background:${color}22;border:1px solid ${color}40;">${cfg.icon||'📝'}</div>
+          <div>
+            <h4 class="text-sm font-black" style="color:${tc};">${cfg.name}</h4>
+            <div class="flex items-center gap-1.5 mt-0.5 flex-wrap">
+              <span class="text-[9px] font-black uppercase tracking-wider px-2 py-0.5 rounded"
+                    style="background:${color}18;color:${color};">${mocks.length} mock${mocks.length!==1?'s':''}</span>
+              ${aboveTgt !== null
+                ? `<span class="text-[9px] font-bold text-slate-400">${aboveTgt}/${mocks.length} above target</span>`
+                : ''}
+            </div>
+          </div>
+        </div>
+        <div class="text-right flex-shrink-0">
+          <div class="text-2xl font-black leading-none" style="color:${color};">${avg.toFixed(1)}</div>
+          <div class="text-[9px] font-bold text-slate-400 mt-0.5">avg / ${cfg.total}</div>
+        </div>
+      </div>
+
+      <!-- Stats grid -->
+      <div class="p-4 grid grid-cols-3 gap-3">
+        <div class="text-center p-3 rounded-xl" style="background:rgba(251,191,36,0.08);border:1px solid rgba(251,191,36,0.15);">
+          <p class="text-[9px] font-black text-amber-500 uppercase tracking-wider mb-0.5">Best</p>
+          <p class="text-lg font-black text-amber-500">${best}</p>
+          <p class="text-[9px] text-slate-400 font-bold">${(best/cfg.total*100).toFixed(0)}%</p>
+        </div>
+        <div class="text-center p-3 rounded-xl" style="background:${color}10;border:1px solid ${color}20;">
+          <p class="text-[9px] font-black uppercase tracking-wider mb-0.5" style="color:${color};">Avg %</p>
+          <p class="text-lg font-black" style="color:${color};">${avgN.toFixed(1)}%</p>
+          <p class="text-[9px] text-slate-400 font-bold">normalised</p>
+        </div>
+        <div class="text-center p-3 rounded-xl" style="background:rgba(239,68,68,0.06);border:1px solid rgba(239,68,68,0.12);">
+          <p class="text-[9px] font-black text-rose-500 uppercase tracking-wider mb-0.5">Lowest</p>
+          <p class="text-lg font-black text-rose-500">${worst}</p>
+          <p class="text-[9px] text-slate-400 font-bold">${(worst/cfg.total*100).toFixed(0)}%</p>
+        </div>
+      </div>
+
+      <!-- Footer row -->
+      <div class="px-4 pb-4 flex items-center justify-between flex-wrap gap-2">
+        <div class="flex items-center gap-3 flex-wrap">
+          ${avgPerc ? `<span class="text-[10px] font-bold px-2 py-0.5 rounded-lg" style="background:rgba(99,102,241,0.1);color:#6366f1;">🎯 ${avgPerc}%ile avg</span>` : ''}
+          <span class="text-[10px] font-bold px-2 py-0.5 rounded-lg" style="background:rgba(239,68,68,0.08);color:#ef4444;">🐛 -${sillies} silly</span>
+        </div>
+        <span class="text-[10px] font-black" style="color:${trendColor};">${trendArrow}</span>
+      </div>
+
+      ${last3 ? `
+      <div class="px-4 pb-4">
+        <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1">Last 3 scores</p>
+        <p class="text-xs font-black" style="color:${color};">${last3}</p>
+      </div>` : ''}
+    </div>`;
+  }).join('');
+}
+
+/* ════════════════════════════════════════
+   SCORE TREND CHART  (normalised %)
+════════════════════════════════════════ */
+function renderCharts(sorted) {
+  const dark = isDark();
+  const gcol = dark ? 'rgba(139,92,246,0.10)' : 'rgba(99,102,241,0.06)';
+  const tcol = dark ? '#64748b' : '#94a3b8';
+
+  const recent = sorted.slice(-15);
+  // Normalised % for cross-exam fairness
+  const labels = recent.map(m => {
+    const eg  = EXAM_GROUPS[m.examGroup];
+    const tag = eg ? eg.name.split('/')[0].replace('SSC ','').replace('RRB ','').replace('Bank ','') : '';
+    return (m.date||'').slice(5) + (tag ? ' · '+tag : '');
+  });
+  const norms = recent.map(normScore);
+  const percs = recent.map(m => m.perc||null);
+  const reg   = linearRegression(norms);
+  const trend = reg ? norms.map((_,i) => parseFloat(reg.predict(i).toFixed(1))) : [];
+
+  // Color each point by its exam group
+  const pointColors = recent.map(m => EXAM_GROUPS[m.examGroup]?.color || '#6366f1');
 
   if (charts.trend) { charts.trend.destroy(); charts.trend = null; }
-  const ctxTrend = el('chart-trend');
-  if (ctxTrend) {
-    const datasets = [
-      {
-        label: 'Score',
-        data: scores,
-        borderColor: '#6366f1',
-        backgroundColor: 'rgba(99,102,241,0.07)',
-        fill: true, tension: 0.42, borderWidth: 3,
-        pointBackgroundColor: '#6366f1', pointRadius: 5, pointHoverRadius: 7, order: 1
-      },
-      {
-        label: 'Percentile',
-        data: percs,
-        borderColor: '#d946ef', borderDash: [5, 4],
-        fill: false, tension: 0.4, borderWidth: 2,
-        pointBackgroundColor: '#d946ef', pointRadius: 3, pointHoverRadius: 5,
-        order: 2, spanGaps: true
-      }
-    ];
-    if (target) {
-      datasets.push({
-        label: 'Target',
-        data: recent.map(() => target),
-        borderColor: '#f59e0b', borderDash: [4, 4],
-        fill: false, borderWidth: 2, pointRadius: 0, tension: 0, order: 3
-      });
-    }
-    if (trendLine.length) {
-      datasets.push({
-        label: 'Trend',
-        data: trendLine,
-        borderColor: 'rgba(16,185,129,0.65)', borderDash: [2, 3],
-        fill: false, borderWidth: 2, pointRadius: 0, tension: 0, order: 4
-      });
-    }
+  const ctx = el('chart-trend');
+  if (!ctx) return;
 
-    charts.trend = new Chart(ctxTrend.getContext('2d'), {
-      type: 'line',
-      data: { labels, datasets },
-      options: {
-        responsive: true, maintainAspectRatio: false,
-        interaction: { mode: 'index', intersect: false },
-        scales: {
-          x: { grid: { display: false }, ticks: { font: { weight: '800', size: 10 }, color: tcol } },
-          y: { beginAtZero: false, grid: { color: gcol }, ticks: { font: { weight: '800', size: 10 }, color: tcol } }
+  const datasets = [
+    {
+      label: 'Score %',
+      data: norms.map(n => parseFloat(n.toFixed(1))),
+      borderColor: '#6366f1',
+      backgroundColor: 'rgba(99,102,241,0.07)',
+      fill: true, tension: 0.42, borderWidth: 3,
+      pointBackgroundColor: pointColors,
+      pointBorderColor: pointColors,
+      pointRadius: 6, pointHoverRadius: 8, order: 1
+    },
+    {
+      label: 'Percentile',
+      data: percs,
+      borderColor: '#d946ef', borderDash: [5,4],
+      fill: false, tension: 0.4, borderWidth: 2,
+      pointBackgroundColor: '#d946ef', pointRadius: 3, pointHoverRadius: 5,
+      order: 2, spanGaps: true
+    }
+  ];
+  if (trend.length) {
+    datasets.push({
+      label: 'Trend',
+      data: trend,
+      borderColor: 'rgba(16,185,129,0.65)', borderDash:[2,3],
+      fill: false, borderWidth:2, pointRadius:0, tension:0, order:3
+    });
+  }
+
+  charts.trend = new Chart(ctx.getContext('2d'), {
+    type: 'line',
+    data: { labels, datasets },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      interaction: { mode:'index', intersect:false },
+      scales: {
+        x: { grid:{display:false}, ticks:{ font:{weight:'800',size:9}, color:tcol, maxRotation:45 } },
+        y: {
+          beginAtZero: false,
+          grid: { color:gcol },
+          ticks: { font:{weight:'800',size:10}, color:tcol, callback: v => v+'%' }
+        }
+      },
+      plugins: {
+        legend: {
+          display: true,
+          labels: { usePointStyle:true, pointStyle:'line', font:{size:10,weight:'bold'}, color:tcol, boxWidth:22, padding:12 }
         },
-        plugins: {
-          legend: {
-            display: true,
-            labels: { usePointStyle: true, pointStyle: 'line', font: { size: 10, weight: 'bold' }, color: tcol, boxWidth: 22, padding: 12 }
-          },
-          tooltip: {
-            backgroundColor: dark ? 'rgba(14,10,31,0.92)' : 'rgba(255,255,255,0.95)',
-            titleColor: dark ? '#e2e8f0' : '#1e293b',
-            bodyColor: dark ? '#94a3b8' : '#475569',
-            borderColor: dark ? 'rgba(139,92,246,0.25)' : 'rgba(99,102,241,0.18)',
-            borderWidth: 1, titleFont: { weight: '900', size: 12 }, bodyFont: { weight: '600', size: 11 },
-            padding: 12, cornerRadius: 12
+        tooltip: {
+          backgroundColor: dark ? 'rgba(14,10,31,0.92)' : 'rgba(255,255,255,0.95)',
+          titleColor: dark?'#e2e8f0':'#1e293b', bodyColor: dark?'#94a3b8':'#475569',
+          borderColor: dark?'rgba(139,92,246,0.25)':'rgba(99,102,241,0.18)',
+          borderWidth:1, titleFont:{weight:'900',size:12}, bodyFont:{weight:'600',size:11},
+          padding:12, cornerRadius:12,
+          callbacks: {
+            beforeTitle: items => {
+              const m = sorted.slice(-15)[items[0].dataIndex];
+              return m ? (EXAM_GROUPS[m.examGroup]?.name || m.examGroup || '') : '';
+            },
+            label: ctx => {
+              if (ctx.dataset.label === 'Score %') return ` Score: ${ctx.parsed.y}%`;
+              if (ctx.dataset.label === 'Percentile') return ctx.parsed.y !== null ? ` Percentile: ${ctx.parsed.y}` : null;
+              if (ctx.dataset.label === 'Trend') return ` Trend: ${ctx.parsed.y}%`;
+              return null;
+            }
           }
         }
       }
-    });
+    }
+  });
 
-    // Trend insight strip
-    if (reg) {
-      const slope = reg.m;
-      const gap   = (target || 0) - avg;
-      const ins   = el('trend-insight');
-      if (ins) {
-        const msg = slope > 1.5
-          ? `📈 Rising at +${slope.toFixed(1)} pts/mock — great momentum! ${gap > 0 ? `~${Math.ceil(gap / slope)} more mocks to hit target.` : '🎉 Target met!'}`
-          : slope < -1.5
-          ? `📉 Slipping by ${Math.abs(slope).toFixed(1)} pts/mock — review your recent errors.`
-          : `➡️ Scores are stable. Cut silly errors to push +5 marks per mock.`;
-        ins.textContent = msg;
-        ins.style.display = '';
-      }
+  // Trend chart title update
+  const trendLabel = document.querySelector('#chart-trend')?.closest('.glass-card')?.querySelector('h3 span.text-\\[10px\\]');
+  if (trendLabel) trendLabel.textContent = 'last 15 mocks · normalised %';
+
+  // Insight strip
+  if (reg) {
+    const slope = reg.m;
+    const ins   = el('trend-insight');
+    if (ins) {
+      const msg = slope > 1.5
+        ? `📈 Improving at +${slope.toFixed(1)}%/mock across all exams — excellent!`
+        : slope < -1.5
+        ? `📉 Score % slipping by ${Math.abs(slope).toFixed(1)}%/mock — review your errors.`
+        : `➡️ Performance is stable. Focus on cutting silly errors for +5%.`;
+      ins.textContent = msg; ins.style.display = '';
     }
   }
 }
 
 /* ── Subject donut + table ── */
-function renderSubjectData(sorted, group) {
+function renderSubjectData(sorted) {
+  // Aggregate across ALL exams
   const subAgg = {};
   sorted.forEach(m => {
+    const cfg = EXAM_GROUPS[m.examGroup] || { c:2, w:0.5 };
     (m.subjects || []).forEach(s => {
-      if (!subAgg[s.name]) subAgg[s.name] = { c:0, w:0, score:0, n:0 };
-      subAgg[s.name].c     += s.c;
-      subAgg[s.name].w     += s.w;
-      subAgg[s.name].score += (s.c * group.c) - (s.w * group.w);
-      subAgg[s.name].n     ++;
+      const key = s.name + (m.examGroup ? ' ('+((EXAM_GROUPS[m.examGroup]?.name||'').split('/')[0])+')' : '');
+      if (!subAgg[key]) subAgg[key] = { c:0, w:0, score:0, n:0 };
+      subAgg[key].c     += s.c;
+      subAgg[key].w     += s.w;
+      subAgg[key].score += (s.c * cfg.c) - (s.w * cfg.w);
+      subAgg[key].n     ++;
     });
   });
 
@@ -1106,7 +1233,7 @@ function renderSubjectData(sorted, group) {
     const d = subAgg[name];
     return d.c + d.w > 0 ? d.c / (d.c + d.w) * 100 : 0;
   });
-  const overallAcc = accArr.reduce((a, b) => a + b, 0) / accArr.length;
+  const overallAcc = accArr.reduce((a,b)=>a+b,0) / accArr.length;
   const weakest    = subjects[accArr.indexOf(Math.min(...accArr))];
   const strongest  = subjects[accArr.indexOf(Math.max(...accArr))];
 
@@ -1119,8 +1246,8 @@ function renderSubjectData(sorted, group) {
         labels: subjects,
         datasets: [{
           data: accArr.map(a => parseFloat(a.toFixed(1))),
-          backgroundColor: subjects.map((_, i) => PALETTE[i % PALETTE.length] + 'CC'),
-          borderColor:     subjects.map((_, i) => PALETTE[i % PALETTE.length]),
+          backgroundColor: subjects.map((_,i) => PALETTE[i%PALETTE.length]+'CC'),
+          borderColor:     subjects.map((_,i) => PALETTE[i%PALETTE.length]),
           borderWidth: 2, hoverOffset: 8
         }]
       },
@@ -1128,7 +1255,7 @@ function renderSubjectData(sorted, group) {
         responsive: false, cutout: '68%',
         plugins: {
           legend: { display: false },
-          tooltip: { callbacks: { label: ctx => ` ${ctx.label}: ${ctx.parsed.toFixed(1)}% accuracy` } }
+          tooltip: { callbacks: { label: ctx => ` ${ctx.label}: ${ctx.parsed.toFixed(1)}%` } }
         }
       }
     });
@@ -1137,7 +1264,7 @@ function renderSubjectData(sorted, group) {
     const leg = el('donut-legend');
     if (leg) {
       leg.innerHTML = subjects.map((name, i) => {
-        const col = PALETTE[i % PALETTE.length];
+        const col = PALETTE[i%PALETTE.length];
         return `<div class="flex items-center justify-between gap-2">
           <div class="flex items-center gap-1.5 min-w-0">
             <div style="width:10px;height:10px;border-radius:3px;background:${col};flex-shrink:0;"></div>
@@ -1147,9 +1274,8 @@ function renderSubjectData(sorted, group) {
         </div>`;
       }).join('');
     }
-
     if (ins) {
-      ins.textContent = `💡 Strongest: ${strongest} · Focus more on: ${weakest}`;
+      ins.textContent = `💡 Strongest: ${strongest.split(' (')[0]} · Needs work: ${weakest.split(' (')[0]}`;
       ins.classList.remove('hidden');
     }
   }
@@ -1159,7 +1285,7 @@ function renderSubjectData(sorted, group) {
       const d   = subAgg[name];
       const acc = accArr[i];
       const avg = (d.score / d.n).toFixed(1);
-      const col = PALETTE[i % PALETTE.length];
+      const col = PALETTE[i%PALETTE.length];
       const status  = acc > 85 ? 'Expert' : acc > 65 ? 'Solid' : 'Needs Work';
       const statCol = acc > 85
         ? 'bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400'
@@ -1183,172 +1309,141 @@ function renderSubjectData(sorted, group) {
 
 function renderDonutEmpty() {
   if (charts.donut) { charts.donut.destroy(); charts.donut = null; }
-  const ctxD = el('chart-donut');
-  if (!ctxD) return;
+  const ctxD = el('chart-donut'); if (!ctxD) return;
   charts.donut = new Chart(ctxD.getContext('2d'), {
     type: 'doughnut',
-    data: {
-      labels: ['No subject data'],
-      datasets: [{ data:[1], backgroundColor:['rgba(99,102,241,0.1)'], borderColor:['rgba(99,102,241,0.2)'], borderWidth:1 }]
-    },
+    data: { labels:['No data'], datasets:[{ data:[1], backgroundColor:['rgba(99,102,241,0.1)'], borderColor:['rgba(99,102,241,0.2)'], borderWidth:1 }] },
     options: { responsive:false, cutout:'68%', plugins:{ legend:{display:false}, tooltip:{enabled:false} } }
   });
   el('donut-pct').textContent = '—';
 }
 
-/* ── Calendar (8 weeks = 56 days) ── */
+/* ── Calendar ── */
 function renderCalendar(sorted, streak) {
-  const grid = el('calendar-grid');
-  if (!grid) return;
-
+  const grid = el('calendar-grid'); if (!grid) return;
   const dateMap = {};
-  sorted.forEach(m => { if (m.date) dateMap[m.date] = (dateMap[m.date] || 0) + 1; });
-
+  sorted.forEach(m => { if (m.date) dateMap[m.date] = (dateMap[m.date]||0)+1; });
   const today = new Date(); today.setHours(0,0,0,0);
   const cells = [];
-  for (let i = 55; i >= 0; i--) {
-    const d = new Date(today); d.setDate(d.getDate() - i);
-    cells.push(d.toISOString().slice(0, 10));
-  }
-
-  const maxCount = Math.max(...cells.map(d => dateMap[d] || 0), 1);
+  for (let i=55;i>=0;i--) { const d=new Date(today); d.setDate(d.getDate()-i); cells.push(d.toISOString().slice(0,10)); }
+  const maxCount = Math.max(...cells.map(d=>dateMap[d]||0),1);
   grid.innerHTML = cells.map(dateStr => {
-    const count   = dateMap[dateStr] || 0;
-    const opacity = count === 0 ? 0.08 : 0.2 + (count / maxCount) * 0.78;
-    const border  = count > 0 ? `rgba(99,102,241,${Math.min(1, opacity + 0.2)})` : 'transparent';
-    const title   = count > 0 ? `${dateStr}: ${count} mock${count > 1 ? 's' : ''}` : dateStr;
-    return `<div class="day-cell" title="${title}"
-              style="background:rgba(99,102,241,${opacity});border:1px solid ${border};"></div>`;
+    const count   = dateMap[dateStr]||0;
+    const opacity = count===0 ? 0.08 : 0.2+(count/maxCount)*0.78;
+    const border  = count>0 ? `rgba(99,102,241,${Math.min(1,opacity+0.2)})` : 'transparent';
+    const title   = count>0 ? `${dateStr}: ${count} mock${count>1?'s':''}` : dateStr;
+    return `<div class="day-cell" title="${title}" style="background:rgba(99,102,241,${opacity});border:1px solid ${border};"></div>`;
   }).join('');
-
-  el('streak-summary').textContent = `Current streak: ${streak.current} day${streak.current !== 1 ? 's' : ''}`;
-  el('longest-streak').textContent = `Longest: ${streak.longest} day${streak.longest !== 1 ? 's' : ''}`;
+  el('streak-summary').textContent = `Current streak: ${streak.current} day${streak.current!==1?'s':''}`;
+  el('longest-streak').textContent = `Longest: ${streak.longest} day${streak.longest!==1?'s':''}`;
 }
 
 /* ── Best day of week ── */
 function renderBestDay(sorted) {
   const days    = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
-  const dayData = days.map((_, i) => {
-    const mocks = sorted.filter(m => new Date(m.date).getDay() === i);
-    const avg   = mocks.length ? mocks.reduce((a, m) => a + m.score, 0) / mocks.length : 0;
-    return { count: mocks.length, avg };
+  const dayData = days.map((_,i) => {
+    const mocks = sorted.filter(m => new Date(m.date).getDay()===i);
+    const avg   = mocks.length ? mocks.map(normScore).reduce((a,b)=>a+b,0)/mocks.length : 0;
+    return { count:mocks.length, avg };
   });
-  const maxAvg  = Math.max(...dayData.map(d => d.avg), 1);
-  const bestIdx = dayData.findIndex(d => d.count > 0 && d.avg === maxAvg);
-
-  const grid = el('best-day-grid');
-  if (grid) {
-    grid.innerHTML = days.map((name, i) => {
-      const d      = dayData[i];
-      const isBest = i === bestIdx && d.count > 0;
-      const alpha  = d.count === 0 ? 0.07 : 0.12 + (d.avg / maxAvg) * 0.75;
-      return `<div class="rounded-2xl p-2 text-center transition hover:scale-110 cursor-default
-              ${isBest ? 'ring-2 ring-indigo-500/60 shadow-lg shadow-indigo-500/20' : ''}"
-              style="background:rgba(99,102,241,${alpha});">
-        <p class="text-[9px] font-black uppercase tracking-wide
-                  ${isBest ? 'text-indigo-500' : 'text-slate-500 dark:text-slate-400'}">${name}</p>
-        <p class="text-sm font-black mt-0.5
-                  ${isBest ? 'text-gradient' : 'text-slate-400'}">${d.count ? d.avg.toFixed(0) : '–'}</p>
-        <p class="text-[8px] font-bold text-slate-400">${d.count || ''}</p>
-      </div>`;
-    }).join('');
-  }
-
+  const maxAvg  = Math.max(...dayData.map(d=>d.avg),1);
+  const bestIdx = dayData.findIndex(d=>d.count>0&&d.avg===maxAvg);
+  const grid = el('best-day-grid'); if (!grid) return;
+  grid.innerHTML = days.map((name,i) => {
+    const d=dayData[i]; const isBest=i===bestIdx&&d.count>0;
+    const alpha=d.count===0?0.07:0.12+(d.avg/maxAvg)*0.75;
+    return `<div class="rounded-2xl p-2 text-center transition hover:scale-110 cursor-default
+            ${isBest?'ring-2 ring-indigo-500/60 shadow-lg shadow-indigo-500/20':''}"
+            style="background:rgba(99,102,241,${alpha});">
+      <p class="text-[9px] font-black uppercase tracking-wide ${isBest?'text-indigo-500':'text-slate-500 dark:text-slate-400'}">${name}</p>
+      <p class="text-sm font-black mt-0.5 ${isBest?'text-gradient':'text-slate-400'}">${d.count?d.avg.toFixed(0)+'%':'–'}</p>
+      <p class="text-[8px] font-bold text-slate-400">${d.count||''}</p>
+    </div>`;
+  }).join('');
   const ins = el('best-day-insight');
-  if (ins && bestIdx >= 0) {
-    ins.textContent = `You perform best on ${days[bestIdx]}s — avg ${maxAvg.toFixed(1)} 💡`;
-  }
+  if (ins&&bestIdx>=0) ins.textContent = `Best day: ${days[bestIdx]} (avg ${maxAvg.toFixed(1)}% normalised) 💡`;
 }
 
 /* ── Platform list ── */
-function renderPlatforms(sorted, group) {
+function renderPlatforms(sorted) {
   const platMap = {};
   sorted.forEach(m => {
     if (!platMap[m.platform]) platMap[m.platform] = [];
-    platMap[m.platform].push(m.max ? (m.score / m.max) * 100 : 0);
+    platMap[m.platform].push(normScore(m));
   });
   const plats = Object.entries(platMap)
-    .map(([name, arr]) => ({ name, avg: arr.reduce((a, b) => a + b, 0) / arr.length, n: arr.length }))
-    .sort((a, b) => b.avg - a.avg);
-
-  const list = el('platform-list');
-  if (!list) return;
-  const max = plats[0]?.avg || 1;
-  list.innerHTML = plats.slice(0, 5).map((p, i) => {
-    const col = PALETTE[i % PALETTE.length];
+    .map(([name,arr]) => ({ name, avg:arr.reduce((a,b)=>a+b,0)/arr.length, n:arr.length }))
+    .sort((a,b)=>b.avg-a.avg);
+  const list = el('platform-list'); if (!list) return;
+  const max  = plats[0]?.avg||1;
+  list.innerHTML = plats.slice(0,6).map((p,i) => {
+    const col = PALETTE[i%PALETTE.length];
     return `<div>
       <div class="flex items-center justify-between mb-1">
         <span class="text-xs font-bold text-slate-600 dark:text-slate-300 truncate">${p.name}</span>
-        <span class="text-xs font-black flex-shrink-0 ml-2" style="color:${col};">
-          ${p.avg.toFixed(1)}% <span class="text-slate-400 font-normal">(${p.n})</span>
-        </span>
+        <span class="text-xs font-black flex-shrink-0 ml-2" style="color:${col};">${p.avg.toFixed(1)}% <span class="text-slate-400 font-normal">(${p.n})</span></span>
       </div>
-      <div class="perf-bar-track">
-        <div class="perf-bar-fill" style="width:${(p.avg / max) * 100}%;background:${col};"></div>
-      </div>
+      <div class="perf-bar-track"><div class="perf-bar-fill" style="width:${(p.avg/max)*100}%;background:${col};"></div></div>
     </div>`;
   }).join('') || '<p class="text-xs text-slate-400 text-center py-3">No platform data</p>';
 }
 
-/* ── Silly errors section ── */
-function renderSillyErrors(sorted, group) {
-  const withSilly = sorted.filter(m => m.sillyMarks > 0);
-  const total     = sorted.reduce((a, m) => a + (m.sillyMarks || 0), 0);
-  const avg       = sorted.length ? (total / sorted.length).toFixed(1) : 0;
-
+/* ── Silly errors ── */
+function renderSillyErrors(sorted) {
+  const total = sorted.reduce((a,m)=>a+(m.sillyMarks||0),0);
+  const avg   = sorted.length ? (total/sorted.length).toFixed(1) : 0;
   el('silly-total').textContent = total.toFixed(1);
   el('silly-avg').textContent   = avg;
+  const withSilly = sorted.filter(m=>m.sillyMarks>0);
+  const maxSily   = Math.max(...withSilly.map(m=>m.sillyMarks),1);
+  const list = el('silly-bar-list'); if (!list) return;
+  list.innerHTML = withSilly.slice(-6).reverse().map(m => {
+    const w = (m.sillyMarks/maxSily)*100;
+    const examLabel = EXAM_GROUPS[m.examGroup]?.name?.split('/')[0] || '';
+    return `<div>
+      <div class="flex items-center justify-between mb-0.5">
+        <span class="text-[10px] font-bold text-slate-600 dark:text-slate-300 truncate">${m.name.substring(0,22)} <span class="text-slate-400">${examLabel}</span></span>
+        <span class="text-[10px] font-black text-rose-500 flex-shrink-0 ml-2">-${m.sillyMarks.toFixed(1)}</span>
+      </div>
+      <div class="perf-bar-track"><div class="perf-bar-fill" style="width:${w}%;background:linear-gradient(90deg,#ef4444,#dc2626);"></div></div>
+    </div>`;
+  }).join('') || '<p class="text-xs text-slate-400 text-center py-2">No silly error data logged</p>';
 
-  const list    = el('silly-bar-list');
-  const maxSily = Math.max(...withSilly.map(m => m.sillyMarks), 1);
-  if (list) {
-    list.innerHTML = withSilly.slice(-5).reverse().map(m => {
-      const w = (m.sillyMarks / maxSily) * 100;
-      return `<div>
-        <div class="flex items-center justify-between mb-0.5">
-          <span class="text-[10px] font-bold text-slate-600 dark:text-slate-300 truncate">${m.name.substring(0, 28)}</span>
-          <span class="text-[10px] font-black text-rose-500 flex-shrink-0 ml-2">-${m.sillyMarks.toFixed(1)}</span>
-        </div>
-        <div class="perf-bar-track">
-          <div class="perf-bar-fill" style="width:${w}%;background:linear-gradient(90deg,#ef4444,#dc2626);"></div>
-        </div>
-      </div>`;
-    }).join('') || '<p class="text-xs text-slate-400 text-center py-2">No silly error data logged</p>';
-  }
-
-  const ins = el('silly-insight');
-  if (ins) {
-    const earned = sorted.reduce((a, m) => {
-      if (m.quickEntry) return a + (m.quickCorrect || 0) * group.c;
-      return a + (m.subjects || []).reduce((b, s) => b + s.c * group.c, 0);
-    }, 0);
-    const ratio = earned > 0 ? ((total / earned) * 100).toFixed(1) : 0;
-    ins.textContent = `Silly errors = ${ratio}% of earned marks. ${
-      parseFloat(ratio) < 8  ? '✅ Very disciplined!' :
-      parseFloat(ratio) < 15 ? '⚠️ Room to improve.' :
-      '🚨 Errors are significantly hurting your score.'
-    }`;
-  }
+  const ins = el('silly-insight'); if (!ins) return;
+  const earned = sorted.reduce((a,m)=>{
+    const cfg = EXAM_GROUPS[m.examGroup]||{c:2};
+    if (m.quickEntry) return a+(m.quickCorrect||0)*cfg.c;
+    return a+(m.subjects||[]).reduce((b,s)=>b+s.c*cfg.c,0);
+  },0);
+  const ratio = earned>0?((total/earned)*100).toFixed(1):0;
+  ins.textContent = `Silly errors = ${ratio}% of earned marks. ${
+    parseFloat(ratio)<8?'✅ Very disciplined!':parseFloat(ratio)<15?'⚠️ Room to improve.':'🚨 Errors significantly hurting your score.'
+  }`;
 }
 
-/* ── Recent mocks mini list ── */
+/* ── Recent mocks list ── */
 function renderRecentList(sorted) {
-  const list = el('recent-list');
-  if (!list) return;
-  const recent = sorted.slice().reverse().slice(0, 6);
+  const list = el('recent-list'); if (!list) return;
+  const recent = sorted.slice().reverse().slice(0,7);
   list.innerHTML = recent.map(m => {
-    const p   = m.max ? ((m.score / m.max) * 100).toFixed(0) : '—';
-    const col = parseFloat(p) >= 70 ? '#10b981' : parseFloat(p) >= 50 ? '#6366f1' : '#ef4444';
+    const eg  = EXAM_GROUPS[m.examGroup];
+    const norm = normScore(m);
+    const col = eg?.color || (norm>=70?'#10b981':norm>=50?'#6366f1':'#ef4444');
+    const egName = eg ? eg.name.split('/')[0] : (m.examGroup||'');
     return `<div class="flex items-center justify-between p-3 rounded-2xl
                 bg-white/30 dark:bg-white/5 hover:bg-white/50 dark:hover:bg-white/8
                 transition border border-white/40 dark:border-white/5 gap-3">
       <div class="min-w-0 flex-1">
         <p class="text-xs font-black text-slate-700 dark:text-slate-200 truncate">${m.name}</p>
-        <p class="text-[10px] font-semibold text-slate-400 mt-0.5">${m.date} · ${m.platform || '—'}</p>
+        <div class="flex items-center gap-1.5 mt-0.5 flex-wrap">
+          <span class="text-[9px] font-bold text-slate-400">${m.date}</span>
+          ${egName?`<span class="text-[9px] font-black px-1.5 py-0.5 rounded" style="background:${col}18;color:${col};">${egName}</span>`:''}
+          <span class="text-[9px] font-bold text-slate-400">${m.platform||''}</span>
+        </div>
       </div>
       <div class="text-right flex-shrink-0">
         <p class="text-sm font-black" style="color:${col};">${m.score}</p>
-        <p class="text-[9px] font-bold text-slate-400">${p}%</p>
+        <p class="text-[9px] font-bold text-slate-400">${norm.toFixed(0)}%</p>
       </div>
     </div>`;
   }).join('') || '<p class="text-xs text-slate-400 text-center py-4">No mocks yet</p>';
@@ -1356,39 +1451,37 @@ function renderRecentList(sorted) {
 
 /* ── Helpers ── */
 function calcStreak(sorted) {
-  const dates  = [...new Set(sorted.map(m => m.date))].sort((a, b) => new Date(b) - new Date(a));
-  const today  = new Date().toISOString().slice(0, 10);
+  const dates  = [...new Set(sorted.map(m=>m.date))].sort((a,b)=>new Date(b)-new Date(a));
+  const today  = new Date().toISOString().slice(0,10);
   let current  = 0, check = today;
   for (const d of dates) {
-    if (d === check) {
+    if (d===check) {
       current++;
-      const dt = new Date(check); dt.setDate(dt.getDate() - 1);
-      check = dt.toISOString().slice(0, 10);
-    } else if (d < check) break;
+      const dt=new Date(check); dt.setDate(dt.getDate()-1);
+      check=dt.toISOString().slice(0,10);
+    } else if (d<check) break;
   }
-  let longest = 0, run = 0;
-  const allDates = [...new Set(sorted.map(m => m.date))].sort();
-  for (let i = 0; i < allDates.length; i++) {
-    if (i === 0) { run = 1; continue; }
-    const diff = (new Date(allDates[i]) - new Date(allDates[i - 1])) / 86400000;
-    run = diff === 1 ? run + 1 : 1;
-    if (run > longest) longest = run;
+  let longest=0, run=0;
+  const allDates=[...new Set(sorted.map(m=>m.date))].sort();
+  for (let i=0;i<allDates.length;i++) {
+    if (i===0){run=1;continue;}
+    const diff=(new Date(allDates[i])-new Date(allDates[i-1]))/86400000;
+    run=diff===1?run+1:1;
+    if(run>longest)longest=run;
   }
-  if (run > longest) longest = run;
+  if(run>longest)longest=run;
   return { current, longest };
 }
 
 function linearRegression(ys) {
-  const n = ys.length;
-  if (n < 2) return null;
-  const xs  = ys.map((_, i) => i);
-  const sx  = xs.reduce((a, b) => a + b, 0);
-  const sy  = ys.reduce((a, b) => a + b, 0);
-  const sxy = xs.reduce((acc, x, i) => acc + x * ys[i], 0);
-  const sx2 = xs.reduce((acc, x) => acc + x * x, 0);
-  const m   = (n * sxy - sx * sy) / (n * sx2 - sx * sx);
-  const b   = (sy - m * sx) / n;
-  return { m, b, predict: x => Math.max(0, m * x + b) };
+  const n=ys.length; if(n<2) return null;
+  const xs=ys.map((_,i)=>i);
+  const sx=xs.reduce((a,b)=>a+b,0), sy=ys.reduce((a,b)=>a+b,0);
+  const sxy=xs.reduce((acc,x,i)=>acc+x*ys[i],0);
+  const sx2=xs.reduce((acc,x)=>acc+x*x,0);
+  const m=(n*sxy-sx*sy)/(n*sx2-sx*sx);
+  const b=(sy-m*sx)/n;
+  return { m, b, predict: x=>Math.max(0,m*x+b) };
 }
 
 </script>
