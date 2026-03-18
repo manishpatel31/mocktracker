@@ -936,28 +936,37 @@
             100% { opacity:0; transform:translate(calc(var(--dx)*1.8),calc(var(--dy)*1.8)) scale(0) rotate(360deg); }
         }
 
+        /* ── AI toggle was used in HTML but CSS never defined ── */
+        .ai-toggle-track {
+            width:56px; height:28px; border-radius:999px;
+            background:rgba(148,163,184,0.22);
+            border:1px solid rgba(148,163,184,0.28);
+            cursor:pointer; position:relative; display:inline-block;
+            transition:background 0.35s, border-color 0.35s, box-shadow 0.35s;
+            flex-shrink:0;
+        }
+        .ai-toggle-track.on {
+            background:linear-gradient(135deg,#6366f1,#a855f7);
+            border-color:rgba(99,102,241,0.5);
+            box-shadow:0 0 18px rgba(99,102,241,0.45);
+        }
+        .dark .ai-toggle-track { background:rgba(255,255,255,0.08); border-color:rgba(139,92,246,0.25); }
+        .ai-toggle-thumb {
+            position:absolute; top:3px; left:3px;
+            width:22px; height:22px; border-radius:50%;
+            background:white; box-shadow:0 2px 6px rgba(0,0,0,0.18);
+            transition:transform 0.35s cubic-bezier(0.34,1.56,0.64,1);
+            display:flex; align-items:center; justify-content:center;
+            font-size:12px; pointer-events:none;
+        }
+        .ai-toggle-track.on .ai-toggle-thumb { transform:translateX(28px); }
 
-        /* ═══ TIER MODE STRIP ═══ */
-        .tier-pill { padding:8px 20px; border-radius:999px; font-size:11px; font-weight:900; cursor:pointer; transition:all 0.28s cubic-bezier(0.16,1,0.3,1); border:none; letter-spacing:0.07em; text-transform:uppercase; outline:none; -webkit-tap-highlight-color:transparent; white-space:nowrap; }
-        .tier-pill-t1-on { background:linear-gradient(135deg,#6366f1,#818cf8); color:white; box-shadow:0 4px 18px rgba(99,102,241,0.45); }
-        .tier-pill-t2-on { background:linear-gradient(135deg,#d946ef,#f59e0b); color:white; box-shadow:0 4px 18px rgba(217,70,239,0.45); }
-        .tier-pill-off   { background:rgba(255,255,255,0.38); color:#64748b; border:1px solid rgba(255,255,255,0.5); }
-        .dark .tier-pill-off { background:rgba(255,255,255,0.05); color:#64748b; border-color:rgba(139,92,246,0.2); }
-        .tier-pill:hover:not(.tier-pill-t1-on):not(.tier-pill-t2-on) { background:rgba(255,255,255,0.65); transform:scale(1.05); }
-        .dark .tier-pill:hover:not(.tier-pill-t1-on):not(.tier-pill-t2-on) { background:rgba(99,102,241,0.12); }
-        @keyframes confettiPop { 0%{opacity:0;transform:scale(0.5) translateY(20px) rotate(-5deg)} 60%{opacity:1;transform:scale(1.06) translateY(-4px) rotate(1deg)} 100%{opacity:1;transform:scale(1) translateY(0) rotate(0deg)} }
-        @keyframes tierBadgePop { 0%{transform:scale(0);opacity:0} 70%{transform:scale(1.2);opacity:1} 100%{transform:scale(1);opacity:1} }
-        .tier-qual-congrats { animation: confettiPop 0.55s cubic-bezier(0.34,1.56,0.64,1) both; }
-        .tier-badge-pop { animation: tierBadgePop 0.4s cubic-bezier(0.34,1.56,0.64,1) 0.2s both; }
-        .tier2-mode header.glass-nav { border-bottom-color:rgba(217,70,239,0.3)!important; }
-        .tier2-mode #selected-exam-badge { color:#d946ef!important; }
-
-        /* AI toggle */
-        .ai-toggle-track { width:56px;height:30px;border-radius:999px;background:rgba(148,163,184,0.2);border:2px solid rgba(148,163,184,0.3);cursor:pointer;position:relative;transition:all 0.3s;flex-shrink:0; }
-        .ai-toggle-track.on { background:linear-gradient(135deg,#6366f1,#a855f7);border-color:transparent;box-shadow:0 0 16px rgba(99,102,241,0.45); }
-        .ai-toggle-thumb { position:absolute;top:2px;left:2px;width:22px;height:22px;border-radius:50%;background:white;display:flex;align-items:center;justify-content:center;font-size:12px;transition:all 0.3s cubic-bezier(0.34,1.56,0.64,1);box-shadow:0 2px 6px rgba(0,0,0,0.2); }
-        .ai-toggle-track.on .ai-toggle-thumb { transform:translateX(26px); }
-
+        /* ── Dark mode fix for exam modal sticky footer ── */
+        .dark .exam-confirm-footer {
+            background:rgba(10,8,24,0.96) !important;
+            border-top:1px solid rgba(139,92,246,0.18) !important;
+        }
+        @keyframes spin { to { transform:rotate(360deg); } }
     </style>
     <!-- SVG gradient defs for ring -->
     <svg width="0" height="0" style="position:absolute">
@@ -1082,23 +1091,15 @@
                 <p class="text-slate-500 dark:text-slate-400 text-xs mt-1">Select the exam you're preparing for</p>
             </div>
 
-            <!-- 2-column exam grid — 5 exams -->
+            <!-- Compact 2x2 grid -->
             <div class="p-4 grid grid-cols-2 gap-3">
-                <div onclick="selectExam('SSC_CGL')" class="exam-card glass-card p-4 rounded-[1.25rem] border-2 border-transparent cursor-pointer" data-exam="SSC_CGL">
+                <div onclick="selectExam('SSC_CGL_CHSL')" class="exam-card glass-card p-4 rounded-[1.25rem] border-2 border-transparent cursor-pointer" data-exam="SSC_CGL_CHSL">
                     <div class="flex items-center justify-between mb-2">
                         <div class="w-8 h-8 rounded-xl bg-blue-100 dark:bg-blue-900/30 text-blue-600 flex items-center justify-center text-sm"><i class="fa-solid fa-briefcase"></i></div>
                         <i class="fa-solid fa-check-circle text-lg text-brand-600 opacity-0 check-icon transition"></i>
                     </div>
-                    <h3 class="text-sm font-black text-slate-900 dark:text-white leading-tight">SSC CGL</h3>
+                    <h3 class="text-sm font-black text-slate-900 dark:text-white leading-tight">SSC CGL / CHSL</h3>
                     <div class="flex gap-1 mt-1.5 flex-wrap"><span class="pill bg-blue-100 dark:bg-blue-900/30 text-blue-600">+2 / -0.5</span><span class="pill bg-blue-100 dark:bg-blue-900/30 text-blue-600">200 marks</span></div>
-                </div>
-                <div onclick="selectExam('SSC_CHSL')" class="exam-card glass-card p-4 rounded-[1.25rem] border-2 border-transparent cursor-pointer" data-exam="SSC_CHSL">
-                    <div class="flex items-center justify-between mb-2">
-                        <div class="w-8 h-8 rounded-xl bg-sky-100 dark:bg-sky-900/30 text-sky-600 flex items-center justify-center text-sm"><i class="fa-solid fa-file-pen"></i></div>
-                        <i class="fa-solid fa-check-circle text-lg text-brand-600 opacity-0 check-icon transition"></i>
-                    </div>
-                    <h3 class="text-sm font-black text-slate-900 dark:text-white leading-tight">SSC CHSL</h3>
-                    <div class="flex gap-1 mt-1.5 flex-wrap"><span class="pill bg-sky-100 dark:bg-sky-900/30 text-sky-600">+2 / -0.5</span><span class="pill bg-sky-100 dark:bg-sky-900/30 text-sky-600">200 marks</span></div>
                 </div>
                 <div onclick="selectExam('RRB_NTPC')" class="exam-card glass-card p-4 rounded-[1.25rem] border-2 border-transparent cursor-pointer" data-exam="RRB_NTPC">
                     <div class="flex items-center justify-between mb-2">
@@ -1126,7 +1127,7 @@
                 </div>
             </div>
 
-            <div class="px-4 pb-5 flex gap-3" style="position:sticky;bottom:0;background:rgba(255,255,255,0.92);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);padding-top:10px;border-top:1px solid rgba(0,0,0,0.06);">
+            <div class="exam-confirm-footer px-4 pb-5 flex gap-3" style="position:sticky;bottom:0;background:rgba(255,255,255,0.92);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);padding-top:10px;border-top:1px solid rgba(0,0,0,0.06);">
                 <button id="confirm-exam-btn" onclick="confirmExamSelection()" disabled class="flex-1 py-3 rounded-xl btn-gradient text-white text-sm font-black shadow-lg transition opacity-50 cursor-not-allowed">
                     Continue →
                 </button>
@@ -1181,12 +1182,9 @@
     -->
     <header class="glass-nav flex-none flex items-center justify-between z-50 flex-shrink-0">
 
-        <!-- LEFT: Logo — clicking goes to home (index.html) -->
-        <a href="index.html"
-           title="Go to Home"
-           class="logo-group flex items-center gap-2 md:gap-3 min-w-0 no-underline cursor-pointer hover:opacity-85 transition-opacity"
-           style="text-decoration:none;">
-            <div class="w-10 h-10 md:w-12 md:h-12 rounded-2xl bg-gradient-to-tr from-brand-600 to-accent-500 text-white flex items-center justify-center shadow-xl shadow-brand-500/30 flex-shrink-0 transition-transform hover:scale-105">
+        <!-- LEFT: Logo group — shrinks gracefully, never wraps -->
+        <div class="logo-group flex items-center gap-2 md:gap-3 min-w-0">
+            <div class="w-10 h-10 md:w-12 md:h-12 rounded-2xl bg-gradient-to-tr from-brand-600 to-accent-500 text-white flex items-center justify-center shadow-xl shadow-brand-500/30 flex-shrink-0">
                 <i class="fa-solid fa-chart-pie text-base md:text-xl"></i>
             </div>
             <div class="min-w-0">
@@ -1202,7 +1200,7 @@
                     <span id="status-text" style="font-size:9px" class="font-bold uppercase text-gray-400 tracking-wide hidden sm:inline">Offline</span>
                 </div>
             </div>
-        </a>
+        </div>
 
         <!-- CENTER: Desktop tab nav (hidden on mobile) -->
         <nav class="hidden md:flex items-center glass-card rounded-2xl p-1 mx-2">
@@ -1213,68 +1211,61 @@
             <button onclick="window.app.nav('tools')"    id="nav-tools"    class="nav-link px-5 py-2.5 rounded-xl transition-all duration-300">Tools</button>
         </nav>
 
-        <!-- RIGHT: Action buttons -->
+        <!-- RIGHT: Action buttons — flex-nowrap, 44px each, 6px gap -->
         <div class="header-actions">
 
-            <!-- Stats Page (desktop only) -->
-            <a href="stats.html"
-               class="hidden md:flex flex-col items-center justify-center px-2.5 rounded-xl btn-glass hover:scale-105 transition"
-               style="min-height:44px;min-width:44px;gap:1px;" title="Full Stats Dashboard">
-                <i class="fa-solid fa-chart-bar text-accent-500" style="font-size:13px;"></i>
-                <span style="font-size:7px;font-weight:900;letter-spacing:0.04em;text-transform:uppercase;color:#d946ef;line-height:1;">Stats</span>
+            <!-- Back to Home — icon + "Home" label, compact on mobile -->
+            <a href="index.html"
+               title="Back to landing page"
+               class="home-back-btn btn-glass text-brand-500 dark:text-brand-400">
+                <i class="fa-solid fa-arrow-left" style="font-size:13px;"></i>
+                <span class="text-xs font-black">Home</span>
             </a>
 
-            <!-- Switch Exam (desktop only) — compact two-line -->
-            <button onclick="showExamSelector()"
-                    class="hidden md:flex flex-col items-center justify-center px-2.5 rounded-xl btn-glass hover:scale-105 transition"
-                    style="min-height:44px;min-width:44px;gap:1px;" title="Switch Exam">
-                <i class="fa-solid fa-exchange-alt text-brand-500" style="font-size:13px;"></i>
-                <span style="font-size:7px;font-weight:900;letter-spacing:0.04em;text-transform:uppercase;color:#6366f1;line-height:1;">Switch</span>
-                <span style="font-size:6px;font-weight:800;letter-spacing:0.04em;text-transform:uppercase;color:#94a3b8;line-height:1;">Exam</span>
-            </button>
-
-            <!-- Auth — single compact button (sign in OR signed-in state) -->
-            <div id="auth-box" class="flex-shrink-0">
-                <!-- Not signed in -->
-                <button id="btn-login"
-                        onclick="app.login()"
-                        class="btn-glass rounded-xl transition flex flex-col items-center justify-center hover:scale-105"
-                        style="min-height:44px;min-width:44px;padding:0 10px;gap:2px;"
-                        title="Sign in with Google">
-                    <i class="fa-brands fa-google text-sm text-red-500"></i>
-                    <span style="font-size:7px;font-weight:900;letter-spacing:0.04em;text-transform:uppercase;color:#475569;line-height:1;">Sign in</span>
-                </button>
-                <!-- Signed in — avatar + name chip + logout on hover -->
-                <div id="user-profile" class="hidden">
-                    <button onclick="app.logout()"
-                            class="btn-glass rounded-xl transition flex flex-col items-center justify-center relative group overflow-hidden hover:scale-105"
-                            style="min-height:44px;min-width:44px;padding:4px 8px;gap:2px;"
-                            title="Signed in · Click to sign out">
-                        <img id="user-avatar"
-                             class="w-6 h-6 rounded-full border-2 border-white/60 shadow flex-shrink-0"
-                             style="object-fit:cover;">
-                        <span id="user-name-short"
-                              style="font-size:7px;font-weight:900;letter-spacing:0.03em;text-transform:uppercase;color:#10b981;line-height:1;max-width:44px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"></span>
-                        <!-- Hover overlay: shows sign-out icon -->
-                        <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity rounded-xl"
-                             style="background:rgba(239,68,68,0.88);">
-                            <i class="fa-solid fa-power-off text-white" style="font-size:14px;pointer-events:none;"></i>
-                        </div>
-                    </button>
-                </div>
-            </div>
-
-            <!-- Theme Toggle — rightmost corner -->
+            <!-- Theme Toggle -->
             <button onclick="window.app.toggleTheme()"
                     class="btn-glass rounded-xl relative overflow-hidden hover:scale-105 transition"
-                    title="Toggle dark / light mode"
+                    title="Toggle theme"
                     style="width:44px;height:44px;">
                 <i class="fa-solid fa-sun theme-icon theme-sun text-amber-400"></i>
                 <i class="fa-solid fa-moon theme-icon theme-moon text-indigo-400"></i>
             </button>
 
-            <!-- Hidden stub for JS exam-count-badge compat — not visible -->
-            <span id="exam-count-badge" style="display:none;"></span>
+            <!-- Auth -->
+            <div id="auth-box" class="flex-shrink-0">
+                <button id="btn-login"
+                        onclick="app.login()"
+                        class="btn-glass rounded-xl transition flex items-center gap-1.5 md:gap-2"
+                        style="min-height:44px;padding:0 10px 0 10px;">
+                    <i class="fa-brands fa-google text-base text-red-500"></i>
+                    <span class="hidden md:inline text-xs font-bold">Sign in</span>
+                </button>
+                <div id="user-profile" class="hidden flex items-center gap-2 md:gap-3 border-l border-white/30 dark:border-white/10 pl-2 md:pl-3">
+                    <img id="user-avatar" class="w-8 h-8 md:w-9 md:h-9 rounded-full border-2 border-white/50 shadow-lg">
+                    <button onclick="app.logout()"
+                            class="text-slate-400 hover:text-red-500 transition"
+                            style="min-width:44px;min-height:44px;display:inline-flex;align-items:center;justify-content:center;">
+                        <i class="fa-solid fa-power-off"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Switch Exam (desktop only) -->
+            <button onclick="showExamSelector()"
+                    class="hidden md:flex items-center gap-1.5 px-3 rounded-xl btn-glass text-xs font-bold hover:scale-105 transition"
+                    style="min-height:44px;">
+                <i class="fa-solid fa-exchange-alt"></i>
+                <span class="ml-1.5">Switch</span>
+            </button>
+
+            <!-- Upcoming Exams -->
+            <button id="nav-exams-btn"
+                    class="btn-glass rounded-xl flex items-center justify-center relative hover:scale-105 transition flex-shrink-0"
+                    title="Upcoming Exams"
+                    style="width:44px;height:44px;">
+                <i class="fa-solid fa-calendar-days text-brand-500" style="font-size:15px;pointer-events:none;"></i>
+                <span id="exam-count-badge" style="display:none;position:absolute;top:-3px;right:-3px;min-width:16px;height:16px;background:#ef4444;color:white;font-size:9px;font-weight:900;border-radius:999px;align-items:center;justify-content:center;padding:0 3px;"></span>
+            </button>
 
         </div>
     </header>
@@ -1320,9 +1311,6 @@
                 <div id="home-primary-exam" style="display:none;"></div>
                 <div id="home-other-exams" style="display:none;"></div>
             </div>
-
-            <!-- ══ TIER MODE STRIP ══ -->
-            <div id="tier-mode-strip" style="display:none;" class="w-full"></div>
 
             <!-- Primary Stat Cards -->
             <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
@@ -1668,7 +1656,6 @@
 
                     <!-- Normal subject-wise entry -->
                     <div id="normal-entry-section" class="p-6">
-                        <div id="exam-total-marks-banner"></div>
                         <div id="subject-cards-grid" class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
                             <!-- Subject cards rendered by JS -->
                         </div>
@@ -1728,8 +1715,8 @@
                 </div>
 
                 <!-- ── SAVE BUTTON ── -->
-                <button type="submit" class="w-full py-5 rounded-2xl btn-gradient text-white text-base font-black shadow-xl shadow-brand-500/30 transition active:scale-[0.98] flex items-center justify-center gap-3"
-                        data-aos="zoom-in" data-aos-duration="600" data-aos-delay="350">
+                <button type="submit" id="save-mock-btn"
+                        class="w-full py-5 rounded-2xl btn-gradient text-white text-base font-black shadow-xl shadow-brand-500/30 transition active:scale-[0.98] flex items-center justify-center gap-3">
                     <i class="fa-solid fa-floppy-disk text-lg"></i>
                     Save Mock to Vault
                 </button>
@@ -1803,16 +1790,9 @@
                         <i class="fa-solid fa-bolt text-amber-500"></i> ⚡ Potential Score Analysis
                         <span class="demo-badge">demo</span>
                     </h3>
-                    <div class="flex items-center gap-2 flex-wrap">
-                        <a href="stats.html"
-                           class="px-5 py-2.5 rounded-xl text-white text-xs font-black shadow-lg flex items-center gap-2 hover:scale-105 transition"
-                           style="background:linear-gradient(135deg,#d946ef,#a855f7);">
-                            <i class="fa-solid fa-chart-bar"></i> Full Stats Page
-                        </a>
-                        <button onclick="openShareCard()" class="btn-gradient px-5 py-2.5 rounded-xl text-white text-xs font-black shadow-lg flex items-center gap-2 hover:scale-105 transition btn-glow-pulse">
-                            <i class="fa-solid fa-share-nodes"></i> Share Performance Card
-                        </button>
-                    </div>
+                    <button onclick="openShareCard()" class="btn-gradient px-5 py-2.5 rounded-xl text-white text-xs font-black shadow-lg flex items-center gap-2 hover:scale-105 transition btn-glow-pulse">
+                        <i class="fa-solid fa-share-nodes"></i> Share Performance Card
+                    </button>
                 </div>
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                     <div class="text-center p-5 rounded-2xl glass-card shimmer-card scroll-reveal"><p class="text-xs font-black text-slate-400 uppercase tracking-widest mb-1">📊 Real Average</p><h2 id="ana-real-avg" class="text-3xl font-black text-slate-800 dark:text-white">-</h2></div>
@@ -2207,7 +2187,6 @@
             <button id="hmenu-tools" class="hmenu-item" style="width:100%;display:flex;align-items:center;gap:14px;padding:13px 12px;border:none;background:none;cursor:pointer;border-radius:14px;text-align:left;touch-action:manipulation;-webkit-tap-highlight-color:transparent;"><span style="width:38px;height:38px;border-radius:11px;background:#ede9fe;display:flex;align-items:center;justify-content:center;flex-shrink:0;pointer-events:none;"><i class="fa-solid fa-wrench" style="font-size:16px;color:#7c3aed;pointer-events:none;"></i></span><div style="pointer-events:none;"><div style="font-size:14px;font-weight:800;color:#1e293b;">Tools</div><div style="font-size:11px;color:#94a3b8;margin-top:1px;">Export, restore &amp; offline queue</div></div></button>
             <button id="hmenu-switch" class="hmenu-item" style="width:100%;display:flex;align-items:center;gap:14px;padding:13px 12px;border:none;background:none;cursor:pointer;border-radius:14px;text-align:left;touch-action:manipulation;-webkit-tap-highlight-color:transparent;"><span style="width:38px;height:38px;border-radius:11px;background:#e0f2fe;display:flex;align-items:center;justify-content:center;flex-shrink:0;pointer-events:none;"><i class="fa-solid fa-exchange-alt" style="font-size:16px;color:#0284c7;pointer-events:none;"></i></span><div style="pointer-events:none;"><div style="font-size:14px;font-weight:800;color:#1e293b;">Switch Exam</div><div style="font-size:11px;color:#94a3b8;margin-top:1px;">Change exam — SSC, RRB, Bank PO</div></div></button>
             <button id="hmenu-exams" class="hmenu-item" style="width:100%;display:flex;align-items:center;gap:14px;padding:13px 12px;border:none;background:none;cursor:pointer;border-radius:14px;text-align:left;touch-action:manipulation;-webkit-tap-highlight-color:transparent;"><span style="width:38px;height:38px;border-radius:11px;background:linear-gradient(135deg,#ede9fe,#e0e7ff);display:flex;align-items:center;justify-content:center;flex-shrink:0;pointer-events:none;"><i class="fa-solid fa-calendar-days" style="font-size:16px;color:#6366f1;pointer-events:none;"></i></span><div style="pointer-events:none;"><div style="font-size:14px;font-weight:800;color:#1e293b;" class="dark:text-white">Upcoming Exams</div><div style="font-size:11px;color:#94a3b8;margin-top:1px;">Track exam dates &amp; get AI reminders</div></div></button>
-            <button id="hmenu-stats" class="hmenu-item" style="width:100%;display:flex;align-items:center;gap:14px;padding:13px 12px;border:none;background:none;cursor:pointer;border-radius:14px;text-align:left;touch-action:manipulation;-webkit-tap-highlight-color:transparent;"><span style="width:38px;height:38px;border-radius:11px;background:linear-gradient(135deg,#ede9fe,#fce7f3);display:flex;align-items:center;justify-content:center;flex-shrink:0;pointer-events:none;"><i class="fa-solid fa-chart-bar" style="font-size:16px;color:#d946ef;pointer-events:none;"></i></span><div style="pointer-events:none;"><div style="font-size:14px;font-weight:800;color:#1e293b;" class="dark:text-white">Full Stats Page</div><div style="font-size:11px;color:#94a3b8;margin-top:1px;">Deep analytics dashboard</div></div></button>
             <div style="height:1px;background:rgba(0,0,0,0.05);margin:6px 12px;"></div>
             <button id="hmenu-tour" class="hmenu-item" style="width:100%;display:flex;align-items:center;gap:14px;padding:13px 12px;border:none;background:none;cursor:pointer;border-radius:14px;text-align:left;touch-action:manipulation;-webkit-tap-highlight-color:transparent;"><span style="width:38px;height:38px;border-radius:11px;background:linear-gradient(135deg,#e0e7ff,#ede9fe);display:flex;align-items:center;justify-content:center;flex-shrink:0;pointer-events:none;font-size:18px;">🗺️</span><div style="pointer-events:none;"><div style="font-size:14px;font-weight:800;color:#1e293b;" class="dark:text-white">Take App Tour</div><div style="font-size:11px;color:#94a3b8;margin-top:1px;">Replay the full feature walkthrough</div></div></button>
             <button id="hmenu-demo" class="hmenu-item" style="width:100%;display:flex;align-items:center;gap:14px;padding:13px 12px;border:none;background:none;cursor:pointer;border-radius:14px;text-align:left;touch-action:manipulation;-webkit-tap-highlight-color:transparent;"><span style="width:38px;height:38px;border-radius:11px;background:linear-gradient(135deg,#fef3c7,#fee2e2);display:flex;align-items:center;justify-content:center;flex-shrink:0;pointer-events:none;"><i class="fa-solid fa-flask-vial" style="font-size:16px;color:#d97706;pointer-events:none;"></i></span><div style="pointer-events:none;"><div style="font-size:14px;font-weight:800;color:#1e293b;">Try Demo Mode</div><div style="font-size:11px;color:#94a3b8;margin-top:1px;">Explore with 5 sample SSC CGL mocks</div></div></button>
@@ -2230,7 +2209,7 @@
         let   currentTab = 0;
 
         // Per-exam target score helpers
-        function getTargetKey() { return 'mockpro_target_' + (state?.selectedExamGroup || 'default') + '_' + (state?.currentTier || 'tier1'); }
+        function getTargetKey() { return 'mockpro_target_' + (state?.selectedExamGroup || 'default'); }
         function loadTargetScore() {
             const v = parseInt(localStorage.getItem(getTargetKey()) || '0');
             state.targetScore = v || (EXAM_GROUPS[state.selectedExamGroup]?.total ? Math.round(EXAM_GROUPS[state.selectedExamGroup].total * 0.8) : 160);
@@ -2238,186 +2217,11 @@
 
         // ── EXAM CONFIGS ──
         const EXAM_GROUPS = {
-            "SSC_CGL": { name:"SSC CGL", exams:["SSC CGL"], c:2, w:0.5, total:200, quickEntry:false,
-                subjects:[
-                    { name:"General Intelligence", q:25, c:2, w:0.5, total:50 },
-                    { name:"General Awareness",    q:25, c:2, w:0.5, total:50 },
-                    { name:"Quantitative Aptitude",q:25, c:2, w:0.5, total:50 },
-                    { name:"English Comprehension",q:25, c:2, w:0.5, total:50 }
-                ]
-            },
-            "SSC_CHSL": { name:"SSC CHSL", exams:["SSC CHSL"], c:2, w:0.5, total:200, quickEntry:false,
-                subjects:[
-                    { name:"English Language",     q:25, c:2, w:0.5, total:50 },
-                    { name:"General Intelligence", q:25, c:2, w:0.5, total:50 },
-                    { name:"Quantitative Aptitude",q:25, c:2, w:0.5, total:50 },
-                    { name:"General Awareness",    q:25, c:2, w:0.5, total:50 }
-                ]
-            },
-            "RRB_NTPC": { name:"RRB NTPC", exams:["RRB NTPC"], c:1, w:1/3, total:100, quickEntry:false,
-                subjects:[
-                    { name:"General Awareness",             q:40, c:1, w:1/3, total:40 },
-                    { name:"Mathematics",                   q:30, c:1, w:1/3, total:30 },
-                    { name:"General Intelligence & Reasoning", q:30, c:1, w:1/3, total:30 }
-                ]
-            },
-            "SSC_MTS": { name:"SSC MTS", exams:["SSC MTS"], c:3, w:0, total:270, quickEntry:false,
-                subjects:[
-                    { name:"Mathematics",       q:20, c:3, w:0,   total:60 },
-                    { name:"Reasoning",         q:20, c:3, w:0,   total:60 },
-                    { name:"General Awareness", q:25, c:3, w:1,   total:75 },
-                    { name:"English Language",  q:25, c:3, w:1,   total:75 }
-                ]
-            },
-            "BANK_PO": { name:"Bank PO", exams:["Bank PO"], c:1, w:0.25, total:100, quickEntry:false,
-                subjects:[
-                    { name:"English Language",  q:30, c:1, w:0.25, total:30 },
-                    { name:"Quantitative Aptitude", q:35, c:1, w:0.25, total:35 },
-                    { name:"Reasoning Ability", q:35, c:1, w:0.25, total:35 }
-                ]
-            }
+            "SSC_CGL_CHSL": { name:"SSC CGL/CHSL", exams:["SSC CGL","SSC CHSL"], subjects:["Reasoning","GK","Quant","English"], c:2, w:0.5, total:200, quickEntry:false },
+            "RRB_NTPC":     { name:"RRB NTPC",     exams:["RRB NTPC"],            subjects:["GK/Science","Maths","Reasoning"],    c:1, w:0.33, total:100, quickEntry:true },
+            "SSC_MTS":      { name:"SSC MTS",       exams:["SSC MTS"],             subjects:["Maths","Reasoning","GK","English"],   c:3, w:1,    total:270, quickEntry:false },
+            "BANK_PO":      { name:"Bank PO",        exams:["Bank PO"],             subjects:["English","Quant","Reasoning"],        c:1, w:0.25, total:100, quickEntry:false }
         };
-
-
-        // ── TIER 2 / MAINS EXAM CONFIGS ──
-        const EXAM_TIER2_GROUPS = {
-            "SSC_CGL":  { name:"SSC CGL Tier 2",  tierLabel:"Tier 2", exams:["SSC CGL"],  c:3, w:1, total:390, quickEntry:false,
-                            info:"130Q · +3 / −1 · 390 marks", examLabel:"SSC CGL — Tier 2 (Mains)",
-                            subjects:[
-                                { name:"Mathematical Abilities",           q:30, c:3, w:1, total:90  },
-                                { name:"Reasoning & General Intelligence", q:30, c:3, w:1, total:90  },
-                                { name:"English Language & Comprehension", q:45, c:3, w:1, total:135 },
-                                { name:"General Awareness",               q:25, c:3, w:1, total:75  },
-                                { name:"Computer Knowledge (Qualifying)",  q:20, c:3, w:1, total:60, qualifying:true }
-                            ]
-                        },
-            "SSC_CHSL": { name:"SSC CHSL Tier 2", tierLabel:"Tier 2", exams:["SSC CHSL"], c:3, w:1, total:360, quickEntry:false,
-                            info:"120Q · +3 / −1 · 360 marks", examLabel:"SSC CHSL — Tier 2 (Mains)",
-                            subjects:[
-                                { name:"Mathematical Abilities",           q:30, c:3, w:1, total:90  },
-                                { name:"Reasoning & General Intelligence", q:30, c:3, w:1, total:90  },
-                                { name:"English Language & Comprehension", q:40, c:3, w:1, total:120 },
-                                { name:"General Awareness",               q:20, c:3, w:1, total:60  },
-                                { name:"Computer Knowledge (Qualifying)",  q:15, c:3, w:1, total:45, qualifying:true }
-                            ]
-                        },
-            "RRB_NTPC": { name:"RRB NTPC CBT 2", tierLabel:"CBT 2", exams:["RRB NTPC"], c:1, w:1/3, total:120, quickEntry:false,
-                            info:"120Q · +1 / −0.33 · 120 marks", examLabel:"RRB NTPC — CBT 2",
-                            subjects:[
-                                { name:"General Awareness",             q:50, c:1, w:1/3, total:50 },
-                                { name:"Mathematics",                   q:35, c:1, w:1/3, total:35 },
-                                { name:"General Intelligence & Reasoning", q:35, c:1, w:1/3, total:35 }
-                            ]
-                        },
-            "SSC_MTS":  { name:"SSC MTS Tier 2", tierLabel:"Tier 2", exams:["SSC MTS"], c:1, w:0, total:50, quickEntry:false,
-                            info:"Descriptive · 50 marks", examLabel:"SSC MTS — Tier 2 (Descriptive)",
-                            subjects:[
-                                { name:"Essay",                q:1, c:25, w:0, total:25 },
-                                { name:"Letter / Application", q:1, c:25, w:0, total:25 }
-                            ]
-                        },
-            "BANK_PO":  { name:"Bank PO Mains", tierLabel:"Phase 2", exams:["Bank PO"], c:1, w:0.25, total:200, quickEntry:false,
-                            info:"155Q · +1 / −0.25 · 200 marks", examLabel:"Bank PO — Phase 2 (Mains)",
-                            subjects:[
-                                { name:"Reasoning & Computer",  q:45, c:1, w:0.25, total:45 },
-                                { name:"English Language",      q:35, c:1, w:0.25, total:35 },
-                                { name:"Data Analysis & Interpretation", q:35, c:1, w:0.25, total:35 },
-                                { name:"GK & Banking Awareness",q:40, c:1, w:0.25, total:40 }
-                            ]
-                        }
-        };
-
-        // ── TIER helpers ──
-        const TIER_STORAGE_KEY  = 'mockpro_tier_';
-        const TIER2_QUAL_PREFIX = 'mockpro_t2qual_';
-        function getTierStorageKey() { return TIER_STORAGE_KEY  + (state?.selectedExamGroup || 'def'); }
-        function getTier2QualKey()   { return TIER2_QUAL_PREFIX + (state?.selectedExamGroup || 'def'); }
-        function loadTier()          { state.currentTier = localStorage.getItem(getTierStorageKey()) || 'tier1'; }
-        function getCurrentTierConfig() {
-            if (!state.selectedExamGroup) return null;
-            if (state.currentTier === 'tier2') return EXAM_TIER2_GROUPS[state.selectedExamGroup] || EXAM_GROUPS[state.selectedExamGroup];
-            return EXAM_GROUPS[state.selectedExamGroup];
-        }
-        function activateTier(tier) {
-            state.currentTier = tier;
-            localStorage.setItem(getTierStorageKey(), tier);
-            document.documentElement.classList.toggle('tier2-mode', tier === 'tier2');
-            loadTargetScore(); updateExamBadge(); updateFormForExam(); renderTierStrip(); processData();
-        }
-        window.switchTier = function(tier) {
-            if (!state.selectedExamGroup || tier === state.currentTier) return;
-            if (tier === 'tier2') {
-                if (!localStorage.getItem(getTier2QualKey())) { showTier2QualModal(); return; }
-                activateTier('tier2');
-            } else { activateTier('tier1'); }
-        };
-        function showTier2QualModal() {
-            const m = document.getElementById('tier2-qual-modal'); if (!m) return;
-            const t2 = EXAM_TIER2_GROUPS[state.selectedExamGroup];
-            const e1 = document.getElementById('t2q-exam-name');
-            const e2 = document.getElementById('t2q-tier2-name');
-            const e3 = document.getElementById('t2q-info');
-            if (e1) e1.textContent = EXAM_GROUPS[state.selectedExamGroup]?.name || 'Tier 1';
-            if (e2) e2.textContent = t2 ? t2.examLabel : 'Tier 2 / Mains';
-            if (e3 && t2) e3.textContent = t2.info;
-            m.style.display = 'flex';
-        }
-        window.closeTier2QualModal = function() { const m = document.getElementById('tier2-qual-modal'); if (m) m.style.display = 'none'; };
-        window.confirmTier2Status = function(qualified) {
-            closeTier2QualModal();
-            const key = getTier2QualKey();
-            if (qualified) {
-                localStorage.setItem(key, 'yes');
-                activateTier('tier2');
-                setTimeout(showTierCongrats, 200);
-            } else {
-                localStorage.setItem(key, 'not_yet');
-                alert('No worries! Keep practising Tier 1 mocks. Switch to Mains mode once you clear Prelims.');
-            }
-        };
-        function showTierCongrats() {
-            if (typeof confetti !== 'undefined') {
-                confetti({ particleCount:120, spread:100, origin:{y:0.5}, colors:['#d946ef','#f59e0b','#6366f1','#34d399','white'] });
-                setTimeout(()=>confetti({ particleCount:60, spread:80, origin:{y:0.45,x:0.2} }), 250);
-                setTimeout(()=>confetti({ particleCount:60, spread:80, origin:{y:0.45,x:0.8} }), 450);
-            }
-            const toast = document.getElementById('welcome-toast');
-            const toastTxt = document.getElementById('welcome-toast-text');
-            if (toast && toastTxt) {
-                toastTxt.textContent = "🎉  Prelims cleared! Mains mode activated — let\'s go!";
-                toast.style.display = 'block';
-                setTimeout(()=>{ toast.style.transition='opacity 0.6s'; toast.style.opacity='0'; setTimeout(()=>{toast.style.display='none';toast.style.opacity='1';},600); }, 4000);
-            }
-        }
-        function renderTierStrip() {
-            const strip = document.getElementById('tier-mode-strip');
-            if (!strip || !state.selectedExamGroup) { if (strip) strip.style.display='none'; return; }
-            const t2cfg = EXAM_TIER2_GROUPS[state.selectedExamGroup];
-            if (!t2cfg) { strip.style.display='none'; return; }
-            strip.style.display = 'flex';
-            const t1cfg = EXAM_GROUPS[state.selectedExamGroup];
-            const isT1 = (state.currentTier !== 'tier2');
-            const qual = localStorage.getItem(getTier2QualKey());
-            strip.innerHTML = `
-            <div class="glass-card rounded-[2rem] p-4 flex items-center justify-between gap-4 w-full" style="${isT1?'':'border:2px solid rgba(217,70,239,0.35);box-shadow:0 0 0 3px rgba(217,70,239,0.1),0 8px 32px rgba(217,70,239,0.15);'}">
-                <div class="flex flex-col min-w-0">
-                    <div class="flex items-center gap-2 flex-wrap">
-                        <span class="text-xs font-black uppercase tracking-widest text-slate-400">Mode</span>
-                        <span class="tier-badge-pop px-3 py-1 rounded-full text-xs font-black text-white" style="background:${isT1?'linear-gradient(135deg,#6366f1,#818cf8)':'linear-gradient(135deg,#d946ef,#f59e0b)'};">
-                            ${isT1 ? '📝 '+(t1cfg?.name||'Tier 1') : '🏆 '+(t2cfg.tierLabel||'Tier 2')}
-                        </span>
-                        ${!isT1&&qual==='yes'?'<span style="font-size:13px;">✅</span>':''}
-                    </div>
-                    <p class="text-xs font-semibold text-slate-400 mt-1 truncate">
-                        ${isT1?(t1cfg?t1cfg.exams[0]+' · +'+ t1cfg.c+' / −'+t1cfg.w+' · '+t1cfg.total+' marks':''):t2cfg.info}
-                    </p>
-                </div>
-                <div class="flex gap-2 flex-shrink-0">
-                    <button onclick="window.switchTier('tier1')" class="tier-pill ${isT1?'tier-pill-t1-on':'tier-pill-off'}">📝 Pre</button>
-                    <button onclick="window.switchTier('tier2')" class="tier-pill ${!isT1?'tier-pill-t2-on':'tier-pill-off'}">🏆 Mains${qual==='yes'?' ✅':''}</button>
-                </div>
-            </div>`;
-        }
 
         // ── HARDCODED DEMO DATA (5 fixed mocks — SSC CGL Tier-1) ──
         // Marking: +2 correct, -0.5 wrong | 100 questions | Max 200 marks
@@ -2426,7 +2230,7 @@
             return {
                 mocks: [
                     {   // Mock 1 — starting point, avg performer
-                        id:'dm1', platform:'Testbook', exam:'SSC CGL', examGroup:'SSC_CGL',
+                        id:'dm1', platform:'Testbook', exam:'SSC CGL', examGroup:'SSC_CGL_CHSL',
                         name:'SSC CGL Tier-1 Mock #1', category:'Full', date:d(28),
                         score:123.0, max:200, perc:72.3, time:65, quickEntry:false,
                         subjects:[
@@ -2441,7 +2245,7 @@
                         weak:'Trigonometry, Blood Relations, Para Jumbles'
                     },
                     {   // Mock 2 — decent improvement
-                        id:'dm2', platform:'Oliveboard', exam:'SSC CGL', examGroup:'SSC_CGL',
+                        id:'dm2', platform:'Oliveboard', exam:'SSC CGL', examGroup:'SSC_CGL_CHSL',
                         name:'SSC CGL Tier-1 Mock #2', category:'Full', date:d(21),
                         score:139.5, max:200, perc:78.9, time:62, quickEntry:false,
                         subjects:[
@@ -2456,7 +2260,7 @@
                         weak:'Mensuration formulas, Synonyms/Antonyms, Modern History dates'
                     },
                     {   // Mock 3 — slight dip (bad day)
-                        id:'dm3', platform:'The Pundits', exam:'SSC CGL', examGroup:'SSC_CGL',
+                        id:'dm3', platform:'The Pundits', exam:'SSC CGL', examGroup:'SSC_CGL_CHSL',
                         name:'SSC CGL Tier-1 Mock #3', category:'Full', date:d(14),
                         score:117.5, max:200, perc:68.4, time:68, quickEntry:false,
                         subjects:[
@@ -2471,7 +2275,7 @@
                         weak:'Syllogisms, Geography GK, Speed Time Distance shortcuts'
                     },
                     {   // Mock 4 — strong recovery
-                        id:'dm4', platform:'Adda247', exam:'SSC CGL', examGroup:'SSC_CGL',
+                        id:'dm4', platform:'Adda247', exam:'SSC CGL', examGroup:'SSC_CGL_CHSL',
                         name:'SSC CGL Tier-1 Mock #4', category:'Full', date:d(7),
                         score:153.5, max:200, perc:87.2, time:58, quickEntry:false,
                         subjects:[
@@ -2486,7 +2290,7 @@
                         weak:'Coding-Decoding advanced patterns, Percentage applications'
                     },
                     {   // Mock 5 — best so far (latest)
-                        id:'dm5', platform:'Testbook', exam:'SSC CGL', examGroup:'SSC_CGL',
+                        id:'dm5', platform:'Testbook', exam:'SSC CGL', examGroup:'SSC_CGL_CHSL',
                         name:'SSC CGL Tier-1 Mock #5', category:'Full', date:d(2),
                         score:163.0, max:200, perc:93.6, time:55, quickEntry:false,
                         subjects:[
@@ -2531,7 +2335,6 @@
             selectedExamGroup: null,
             mocks: [], tasks: [], links: [],
             editingId: null,
-            currentTier: 'tier1',
             charts: { home: null, week: null, plat: null, radar: null, scatter: null, histogram: null, damage: null },
             useQuickEntry: false,
             isDemoMode: false,
@@ -2557,8 +2360,7 @@
             state._realExamGroup = state.selectedExamGroup; // also stash exam selection
 
             state.isDemoMode = true;
-            state.selectedExamGroup = 'SSC_CGL';
-            state.currentTier = 'tier1';
+            state.selectedExamGroup = 'SSC_CGL_CHSL';
             updateExamBadge();
             updateFormForExam();
 
@@ -2596,7 +2398,6 @@
 
             updateExamBadge();
             updateFormForExam();
-            renderTierStrip();
             processData();
             window.app.nav('home');
 
@@ -2631,10 +2432,9 @@
             m.style.display = '';
             m.classList.add('hidden');
             m.classList.remove('flex');
-            loadTier(); loadTargetScore();
+            loadTargetScore();  // load per-exam target
             updateExamBadge();
             updateFormForExam();
-            renderTierStrip();
             processData();
         };
 
@@ -2650,21 +2450,12 @@
 
         function updateExamBadge() {
             const badge = el('selected-exam-badge');
-            if (badge && state.selectedExamGroup) {
-                const tierSuffix = (state.currentTier === 'tier2') ? ' · T2' : '';
-                badge.textContent = state.isDemoMode ? '⚡ DEMO — ' + EXAM_GROUPS[state.selectedExamGroup].name + tierSuffix : EXAM_GROUPS[state.selectedExamGroup].name + tierSuffix;
-                badge.style.color = (state.currentTier === 'tier2') ? '#d946ef' : '';
-            }
+            if (badge && state.selectedExamGroup) badge.textContent = state.isDemoMode ? '⚡ DEMO — ' + EXAM_GROUPS[state.selectedExamGroup].name : EXAM_GROUPS[state.selectedExamGroup].name;
         }
 
         function updateFormForExam() {
-            const group = getCurrentTierConfig() || EXAM_GROUPS[state.selectedExamGroup];
+            const group = EXAM_GROUPS[state.selectedExamGroup];
             if (!group) return;
-            const logTitle = document.getElementById('log-title');
-            if (logTitle && state.currentTier === 'tier2') {
-                const t2n = EXAM_TIER2_GROUPS[state.selectedExamGroup];
-                logTitle.textContent = t2n ? 'Log ' + t2n.tierLabel + ' Mock' : 'Log Mains Mock';
-            } else if (logTitle) { logTitle.textContent = 'Log a Mock'; }
             loadTargetScore();  // reload target for this exam
             // reset target input to reflect loaded value
             const inp = el('target-input');
@@ -2680,8 +2471,7 @@
         function getFilteredMocks() {
             if (!state.selectedExamGroup) return state.mocks;
             const allowed = EXAM_GROUPS[state.selectedExamGroup].exams;
-            const tier = state.currentTier || 'tier1';
-            return state.mocks.filter(m => allowed.includes(m.exam) && (m.tier||'tier1') === tier);
+            return state.mocks.filter(m => allowed.includes(m.exam));
         }
 
         window.toggleQuickEntry = () => {
@@ -4971,8 +4761,12 @@ Give a concise pre-mock briefing in this EXACT JSON (no markdown, no backticks):
             },
             viewMock: (id) => {
                 const m = state.mocks.find(x => x.id == id); if (!m) return;
-                const group = EXAM_GROUPS[state.selectedExamGroup] || { c:2, w:0.5 };
+                const group = EXAM_GROUPS[m.examGroup] || EXAM_GROUPS[state.selectedExamGroup] || { c:2, w:0.5, total:200 };
                 const totalSillyLoss = (m.subjects||[]).reduce((acc,s) => acc + (s.s * (group.c + group.w)), 0);
+                const examLabel = EXAM_GROUPS[m.examGroup]?.name || m.exam || '—';
+                const tierTag = m.tierLabel
+                    ? `<span style="padding:2px 9px;border-radius:999px;font-size:10px;font-weight:900;background:rgba(217,70,239,0.12);color:#d946ef;border:1px solid rgba(217,70,239,0.2);">${m.tierLabel}</span>`
+                    : '';
                 let subjectsHTML = '';
                 if (m.quickEntry) {
                     subjectsHTML = `<div class="p-5 rounded-2xl border border-emerald-200/40 dark:border-emerald-800/30" style="background:rgba(16,185,129,0.06)">
@@ -4996,21 +4790,27 @@ Give a concise pre-mock briefing in this EXACT JSON (no markdown, no backticks):
                 el('details-content').innerHTML = `
                     <div class="p-7 space-y-5">
                         ${state.isDemoMode ? '<div class="flex justify-center mb-1"><span class="demo-badge" style="display:inline-flex;">⚡ Demo Data — Sample Entry</span></div>' : ''}
-                        <div class="flex justify-between items-start">
-                            <div>
+                        <div class="flex justify-between items-start gap-3">
+                            <div class="min-w-0">
                                 <h3 class="text-xl font-black text-slate-900 dark:text-white">${m.name}</h3>
-                                <p class="text-xs font-black text-brand-600 uppercase mt-1 tracking-widest">${m.exam} • ${m.category} • ${m.platform}</p>
+                                <div class="flex items-center gap-2 flex-wrap mt-1.5">
+                                    <span class="text-xs font-black text-brand-600 uppercase tracking-widest">${examLabel}</span>
+                                    ${tierTag}
+                                    <span class="text-xs font-bold text-slate-400">${m.category} · ${m.platform}</span>
+                                </div>
                             </div>
-                            <span class="px-3 py-1 rounded-lg text-xs font-black uppercase" style="background:rgba(255,255,255,0.4)">${m.date}</span>
+                            <span class="px-3 py-1 rounded-lg text-xs font-black uppercase flex-shrink-0" style="background:rgba(255,255,255,0.4)">${m.date}</span>
                         </div>
                         <div class="grid grid-cols-2 gap-4">
                             <div class="p-5 rounded-2xl bg-gradient-to-br from-brand-600 to-indigo-700 text-white shadow-lg">
                                 <p class="text-xs font-black uppercase opacity-70 mb-1">Score</p>
-                                <h2 class="text-3xl font-black">${m.score} <span class="text-xs opacity-60">/ ${m.max}</span></h2>
+                                <h2 class="text-3xl font-black">${m.score} <span class="text-xs opacity-60">/ ${m.max||group.total}</span></h2>
+                                <p class="text-xs opacity-60 mt-1">${((m.score/(m.max||group.total))*100).toFixed(1)}%</p>
                             </div>
                             <div class="p-5 rounded-2xl bg-gradient-to-br from-accent-500 to-purple-700 text-white shadow-lg">
                                 <p class="text-xs font-black uppercase opacity-70 mb-1">Percentile</p>
-                                <h2 class="text-3xl font-black">${m.perc}%ile</h2>
+                                <h2 class="text-3xl font-black">${m.perc ? m.perc+'%ile' : '—'}</h2>
+                                ${m.time ? `<p class="text-xs opacity-60 mt-1">⏱ ${m.time} min</p>` : ''}
                             </div>
                         </div>
                         ${subjectsHTML}
@@ -5035,21 +4835,21 @@ Give a concise pre-mock briefing in this EXACT JSON (no markdown, no backticks):
             },
             renderMatrix: () => {
                 const subset = getFilteredMocks();
-                // Feature #17 — analysis empty state
                 const emptyAna = el('empty-analysis');
                 const anaContent = el('analysis-content');
                 const hasEnough = subset.length >= 1;
                 if (emptyAna) emptyAna.classList.toggle('hidden', hasEnough);
                 if (anaContent) anaContent.classList.toggle('hidden', !hasEnough);
-                const group = getCurrentTierConfig() || EXAM_GROUPS[state.selectedExamGroup]; if (!group) return;
+                const group = EXAM_GROUPS[state.selectedExamGroup] || { c:2, w:0.5, total:200 };
                 const ag = {}; let totalScoreSum=0, totalSillyLoss=0;
                 subset.forEach(m => {
-                    let es = m.score, esi = (m.subjects||[]).reduce((acc,s) => acc + (s.s * (group.c + group.w)), 0);
-                    if (m.category === 'Sectional' && m.max > 0) { const f = group.total/m.max; es*=f; esi*=f; }
+                    const mGroup = EXAM_GROUPS[m.examGroup] || group;
+                    let es = m.score, esi = (m.subjects||[]).reduce((acc,s) => acc + (s.s * (mGroup.c + mGroup.w)), 0);
+                    if (m.category === 'Sectional' && m.max > 0) { const f = mGroup.total/m.max; es*=f; esi*=f; }
                     totalScoreSum += es; totalSillyLoss += esi;
                     m.subjects?.forEach(s => {
                         if (!ag[s.name]) ag[s.name] = { score:0, cor:0, tot:0, n:0, l5:[] };
-                        const sc = (s.c*group.c)-(s.w*group.w);
+                        const sc = (s.c*mGroup.c)-(s.w*mGroup.w);
                         ag[s.name].score+=sc; ag[s.name].cor+=s.c; ag[s.name].tot+=(s.c+s.w); ag[s.name].n++; ag[s.name].l5.push(sc);
                     });
                 });
@@ -5327,17 +5127,17 @@ Give a concise pre-mock briefing in this EXACT JSON (no markdown, no backticks):
         function renderDamageChart(subset) {
             const ctxEl = el('chart-damage'); if (!ctxEl) return;
             if (state.charts.damage) state.charts.damage.destroy();
-            const group = EXAM_GROUPS[state.selectedExamGroup]; if (!group) return;
             const recent = subset.slice().sort((a, b) => new Date(a.date) - new Date(b.date)).slice(-12);
             if (!recent.length) return;
             const earned = [], bled = [], labels = [];
             recent.forEach(m => {
+                const mGroup = EXAM_GROUPS[m.examGroup] || EXAM_GROUPS[state.selectedExamGroup] || { c:2, w:0.5 };
                 let e = 0, b = 0;
                 if (m.quickEntry) {
-                    e = (m.quickCorrect || 0) * group.c;
-                    b = (m.quickWrong || 0) * group.w;
+                    e = (m.quickCorrect || 0) * mGroup.c;
+                    b = (m.quickWrong || 0) * mGroup.w;
                 } else {
-                    (m.subjects || []).forEach(s => { e += s.c * group.c; b += s.w * group.w; });
+                    (m.subjects || []).forEach(s => { e += s.c * mGroup.c; b += s.w * mGroup.w; });
                 }
                 earned.push(parseFloat(e.toFixed(1)));
                 bled.push(parseFloat((-b).toFixed(1)));
@@ -5380,9 +5180,9 @@ Give a concise pre-mock briefing in this EXACT JSON (no markdown, no backticks):
         // ─────────────────────────────────────────────────
         window.openShareCard = function() {
             const subset = getFilteredMocks();
-            const group  = EXAM_GROUPS[state.selectedExamGroup];
             if (!subset.length) return alert("Log some mocks first to generate your card!");
             const sorted = subset.slice().sort((a, b) => new Date(a.date) - new Date(b.date));
+            const group  = EXAM_GROUPS[state.selectedExamGroup] || { name:'All Exams', total: Math.max(...sorted.map(m => m.max || 200)) };
             const avg  = (sorted.reduce((a, m) => a + m.score, 0) / sorted.length).toFixed(1);
             const high = Math.max(...sorted.map(m => m.score));
             const perc = (sorted.reduce((a, m) => a + (m.perc || 0), 0) / sorted.length).toFixed(1);
@@ -5650,9 +5450,6 @@ Give a concise pre-mock briefing in this EXACT JSON (no markdown, no backticks):
             };
 
             // Score emoji
-            const tierTag = (m) => m.tier==='tier2'
-                ? '<span style="font-size:9px;font-weight:900;padding:1px 7px;border-radius:5px;background:linear-gradient(135deg,#d946ef,#f59e0b);color:white;text-transform:uppercase;letter-spacing:0.06em;margin-right:4px;">T2</span>'
-                : '<span style="font-size:9px;font-weight:900;padding:1px 7px;border-radius:5px;background:linear-gradient(135deg,#6366f1,#818cf8);color:white;text-transform:uppercase;letter-spacing:0.06em;margin-right:4px;">T1</span>';
             const scoreEmoji = (pct) => pct >= 85 ? '🏆' : pct >= 70 ? '⭐' : pct >= 55 ? '📈' : pct >= 40 ? '📉' : '💀';
 
             const circum = 220;
@@ -5694,7 +5491,7 @@ Give a concise pre-mock briefing in this EXACT JSON (no markdown, no backticks):
                         <div class="flex items-start justify-between gap-2">
                             <div class="min-w-0 flex-1">
                                 <div class="flex items-center gap-1.5 flex-wrap">
-                                    ${tierTag(m)}${state.isDemoMode ? '<span class="demo-badge" style="display:inline-flex;">demo</span>' : ''}
+                                    ${state.isDemoMode ? '<span class="demo-badge" style="display:inline-flex;">demo</span>' : ''}
                                     <span class="font-black text-slate-900 dark:text-white truncate" style="font-size:15px;">${m.name}</span>
                                 </div>
                                 <div class="flex items-center gap-1.5 flex-wrap mt-1">
@@ -5892,99 +5689,65 @@ Give a concise pre-mock briefing in this EXACT JSON (no markdown, no backticks):
         }
 
         function updateForm() {
-            const group = getCurrentTierConfig() || EXAM_GROUPS[state.selectedExamGroup]; if (!group) return;
+            const group = EXAM_GROUPS[state.selectedExamGroup]; if (!group) return;
             safeSetText('marking-scheme', `MARKING: +${group.c} / -${group.w}`);
             const sc = el('sec-checkboxes');
             if (sc) sc.innerHTML = group.subjects.map(s => `
                 <label class="cursor-pointer glass-card px-4 py-3 rounded-2xl text-xs font-black text-slate-500 uppercase tracking-widest hover:border-brand-500 transition flex items-center gap-2 select-none">
-                    <input type="checkbox" value="${s.name}" class="sec-cb accent-brand-600 w-4 h-4 rounded" onchange="window.renderFormRows()"> ${s.name}
+                    <input type="checkbox" value="${s}" class="sec-cb accent-brand-600 w-4 h-4 rounded" onchange="window.renderFormRows()"> ${s}
                 </label>`).join('');
             window.renderFormRows();
         }
 
         window.renderFormRows = () => {
-            const catVal = el('inp-cat'), group = getCurrentTierConfig() || EXAM_GROUPS[state.selectedExamGroup];
+            const catVal = el('inp-cat'), group = EXAM_GROUPS[state.selectedExamGroup];
             if (!group || !catVal) return;
-            let subs = group.subjects;  // array of {name, q, c, w, total, qualifying?}
+            let subs = group.subjects;
             const divSec = el('div-sec-select');
             if (catVal.value === 'Sectional') {
                 if (divSec) divSec.classList.remove('hidden');
-                const checked = Array.from(document.querySelectorAll('.sec-cb:checked')).map(cb=>cb.value);
-                if (checked.length) subs = subs.filter(s => checked.includes(s.name));
+                const checked = Array.from(document.querySelectorAll('.sec-cb:checked')).map(c=>c.value);
+                if (checked.length) subs = checked;
             } else { if (divSec) divSec.classList.add('hidden'); }
 
-            // Total marks banner
-            const totalBanner = el('exam-total-marks-banner');
-            if (totalBanner) {
-                const scored = subs.filter(s => !s.qualifying);
-                const bannerTotal = scored.reduce((a,s)=>a+s.total, 0);
-                totalBanner.innerHTML = `
-                    <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;padding:10px 14px;border-radius:14px;background:linear-gradient(135deg,rgba(99,102,241,0.12),rgba(168,85,247,0.10));border:1px solid rgba(99,102,241,0.25);margin-bottom:12px;">
-                        <div style="display:flex;align-items:center;gap:8px;">
-                            <span style="font-size:15px;">📋</span>
-                            <span style="font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:0.08em;color:var(--c-slate-500);">${group.name}</span>
-                        </div>
-                        <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
-                            <span style="font-size:11px;font-weight:800;color:#6366f1;">Total: <span style="font-size:15px;">${bannerTotal}</span> marks</span>
-                            <span style="font-size:11px;font-weight:700;color:var(--c-slate-400);">+${group.c} / −${group.w} per Q</span>
-                        </div>
-                    </div>`;
-                totalBanner.style.display = 'block';
-            }
-
-            // Subject cards with per-subject metadata
+            // New card-based grid for subjects
             const grid = el('subject-cards-grid');
-            if (grid) grid.innerHTML = subs.map(s => {
-                const isQual = s.qualifying;
-                const negStr = s.w === 0 ? 'No Neg' : ('−' + (s.w === 1/3 ? '0.33' : s.w));
-                return `
-                <div class="glass-card rounded-2xl p-3 border border-white/40 dark:border-white/5${isQual?' opacity-60':''}" data-sub="${s.name}" data-c="${s.c}" data-w="${s.w}">
-                    <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px;">
-                        <p style="font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:0.07em;color:${isQual?'#f59e0b':'var(--c-slate-500)'};">${s.name}${isQual ? ' <span style="font-size:9px;background:rgba(245,158,11,0.15);color:#f59e0b;padding:1px 5px;border-radius:4px;">QUAL</span>' : ''}</p>
-                    </div>
-                    <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px;">
-                        <span style="font-size:9px;font-weight:800;padding:2px 7px;border-radius:6px;background:rgba(99,102,241,0.1);color:#6366f1;">${s.q}Q</span>
-                        <span style="font-size:9px;font-weight:800;padding:2px 7px;border-radius:6px;background:rgba(16,185,129,0.1);color:#10b981;">+${s.c}/Q</span>
-                        <span style="font-size:9px;font-weight:800;padding:2px 7px;border-radius:6px;background:rgba(239,68,68,0.1);color:#ef4444;">${negStr}</span>
-                        <span style="font-size:9px;font-weight:800;padding:2px 7px;border-radius:6px;background:rgba(148,163,184,0.15);color:var(--c-slate-500);">${s.total}M</span>
-                    </div>
-                    <div class="grid grid-cols-4 gap-1.5">
+            if (grid) grid.innerHTML = subs.map(s => `
+                <div class="glass-card rounded-2xl p-4 border border-white/40 dark:border-white/5" data-sub="${s}">
+                    <p class="text-xs font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-3">${s}</p>
+                    <div class="grid grid-cols-4 gap-2">
                         <div class="text-center">
-                            <p style="font-size:9px;font-weight:900;color:#10b981;text-transform:uppercase;margin-bottom:3px;">Right</p>
-                            <input type="number" min="0" class="score-inp c w-full text-emerald-600 text-lg font-black" placeholder="0" oninput="window.calcScore()" style="background:rgba(16,185,129,0.08);border-radius:8px;padding:6px 4px;text-align:center;border:none;outline:none;width:100%;">
+                            <p class="text-xs font-black text-emerald-500 uppercase mb-1">Right</p>
+                            <input type="number" min="0" class="score-inp c w-full text-emerald-600 text-lg font-black" placeholder="0" oninput="window.calcScore()" style="background:rgba(16,185,129,0.08);border-radius:8px;padding:6px 4px;">
                         </div>
                         <div class="text-center">
-                            <p style="font-size:9px;font-weight:900;color:#ef4444;text-transform:uppercase;margin-bottom:3px;">Wrong</p>
-                            <input type="number" min="0" class="score-inp w w-full text-rose-500 text-lg font-black" placeholder="0" oninput="window.calcScore()" style="background:rgba(239,68,68,0.08);border-radius:8px;padding:6px 4px;text-align:center;border:none;outline:none;width:100%;">
+                            <p class="text-xs font-black text-rose-500 uppercase mb-1">Wrong</p>
+                            <input type="number" min="0" class="score-inp w w-full text-rose-500 text-lg font-black" placeholder="0" oninput="window.calcScore()" style="background:rgba(239,68,68,0.08);border-radius:8px;padding:6px 4px;">
                         </div>
                         <div class="text-center">
-                            <p style="font-size:9px;font-weight:900;color:#94a3b8;text-transform:uppercase;margin-bottom:3px;">Skip</p>
-                            <input type="number" min="0" class="score-inp u w-full text-slate-400 text-lg font-black" placeholder="0" style="background:rgba(148,163,184,0.08);border-radius:8px;padding:6px 4px;text-align:center;border:none;outline:none;width:100%;">
+                            <p class="text-xs font-black text-slate-400 uppercase mb-1">Skip</p>
+                            <input type="number" min="0" class="score-inp u w-full text-slate-400 text-lg font-black" placeholder="0" style="background:rgba(148,163,184,0.08);border-radius:8px;padding:6px 4px;">
                         </div>
                         <div class="text-center">
-                            <p style="font-size:9px;font-weight:900;color:#f97316;text-transform:uppercase;margin-bottom:3px;">Silly</p>
-                            <input type="number" min="0" class="score-inp s w-full text-orange-500 text-lg font-black" placeholder="0" style="background:rgba(249,115,22,0.08);border-radius:8px;padding:6px 4px;text-align:center;border:none;outline:none;width:100%;">
+                            <p class="text-xs font-black text-orange-500 uppercase mb-1">Silly</p>
+                            <input type="number" min="0" class="score-inp s w-full text-orange-500 text-lg font-black" placeholder="0" style="background:rgba(249,115,22,0.08);border-radius:8px;padding:6px 4px;">
                         </div>
                     </div>
-                </div>`;
-            }).join('');
+                </div>`).join('');
 
-            // Sync hidden tbody
+            // Keep hidden tbody in sync for form submit (reads data-sub from cards now)
             const tbody = el('inp-subs-body');
-            if (tbody) tbody.innerHTML = subs.map(s => `<tr data-sub="${s.name}"></tr>`).join('');
+            if (tbody) tbody.innerHTML = subs.map(s => `<tr data-sub="${s}"></tr>`).join('');
 
             window.calcScore();
         };
 
         window.calcScore = () => {
-            const group = getCurrentTierConfig() || EXAM_GROUPS[state.selectedExamGroup]; if (!group) return;
+            const group = EXAM_GROUPS[state.selectedExamGroup]; if (!group) return;
             let score = 0;
             document.querySelectorAll('#subject-cards-grid [data-sub]').forEach(card => {
                 const c = parseFloat(card.querySelector('.c')?.value||0), w = parseFloat(card.querySelector('.w')?.value||0);
-                // Use per-subject marking stored in data-c / data-w (falls back to group-level)
-                const cMark = parseFloat(card.dataset.c || group.c);
-                const wMark = parseFloat(card.dataset.w || group.w);
-                score += (c * cMark) - (w * wMark);
+                score += (c * group.c) - (w * group.w);
             });
             safeSetText('calc-score', score.toFixed(2));
         };
@@ -6020,7 +5783,7 @@ Give a concise pre-mock briefing in this EXACT JSON (no markdown, no backticks):
 
         function processData() {
             state.mocks.sort((a,b) => new Date(a.date)-new Date(b.date));
-            renderTierStrip(); renderHome(); renderHistory(); window.app.renderMatrix();
+            renderHome(); renderHistory(); window.app.renderMatrix();
         }
 
         // ── Firebase Auth ──
@@ -6031,13 +5794,6 @@ Give a concise pre-mock briefing in this EXACT JSON (no markdown, no backticks):
                     el('btn-login')?.classList.add('hidden');
                     const up = el('user-profile'); if (up) { up.classList.remove('hidden'); up.style.display='flex'; }
                     const av = el('user-avatar'); if (av) av.src = u.photoURL || '';
-                    // Set first name in compact auth button
-                    const nameShort = el('user-name-short');
-                    if (nameShort && u.displayName) {
-                        nameShort.textContent = u.displayName.split(' ')[0].substring(0, 7);
-                    } else if (nameShort) {
-                        nameShort.textContent = u.isAnonymous ? 'Guest' : 'User';
-                    }
                     safeSetText('status-text', 'Cloud Sync');
                     const si = el('status-indicator'); if (si) { si.classList.remove('bg-gray-400'); si.classList.add('bg-emerald-500','animate-pulse'); }
 
@@ -6049,7 +5805,7 @@ Give a concise pre-mock briefing in this EXACT JSON (no markdown, no backticks):
 
                     if (!state.selectedExamGroup) state.selectedExamGroup = localStorage.getItem('selected_exam_group');
                     if (!state.selectedExamGroup) showExamSelector();
-                    else { loadTier(); updateExamBadge(); updateFormForExam(); renderTierStrip(); }
+                    else { updateExamBadge(); updateFormForExam(); }
 
                     onSnapshot(collection(db,'artifacts',appId,'users',u.uid,'mocks'), s => { if (!state.isDemoMode) { state.mocks = s.docs.map(d=>({id:d.id,...d.data()})); processData(); } });
                     onSnapshot(collection(db,'artifacts',appId,'users',u.uid,'tasks'), s => { if (!state.isDemoMode) { state.tasks = s.docs.map(d=>({id:d.id,...d.data()})); renderTaskList(); } });
@@ -6062,7 +5818,7 @@ Give a concise pre-mock briefing in this EXACT JSON (no markdown, no backticks):
                     const si = el('status-indicator'); if (si) { si.classList.remove('bg-emerald-500','animate-pulse'); si.classList.add('bg-gray-400'); }
                     state.selectedExamGroup = localStorage.getItem('selected_exam_group');
                     if (!state.selectedExamGroup) showExamSelector();
-                    else { loadTier(); updateExamBadge(); updateFormForExam(); renderTierStrip(); }
+                    else { updateExamBadge(); updateFormForExam(); }
                     state.mocks=[]; state.tasks=[]; state.links=[];
                     processData();
                 }
@@ -6092,9 +5848,7 @@ Give a concise pre-mock briefing in this EXACT JSON (no markdown, no backticks):
             if (state.isDemoMode) { alert("Cannot save mocks in Demo Mode — exit demo first."); return; }
             const group = EXAM_GROUPS[state.selectedExamGroup]; if (!group) return alert("Select exam first!");
             let entry = {
-                platform: el('inp-platform').value,
-                exam: (state.currentTier==='tier2'&&EXAM_TIER2_GROUPS[state.selectedExamGroup])?EXAM_TIER2_GROUPS[state.selectedExamGroup].exams[0]:group.exams[0],
-                examGroup: state.selectedExamGroup, tier: state.currentTier||'tier1',
+                platform: el('inp-platform').value, exam: group.exams[0], examGroup: state.selectedExamGroup,
                 name: el('inp-name').value, category: el('inp-cat').value,
                 date: el('inp-date').value || new Date().toISOString().slice(0,10),
                 perc: parseFloat(el('inp-perc').value)||0, time: parseFloat(el('inp-time').value)||0,
@@ -6160,7 +5914,6 @@ Give a concise pre-mock briefing in this EXACT JSON (no markdown, no backticks):
                        ['hmenu-tools',  function(){window.app.nav('tools');}],
                        ['hmenu-switch', function(){window.showExamSelector();}],
                        ['hmenu-exams', function(){window.app.nav('tools');}],
-                       ['hmenu-stats',  function(){window.location.href='stats.html';}],
                        ['hmenu-tour',  function(){window.startTour();}],
                        ['hmenu-demo',   function(){window.loadDemoMode();}]];
             pairs.forEach(function(p){
@@ -6251,41 +6004,6 @@ Give a concise pre-mock briefing in this EXACT JSON (no markdown, no backticks):
             });
         })();
     </script>
-
-
-    <!-- TIER 2 QUALIFICATION MODAL -->
-    <div id="tier2-qual-modal" onclick="if(event.target===this)closeTier2QualModal()"
-         style="display:none;position:fixed;inset:0;z-index:28000;background:rgba(0,0,0,0.72);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);align-items:center;justify-content:center;padding:20px;">
-        <div class="glass-modal tier-qual-congrats" style="max-width:420px;width:100%;border-radius:2rem;overflow:hidden;box-shadow:0 32px 80px rgba(217,70,239,0.35);">
-            <div style="background:linear-gradient(135deg,#6366f1 0%,#a855f7 50%,#d946ef 100%);padding:28px 24px 22px;text-align:center;">
-                <div style="font-size:40px;margin-bottom:10px;">🏆</div>
-                <h2 style="font-size:20px;font-weight:900;color:white;margin-bottom:6px;">Switch to Mains Mode?</h2>
-                <p style="font-size:12px;color:rgba(255,255,255,0.7);font-weight:600;">Unlock Tier 2 / Mains tracking for</p>
-                <p id="t2q-tier2-name" style="font-size:13px;color:white;font-weight:900;margin-top:2px;"></p>
-            </div>
-            <div style="padding:22px 24px;">
-                <div style="background:rgba(217,70,239,0.06);border:1px solid rgba(217,70,239,0.2);border-radius:14px;padding:10px 14px;display:flex;align-items:center;gap:10px;margin-bottom:18px;">
-                    <span style="font-size:18px;flex-shrink:0;">📋</span>
-                    <div><p style="font-size:11px;font-weight:900;color:#d946ef;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:2px;">Exam Pattern</p><p id="t2q-info" style="font-size:13px;font-weight:700;color:#475569;"></p></div>
-                </div>
-                <p style="font-size:14px;font-weight:800;text-align:center;margin-bottom:18px;color:#1e293b;" class="dark:text-slate-200">
-                    Have you cleared Prelims / <span id="t2q-exam-name" style="color:#6366f1;"></span> Tier&nbsp;1?
-                </p>
-                <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px;">
-                    <button onclick="window.confirmTier2Status(true)"
-                        style="padding:14px 8px;border-radius:16px;background:linear-gradient(135deg,#d946ef,#f59e0b);color:white;font-size:14px;font-weight:900;border:none;cursor:pointer;box-shadow:0 4px 18px rgba(217,70,239,0.35);">
-                        🎉 Yes, I Cleared!
-                    </button>
-                    <button onclick="window.confirmTier2Status(false)"
-                        style="padding:14px 8px;border-radius:16px;background:rgba(148,163,184,0.12);color:#64748b;font-size:14px;font-weight:900;border:1px solid rgba(148,163,184,0.2);cursor:pointer;">
-                        Not Yet
-                    </button>
-                </div>
-                <p style="font-size:11px;text-align:center;color:#94a3b8;font-weight:600;">In Mains mode, all stats, charts &amp; AI analysis switch to Tier 2 data only.</p>
-                <button onclick="closeTier2QualModal()" style="display:block;margin:12px auto 0;background:none;border:none;color:#94a3b8;font-size:12px;font-weight:700;cursor:pointer;padding:6px 12px;">Cancel</button>
-            </div>
-        </div>
-    </div>
 
     <!-- AI DEBRIEF CHAT MODAL -->
     <!-- AI DEBRIEF MODAL -->
@@ -6498,19 +6216,15 @@ Give a concise pre-mock briefing in this EXACT JSON (no markdown, no backticks):
              because the app scrolls inside <main>, not the page itself
         */
         (function initAOS() {
+            if (typeof AOS === 'undefined') return; // CDN failed to load — skip gracefully
             const scrollContainer = document.querySelector('main.flex-1');
-
-            if (typeof AOS === 'undefined') return;
             AOS.init({
                 duration : 800,
                 easing   : 'ease-in-out',
-                once     : false,   // re-animate each time tab is switched back
+                once     : false,
                 offset   : 60,
-                // Tell AOS to watch the inner scroll container, not window
                 ...(scrollContainer ? { container: scrollContainer } : {})
             });
-
-            // Also refresh after the first data render so dynamic content is caught
             setTimeout(() => { if (typeof AOS !== 'undefined') AOS.refresh(); }, 600);
         })();
     </script>
