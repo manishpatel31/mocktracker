@@ -1278,8 +1278,7 @@ window.answerQuiz = (sel, correct, btn) => {
 
     // Parse word list — support newlines or commas or spaces
     const words = raw
-      .split(/[
-,]+/)
+      .split(/[\n,]+/)
       .map(w => w.trim())
       .filter(Boolean);
 
@@ -1324,8 +1323,7 @@ IMPORTANT RULES:
 8. Mnemonics and tricks should be vivid, memorable, and India-context-friendly where possible
 
 WORD LIST:
-${words.map((w, i) => `${i + 1}. ${w}`).join('
-')}
+${words.map((w, i) => `${i + 1}. ${w}`).join('\n')}
 
 Begin CSV output now (no header, data rows only):`;
 
