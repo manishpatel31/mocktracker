@@ -4,353 +4,234 @@
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
   <title>MockTracker Pro · LexiPrep Vocab</title>
-
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=Bebas+Neue&display=swap" rel="stylesheet"/>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
-      darkMode: 'class',
-      theme: {
-        extend: {
-          colors: {
-            dark: { bg:'#06040f', card:'#0e0a1f', text:'#f1f5f9', border:'#1e1535' },
-            brand: { 500:'#6366f1', 600:'#4f46e5', 400:'#818cf8', 100:'#e0e7ff' },
-            accent: { 500:'#d946ef', 600:'#c026d3' }
-          }
+      darkMode:'class',
+      theme:{ extend:{
+        colors:{
+          dark:{ bg:'#06040f', card:'#0e0a1f', text:'#f1f5f9', border:'#1e1535' },
+          brand:{ 500:'#6366f1', 600:'#4f46e5', 400:'#818cf8', 100:'#e0e7ff' },
+          accent:{ 500:'#d946ef', 600:'#c026d3' }
         }
-      }
+      }}
     }
   </script>
-
   <style>
-    * { -webkit-font-smoothing: antialiased; box-sizing: border-box; }
-    body { font-family: 'Plus Jakarta Sans', sans-serif; }
+    *{ -webkit-font-smoothing:antialiased; box-sizing:border-box; }
+    body{ font-family:'Plus Jakarta Sans',sans-serif; }
 
-    .app-bg {
-      background-color: #eef0ff;
+    .app-bg{
+      background-color:#eef0ff;
       background-image:
-        radial-gradient(ellipse 90% 70% at 0% 0%,   rgba(99,102,241,0.28) 0%, transparent 55%),
-        radial-gradient(ellipse 80% 60% at 100% 100%,rgba(217,70,239,0.22) 0%, transparent 55%),
-        radial-gradient(ellipse 60% 40% at 60% 20%, rgba(139,92,246,0.15) 0%, transparent 50%),
-        radial-gradient(ellipse 50% 40% at 20% 80%, rgba(99,102,241,0.10) 0%, transparent 45%);
-      background-attachment: fixed;
+        radial-gradient(ellipse 90% 70% at 0% 0%,   rgba(99,102,241,.28) 0%,transparent 55%),
+        radial-gradient(ellipse 80% 60% at 100% 100%,rgba(217,70,239,.22) 0%,transparent 55%),
+        radial-gradient(ellipse 60% 40% at 60% 20%, rgba(139,92,246,.15) 0%,transparent 50%),
+        radial-gradient(ellipse 50% 40% at 20% 80%, rgba(99,102,241,.10) 0%,transparent 45%);
+      background-attachment:fixed;
     }
-    .dark .app-bg {
-      background-color: #06040f;
+    .dark .app-bg{
+      background-color:#06040f;
       background-image:
-        radial-gradient(ellipse 90% 70% at 0% 0%,    rgba(79,70,229,0.45)  0%, transparent 50%),
-        radial-gradient(ellipse 80% 60% at 100% 100%, rgba(192,38,211,0.35) 0%, transparent 50%),
-        radial-gradient(ellipse 60% 50% at 50% 50%,  rgba(109,40,217,0.20) 0%, transparent 55%),
-        radial-gradient(ellipse 40% 30% at 80% 10%,  rgba(99,102,241,0.25) 0%, transparent 40%);
+        radial-gradient(ellipse 90% 70% at 0% 0%,    rgba(79,70,229,.45)  0%,transparent 50%),
+        radial-gradient(ellipse 80% 60% at 100% 100%, rgba(192,38,211,.35) 0%,transparent 50%),
+        radial-gradient(ellipse 60% 50% at 50% 50%,  rgba(109,40,217,.20) 0%,transparent 55%),
+        radial-gradient(ellipse 40% 30% at 80% 10%,  rgba(99,102,241,.25) 0%,transparent 40%);
     }
+    .glass-card{
+      background:rgba(255,255,255,.55); backdrop-filter:blur(24px) saturate(180%);
+      -webkit-backdrop-filter:blur(24px) saturate(180%);
+      border:1px solid rgba(255,255,255,.70);
+      box-shadow:0 8px 32px rgba(99,102,241,.10),inset 0 1px 0 rgba(255,255,255,.80);
+      transition:all .3s ease;
+    }
+    .dark .glass-card{
+      background:rgba(14,10,31,.55); border:1px solid rgba(139,92,246,.18);
+      box-shadow:0 8px 32px rgba(0,0,0,.50),inset 0 1px 0 rgba(255,255,255,.05);
+    }
+    .glass-card:hover{ box-shadow:0 12px 40px rgba(99,102,241,.18),inset 0 1px 0 rgba(255,255,255,.90); }
+    .dark .glass-card:hover{ box-shadow:0 12px 40px rgba(99,102,241,.25),inset 0 1px 0 rgba(255,255,255,.07); }
 
-    .glass-card {
-      background: rgba(255,255,255,0.55);
-      backdrop-filter: blur(24px) saturate(180%);
-      -webkit-backdrop-filter: blur(24px) saturate(180%);
-      border: 1px solid rgba(255,255,255,0.70);
-      box-shadow: 0 8px 32px rgba(99,102,241,0.10), inset 0 1px 0 rgba(255,255,255,0.80);
-      transition: all 0.3s ease;
+    .glass-input{
+      background:rgba(255,255,255,.50); backdrop-filter:blur(8px);
+      border:1px solid rgba(255,255,255,.70); transition:all .2s; color:#1e293b;
     }
-    .dark .glass-card {
-      background: rgba(14,10,31,0.55);
-      border: 1px solid rgba(139,92,246,0.18);
-      box-shadow: 0 8px 32px rgba(0,0,0,0.50), inset 0 1px 0 rgba(255,255,255,0.05);
-    }
-    .glass-card:hover {
-      box-shadow: 0 12px 40px rgba(99,102,241,0.18), inset 0 1px 0 rgba(255,255,255,0.90);
-    }
-    .dark .glass-card:hover {
-      box-shadow: 0 12px 40px rgba(99,102,241,0.25), inset 0 1px 0 rgba(255,255,255,0.07);
-    }
-    .glass-input {
-      background: rgba(255,255,255,0.50);
-      backdrop-filter: blur(8px);
-      border: 1px solid rgba(255,255,255,0.70);
-      transition: all 0.2s;
-      color: #1e293b;
-    }
-    .dark .glass-input {
-      background: rgba(255,255,255,0.05);
-      border: 1px solid rgba(139,92,246,0.20);
-      color: #f1f5f9;
-    }
-    .glass-input:focus {
-      background: rgba(255,255,255,0.75);
-      border-color: rgba(99,102,241,0.50);
-      box-shadow: 0 0 0 3px rgba(99,102,241,0.12);
-      outline: none;
-    }
-    .dark .glass-input:focus {
-      background: rgba(99,102,241,0.08);
-      border-color: rgba(99,102,241,0.50);
-    }
-    .glass-nav {
-      background: rgba(255,255,255,0.65);
-      backdrop-filter: blur(24px) saturate(200%);
-      -webkit-backdrop-filter: blur(24px) saturate(200%);
-      border-bottom: 1px solid rgba(255,255,255,0.60);
-      box-shadow: 0 4px 24px rgba(99,102,241,0.08);
-    }
-    .dark .glass-nav {
-      background: rgba(6,4,15,0.70);
-      border-bottom: 1px solid rgba(139,92,246,0.15);
-      box-shadow: 0 4px 24px rgba(0,0,0,0.40);
-    }
+    .dark .glass-input{ background:rgba(255,255,255,.05); border-color:rgba(139,92,246,.20); color:#f1f5f9; }
+    .glass-input:focus{ background:rgba(255,255,255,.75); border-color:rgba(99,102,241,.50); box-shadow:0 0 0 3px rgba(99,102,241,.12); outline:none; }
+    .dark .glass-input:focus{ background:rgba(99,102,241,.08); border-color:rgba(99,102,241,.50); }
 
-    .text-gradient  { background: linear-gradient(135deg,#6366f1,#d946ef); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
-    .btn-gradient  { background: linear-gradient(135deg,#6366f1,#d946ef); color:white; transition:all 0.3s; }
-    .btn-gradient:hover { filter:brightness(1.12); transform:translateY(-1px); box-shadow:0 8px 24px rgba(99,102,241,0.40); }
-    .btn-glass {
-      background: rgba(255,255,255,0.40);
-      backdrop-filter: blur(10px);
-      border: 1px solid rgba(255,255,255,0.60);
-      color: #475569; transition: all 0.2s;
+    .glass-nav{
+      background:rgba(255,255,255,.65); backdrop-filter:blur(24px) saturate(200%);
+      -webkit-backdrop-filter:blur(24px) saturate(200%);
+      border-bottom:1px solid rgba(255,255,255,.60);
+      box-shadow:0 4px 24px rgba(99,102,241,.08);
     }
-    .dark .btn-glass { background:rgba(255,255,255,0.05); border-color:rgba(139,92,246,0.20); color:#94a3b8; }
-    .btn-glass:hover { background:rgba(255,255,255,0.65); transform:scale(1.04); }
-    .dark .btn-glass:hover { background:rgba(99,102,241,0.12); }
+    .dark .glass-nav{ background:rgba(6,4,15,.70); border-bottom:1px solid rgba(139,92,246,.15); box-shadow:0 4px 24px rgba(0,0,0,.40); }
 
-    html, body { overflow-x:hidden; max-width:100%; }
-    ::-webkit-scrollbar { width:5px; }
-    ::-webkit-scrollbar-thumb { background:rgba(99,102,241,0.30); border-radius:10px; }
+    .text-gradient{ background:linear-gradient(135deg,#6366f1,#d946ef); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+    .btn-gradient{ background:linear-gradient(135deg,#6366f1,#d946ef); color:white; transition:all .3s; }
+    .btn-gradient:hover{ filter:brightness(1.12); transform:translateY(-1px); box-shadow:0 8px 24px rgba(99,102,241,.40); }
+    .btn-glass{ background:rgba(255,255,255,.40); backdrop-filter:blur(10px); border:1px solid rgba(255,255,255,.60); color:#475569; transition:all .2s; }
+    .dark .btn-glass{ background:rgba(255,255,255,.05); border-color:rgba(139,92,246,.20); color:#94a3b8; }
+    .btn-glass:hover{ background:rgba(255,255,255,.65); transform:scale(1.04); }
+    .dark .btn-glass:hover{ background:rgba(99,102,241,.12); }
 
-    .pill { padding:2px 10px; border-radius:100px; font-size:10px; font-weight:800; letter-spacing:0.05em; text-transform:uppercase; }
+    html,body{ overflow-x:hidden; max-width:100%; }
+    ::-webkit-scrollbar{ width:5px; }
+    ::-webkit-scrollbar-thumb{ background:rgba(99,102,241,.30); border-radius:10px; }
+    .pill{ padding:2px 10px; border-radius:100px; font-size:10px; font-weight:800; letter-spacing:.05em; text-transform:uppercase; }
+    .modern-select{ background-image:url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236366f1' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e"); background-position:right .75rem center; background-repeat:no-repeat; background-size:1.2em; padding-right:2.5rem; appearance:none; }
 
-    @keyframes fadeUp {
-      from { opacity:0; transform:translateY(20px); }
-      to   { opacity:1; transform:translateY(0); }
-    }
-    @keyframes floatBob {
-      0%,100% { transform:translateY(0); }
-      50%      { transform:translateY(-6px); }
-    }
-    @keyframes spin { to { transform:rotate(360deg); } }
-    @keyframes scaleUp { from { opacity:0; transform:translateY(12px); } to { opacity:1; transform:translateY(0); } }
-    @keyframes popIn {
-      0%  { opacity:0; transform:scale(0.92) translateY(16px); }
-      70% { transform:scale(1.02) translateY(-2px); }
-      100%{ opacity:1; transform:scale(1) translateY(0); }
-    }
+    @keyframes fadeUp{ from{ opacity:0; transform:translateY(20px); } to{ opacity:1; transform:translateY(0); } }
+    @keyframes floatBob{ 0%,100%{ transform:translateY(0); } 50%{ transform:translateY(-6px); } }
+    @keyframes spin{ to{ transform:rotate(360deg); } }
+    @keyframes scaleUp{ from{ opacity:0; transform:translateY(12px); } to{ opacity:1; transform:translateY(0); } }
+    @keyframes popIn{ 0%{ opacity:0; transform:scale(.92) translateY(16px); } 70%{ transform:scale(1.02) translateY(-2px); } 100%{ opacity:1; transform:scale(1) translateY(0); } }
+    @keyframes shimmerSlide{ 0%{ transform:translateX(-100%); } 100%{ transform:translateX(200%); } }
 
-    .anim-1 { animation:fadeUp 0.55s cubic-bezier(0.22,1,0.36,1) 0.05s both; }
-    .anim-2 { animation:fadeUp 0.55s cubic-bezier(0.22,1,0.36,1) 0.12s both; }
-    .anim-3 { animation:fadeUp 0.55s cubic-bezier(0.22,1,0.36,1) 0.19s both; }
-    .anim-4 { animation:fadeUp 0.55s cubic-bezier(0.22,1,0.36,1) 0.26s both; }
-    .anim-5 { animation:fadeUp 0.55s cubic-bezier(0.22,1,0.36,1) 0.33s both; }
+    .anim-1{ animation:fadeUp .55s cubic-bezier(.22,1,.36,1) .05s both; }
+    .anim-2{ animation:fadeUp .55s cubic-bezier(.22,1,.36,1) .12s both; }
+    .anim-3{ animation:fadeUp .55s cubic-bezier(.22,1,.36,1) .19s both; }
+    .anim-4{ animation:fadeUp .55s cubic-bezier(.22,1,.36,1) .26s both; }
 
-    .theme-icon { position:absolute; transition:transform 0.45s cubic-bezier(0.34,1.56,0.64,1), opacity 0.35s ease; }
-    .theme-sun  { opacity:1;  transform:rotate(0deg) scale(1); }
-    .theme-moon { opacity:0;  transform:rotate(90deg) scale(0.4); }
-    .dark .theme-sun  { opacity:0;  transform:rotate(-90deg) scale(0.4); }
-    .dark .theme-moon { opacity:1;  transform:rotate(0deg) scale(1); }
+    .theme-icon{ position:absolute; transition:transform .45s cubic-bezier(.34,1.56,.64,1),opacity .35s ease; }
+    .theme-sun{ opacity:1; transform:rotate(0deg) scale(1); }
+    .theme-moon{ opacity:0; transform:rotate(90deg) scale(.4); }
+    .dark .theme-sun{ opacity:0; transform:rotate(-90deg) scale(.4); }
+    .dark .theme-moon{ opacity:1; transform:rotate(0deg) scale(1); }
 
-    .spinner {
-      width:36px; height:36px; border-radius:50%;
-      border:3px solid rgba(99,102,241,0.15);
-      border-top-color:#6366f1;
-      animation:spin 0.8s linear infinite;
-    }
+    .spinner{ width:36px; height:36px; border-radius:50%; border:3px solid rgba(99,102,241,.15); border-top-color:#6366f1; animation:spin .8s linear infinite; }
 
-    #toast {
-      position:fixed; bottom:24px; left:50%; transform:translateX(-50%);
-      z-index:999; pointer-events:none;
-      padding:10px 22px; border-radius:14px;
-      background:linear-gradient(135deg,#6366f1,#a855f7);
-      color:white; font-size:13px; font-weight:800;
-      box-shadow:0 8px 32px rgba(99,102,241,0.45);
-      opacity:0; transition:opacity 0.4s;
-      white-space:nowrap;
-    }
-    #toast.show { opacity:1; }
-    #toast.err  { background:linear-gradient(135deg,#ef4444,#dc2626); }
+    #toast{ position:fixed; bottom:24px; left:50%; transform:translateX(-50%); z-index:9999; pointer-events:none; padding:10px 22px; border-radius:14px; background:linear-gradient(135deg,#6366f1,#a855f7); color:white; font-size:13px; font-weight:800; box-shadow:0 8px 32px rgba(99,102,241,.45); opacity:0; transition:opacity .4s; white-space:nowrap; }
+    #toast.show{ opacity:1; }
+    #toast.err{ background:linear-gradient(135deg,#ef4444,#dc2626); }
 
-    /* ─── Sub-tab bar ─── */
-    .vocab-subtab-bar {
-      display:flex; gap:4px; padding:5px;
-      background:rgba(255,255,255,0.35);
-      backdrop-filter:blur(16px);
-      border:1px solid rgba(255,255,255,0.6);
-      border-radius:18px; margin-bottom:20px;
-    }
-    .dark .vocab-subtab-bar { background:rgba(14,10,31,0.5); border-color:rgba(139,92,246,0.18); }
-    .vocab-subtab {
-      flex:1; padding:10px 4px; border:none; border-radius:13px;
-      background:none; color:#64748b;
-      font-size:10px; font-weight:800; letter-spacing:0.05em; text-transform:uppercase;
-      cursor:pointer; transition:all 0.2s;
-      display:flex; flex-direction:column; align-items:center; gap:4px;
-    }
-    .dark .vocab-subtab { color:#94a3b8; }
-    .vocab-subtab i { font-size:15px; }
-    .vocab-subtab.active {
-      background:linear-gradient(135deg,#6366f1,#d946ef);
-      color:white;
-      box-shadow:0 4px 14px rgba(99,102,241,0.40);
-    }
-    .vocab-pane { display:none; animation:scaleUp 0.3s cubic-bezier(0.16,1,0.3,1); }
-    .vocab-pane.active { display:block; }
+    /* ── Sub-tab bar ── */
+    .vtab-bar{ display:flex; gap:4px; padding:5px; background:rgba(255,255,255,.35); backdrop-filter:blur(16px); border:1px solid rgba(255,255,255,.6); border-radius:18px; margin-bottom:20px; }
+    .dark .vtab-bar{ background:rgba(14,10,31,.5); border-color:rgba(139,92,246,.18); }
+    .vtab{ flex:1; padding:9px 4px; border:none; border-radius:13px; background:none; color:#64748b; font-size:10px; font-weight:800; letter-spacing:.05em; text-transform:uppercase; cursor:pointer; transition:all .2s; display:flex; flex-direction:column; align-items:center; gap:3px; }
+    .dark .vtab{ color:#94a3b8; }
+    .vtab i{ font-size:14px; }
+    .vtab.active{ background:linear-gradient(135deg,#6366f1,#d946ef); color:white; box-shadow:0 4px 14px rgba(99,102,241,.40); }
+    .vpane{ display:none; animation:scaleUp .3s cubic-bezier(.16,1,.3,1); }
+    .vpane.active{ display:block; }
 
-    /* ─── Tag chips ─── */
-    .tag-input-box {
-      display:flex; flex-wrap:wrap; gap:6px; padding:9px 12px;
-      background:rgba(255,255,255,0.50); border:1px solid rgba(255,255,255,0.70);
-      border-radius:13px; cursor:text; min-height:46px; align-items:center;
-      transition:all 0.2s; backdrop-filter:blur(8px);
-    }
-    .dark .tag-input-box { background:rgba(255,255,255,0.05); border-color:rgba(139,92,246,0.20); }
-    .tag-input-box:focus-within { border-color:rgba(99,102,241,0.50); box-shadow:0 0 0 3px rgba(99,102,241,0.12); }
-    .tag-input-box input { background:none; border:none; outline:none; color:#1e293b; font-size:13px; font-family:inherit; min-width:80px; flex:1; padding:2px 4px; }
-    .dark .tag-input-box input { color:#f1f5f9; }
-    .vtag { display:inline-flex; align-items:center; gap:4px; padding:3px 10px; border-radius:8px; font-size:11px; font-weight:700; }
-    .vtag-syn { background:rgba(16,185,129,0.12); color:#10b981; }
-    .vtag-ant { background:rgba(239,68,68,0.12); color:#ef4444; }
-    .vtag-tag { background:rgba(99,102,241,0.12); color:#6366f1; }
-    .vtag button { background:none; border:none; cursor:pointer; color:inherit; opacity:0.6; font-size:11px; padding:0; line-height:1; }
-    .vtag button:hover { opacity:1; }
+    /* ── Tag chips ── */
+    .tag-box{ display:flex; flex-wrap:wrap; gap:6px; padding:9px 12px; background:rgba(255,255,255,.50); border:1px solid rgba(255,255,255,.70); border-radius:13px; cursor:text; min-height:46px; align-items:center; transition:all .2s; backdrop-filter:blur(8px); }
+    .dark .tag-box{ background:rgba(255,255,255,.05); border-color:rgba(139,92,246,.20); }
+    .tag-box:focus-within{ border-color:rgba(99,102,241,.50); box-shadow:0 0 0 3px rgba(99,102,241,.12); }
+    .tag-box input{ background:none; border:none; outline:none; color:#1e293b; font-size:13px; font-family:inherit; min-width:80px; flex:1; padding:2px 4px; }
+    .dark .tag-box input{ color:#f1f5f9; }
+    .vtag-chip{ display:inline-flex; align-items:center; gap:4px; padding:3px 10px; border-radius:8px; font-size:11px; font-weight:700; }
+    .vtag-syn{ background:rgba(16,185,129,.12); color:#10b981; }
+    .vtag-ant{ background:rgba(239,68,68,.12); color:#ef4444; }
+    .vtag-tag{ background:rgba(99,102,241,.12); color:#6366f1; }
+    .vtag-chip button{ background:none; border:none; cursor:pointer; color:inherit; opacity:.6; font-size:11px; padding:0; line-height:1; }
+    .vtag-chip button:hover{ opacity:1; }
 
-    /* ─── Word type badges ─── */
-    .wtype { display:inline-flex; align-items:center; padding:2px 9px; border-radius:7px; font-size:9px; font-weight:900; letter-spacing:0.07em; text-transform:uppercase; }
-    .wtype-word   { background:rgba(99,102,241,0.12); color:#6366f1; }
-    .wtype-idiom  { background:rgba(167,139,250,0.15); color:#a78bfa; }
-    .wtype-phrase { background:rgba(45,212,191,0.12); color:#2dd4bf; }
+    /* ── Type badges ── */
+    .wtype{ display:inline-flex; align-items:center; padding:2px 9px; border-radius:7px; font-size:9px; font-weight:900; letter-spacing:.07em; text-transform:uppercase; }
+    .wtype-word{ background:rgba(99,102,241,.12); color:#6366f1; }
+    .wtype-idiom{ background:rgba(167,139,250,.15); color:#a78bfa; }
+    .wtype-phrase{ background:rgba(45,212,191,.12); color:#2dd4bf; }
 
-    /* ─── Word cards ─── */
-    .vword-card { padding:18px 20px; margin-bottom:10px; transition:all 0.25s; }
-    .vword-card:hover { transform:translateY(-2px); }
-    .vword-title { font-size:20px; font-weight:800; color:#1e293b; letter-spacing:-0.02em; }
-    .dark .vword-title { color:#f1f5f9; }
-    .vword-meaning { font-size:13px; color:#64748b; line-height:1.65; margin:8px 0 6px; }
-    .dark .vword-meaning { color:#94a3b8; }
-    .vword-example { font-size:12px; color:#94a3b8; font-style:italic; border-left:2px solid rgba(99,102,241,0.35); padding-left:10px; margin:6px 0 10px; }
+    /* ── Mastery level badges ── */
+    .lvl-badge{ display:inline-flex; align-items:center; gap:3px; padding:3px 10px; border-radius:8px; font-size:10px; font-weight:900; cursor:pointer; transition:all .2s; }
+    .lvl-0{ background:rgba(239,68,68,.12); color:#ef4444; border:1px solid rgba(239,68,68,.25); }
+    .lvl-1{ background:rgba(249,115,22,.12); color:#f97316; border:1px solid rgba(249,115,22,.25); }
+    .lvl-2{ background:rgba(234,179,8,.12); color:#eab308; border:1px solid rgba(234,179,8,.25); }
+    .lvl-3{ background:rgba(59,130,246,.12); color:#3b82f6; border:1px solid rgba(59,130,246,.25); }
+    .lvl-4{ background:rgba(99,102,241,.12); color:#6366f1; border:1px solid rgba(99,102,241,.25); }
+    .lvl-5{ background:rgba(16,185,129,.12); color:#10b981; border:1px solid rgba(16,185,129,.25); }
 
-    /* ─── Flashcard ─── */
-    .fc-scene { perspective:1200px; width:100%; max-width:500px; margin:0 auto; cursor:pointer; }
-    .fc-card-inner {
-      width:100%; min-height:270px; position:relative;
-      transform-style:preserve-3d;
-      transition:transform 0.55s cubic-bezier(0.34,1.56,0.64,1);
-      border-radius:26px;
-    }
-    .fc-card-inner.is-flipped { transform:rotateY(180deg); }
-    .fc-face {
-      position:absolute; inset:0; backface-visibility:hidden;
-      -webkit-backface-visibility:hidden;
-      border-radius:26px; padding:34px 28px;
-      display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center;
-    }
-    .fc-front {
-      background:rgba(255,255,255,0.65);
-      backdrop-filter:blur(24px);
-      border:1px solid rgba(255,255,255,0.85);
-      box-shadow:0 16px 48px rgba(99,102,241,0.15), inset 0 1px 0 rgba(255,255,255,0.9);
-    }
-    .dark .fc-front {
-      background:rgba(14,10,31,0.75);
-      border-color:rgba(99,102,241,0.30);
-      box-shadow:0 16px 48px rgba(0,0,0,0.55);
-    }
-    .fc-back {
-      background:linear-gradient(135deg,rgba(99,102,241,0.08),rgba(217,70,239,0.06));
-      backdrop-filter:blur(24px);
-      border:1px solid rgba(99,102,241,0.25);
-      box-shadow:0 16px 48px rgba(99,102,241,0.12);
-      transform:rotateY(180deg);
-    }
-    .dark .fc-back {
-      background:linear-gradient(135deg,rgba(99,102,241,0.15),rgba(217,70,239,0.10));
-      border-color:rgba(99,102,241,0.30);
-    }
-    .fc-word-big { font-size:32px; font-weight:900; color:#1e293b; letter-spacing:-0.03em; margin-bottom:10px; }
-    .dark .fc-word-big { color:#f1f5f9; }
-    .fc-hint { font-size:10px; font-weight:800; letter-spacing:0.12em; text-transform:uppercase; color:#94a3b8; }
+    /* ── Word cards in library ── */
+    .vword-card{ padding:18px 20px; margin-bottom:10px; transition:all .25s; }
+    .vword-card:hover{ transform:translateY(-2px); }
+    .vword-title{ font-size:20px; font-weight:800; color:#1e293b; letter-spacing:-.02em; }
+    .dark .vword-title{ color:#f1f5f9; }
+    .vword-pos{ font-size:10px; font-weight:700; color:#94a3b8; text-transform:uppercase; letter-spacing:.08em; }
+    .vword-meaning{ font-size:13px; color:#475569; line-height:1.65; margin:6px 0; }
+    .dark .vword-meaning{ color:#94a3b8; }
+    .vword-section{ margin-top:10px; padding-top:10px; border-top:1px solid rgba(99,102,241,.08); }
+    .dark .vword-section{ border-color:rgba(139,92,246,.1); }
+    .vword-label{ font-size:9px; font-weight:900; letter-spacing:.1em; text-transform:uppercase; color:#94a3b8; margin-bottom:4px; }
+    .vword-text{ font-size:12px; color:#64748b; line-height:1.6; }
+    .dark .vword-text{ color:#94a3b8; }
+    .vword-example{ font-size:12px; color:#94a3b8; font-style:italic; border-left:2px solid rgba(99,102,241,.35); padding-left:10px; }
 
-    /* ─── Quiz ─── */
-    .quiz-opt {
-      padding:14px 16px; border-radius:15px;
-      background:rgba(255,255,255,0.45); border:1px solid rgba(255,255,255,0.65);
-      color:#1e293b; font-size:13px; font-weight:600;
-      cursor:pointer; transition:all 0.2s; text-align:left; width:100%;
-    }
-    .dark .quiz-opt { background:rgba(255,255,255,0.05); border-color:rgba(139,92,246,0.20); color:#f1f5f9; }
-    .quiz-opt:hover:not(:disabled) { border-color:rgba(99,102,241,0.50); background:rgba(99,102,241,0.07); transform:translateY(-1px); }
-    .quiz-opt.q-correct { background:rgba(16,185,129,0.12) !important; border-color:#10b981 !important; color:#059669 !important; font-weight:800 !important; }
-    .quiz-opt.q-wrong   { background:rgba(239,68,68,0.10)  !important; border-color:#ef4444 !important; color:#dc2626 !important; font-weight:800 !important; }
-    .dark .quiz-opt.q-correct { color:#34d399 !important; }
-    .dark .quiz-opt.q-wrong   { color:#f87171 !important; }
-    .quiz-prog-track { height:5px; background:rgba(99,102,241,0.10); border-radius:3px; overflow:hidden; margin-bottom:18px; }
-    .quiz-prog-fill  { height:100%; background:linear-gradient(90deg,#6366f1,#d946ef); border-radius:3px; transition:width 0.4s ease; }
+    /* ── Filter chips ── */
+    .vfilter{ padding:5px 14px; border-radius:9px; font-size:10px; font-weight:800; letter-spacing:.05em; text-transform:uppercase; cursor:pointer; background:rgba(255,255,255,.40); border:1px solid rgba(255,255,255,.60); color:#64748b; transition:all .15s; }
+    .dark .vfilter{ background:rgba(255,255,255,.05); border-color:rgba(139,92,246,.20); color:#94a3b8; }
+    .vfilter.active{ background:rgba(99,102,241,.12); border-color:rgba(99,102,241,.40); color:#6366f1; }
+    .dark .vfilter.active{ color:#818cf8; border-color:rgba(129,140,248,.40); }
 
-    /* ─── Filter chips ─── */
-    .vfilter {
-      padding:5px 14px; border-radius:9px; font-size:10px; font-weight:800;
-      letter-spacing:0.05em; text-transform:uppercase; cursor:pointer;
-      background:rgba(255,255,255,0.40); border:1px solid rgba(255,255,255,0.60);
-      color:#64748b; transition:all 0.15s;
-    }
-    .dark .vfilter { background:rgba(255,255,255,0.05); border-color:rgba(139,92,246,0.20); color:#94a3b8; }
-    .vfilter.active { background:rgba(99,102,241,0.12); border-color:rgba(99,102,241,0.40); color:#6366f1; }
-    .dark .vfilter.active { color:#818cf8; border-color:rgba(129,140,248,0.40); }
+    /* ── Stat strip ── */
+    .vstat{ flex:1; min-width:60px; padding:12px 8px; text-align:center; border-radius:16px; }
+    .vstat-num{ font-size:22px; font-weight:900; font-family:'Bebas Neue',sans-serif; letter-spacing:.02em; }
+    .vstat-lbl{ font-size:9px; font-weight:800; letter-spacing:.1em; text-transform:uppercase; color:#94a3b8; margin-top:2px; }
 
-    /* ─── Stat strip cards ─── */
-    .vstat {
-      flex:1; min-width:70px; padding:14px 10px; text-align:center;
-      border-radius:18px;
-    }
-    .vstat-num { font-size:26px; font-weight:900; font-family:'Bebas Neue',sans-serif; letter-spacing:0.02em; }
-    .vstat-lbl { font-size:9px; font-weight:800; letter-spacing:0.1em; text-transform:uppercase; color:#94a3b8; margin-top:2px; }
+    /* ── Flashcard ── */
+    .fc-scene{ perspective:1200px; width:100%; max-width:520px; margin:0 auto; cursor:pointer; }
+    .fc-inner{ width:100%; min-height:300px; position:relative; transform-style:preserve-3d; transition:transform .55s cubic-bezier(.34,1.56,.64,1); border-radius:26px; }
+    .fc-inner.flipped{ transform:rotateY(180deg); }
+    .fc-face{ position:absolute; inset:0; backface-visibility:hidden; -webkit-backface-visibility:hidden; border-radius:26px; padding:28px; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; }
+    .fc-front{ background:rgba(255,255,255,.65); backdrop-filter:blur(24px); border:1px solid rgba(255,255,255,.85); box-shadow:0 16px 48px rgba(99,102,241,.15),inset 0 1px 0 rgba(255,255,255,.9); }
+    .dark .fc-front{ background:rgba(14,10,31,.75); border-color:rgba(99,102,241,.30); box-shadow:0 16px 48px rgba(0,0,0,.55); }
+    .fc-back{ background:linear-gradient(135deg,rgba(99,102,241,.08),rgba(217,70,239,.06)); backdrop-filter:blur(24px); border:1px solid rgba(99,102,241,.25); box-shadow:0 16px 48px rgba(99,102,241,.12); transform:rotateY(180deg); overflow-y:auto; justify-content:flex-start; text-align:left; }
+    .dark .fc-back{ background:linear-gradient(135deg,rgba(99,102,241,.15),rgba(217,70,239,.10)); border-color:rgba(99,102,241,.30); }
+    .fc-word-big{ font-size:30px; font-weight:900; color:#1e293b; letter-spacing:-.03em; margin-bottom:8px; }
+    .dark .fc-word-big{ color:#f1f5f9; }
+    .fc-hint{ font-size:10px; font-weight:800; letter-spacing:.12em; text-transform:uppercase; color:#94a3b8; }
+    .fc-back-section{ width:100%; margin-bottom:10px; }
+    .fc-back-label{ font-size:9px; font-weight:900; letter-spacing:.1em; text-transform:uppercase; color:#818cf8; margin-bottom:3px; }
+    .fc-back-text{ font-size:12px; color:#1e293b; line-height:1.6; }
+    .dark .fc-back-text{ color:#e2e8f0; }
 
-    /* ─── Modern select ─── */
-    .modern-select {
-      background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236366f1' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
-      background-position: right 0.75rem center;
-      background-repeat: no-repeat;
-      background-size: 1.2em 1.2em;
-      padding-right: 2.5rem;
-      appearance: none;
-    }
+    /* ── Quiz ── */
+    .quiz-opt{ padding:13px 16px; border-radius:14px; background:rgba(255,255,255,.45); border:1px solid rgba(255,255,255,.65); color:#1e293b; font-size:13px; font-weight:600; cursor:pointer; transition:all .2s; text-align:left; width:100%; }
+    .dark .quiz-opt{ background:rgba(255,255,255,.05); border-color:rgba(139,92,246,.20); color:#f1f5f9; }
+    .quiz-opt:hover:not(:disabled){ border-color:rgba(99,102,241,.50); background:rgba(99,102,241,.07); transform:translateY(-1px); }
+    .quiz-opt.q-correct{ background:rgba(16,185,129,.12)!important; border-color:#10b981!important; color:#059669!important; font-weight:800!important; }
+    .quiz-opt.q-wrong{ background:rgba(239,68,68,.10)!important; border-color:#ef4444!important; color:#dc2626!important; font-weight:800!important; }
+    .dark .quiz-opt.q-correct{ color:#34d399!important; }
+    .dark .quiz-opt.q-wrong{ color:#f87171!important; }
+    .qprog-track{ height:5px; background:rgba(99,102,241,.10); border-radius:3px; overflow:hidden; margin-bottom:18px; }
+    .qprog-fill{ height:100%; background:linear-gradient(90deg,#6366f1,#d946ef); border-radius:3px; transition:width .4s ease; }
 
-    /* ─── Empty state float ─── */
-    .empty-float { animation:floatBob 2.8s ease-in-out infinite; }
-    .pop-in { animation:popIn 0.38s cubic-bezier(0.34,1.56,0.64,1) both; }
+    /* ── Import tab ── */
+    .csv-table{ width:100%; border-collapse:separate; border-spacing:0; font-size:11px; }
+    .csv-table thead th{ padding:8px 12px; font-size:9px; font-weight:900; letter-spacing:.08em; text-transform:uppercase; color:#94a3b8; background:rgba(255,255,255,.35); border-bottom:1px solid rgba(99,102,241,.12); white-space:nowrap; }
+    .dark .csv-table thead th{ background:rgba(14,10,31,.5); }
+    .csv-table tbody td{ padding:7px 12px; border-bottom:1px solid rgba(99,102,241,.06); color:#475569; vertical-align:top; max-width:150px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+    .dark .csv-table tbody td{ color:#94a3b8; border-color:rgba(139,92,246,.08); }
+    .csv-table tbody tr:last-child td{ border-bottom:none; }
+    .csv-table tbody tr:hover td{ background:rgba(99,102,241,.04); }
+    .csv-word-cell{ font-weight:900!important; color:#1e293b!important; font-size:12px!important; }
+    .dark .csv-word-cell{ color:#f1f5f9!important; }
+    .csv-dup{ opacity:.4; }
 
-    /* ─── Import Tab extras ─── */
-    .csv-preview-table { width:100%; border-collapse:separate; border-spacing:0; font-size:11px; }
-    .csv-preview-table thead th {
-      padding:8px 12px; font-size:9px; font-weight:900; letter-spacing:0.08em;
-      text-transform:uppercase; color:#94a3b8;
-      background:rgba(255,255,255,0.35); border-bottom:1px solid rgba(99,102,241,0.12);
-      white-space:nowrap;
-    }
-    .dark .csv-preview-table thead th { background:rgba(14,10,31,0.5); }
-    .csv-preview-table tbody td {
-      padding:8px 12px; border-bottom:1px solid rgba(99,102,241,0.06);
-      color:#475569; vertical-align:top; max-width:160px;
-      overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
-    }
-    .dark .csv-preview-table tbody td { color:#94a3b8; border-color:rgba(139,92,246,0.08); }
-    .csv-preview-table tbody tr:last-child td { border-bottom:none; }
-    .csv-preview-table tbody tr:hover td { background:rgba(99,102,241,0.04); }
-    .csv-row-word { font-weight:900 !important; color:#1e293b !important; font-size:12px !important; }
-    .dark .csv-row-word { color:#f1f5f9 !important; }
-    .csv-row-skip { opacity:0.45; }
-    .csv-row-skip td:first-child::after {
-      content:" (duplicate)"; font-size:9px; font-weight:700;
-      color:#ef4444; margin-left:4px;
-    }
-    #pg-prompt-text { font-size:11px; line-height:1.65; }
+    .empty-float{ animation:floatBob 2.8s ease-in-out infinite; }
+    .pop-in{ animation:popIn .38s cubic-bezier(.34,1.56,.64,1) both; }
 
+    /* ── Mastery level selector (popup) ── */
+    .lvl-selector{ display:none; position:fixed; inset:0; z-index:9000; align-items:center; justify-content:center; }
+    .lvl-selector.open{ display:flex; }
+    .lvl-backdrop{ position:absolute; inset:0; background:rgba(0,0,0,.5); backdrop-filter:blur(4px); }
+    .lvl-modal{ position:relative; z-index:1; border-radius:2rem; padding:28px; width:min(360px,calc(100vw - 32px)); }
+
+    /* ── Duplicate modal ── */
+    .dup-modal{ display:none; position:fixed; inset:0; z-index:9000; align-items:center; justify-content:center; }
+    .dup-modal.open{ display:flex; }
+    .dup-item{ padding:12px 14px; border-radius:14px; border:1px solid rgba(239,68,68,.2); background:rgba(239,68,68,.06); margin-bottom:8px; }
   </style>
 </head>
 
 <body class="app-bg text-slate-800 dark:text-slate-100 min-h-screen transition-colors duration-500">
 
-<!-- ══════════════════════════════════════
-     NAVBAR
-══════════════════════════════════════ -->
+<!-- ═══ NAVBAR ═══ -->
 <header class="glass-nav sticky top-0 z-50 flex items-center justify-between px-4 md:px-6" style="height:64px;">
-
   <div class="flex items-center gap-2.5 min-w-0">
     <div class="w-10 h-10 rounded-2xl flex items-center justify-center shadow-lg flex-shrink-0 text-xl"
          style="background:linear-gradient(135deg,#6366f1,#d946ef);">📖</div>
@@ -358,62 +239,36 @@
       <h1 class="text-base font-extrabold tracking-tight text-slate-900 dark:text-white whitespace-nowrap">
         MockTracker <span class="text-indigo-500">LexiPrep</span>
       </h1>
-      <span class="text-[9px] font-black uppercase tracking-wider px-2 py-0.5 rounded
-                   bg-indigo-100 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400">
-        Vocab Builder
+      <span class="text-[9px] font-black uppercase tracking-wider px-2 py-0.5 rounded bg-indigo-100 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400">
+        SSC · RRB · Bank Vocab Builder
       </span>
     </div>
   </div>
-
   <div class="flex items-center gap-2 flex-shrink-0">
-
-    <!-- Auth chip -->
     <div id="auth-status" class="hidden items-center gap-2 px-3 py-1.5 rounded-xl text-xs font-bold"
-         style="background:rgba(16,185,129,0.1);border:1px solid rgba(16,185,129,0.2);color:#10b981;">
+         style="background:rgba(16,185,129,.1);border:1px solid rgba(16,185,129,.2);color:#10b981;">
       <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse inline-block"></span>
       <span id="auth-name">Synced</span>
     </div>
-
-    <!-- Sign in -->
-    <button id="btn-signin" onclick="doSignIn()"
-            class="hidden items-center gap-2 px-3 py-2 rounded-xl text-xs font-bold transition hover:scale-105"
-            style="background:rgba(99,102,241,0.1);border:1px solid rgba(99,102,241,0.2);color:#6366f1;">
-      <i class="fa-brands fa-google text-red-500"></i>
-      <span>Sign in</span>
+    <button id="btn-signin" onclick="doSignIn()" class="hidden items-center gap-2 px-3 py-2 rounded-xl text-xs font-bold transition hover:scale-105"
+            style="background:rgba(99,102,241,.1);border:1px solid rgba(99,102,241,.2);color:#6366f1;">
+      <i class="fa-brands fa-google text-red-500"></i><span>Sign in</span>
     </button>
-
-    <!-- Back to App -->
-    <a href="app.html"
-       class="btn-glass rounded-xl flex items-center gap-1.5 px-3 font-black text-xs text-indigo-500
-              dark:text-indigo-400 hover:scale-105 transition"
-       style="height:40px;">
+    <a href="app.html" class="btn-glass rounded-xl flex items-center gap-1.5 px-3 font-black text-xs text-indigo-500 dark:text-indigo-400 hover:scale-105 transition" style="height:40px;">
       <i class="fa-solid fa-arrow-left" style="font-size:12px;"></i>
       <span class="hidden sm:inline">Back to App</span>
     </a>
-
-    <!-- Theme toggle -->
-    <button onclick="toggleTheme()"
-            class="btn-glass rounded-xl relative overflow-hidden hover:scale-105 transition"
-            style="width:40px;height:40px;">
-      <i class="fa-solid fa-sun  theme-icon theme-sun  text-amber-400 absolute"
-         style="inset:0;display:flex;align-items:center;justify-content:center;"></i>
-      <i class="fa-solid fa-moon theme-icon theme-moon text-indigo-400 absolute"
-         style="inset:0;display:flex;align-items:center;justify-content:center;"></i>
+    <button onclick="toggleTheme()" class="btn-glass rounded-xl relative overflow-hidden hover:scale-105 transition" style="width:40px;height:40px;">
+      <i class="fa-solid fa-sun  theme-icon theme-sun  text-amber-400 absolute" style="inset:0;display:flex;align-items:center;justify-content:center;"></i>
+      <i class="fa-solid fa-moon theme-icon theme-moon text-indigo-400 absolute" style="inset:0;display:flex;align-items:center;justify-content:center;"></i>
     </button>
-
-    <!-- Refresh -->
-    <button onclick="loadWords(true)"
-            class="btn-glass rounded-xl flex items-center justify-center hover:scale-105 transition"
-            style="width:40px;height:40px;" title="Refresh">
+    <button onclick="loadWords(true)" class="btn-glass rounded-xl flex items-center justify-center hover:scale-105 transition" style="width:40px;height:40px;" title="Refresh">
       <i class="fa-solid fa-rotate-right text-indigo-500" style="font-size:14px;"></i>
     </button>
-
   </div>
 </header>
 
-<!-- ══════════════════════════════════════
-     MAIN
-══════════════════════════════════════ -->
+<!-- ═══ MAIN ═══ -->
 <main class="max-w-3xl mx-auto px-4 md:px-6 pb-16 pt-6 space-y-5">
 
   <!-- Loading -->
@@ -422,424 +277,431 @@
     <p class="text-sm font-black text-slate-400 uppercase tracking-widest">Loading LexiPrep…</p>
   </div>
 
-  <!-- Sign-in prompt -->
+  <!-- Sign-in -->
   <div id="state-signin" class="hidden glass-card rounded-[2rem] py-24 text-center px-6">
     <div class="text-5xl mb-4 empty-float">🔐</div>
     <p class="text-xl font-black text-slate-700 dark:text-slate-200 mb-2">Sign in to use LexiPrep</p>
-    <p class="text-sm text-slate-400 max-w-xs mx-auto mb-6 leading-relaxed">
-      Your vocab vault is tied to your account. Sign in to add words, review flashcards and take quizzes.
-    </p>
-    <button onclick="doSignIn()"
-            class="btn-gradient inline-flex items-center gap-3 px-8 py-3.5 rounded-2xl font-black text-sm shadow-xl mx-auto">
+    <p class="text-sm text-slate-400 max-w-xs mx-auto mb-6 leading-relaxed">Your vocab vault is tied to your account.</p>
+    <button onclick="doSignIn()" class="btn-gradient inline-flex items-center gap-3 px-8 py-3.5 rounded-2xl font-black text-sm shadow-xl mx-auto">
       <i class="fa-brands fa-google text-white text-base"></i> Sign in with Google
     </button>
-    <p class="text-xs text-slate-400 mt-4">
-      <a href="app.html" class="text-indigo-500 font-bold hover:underline">← Back to MockTracker</a>
-    </p>
+    <p class="text-xs text-slate-400 mt-4"><a href="app.html" class="text-indigo-500 font-bold hover:underline">← Back to MockTracker</a></p>
   </div>
 
-  <!-- Main content -->
+  <!-- Main -->
   <div id="state-main" class="hidden space-y-5">
 
-    <!-- Page header -->
+    <!-- Page header with action buttons -->
     <div class="anim-1 flex items-center justify-between flex-wrap gap-3">
       <div>
         <h2 class="text-2xl md:text-3xl font-black text-gradient leading-tight">LexiPrep Vault</h2>
-        <p class="text-xs font-semibold text-slate-400 mt-1">Words · Idioms · Flashcards · Quiz</p>
+        <p class="text-xs font-semibold text-slate-400 mt-1">Words · Idioms · Flashcards · Spaced Repetition</p>
       </div>
-      <button onclick="subTab('add')"
-              class="btn-gradient flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-black shadow-lg">
-        <i class="fa-solid fa-plus"></i> Add Word
-      </button>
+      <div class="flex items-center gap-2 flex-wrap">
+        <button onclick="openDupModal()"
+                class="flex items-center gap-1.5 px-4 py-2.5 rounded-xl text-xs font-black transition hover:scale-105"
+                style="background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.25);color:#ef4444;">
+          <i class="fa-solid fa-clone"></i> Remove Dupes
+        </button>
+        <button onclick="subTab('add')"
+                class="btn-gradient flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-black shadow-lg">
+          <i class="fa-solid fa-plus"></i> Add Word
+        </button>
+      </div>
     </div>
 
     <!-- Stats strip -->
-    <div class="anim-2 flex gap-3 flex-wrap">
+    <div class="anim-2 flex gap-2 flex-wrap">
       <div class="glass-card vstat"><div class="vstat-num text-gradient" id="vs-total">0</div><div class="vstat-lbl">Total</div></div>
       <div class="glass-card vstat"><div class="vstat-num" style="color:#6366f1" id="vs-words">0</div><div class="vstat-lbl">Words</div></div>
       <div class="glass-card vstat"><div class="vstat-num" style="color:#a78bfa" id="vs-idioms">0</div><div class="vstat-lbl">Idioms</div></div>
-      <div class="glass-card vstat"><div class="vstat-num" style="color:#2dd4bf" id="vs-phrases">0</div><div class="vstat-lbl">Phrases</div></div>
-      <div class="glass-card vstat"><div class="vstat-num" style="color:#f59e0b" id="vs-mastered">0</div><div class="vstat-lbl">Mastered</div></div>
+      <div class="glass-card vstat"><div class="vstat-num" style="color:#10b981" id="vs-mastered">0</div><div class="vstat-lbl">Mastered</div></div>
+      <div class="glass-card vstat"><div class="vstat-num" style="color:#f97316" id="vs-due">0</div><div class="vstat-lbl">Due Today</div></div>
     </div>
 
     <!-- Sub-tab bar -->
-    <div class="anim-3 vocab-subtab-bar">
-      <button class="vocab-subtab active" id="vstab-library"   onclick="subTab('library')">
-        <i class="fa-solid fa-books"></i>Library
-      </button>
-      <button class="vocab-subtab"        id="vstab-add"       onclick="subTab('add')">
-        <i class="fa-solid fa-plus-circle"></i>Add
-      </button>
-      <button class="vocab-subtab"        id="vstab-flashcard" onclick="subTab('flashcard')">
-        <i class="fa-solid fa-clone"></i>Cards
-      </button>
-      <button class="vocab-subtab"        id="vstab-quiz"      onclick="subTab('quiz')">
-        <i class="fa-solid fa-bullseye"></i>Quiz
-      </button>
-      <button class="vocab-subtab"        id="vstab-import"    onclick="subTab('import')">
-        <i class="fa-solid fa-file-import"></i>Import
-      </button>
+    <div class="anim-3 vtab-bar">
+      <button class="vtab active" id="vstab-library"   onclick="subTab('library')"><i class="fa-solid fa-books"></i>Library</button>
+      <button class="vtab"        id="vstab-add"       onclick="subTab('add')"><i class="fa-solid fa-plus-circle"></i>Add</button>
+      <button class="vtab"        id="vstab-flashcard" onclick="subTab('flashcard')"><i class="fa-solid fa-clone"></i>Cards</button>
+      <button class="vtab"        id="vstab-quiz"      onclick="subTab('quiz')"><i class="fa-solid fa-bullseye"></i>Quiz</button>
+      <button class="vtab"        id="vstab-import"    onclick="subTab('import')"><i class="fa-solid fa-file-import"></i>Import</button>
     </div>
 
-    <!-- ── LIBRARY ── -->
-    <div class="vocab-pane active" id="vpane-library">
+    <!-- ══ LIBRARY ══ -->
+    <div class="vpane active" id="vpane-library">
       <div class="flex gap-2 mb-3">
         <input id="v-search" type="text" placeholder="🔍  Search words, meanings, tags…"
-               oninput="renderLibrary()"
-               class="glass-input flex-1 px-4 py-3 rounded-xl font-medium text-sm">
+               oninput="renderLibrary()" class="glass-input flex-1 px-4 py-3 rounded-xl font-medium text-sm">
       </div>
-      <div class="flex gap-2 flex-wrap mb-4">
+      <!-- Filter chips row -->
+      <div class="flex gap-2 flex-wrap mb-2">
         <button class="vfilter active" data-f="all"      onclick="setFilter('all',this)">All</button>
         <button class="vfilter"         data-f="word"     onclick="setFilter('word',this)">Words</button>
         <button class="vfilter"         data-f="idiom"    onclick="setFilter('idiom',this)">Idioms</button>
         <button class="vfilter"         data-f="phrase"   onclick="setFilter('phrase',this)">Phrases</button>
-        <button class="vfilter"         data-f="mastered" onclick="setFilter('mastered',this)">⭐ Mastered</button>
+        <button class="vfilter"         data-f="due"      onclick="setFilter('due',this)">⏰ Due</button>
+        <button class="vfilter"         data-f="mastered" onclick="setFilter('mastered',this)">✅ L5</button>
+      </div>
+      <!-- Sort row -->
+      <div class="flex gap-2 flex-wrap mb-4 items-center">
+        <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Sort:</span>
+        <button class="vfilter active" id="sort-newest"  onclick="setSort('newest',this)">Newest</button>
+        <button class="vfilter"        id="sort-az"      onclick="setSort('az',this)">A → Z</button>
+        <button class="vfilter"        id="sort-level"   onclick="setSort('level',this)">Level ↑</button>
+        <button class="vfilter"        id="sort-due"     onclick="setSort('due',this)">Due First</button>
       </div>
       <div id="v-library-list"></div>
     </div>
 
-    <!-- ── ADD / EDIT ── -->
-    <div class="vocab-pane" id="vpane-add">
+    <!-- ══ ADD / EDIT ══ -->
+    <div class="vpane" id="vpane-add">
       <div class="glass-card rounded-[1.8rem] overflow-hidden anim-3">
-        <div class="px-6 py-4 border-b border-white/30 dark:border-white/5 flex items-center gap-3"
-             style="background:rgba(255,255,255,0.20);">
-          <span class="w-7 h-7 rounded-xl btn-gradient text-white flex items-center justify-center text-xs shadow-lg">
-            <i class="fa-solid fa-pen-nib"></i>
-          </span>
-          <span class="text-sm font-black text-slate-700 dark:text-slate-200 uppercase tracking-wider"
-                id="v-form-title">Add New Entry</span>
-          <button id="v-cancel-btn" onclick="cancelEdit()"
-                  class="hidden ml-auto btn-glass px-3 py-1.5 rounded-xl text-xs font-black text-rose-500">
-            Cancel Edit
-          </button>
+        <div class="px-6 py-4 border-b border-white/30 dark:border-white/5 flex items-center gap-3" style="background:rgba(255,255,255,.20);">
+          <span class="w-7 h-7 rounded-xl btn-gradient text-white flex items-center justify-center text-xs shadow-lg"><i class="fa-solid fa-pen-nib"></i></span>
+          <span class="text-sm font-black text-slate-700 dark:text-slate-200 uppercase tracking-wider" id="v-form-title">Add New Entry</span>
+          <button id="v-cancel-btn" onclick="cancelEdit()" class="hidden ml-auto btn-glass px-3 py-1.5 rounded-xl text-xs font-black text-rose-500">Cancel Edit</button>
         </div>
         <div class="p-6 space-y-4">
           <input type="hidden" id="v-edit-id">
-
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div class="space-y-1.5">
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div class="space-y-1.5 sm:col-span-2">
               <label class="text-xs font-black text-slate-400 uppercase tracking-widest">Word / Idiom / Phrase *</label>
-              <input class="glass-input w-full px-4 py-3 rounded-xl font-bold text-sm"
-                     type="text" id="v-inp-word" placeholder="e.g. Ameliorate">
+              <input class="glass-input w-full px-4 py-3 rounded-xl font-bold text-sm" type="text" id="v-inp-word" placeholder="e.g. Ameliorate">
             </div>
             <div class="space-y-1.5">
               <label class="text-xs font-black text-slate-400 uppercase tracking-widest">Type</label>
-              <select class="glass-input w-full px-4 py-3 rounded-xl font-bold text-sm modern-select"
-                      id="v-inp-type" onchange="onTypeChange()">
+              <select class="glass-input w-full px-4 py-3 rounded-xl font-bold text-sm modern-select" id="v-inp-type" onchange="onTypeChange()">
                 <option value="word">Word</option>
                 <option value="idiom">Idiom</option>
                 <option value="phrase">Phrase / Proverb</option>
               </select>
             </div>
           </div>
-
-          <div class="space-y-1.5">
-            <label class="text-xs font-black text-slate-400 uppercase tracking-widest">Meaning / Definition *</label>
-            <textarea class="glass-input w-full px-4 py-3 rounded-xl font-medium text-sm resize-none"
-                      id="v-inp-meaning" rows="2" placeholder="Clear, concise definition…"></textarea>
-          </div>
-
-          <div class="space-y-1.5">
-            <label class="text-xs font-black text-slate-400 uppercase tracking-widest">Example Sentence</label>
-            <textarea class="glass-input w-full px-4 py-3 rounded-xl font-medium text-sm resize-none"
-                      id="v-inp-example" rows="2" placeholder="Use it in a sentence to remember better…"></textarea>
-          </div>
-
-          <div id="syn-ant-section">
-            <div class="space-y-1.5 mb-4">
-              <label class="text-xs font-black text-slate-400 uppercase tracking-widest">
-                Synonyms <span class="font-normal normal-case text-slate-300">(Press Enter to add each)</span>
-              </label>
-              <div class="tag-input-box" id="v-syn-wrap" onclick="document.getElementById('v-syn-inp').focus()">
-                <input id="v-syn-inp" placeholder="Type and press Enter…"
-                       onkeydown="tagKey(event,'synonyms')">
-              </div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div class="space-y-1.5">
+              <label class="text-xs font-black text-slate-400 uppercase tracking-widest">Part of Speech</label>
+              <select class="glass-input w-full px-4 py-3 rounded-xl font-bold text-sm modern-select" id="v-inp-pos">
+                <option value="">— Select —</option>
+                <option value="noun">Noun</option>
+                <option value="verb">Verb</option>
+                <option value="adjective">Adjective</option>
+                <option value="adverb">Adverb</option>
+                <option value="phrasal verb">Phrasal Verb</option>
+                <option value="idiom">Idiom</option>
+                <option value="phrase">Phrase</option>
+                <option value="proverb">Proverb</option>
+              </select>
             </div>
             <div class="space-y-1.5">
-              <label class="text-xs font-black text-slate-400 uppercase tracking-widest">
-                Antonyms <span class="font-normal normal-case text-slate-300">(Press Enter to add each)</span>
-              </label>
-              <div class="tag-input-box" id="v-ant-wrap" onclick="document.getElementById('v-ant-inp').focus()">
-                <input id="v-ant-inp" placeholder="Type and press Enter…"
-                       onkeydown="tagKey(event,'antonyms')">
+              <label class="text-xs font-black text-slate-400 uppercase tracking-widest">Initial Level</label>
+              <select class="glass-input w-full px-4 py-3 rounded-xl font-bold text-sm modern-select" id="v-inp-level">
+                <option value="0">L0 — New (revise every 2 days)</option>
+                <option value="1">L1 — Familiar (every week)</option>
+                <option value="2">L2 — Learning (every 2 weeks)</option>
+                <option value="3">L3 — Good (every 3 weeks)</option>
+                <option value="4">L4 — Strong (every month)</option>
+                <option value="5">L5 — Mastered ✅</option>
+              </select>
+            </div>
+          </div>
+          <div class="space-y-1.5">
+            <label class="text-xs font-black text-slate-400 uppercase tracking-widest">Meaning / Definition *</label>
+            <textarea class="glass-input w-full px-4 py-3 rounded-xl font-medium text-sm resize-none" id="v-inp-meaning" rows="2" placeholder="Clear, concise definition…"></textarea>
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div class="space-y-1.5">
+              <label class="text-xs font-black text-slate-400 uppercase tracking-widest">Mnemonics</label>
+              <textarea class="glass-input w-full px-4 py-3 rounded-xl font-medium text-sm resize-none" id="v-inp-mnemonics" rows="2" placeholder="Memory hook or story…"></textarea>
+            </div>
+            <div class="space-y-1.5">
+              <label class="text-xs font-black text-slate-400 uppercase tracking-widest">Trick / Root</label>
+              <textarea class="glass-input w-full px-4 py-3 rounded-xl font-medium text-sm resize-none" id="v-inp-trick" rows="2" placeholder="Word root or quick trick…"></textarea>
+            </div>
+          </div>
+          <div class="space-y-1.5">
+            <label class="text-xs font-black text-slate-400 uppercase tracking-widest">Example Sentence</label>
+            <textarea class="glass-input w-full px-4 py-3 rounded-xl font-medium text-sm resize-none" id="v-inp-example" rows="2" placeholder="Use it in a sentence…"></textarea>
+          </div>
+          <div id="syn-ant-section">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div class="space-y-1.5">
+                <label class="text-xs font-black text-slate-400 uppercase tracking-widest">Synonyms <span class="font-normal normal-case text-slate-300">(Enter to add)</span></label>
+                <div class="tag-box" id="v-syn-wrap" onclick="document.getElementById('v-syn-inp').focus()">
+                  <input id="v-syn-inp" placeholder="Type and press Enter…" onkeydown="tagKey(event,'synonyms')">
+                </div>
+              </div>
+              <div class="space-y-1.5">
+                <label class="text-xs font-black text-slate-400 uppercase tracking-widest">Antonyms <span class="font-normal normal-case text-slate-300">(Enter to add)</span></label>
+                <div class="tag-box" id="v-ant-wrap" onclick="document.getElementById('v-ant-inp').focus()">
+                  <input id="v-ant-inp" placeholder="Type and press Enter…" onkeydown="tagKey(event,'antonyms')">
+                </div>
               </div>
             </div>
           </div>
-
           <div class="space-y-1.5">
-            <label class="text-xs font-black text-slate-400 uppercase tracking-widest">
-              Tags <span class="font-normal normal-case text-slate-300">(e.g. SSC, formal, tricky)</span>
-            </label>
-            <div class="tag-input-box" id="v-tags-wrap" onclick="document.getElementById('v-tags-inp').focus()">
-              <input id="v-tags-inp" placeholder="Add tag and press Enter…"
-                     onkeydown="tagKey(event,'tags')">
+            <label class="text-xs font-black text-slate-400 uppercase tracking-widest">Tags <span class="font-normal normal-case text-slate-300">(e.g. SSC, formal, tricky)</span></label>
+            <div class="tag-box" id="v-tags-wrap" onclick="document.getElementById('v-tags-inp').focus()">
+              <input id="v-tags-inp" placeholder="Add tag…" onkeydown="tagKey(event,'tags')">
             </div>
           </div>
-
-          <button onclick="saveWord()"
-                  class="w-full py-4 rounded-2xl btn-gradient text-white text-sm font-black shadow-xl transition active:scale-[0.98] flex items-center justify-center gap-3">
-            <i class="fa-solid fa-floppy-disk"></i>
-            <span id="v-save-txt">Save to Vault</span>
+          <button onclick="saveWord()" class="w-full py-4 rounded-2xl btn-gradient text-white text-sm font-black shadow-xl transition active:scale-[.98] flex items-center justify-center gap-3">
+            <i class="fa-solid fa-floppy-disk"></i><span id="v-save-txt">Save to Vault</span>
           </button>
         </div>
       </div>
     </div>
 
-    <!-- ── FLASHCARDS ── -->
-    <div class="vocab-pane" id="vpane-flashcard">
-      <div class="flex gap-2 flex-wrap justify-center mb-6">
-        <button onclick="startFC('all')"
-                class="btn-glass px-5 py-2.5 rounded-xl text-xs font-black flex items-center gap-2">
-          <i class="fa-solid fa-layer-group text-indigo-500"></i> All Words
-        </button>
-        <button onclick="startFC('weak')"
-                class="btn-glass px-5 py-2.5 rounded-xl text-xs font-black flex items-center gap-2">
-          <i class="fa-solid fa-fire text-rose-500"></i> Not Mastered
-        </button>
-        <button onclick="startFC('random')"
-                class="btn-gradient px-5 py-2.5 rounded-xl text-xs font-black text-white flex items-center gap-2">
-          <i class="fa-solid fa-shuffle"></i> Random 10
-        </button>
+    <!-- ══ FLASHCARDS ══ -->
+    <div class="vpane" id="vpane-flashcard">
+      <!-- Mode selector + random count -->
+      <div class="glass-card rounded-[1.5rem] p-4 mb-5">
+        <div class="flex flex-wrap gap-3 items-center justify-between mb-3">
+          <span class="text-xs font-black text-slate-400 uppercase tracking-widest">Deck Mode</span>
+          <div class="flex items-center gap-2">
+            <span class="text-xs font-black text-slate-400">Random count:</span>
+            <input type="number" id="fc-random-count" value="10" min="1" max="100"
+                   class="glass-input w-16 px-3 py-1.5 rounded-xl font-bold text-sm text-center">
+          </div>
+        </div>
+        <div class="flex flex-wrap gap-2">
+          <button onclick="startFC('all')"    class="btn-glass px-4 py-2.5 rounded-xl text-xs font-black flex items-center gap-2"><i class="fa-solid fa-layer-group text-indigo-500"></i>All Words</button>
+          <button onclick="startFC('due')"    class="btn-glass px-4 py-2.5 rounded-xl text-xs font-black flex items-center gap-2"><i class="fa-solid fa-clock text-amber-500"></i>Due Today</button>
+          <button onclick="startFC('weak')"   class="btn-glass px-4 py-2.5 rounded-xl text-xs font-black flex items-center gap-2"><i class="fa-solid fa-fire text-rose-500"></i>L0–L2 Weak</button>
+          <button onclick="startFC('random')" class="btn-gradient px-4 py-2.5 rounded-xl text-xs font-black text-white flex items-center gap-2"><i class="fa-solid fa-shuffle"></i>Random N</button>
+        </div>
       </div>
       <div id="v-fc-area">
         <div class="text-center py-14 text-slate-400">
-          <i class="fa-solid fa-clone text-5xl opacity-20 block mb-4 empty-float"></i>
+          <i class="fa-solid fa-clone text-5xl opacity-15 block mb-4 empty-float"></i>
           <p class="font-black text-sm uppercase tracking-wider">Choose a mode above to begin</p>
-          <p class="text-xs mt-1">Tap a card to flip and reveal the meaning</p>
         </div>
       </div>
     </div>
 
-    <!-- ── QUIZ ── -->
-    <div class="vocab-pane" id="vpane-quiz">
+    <!-- ══ QUIZ ══ -->
+    <div class="vpane" id="vpane-quiz">
       <div id="v-quiz-area">
         <div class="glass-card rounded-[2rem] p-10 text-center anim-3">
           <i class="fa-solid fa-bullseye text-5xl text-indigo-500 opacity-30 block mb-4 empty-float"></i>
           <h3 class="text-2xl font-black text-slate-700 dark:text-slate-200 mb-2">Quiz Time!</h3>
-          <p class="text-sm text-slate-400 mb-7 max-w-xs mx-auto leading-relaxed">
-            MCQ from your saved vocab. Need at least 4 words to start.
-          </p>
+          <p class="text-sm text-slate-400 mb-7 max-w-xs mx-auto leading-relaxed">MCQ from your saved vocab. Need at least 4 words.</p>
           <div class="flex gap-3 justify-center flex-wrap">
-            <button onclick="startQuiz('meaning')"
-                    class="btn-gradient px-6 py-3.5 rounded-xl text-white text-sm font-black shadow-lg">
-              <i class="fa-solid fa-book mr-2"></i>Meaning Quiz
-            </button>
-            <button onclick="startQuiz('word')"
-                    class="btn-glass px-6 py-3.5 rounded-xl text-sm font-black">
-              <i class="fa-solid fa-pen mr-2"></i>Word Quiz
-            </button>
+            <button onclick="startQuiz('meaning')" class="btn-gradient px-6 py-3.5 rounded-xl text-white text-sm font-black shadow-lg"><i class="fa-solid fa-book mr-2"></i>Meaning Quiz</button>
+            <button onclick="startQuiz('word')"    class="btn-glass px-6 py-3.5 rounded-xl text-sm font-black"><i class="fa-solid fa-pen mr-2"></i>Word Quiz</button>
           </div>
         </div>
       </div>
     </div>
 
+    <!-- ══ IMPORT ══ -->
+    <div class="vpane" id="vpane-import">
 
-    <!-- ── IMPORT ── -->
-    <div class="vocab-pane" id="vpane-import">
-
-      <!-- ── SECTION A: PROMPT GENERATOR ── -->
+      <!-- PROMPT GENERATOR -->
       <div class="glass-card rounded-[1.8rem] overflow-hidden mb-5 anim-2">
-        <div class="px-6 py-4 border-b border-white/30 dark:border-white/5 flex items-center gap-3"
-             style="background:linear-gradient(135deg,rgba(99,102,241,0.07),rgba(217,70,239,0.05));">
-          <span class="w-7 h-7 rounded-xl btn-gradient text-white flex items-center justify-center text-sm shadow-lg flex-shrink-0">
-            <i class="fa-solid fa-wand-magic-sparkles"></i>
-          </span>
-          <div class="flex-1 min-w-0">
+        <div class="px-6 py-4 border-b border-white/30 dark:border-white/5 flex items-center gap-3" style="background:linear-gradient(135deg,rgba(99,102,241,.07),rgba(217,70,239,.05));">
+          <span class="w-7 h-7 rounded-xl btn-gradient text-white flex items-center justify-center text-sm shadow-lg flex-shrink-0"><i class="fa-solid fa-wand-magic-sparkles"></i></span>
+          <div>
             <div class="text-sm font-black text-slate-700 dark:text-slate-200 uppercase tracking-wider">AI Prompt Generator</div>
-            <p class="text-xs text-slate-400 font-medium mt-0.5">Generate a prompt → paste into any AI → get CSV back</p>
+            <p class="text-xs text-slate-400 mt-0.5">Generate prompt → paste into any AI → get CSV → import below</p>
           </div>
         </div>
         <div class="p-6 space-y-4">
-
-          <!-- How it works steps -->
-          <div class="grid grid-cols-3 gap-3 mb-2">
-            <div class="text-center p-3 rounded-2xl" style="background:rgba(99,102,241,0.06);border:1px solid rgba(99,102,241,0.12);">
-              <div class="w-8 h-8 rounded-xl btn-gradient text-white flex items-center justify-center text-xs font-black mx-auto mb-2">1</div>
-              <p class="text-xs font-bold text-slate-600 dark:text-slate-300">Paste word list below</p>
+          <div class="grid grid-cols-3 gap-3">
+            <div class="text-center p-3 rounded-2xl" style="background:rgba(99,102,241,.06);border:1px solid rgba(99,102,241,.12);">
+              <div class="w-7 h-7 rounded-xl btn-gradient text-white flex items-center justify-center text-xs font-black mx-auto mb-1.5">1</div>
+              <p class="text-[11px] font-bold text-slate-600 dark:text-slate-300">Paste word list</p>
             </div>
-            <div class="text-center p-3 rounded-2xl" style="background:rgba(217,70,239,0.06);border:1px solid rgba(217,70,239,0.12);">
-              <div class="w-8 h-8 rounded-xl btn-gradient text-white flex items-center justify-center text-xs font-black mx-auto mb-2">2</div>
-              <p class="text-xs font-bold text-slate-600 dark:text-slate-300">Copy prompt → paste to AI</p>
+            <div class="text-center p-3 rounded-2xl" style="background:rgba(217,70,239,.06);border:1px solid rgba(217,70,239,.12);">
+              <div class="w-7 h-7 rounded-xl btn-gradient text-white flex items-center justify-center text-xs font-black mx-auto mb-1.5">2</div>
+              <p class="text-[11px] font-bold text-slate-600 dark:text-slate-300">Copy prompt → AI</p>
             </div>
-            <div class="text-center p-3 rounded-2xl" style="background:rgba(16,185,129,0.06);border:1px solid rgba(16,185,129,0.12);">
-              <div class="w-8 h-8 rounded-xl btn-gradient text-white flex items-center justify-center text-xs font-black mx-auto mb-2">3</div>
-              <p class="text-xs font-bold text-slate-600 dark:text-slate-300">Copy AI output → import below</p>
+            <div class="text-center p-3 rounded-2xl" style="background:rgba(16,185,129,.06);border:1px solid rgba(16,185,129,.12);">
+              <div class="w-7 h-7 rounded-xl btn-gradient text-white flex items-center justify-center text-xs font-black mx-auto mb-1.5">3</div>
+              <p class="text-[11px] font-bold text-slate-600 dark:text-slate-300">Paste CSV → Import</p>
             </div>
           </div>
-
           <div class="space-y-1.5">
-            <label class="text-xs font-black text-slate-400 uppercase tracking-widest">
-              Your Word List
-              <span class="font-normal normal-case text-slate-300 ml-1">(one per line, or comma/space separated)</span>
-            </label>
-            <textarea id="pg-word-list"
-                      class="glass-input w-full px-4 py-3 rounded-xl font-medium text-sm resize-none"
-                      rows="4"
-                      placeholder="ameliorate&#10;ephemeral&#10;serendipity&#10;...or: ameliorate, ephemeral, serendipity"></textarea>
+            <label class="text-xs font-black text-slate-400 uppercase tracking-widest">Your Word List <span class="font-normal normal-case text-slate-300">(one per line or comma separated)</span></label>
+            <textarea id="pg-words" class="glass-input w-full px-4 py-3 rounded-xl font-medium text-sm resize-none" rows="4" placeholder="ameliorate&#10;ephemeral&#10;serendipity&#10;kick the bucket"></textarea>
           </div>
-
-          <div class="flex gap-3 flex-wrap items-center">
-            <div class="space-y-1">
+          <div class="flex gap-3 flex-wrap items-end">
+            <div class="space-y-1.5">
               <label class="text-xs font-black text-slate-400 uppercase tracking-widest">Type</label>
-              <select id="pg-type" class="glass-input px-3 py-2.5 rounded-xl font-bold text-sm modern-select" style="min-width:130px;">
+              <select id="pg-type" class="glass-input px-3 py-2.5 rounded-xl font-bold text-sm modern-select" style="min-width:140px;">
                 <option value="mixed">Mixed (auto-detect)</option>
                 <option value="word">Words only</option>
                 <option value="idiom">Idioms only</option>
                 <option value="phrase">Phrases only</option>
               </select>
             </div>
-            <button onclick="generatePrompt()"
-                    class="btn-gradient px-6 py-3 rounded-xl text-white text-sm font-black shadow-lg flex items-center gap-2 mt-5">
+            <button onclick="generatePrompt()" class="btn-gradient px-6 py-3 rounded-xl text-white text-sm font-black shadow-lg flex items-center gap-2">
               <i class="fa-solid fa-wand-magic-sparkles"></i> Generate Prompt
             </button>
           </div>
-
-          <!-- Generated prompt output -->
-          <div id="pg-output-box" class="hidden space-y-3">
+          <div id="pg-out" class="hidden space-y-3">
             <div class="flex items-center justify-between">
-              <label class="text-xs font-black text-slate-400 uppercase tracking-widest">Generated Prompt — Copy & paste to AI</label>
-              <button onclick="copyPrompt()"
-                      id="pg-copy-btn"
-                      class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-black transition hover:scale-105"
-                      style="background:rgba(99,102,241,0.12);border:1px solid rgba(99,102,241,0.25);color:#6366f1;">
+              <label class="text-xs font-black text-slate-400 uppercase tracking-widest">Prompt — Copy &amp; paste to AI</label>
+              <button onclick="copyPrompt()" id="pg-copy-btn" class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-black transition hover:scale-105" style="background:rgba(99,102,241,.12);border:1px solid rgba(99,102,241,.25);color:#6366f1;">
                 <i class="fa-solid fa-copy"></i> Copy
               </button>
             </div>
-            <div class="relative">
-              <textarea id="pg-prompt-text"
-                        class="glass-input w-full px-4 py-3 rounded-xl font-mono text-xs resize-none"
-                        rows="10" readonly></textarea>
-            </div>
-            <div class="flex items-center gap-2 p-3 rounded-xl text-xs font-semibold"
-                 style="background:rgba(251,191,36,0.1);border:1px solid rgba(251,191,36,0.2);color:#d97706;">
+            <textarea id="pg-prompt-txt" class="glass-input w-full px-4 py-3 rounded-xl font-mono text-xs resize-none" rows="10" readonly></textarea>
+            <div class="flex items-center gap-2 p-3 rounded-xl text-xs font-semibold" style="background:rgba(251,191,36,.1);border:1px solid rgba(251,191,36,.2);color:#d97706;">
               <i class="fa-solid fa-lightbulb text-amber-400"></i>
-              Works with ChatGPT, Claude, Gemini, or any AI. After AI replies, copy the CSV output and paste it in the Import section below.
+              Works with ChatGPT, Claude, Gemini. After AI replies, copy the CSV and paste in Import below.
             </div>
           </div>
-
         </div>
       </div>
 
-      <!-- ── SECTION B: CSV IMPORT ── -->
+      <!-- CSV IMPORT -->
       <div class="glass-card rounded-[1.8rem] overflow-hidden anim-3">
-        <div class="px-6 py-4 border-b border-white/30 dark:border-white/5 flex items-center gap-3"
-             style="background:linear-gradient(135deg,rgba(16,185,129,0.07),rgba(6,182,212,0.05));">
-          <span class="w-7 h-7 rounded-2xl flex items-center justify-center text-sm shadow-lg flex-shrink-0"
-                style="background:linear-gradient(135deg,#10b981,#06b6d4);">
+        <div class="px-6 py-4 border-b border-white/30 dark:border-white/5 flex items-center gap-3" style="background:linear-gradient(135deg,rgba(16,185,129,.07),rgba(6,182,212,.05));">
+          <span class="w-7 h-7 rounded-2xl flex items-center justify-center text-sm shadow-lg flex-shrink-0" style="background:linear-gradient(135deg,#10b981,#06b6d4);">
             <i class="fa-solid fa-file-csv text-white"></i>
           </span>
-          <div class="flex-1 min-w-0">
+          <div>
             <div class="text-sm font-black text-slate-700 dark:text-slate-200 uppercase tracking-wider">CSV Import</div>
-            <p class="text-xs text-slate-400 font-medium mt-0.5">Paste AI-generated CSV here to bulk-add to your vault</p>
+            <p class="text-xs text-slate-400 mt-0.5">Paste AI-generated CSV to bulk-add to vault</p>
           </div>
         </div>
         <div class="p-6 space-y-4">
-
-          <!-- Expected format hint -->
-          <div class="p-3 rounded-2xl text-xs font-mono overflow-x-auto"
-               style="background:rgba(0,0,0,0.04);border:1px solid rgba(99,102,241,0.12);color:#64748b;">
-            <div class="font-black text-slate-500 dark:text-slate-400 font-sans mb-1.5 text-[10px] uppercase tracking-widest not-italic">Expected columns:</div>
-            word, type, meaning, mnemonics, trick, example, synonyms, antonyms
+          <div class="p-3 rounded-xl font-mono text-xs overflow-x-auto" style="background:rgba(0,0,0,.04);border:1px solid rgba(99,102,241,.12);color:#64748b;">
+            <div class="font-black text-[10px] font-sans uppercase tracking-widest text-slate-500 mb-1">Expected columns:</div>
+            word, type, pos, meaning, mnemonics, trick, example, synonyms, antonyms
           </div>
-
           <div class="space-y-1.5">
             <div class="flex items-center justify-between">
               <label class="text-xs font-black text-slate-400 uppercase tracking-widest">Paste CSV Here</label>
-              <button onclick="el('csv-input').value='';el('csv-preview').innerHTML='';el('csv-import-bar').classList.add('hidden');"
-                      class="text-xs font-black text-rose-400 hover:text-rose-600 transition">Clear</button>
+              <button onclick="el('csv-in').value='';el('csv-preview').innerHTML='';el('csv-bar').classList.add('hidden');" class="text-xs font-black text-rose-400 hover:text-rose-600">Clear</button>
             </div>
-            <textarea id="csv-input"
-                      class="glass-input w-full px-4 py-3 rounded-xl font-mono text-xs resize-none"
-                      rows="7"
-                      oninput="parseCSVPreview()"
-                      placeholder="word,type,meaning,mnemonics,trick,example,synonyms,antonyms&#10;ameliorate,word,&quot;to make better&quot;,&quot;A meal that's better&quot;,..."></textarea>
+            <textarea id="csv-in" class="glass-input w-full px-4 py-3 rounded-xl font-mono text-xs resize-none" rows="7" oninput="parseCSVPreview()" placeholder="ameliorate,word,verb,&quot;to make better&quot;,..."></textarea>
           </div>
-
-          <!-- Preview table -->
           <div id="csv-preview" class="overflow-x-auto rounded-2xl"></div>
-
-          <!-- Import action bar -->
-          <div id="csv-import-bar" class="hidden flex items-center justify-between gap-3 p-4 rounded-2xl"
-               style="background:rgba(16,185,129,0.08);border:1px solid rgba(16,185,129,0.20);">
+          <div id="csv-bar" class="hidden flex items-center justify-between gap-3 p-4 rounded-2xl" style="background:rgba(16,185,129,.08);border:1px solid rgba(16,185,129,.20);">
             <div>
-              <span class="text-sm font-black text-emerald-600 dark:text-emerald-400" id="csv-count-label">0 words ready</span>
-              <p class="text-xs text-slate-400 mt-0.5">Duplicates (same word) will be skipped automatically</p>
+              <span class="text-sm font-black text-emerald-600 dark:text-emerald-400" id="csv-count-lbl">0 words ready</span>
+              <p class="text-xs text-slate-400 mt-0.5">Duplicates will be skipped</p>
             </div>
-            <button onclick="importCSV()"
-                    id="csv-import-btn"
-                    class="btn-gradient px-6 py-3 rounded-xl text-white text-sm font-black shadow-lg flex items-center gap-2 flex-shrink-0">
+            <button onclick="importCSV()" id="csv-import-btn" class="btn-gradient px-6 py-3 rounded-xl text-white text-sm font-black shadow-lg flex items-center gap-2 flex-shrink-0">
               <i class="fa-solid fa-cloud-arrow-up"></i> Import All
             </button>
           </div>
-
         </div>
       </div>
-
-    </div><!-- /vpane-import -->
+    </div>
 
   </div><!-- /state-main -->
-
 </main>
 
-<!-- Toast -->
+<!-- ═══ MASTERY LEVEL MODAL ═══ -->
+<div class="lvl-selector" id="lvl-modal">
+  <div class="lvl-backdrop" onclick="closeLvlModal()"></div>
+  <div class="lvl-modal glass-card pop-in">
+    <div class="text-center mb-4">
+      <h3 class="text-base font-black text-slate-800 dark:text-white" id="lvl-modal-word">—</h3>
+      <p class="text-xs text-slate-400 mt-1">How well do you know this word?</p>
+    </div>
+    <div class="space-y-2" id="lvl-options"></div>
+    <button onclick="closeLvlModal()" class="mt-4 w-full py-2.5 rounded-xl btn-glass text-xs font-black">Cancel</button>
+  </div>
+</div>
+
+<!-- ═══ DUPLICATE SCAN MODAL ═══ -->
+<div class="dup-modal" id="dup-modal">
+  <div class="lvl-backdrop" onclick="closeDupModal()"></div>
+  <div class="lvl-modal glass-card pop-in" style="max-width:460px;max-height:80vh;overflow-y:auto;">
+    <div class="flex items-center justify-between mb-4">
+      <h3 class="text-base font-black text-slate-800 dark:text-white">Duplicate Scanner</h3>
+      <button onclick="closeDupModal()" class="btn-glass w-8 h-8 rounded-xl flex items-center justify-center text-xs"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div id="dup-content"></div>
+  </div>
+</div>
+
 <div id="toast"></div>
 
-<!-- ══════════════════════════════════════
-     FIREBASE + LOGIC
-══════════════════════════════════════ -->
+<!-- ═══ FIREBASE + JS ═══ -->
 <script type="module">
-import { initializeApp }   from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
 import { getAuth, onAuthStateChanged, signInWithPopup, GoogleAuthProvider, signInAnonymously }
   from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-import {
-  getFirestore, collection, query, orderBy, getDocs,
-  doc, addDoc, updateDoc, deleteDoc, Timestamp
-} from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+import { getFirestore, collection, query, orderBy, getDocs, doc, addDoc, updateDoc, deleteDoc, Timestamp }
+  from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-/* ── Config ── */
 const firebaseConfig = {
-  apiKey:            "AIzaSyCLvZzZ-Hx9LsvuL1zK4xuZcF_1P28h4sI",
-  authDomain:        "mock-analysis-aaf4b.firebaseapp.com",
-  projectId:         "mock-analysis-aaf4b",
-  storageBucket:     "mock-analysis-aaf4b.firebasestorage.app",
-  messagingSenderId: "88057484168",
-  appId:             "1:88057484168:web:70e580fe70573a4866a03d"
+  apiKey:"AIzaSyCLvZzZ-Hx9LsvuL1zK4xuZcF_1P28h4sI",
+  authDomain:"mock-analysis-aaf4b.firebaseapp.com",
+  projectId:"mock-analysis-aaf4b",
+  storageBucket:"mock-analysis-aaf4b.firebasestorage.app",
+  messagingSenderId:"88057484168",
+  appId:"1:88057484168:web:70e580fe70573a4866a03d"
 };
 const APP_ID = 'mock-tracker-pro-final';
-
-const fApp     = initializeApp(firebaseConfig);
-const auth     = getAuth(fApp);
-const db       = getFirestore(fApp);
+const fApp = initializeApp(firebaseConfig);
+const auth = getAuth(fApp);
+const db   = getFirestore(fApp);
 const provider = new GoogleAuthProvider();
 
+/* ── Spaced repetition schedule (days) ── */
+const LEVEL_DAYS = { 0:2, 1:7, 2:14, 3:21, 4:30, 5:9999 };
+const LEVEL_LABELS = {
+  0: { label:'L0 — New',      sub:'Revise every 2 days',    icon:'🔴' },
+  1: { label:'L1 — Familiar', sub:'Revise every week',      icon:'🟠' },
+  2: { label:'L2 — Learning', sub:'Revise every 2 weeks',   icon:'🟡' },
+  3: { label:'L3 — Good',     sub:'Revise every 3 weeks',   icon:'🔵' },
+  4: { label:'L4 — Strong',   sub:'Revise every month',     icon:'🟣' },
+  5: { label:'L5 — Mastered', sub:'Monthly revision only',  icon:'✅' }
+};
+
 /* ── State ── */
-let vWords  = [];
-let vFilter = 'all';
-let vLoaded = false;
+let vWords = [], vFilter = 'all', vSort = 'newest', vLoaded = false;
 let vFcDeck = [], vFcIdx = 0, vFcKnown = 0, vFcUnknown = 0;
-let vQuizQ  = [], vQuizIdx = 0, vQuizScore = 0, vQuizMode = 'meaning';
+let vQuizQ = [], vQuizIdx = 0, vQuizScore = 0, vQuizMode = 'meaning';
 const vTags = { synonyms:[], antonyms:[], tags:[] };
-let currentUser = null;
+let currentUser = null, lvlTargetId = null;
 
 /* ── Helpers ── */
-const el   = id => document.getElementById(id);
-const show = id => { const e=el(id); if(e) e.classList.remove('hidden'); };
-const hide = id => { const e=el(id); if(e) e.classList.add('hidden'); };
+const el = id => document.getElementById(id);
 const vocabColl = () => collection(db,'artifacts',APP_ID,'users',currentUser.uid,'vocab');
 
 function toast(msg, isErr=false) {
-  const t = el('toast');
-  t.textContent = msg;
+  const t = el('toast'); t.textContent = msg;
   t.className = isErr ? 'err show' : 'show';
-  clearTimeout(t._tid);
-  t._tid = setTimeout(() => { t.className = ''; }, 2400);
+  clearTimeout(t._tid); t._tid = setTimeout(() => { t.className = ''; }, 2600);
 }
 
 function wTypeBadge(t) {
-  const c = {word:'wtype-word', idiom:'wtype-idiom', phrase:'wtype-phrase'};
-  const l = {word:'Word', idiom:'Idiom', phrase:'Phrase'};
+  const c = {word:'wtype-word',idiom:'wtype-idiom',phrase:'wtype-phrase'};
+  const l = {word:'Word',idiom:'Idiom',phrase:'Phrase'};
   return `<span class="wtype ${c[t]||'wtype-word'}">${l[t]||t}</span>`;
 }
+
+function isDue(w) {
+  if (!w.lastReviewed) return true;
+  const days = LEVEL_DAYS[w.level ?? 0];
+  const next = new Date(w.lastReviewed.toDate ? w.lastReviewed.toDate() : w.lastReviewed);
+  next.setDate(next.getDate() + days);
+  return new Date() >= next;
+}
+
+function levelBadgeHTML(w, clickable=true) {
+  const lvl = w.level ?? 0;
+  const info = LEVEL_LABELS[lvl];
+  const due = isDue(w);
+  const dueDot = due && lvl < 5 ? '<span class="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse inline-block ml-1"></span>' : '';
+  return `<span class="lvl-badge lvl-${lvl}" ${clickable ? `onclick="openLvlModal('${w.id}')" title="Click to change level"` : ''}>${info.icon} ${info.label}${dueDot}</span>`;
+}
+
+/* ── Theme ── */
+window.toggleTheme = () => {
+  const dark = document.documentElement.classList.toggle('dark');
+  localStorage.setItem('lexiprep_theme', dark ? 'dark' : 'light');
+};
+if (localStorage.getItem('lexiprep_theme')==='dark' ||
+    (!localStorage.getItem('lexiprep_theme') && localStorage.getItem('theme')==='dark'))
+  document.documentElement.classList.add('dark');
 
 /* ── Auth ── */
 window.doSignIn = async () => {
@@ -851,38 +713,28 @@ window.doSignIn = async () => {
   }
 };
 
-window.toggleTheme = () => {
-  const dark = document.documentElement.classList.toggle('dark');
-  localStorage.setItem('lexiprep_theme', dark ? 'dark' : 'light');
-};
-
-/* Restore theme */
-if (localStorage.getItem('lexiprep_theme') === 'dark' ||
-    (!localStorage.getItem('lexiprep_theme') && localStorage.getItem('theme') === 'dark'))
-  document.documentElement.classList.add('dark');
-
 onAuthStateChanged(auth, user => {
+  const chip=el('auth-status'), nameEl=el('auth-name'), signinBtn=el('btn-signin');
   if (user) {
     currentUser = user;
-    const chip = el('auth-status'), nameEl = el('auth-name'), signinBtn = el('btn-signin');
-    if (chip)     { chip.classList.remove('hidden'); chip.style.display='flex'; }
-    if (signinBtn)  signinBtn.style.display='none';
-    if (nameEl)     nameEl.textContent = user.isAnonymous ? 'Guest' : (user.displayName?.split(' ')[0] || 'Synced');
-    hide('state-loading'); hide('state-signin');
+    if(chip){ chip.classList.remove('hidden'); chip.style.display='flex'; }
+    if(signinBtn) signinBtn.style.display='none';
+    if(nameEl) nameEl.textContent = user.isAnonymous ? 'Guest' : (user.displayName?.split(' ')[0]||'Synced');
+    el('state-loading').classList.add('hidden');
+    el('state-signin').classList.add('hidden');
     el('state-main').classList.remove('hidden');
     loadWords();
   } else {
     currentUser = null;
-    hide('state-loading');
-    show('state-signin');
-    hide('state-main');
-    const chip = el('auth-status'), signinBtn = el('btn-signin');
-    if (chip)     chip.style.display='none';
-    if (signinBtn) { signinBtn.classList.remove('hidden'); signinBtn.style.display='flex'; }
+    el('state-loading').classList.add('hidden');
+    el('state-signin').classList.remove('hidden');
+    el('state-main').classList.add('hidden');
+    if(chip) chip.style.display='none';
+    if(signinBtn){ signinBtn.classList.remove('hidden'); signinBtn.style.display='flex'; }
   }
 });
 
-/* ── Load words ── */
+/* ── Load ── */
 window.loadWords = async (force=false) => {
   if (!currentUser) return;
   if (vLoaded && !force) return;
@@ -890,88 +742,106 @@ window.loadWords = async (force=false) => {
     const snap = await getDocs(query(vocabColl(), orderBy('createdAt','desc')));
     vWords = snap.docs.map(d => ({id:d.id,...d.data()}));
     vLoaded = true;
-    updateStats();
-    renderLibrary();
+    updateStats(); renderLibrary();
   } catch(e) { toast('Load failed: '+e.message, true); }
 };
 
 function updateStats() {
-  el('vs-total')   && (el('vs-total').textContent    = vWords.length);
-  el('vs-words')   && (el('vs-words').textContent    = vWords.filter(w=>w.type==='word').length);
-  el('vs-idioms')  && (el('vs-idioms').textContent   = vWords.filter(w=>w.type==='idiom').length);
-  el('vs-phrases') && (el('vs-phrases').textContent  = vWords.filter(w=>w.type==='phrase').length);
-  el('vs-mastered')&& (el('vs-mastered').textContent = vWords.filter(w=>w.mastered).length);
+  const today = new Date();
+  const due = vWords.filter(w => isDue(w) && (w.level??0) < 5).length;
+  el('vs-total')   && (el('vs-total').textContent   = vWords.length);
+  el('vs-words')   && (el('vs-words').textContent   = vWords.filter(w=>w.type==='word').length);
+  el('vs-idioms')  && (el('vs-idioms').textContent  = vWords.filter(w=>w.type==='idiom').length);
+  el('vs-mastered')&& (el('vs-mastered').textContent= vWords.filter(w=>(w.level??0)===5).length);
+  el('vs-due')     && (el('vs-due').textContent     = due);
 }
 
 /* ── Library ── */
 window.renderLibrary = () => {
   const q = (el('v-search')?.value||'').toLowerCase().trim();
   let list = [...vWords];
-  if (vFilter==='mastered') list = list.filter(w=>w.mastered);
-  else if (vFilter!=='all') list = list.filter(w=>w.type===vFilter);
+
+  if      (vFilter==='mastered') list = list.filter(w=>(w.level??0)===5);
+  else if (vFilter==='due')      list = list.filter(w=>isDue(w) && (w.level??0)<5);
+  else if (vFilter!=='all')      list = list.filter(w=>w.type===vFilter);
+
   if (q) list = list.filter(w=>
     w.word?.toLowerCase().includes(q)||
     w.meaning?.toLowerCase().includes(q)||
+    w.mnemonics?.toLowerCase().includes(q)||
     (w.synonyms||[]).some(s=>s.toLowerCase().includes(q))||
     (w.antonyms||[]).some(s=>s.toLowerCase().includes(q))||
     (w.tags||[]).some(s=>s.toLowerCase().includes(q)));
+
+  if (vSort==='az')     list.sort((a,b)=>(a.word||'').localeCompare(b.word||''));
+  else if(vSort==='level') list.sort((a,b)=>(a.level??0)-(b.level??0));
+  else if(vSort==='due')   list.sort((a,b)=>{ const da=isDue(a)?0:1, db=isDue(b)?0:1; return da-db || (a.level??0)-(b.level??0); });
+  // newest is default (already sorted by createdAt desc from Firestore)
 
   const container = el('v-library-list');
   if (!container) return;
 
   if (!list.length) {
-    container.innerHTML = `
-      <div class="text-center py-16 text-slate-400">
-        <i class="fa-solid fa-book-open text-5xl opacity-15 block mb-4 empty-float"></i>
-        <p class="font-black text-sm uppercase tracking-wider">
-          ${vWords.length ? 'No matches found' : 'Your vault is empty'}
-        </p>
-        <p class="text-xs mt-2">
-          ${vWords.length ? 'Try a different search or filter.' : 'Add your first word using the Add tab.'}
-        </p>
-      </div>`;
+    container.innerHTML = `<div class="text-center py-16 text-slate-400">
+      <i class="fa-solid fa-book-open text-5xl opacity-15 block mb-4 empty-float"></i>
+      <p class="font-black text-sm uppercase tracking-wider">${vWords.length?'No matches':'Vault is empty'}</p>
+      <p class="text-xs mt-2">${vWords.length?'Try a different search or filter.':'Add your first word using the Add tab.'}</p>
+    </div>`;
     return;
   }
 
   container.innerHTML = list.map(w => {
-    const syns = (w.synonyms||[]).map(s=>`<span class="vtag vtag-syn">${s}</span>`).join('');
-    const ants = (w.antonyms||[]).map(s=>`<span class="vtag vtag-ant">${s}</span>`).join('');
-    const tags = (w.tags||[]).map(s=>`<span class="vtag vtag-tag">${s}</span>`).join('');
-    const starCls = w.mastered ? 'fa-solid fa-star text-amber-400' : 'fa-regular fa-star text-slate-400';
+    const syns = (w.synonyms||[]).map(s=>`<span class="vtag-chip vtag-syn">${s}</span>`).join('');
+    const ants = (w.antonyms||[]).map(s=>`<span class="vtag-chip vtag-ant">${s}</span>`).join('');
+    const tags = (w.tags||[]).map(s=>`<span class="vtag-chip vtag-tag">${s}</span>`).join('');
+    const hasSynAnt = (w.synonyms||[]).length || (w.antonyms||[]).length;
     return `
-      <div class="glass-card vword-card rounded-[1.5rem]">
-        <div class="flex items-start justify-between gap-3 mb-1">
-          <div>
-            <div class="vword-title">${w.word}</div>
-            <div class="mt-1.5">${wTypeBadge(w.type||'word')}</div>
+    <div class="glass-card vword-card rounded-[1.5rem]">
+      <!-- Header row -->
+      <div class="flex items-start justify-between gap-3 mb-2">
+        <div class="min-w-0">
+          <div class="flex items-center gap-2 flex-wrap">
+            <span class="vword-title">${w.word}</span>
+            ${w.pos ? `<span class="vword-pos">(${w.pos})</span>` : ''}
           </div>
-          <div class="flex gap-1.5 flex-shrink-0 pt-1">
-            <button onclick="toggleMastered('${w.id}')"
-                    class="btn-glass w-8 h-8 rounded-xl flex items-center justify-center text-xs"
-                    title="${w.mastered?'Unmark mastered':'Mark as mastered'}">
-              <i class="${starCls}"></i>
-            </button>
-            <button onclick="editWord('${w.id}')"
-                    class="btn-glass w-8 h-8 rounded-xl flex items-center justify-center text-xs text-indigo-500">
-              <i class="fa-solid fa-pen"></i>
-            </button>
-            <button onclick="deleteWord('${w.id}')"
-                    class="w-8 h-8 rounded-xl flex items-center justify-center text-xs text-rose-500"
-                    style="background:rgba(239,68,68,0.10);border:1px solid rgba(239,68,68,0.20);">
-              <i class="fa-solid fa-trash"></i>
-            </button>
+          <div class="flex items-center gap-2 mt-1.5 flex-wrap">
+            ${wTypeBadge(w.type||'word')}
+            ${levelBadgeHTML(w)}
           </div>
         </div>
-        <p class="vword-meaning">${w.meaning}</p>
-        ${w.example ? `<p class="vword-example">"${w.example}"</p>` : ''}
-        ${(syns||ants||tags) ? `<div class="flex flex-wrap gap-1.5 mt-1">${syns}${ants}${tags}</div>` : ''}
-      </div>`;
+        <div class="flex gap-1.5 flex-shrink-0">
+          <button onclick="editWord('${w.id}')" class="btn-glass w-8 h-8 rounded-xl flex items-center justify-center text-xs text-indigo-500" title="Edit"><i class="fa-solid fa-pen"></i></button>
+          <button onclick="deleteWord('${w.id}')" class="w-8 h-8 rounded-xl flex items-center justify-center text-xs text-rose-500" style="background:rgba(239,68,68,.10);border:1px solid rgba(239,68,68,.20);" title="Delete"><i class="fa-solid fa-trash"></i></button>
+        </div>
+      </div>
+
+      <!-- Meaning -->
+      <p class="vword-meaning">${w.meaning}</p>
+
+      <!-- Example -->
+      ${w.example ? `<p class="vword-example mt-1">"${w.example}"</p>` : ''}
+
+      <!-- Mnemonics & Trick -->
+      ${(w.mnemonics||w.trick) ? `<div class="vword-section grid grid-cols-1 sm:grid-cols-2 gap-3">
+        ${w.mnemonics ? `<div><div class="vword-label">🧠 Mnemonics</div><div class="vword-text">${w.mnemonics}</div></div>` : ''}
+        ${w.trick     ? `<div><div class="vword-label">💡 Trick / Root</div><div class="vword-text">${w.trick}</div></div>` : ''}
+      </div>` : ''}
+
+      <!-- Synonyms / Antonyms / Tags -->
+      ${(hasSynAnt||tags) ? `<div class="vword-section flex flex-wrap gap-1.5">${syns}${ants}${tags}</div>` : ''}
+    </div>`;
   }).join('');
 };
 
 window.setFilter = (f, chip) => {
   vFilter = f;
-  document.querySelectorAll('.vfilter').forEach(c=>c.classList.remove('active'));
+  document.querySelectorAll('.vfilter[data-f]').forEach(c=>c.classList.remove('active'));
+  chip.classList.add('active');
+  renderLibrary();
+};
+window.setSort = (s, chip) => {
+  vSort = s;
+  document.querySelectorAll('[id^="sort-"]').forEach(c=>c.classList.remove('active'));
   chip.classList.add('active');
   renderLibrary();
 };
@@ -987,564 +857,499 @@ window.tagKey = (e, field) => {
     vTags[field].pop(); renderTags(field);
   }
 };
-
 function renderTags(field) {
-  const wrapId = {synonyms:'v-syn-wrap', antonyms:'v-ant-wrap', tags:'v-tags-wrap'};
-  const inpId  = {synonyms:'v-syn-inp',  antonyms:'v-ant-inp',  tags:'v-tags-inp'};
-  const cls    = {synonyms:'vtag-syn',   antonyms:'vtag-ant',   tags:'vtag-tag'};
-  const wrap = el(wrapId[field]), inp = el(inpId[field]);
-  if (!wrap) return;
-  wrap.querySelectorAll('.vtag').forEach(c=>c.remove());
-  vTags[field].forEach((tag, i) => {
-    const chip = document.createElement('span');
-    chip.className = `vtag ${cls[field]}`;
-    chip.innerHTML = `${tag} <button type="button" onclick="removeTag('${field}',${i})">×</button>`;
-    wrap.insertBefore(chip, inp);
+  const wrapId={synonyms:'v-syn-wrap',antonyms:'v-ant-wrap',tags:'v-tags-wrap'};
+  const inpId ={synonyms:'v-syn-inp', antonyms:'v-ant-inp', tags:'v-tags-inp'};
+  const cls   ={synonyms:'vtag-syn',  antonyms:'vtag-ant',  tags:'vtag-tag'};
+  const wrap=el(wrapId[field]), inp=el(inpId[field]); if(!wrap) return;
+  wrap.querySelectorAll('.vtag-chip').forEach(c=>c.remove());
+  vTags[field].forEach((tag,i)=>{
+    const chip=document.createElement('span');
+    chip.className=`vtag-chip ${cls[field]}`;
+    chip.innerHTML=`${tag} <button type="button" onclick="removeTag('${field}',${i})">×</button>`;
+    wrap.insertBefore(chip,inp);
   });
 }
-
-window.removeTag = (field, i) => { vTags[field].splice(i,1); renderTags(field); };
-
+window.removeTag = (field,i) => { vTags[field].splice(i,1); renderTags(field); };
 window.onTypeChange = () => {
-  const sec = el('syn-ant-section');
-  if (sec) sec.style.display = el('v-inp-type')?.value==='word' ? 'block' : 'none';
+  const s=el('syn-ant-section'); if(s) s.style.display=el('v-inp-type')?.value==='word'?'block':'none';
 };
 
 function resetForm() {
-  el('v-edit-id').value = '';
-  ['v-inp-word','v-inp-meaning','v-inp-example'].forEach(id=>{ const e=el(id); if(e) e.value=''; });
-  if (el('v-inp-type')) el('v-inp-type').value = 'word';
+  el('v-edit-id').value='';
+  ['v-inp-word','v-inp-meaning','v-inp-mnemonics','v-inp-trick','v-inp-example'].forEach(id=>{const e=el(id);if(e)e.value='';});
+  if(el('v-inp-type'))  el('v-inp-type').value='word';
+  if(el('v-inp-pos'))   el('v-inp-pos').value='';
+  if(el('v-inp-level')) el('v-inp-level').value='0';
   vTags.synonyms=[]; vTags.antonyms=[]; vTags.tags=[];
   ['synonyms','antonyms','tags'].forEach(f=>renderTags(f));
-  if (el('v-form-title')) el('v-form-title').textContent = 'Add New Entry';
-  if (el('v-save-txt'))   el('v-save-txt').textContent   = 'Save to Vault';
-  if (el('v-cancel-btn')) el('v-cancel-btn').classList.add('hidden');
+  if(el('v-form-title')) el('v-form-title').textContent='Add New Entry';
+  if(el('v-save-txt'))   el('v-save-txt').textContent='Save to Vault';
+  if(el('v-cancel-btn')) el('v-cancel-btn').classList.add('hidden');
   onTypeChange();
 }
 
 /* ── CRUD ── */
 window.saveWord = async () => {
-  if (!currentUser) return toast('Please sign in first', true);
-  const word    = el('v-inp-word')?.value.trim();
-  const meaning = el('v-inp-meaning')?.value.trim();
-  if (!word||!meaning) return toast('Word and meaning are required', true);
-  const editId = el('v-edit-id')?.value;
-  const entry = {
+  if(!currentUser) return toast('Please sign in first',true);
+  const word=el('v-inp-word')?.value.trim(), meaning=el('v-inp-meaning')?.value.trim();
+  if(!word||!meaning) return toast('Word and meaning are required',true);
+  const editId=el('v-edit-id')?.value;
+  const entry={
     word, meaning,
-    type:     el('v-inp-type')?.value || 'word',
-    example:  el('v-inp-example')?.value.trim() || '',
-    synonyms: [...vTags.synonyms],
-    antonyms: [...vTags.antonyms],
-    tags:     [...vTags.tags],
+    type:    el('v-inp-type')?.value||'word',
+    pos:     el('v-inp-pos')?.value||'',
+    level:   parseInt(el('v-inp-level')?.value||'0'),
+    mnemonics: el('v-inp-mnemonics')?.value.trim()||'',
+    trick:   el('v-inp-trick')?.value.trim()||'',
+    example: el('v-inp-example')?.value.trim()||'',
+    synonyms:[...vTags.synonyms],
+    antonyms:[...vTags.antonyms],
+    tags:    [...vTags.tags],
   };
   try {
-    if (editId) {
-      await updateDoc(doc(db,'artifacts',APP_ID,'users',currentUser.uid,'vocab',editId),
-                      {...entry, updatedAt:Timestamp.now()});
-      const idx = vWords.findIndex(w=>w.id===editId);
-      if (idx!==-1) vWords[idx] = {...vWords[idx],...entry};
+    if(editId) {
+      await updateDoc(doc(db,'artifacts',APP_ID,'users',currentUser.uid,'vocab',editId),{...entry,updatedAt:Timestamp.now()});
+      const idx=vWords.findIndex(w=>w.id===editId);
+      if(idx!==-1) vWords[idx]={...vWords[idx],...entry};
       toast('✅ Updated!');
     } else {
-      entry.createdAt = Timestamp.now();
-      entry.mastered  = false;
-      const ref = await addDoc(vocabColl(), entry);
+      entry.createdAt=Timestamp.now(); entry.lastReviewed=Timestamp.now();
+      const ref=await addDoc(vocabColl(),entry);
       vWords.unshift({id:ref.id,...entry});
       toast('✅ Saved to vault!');
     }
     resetForm(); updateStats(); renderLibrary(); subTab('library');
-  } catch(e) { toast('Save failed: '+e.message, true); }
+  } catch(e){ toast('Save failed: '+e.message,true); }
 };
 
 window.deleteWord = async (id) => {
-  if (!confirm('Delete this entry from your vault?')) return;
+  if(!confirm('Delete this entry?')) return;
   try {
     await deleteDoc(doc(db,'artifacts',APP_ID,'users',currentUser.uid,'vocab',id));
-    vWords = vWords.filter(w=>w.id!==id);
+    vWords=vWords.filter(w=>w.id!==id);
     updateStats(); renderLibrary(); toast('Deleted');
-  } catch(e) { toast('Delete failed', true); }
-};
-
-window.toggleMastered = async (id) => {
-  const w = vWords.find(x=>x.id===id); if(!w) return;
-  const nv = !w.mastered;
-  try {
-    await updateDoc(doc(db,'artifacts',APP_ID,'users',currentUser.uid,'vocab',id), {mastered:nv});
-    w.mastered = nv; updateStats(); renderLibrary();
-    toast(nv ? '⭐ Marked as mastered!' : 'Unmarked');
-  } catch(e) { toast('Update failed', true); }
+  } catch(e){ toast('Delete failed',true); }
 };
 
 window.editWord = (id) => {
-  const w = vWords.find(x=>x.id===id); if(!w) return;
-  el('v-edit-id').value = id;
-  if(el('v-inp-word'))    el('v-inp-word').value    = w.word||'';
-  if(el('v-inp-type'))    el('v-inp-type').value    = w.type||'word';
-  if(el('v-inp-meaning')) el('v-inp-meaning').value = w.meaning||'';
-  if(el('v-inp-example')) el('v-inp-example').value = w.example||'';
-  vTags.synonyms=[...(w.synonyms||[])];
-  vTags.antonyms=[...(w.antonyms||[])];
-  vTags.tags    =[...(w.tags    ||[])];
+  const w=vWords.find(x=>x.id===id); if(!w) return;
+  el('v-edit-id').value=id;
+  if(el('v-inp-word'))      el('v-inp-word').value=w.word||'';
+  if(el('v-inp-type'))      el('v-inp-type').value=w.type||'word';
+  if(el('v-inp-pos'))       el('v-inp-pos').value=w.pos||'';
+  if(el('v-inp-level'))     el('v-inp-level').value=w.level??0;
+  if(el('v-inp-meaning'))   el('v-inp-meaning').value=w.meaning||'';
+  if(el('v-inp-mnemonics')) el('v-inp-mnemonics').value=w.mnemonics||'';
+  if(el('v-inp-trick'))     el('v-inp-trick').value=w.trick||'';
+  if(el('v-inp-example'))   el('v-inp-example').value=w.example||'';
+  vTags.synonyms=[...(w.synonyms||[])]; vTags.antonyms=[...(w.antonyms||[])]; vTags.tags=[...(w.tags||[])];
   ['synonyms','antonyms','tags'].forEach(f=>renderTags(f));
   onTypeChange();
-  if(el('v-form-title'))  el('v-form-title').textContent  = 'Edit Entry';
-  if(el('v-save-txt'))    el('v-save-txt').textContent    = 'Update Entry';
+  if(el('v-form-title'))  el('v-form-title').textContent='Edit Entry';
+  if(el('v-save-txt'))    el('v-save-txt').textContent='Update Entry';
   if(el('v-cancel-btn'))  el('v-cancel-btn').classList.remove('hidden');
   subTab('add');
 };
-
 window.cancelEdit = () => { resetForm(); subTab('library'); };
 
 /* ── Sub-tab ── */
 window.subTab = (tab) => {
-  document.querySelectorAll('.vocab-pane').forEach(p=>p.classList.remove('active'));
-  document.querySelectorAll('.vocab-subtab').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.vpane').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.vtab').forEach(b=>b.classList.remove('active'));
   el('vpane-'+tab)?.classList.add('active');
   el('vstab-'+tab)?.classList.add('active');
-  if (tab==='add' && !el('v-edit-id')?.value) resetForm();
+  if(tab==='add' && !el('v-edit-id')?.value) resetForm();
+};
+
+/* ── Mastery level modal ── */
+window.openLvlModal = (id) => {
+  lvlTargetId=id;
+  const w=vWords.find(x=>x.id===id); if(!w) return;
+  el('lvl-modal-word').textContent=w.word;
+  const opts=el('lvl-options'); if(!opts) return;
+  opts.innerHTML=Object.entries(LEVEL_LABELS).map(([lvl,info])=>`
+    <button onclick="setLevel(${lvl})"
+      class="w-full flex items-center gap-3 px-4 py-3 rounded-2xl border transition hover:scale-[1.02] text-left ${parseInt(lvl)===(w.level??0)?'ring-2 ring-indigo-500':''}"
+      style="background:rgba(255,255,255,.4);border-color:rgba(255,255,255,.6);">
+      <span class="text-xl">${info.icon}</span>
+      <div>
+        <div class="text-sm font-black text-slate-800 dark:text-white">${info.label}</div>
+        <div class="text-xs text-slate-400">${info.sub}</div>
+      </div>
+      ${parseInt(lvl)===(w.level??0) ? '<span class="ml-auto text-xs font-black text-indigo-500">Current</span>' : ''}
+    </button>`).join('');
+  el('lvl-modal').classList.add('open');
+};
+window.closeLvlModal = () => { el('lvl-modal').classList.remove('open'); lvlTargetId=null; };
+window.setLevel = async (lvl) => {
+  if(!lvlTargetId) return;
+  try {
+    await updateDoc(doc(db,'artifacts',APP_ID,'users',currentUser.uid,'vocab',lvlTargetId),
+      { level:lvl, lastReviewed:Timestamp.now() });
+    const w=vWords.find(x=>x.id===lvlTargetId);
+    if(w){ w.level=lvl; w.lastReviewed=Timestamp.now(); }
+    updateStats(); renderLibrary();
+    toast(LEVEL_LABELS[lvl].icon+' Level set to '+LEVEL_LABELS[lvl].label);
+  } catch(e){ toast('Update failed',true); }
+  closeLvlModal();
+};
+
+/* ── Duplicate scanner ── */
+window.openDupModal = () => {
+  const groups={};
+  vWords.forEach(w=>{
+    const key=w.word.toLowerCase().trim();
+    if(!groups[key]) groups[key]=[];
+    groups[key].push(w);
+  });
+  const dups=Object.values(groups).filter(g=>g.length>1);
+  const content=el('dup-content'); if(!content) return;
+  if(!dups.length){
+    content.innerHTML='<div class="text-center py-10 text-slate-400"><i class="fa-solid fa-check-circle text-4xl text-emerald-400 block mb-3"></i><p class="font-black">No duplicates found! 🎉</p></div>';
+  } else {
+    content.innerHTML=`<p class="text-xs text-slate-400 mb-3">${dups.length} duplicate group${dups.length!==1?'s':''} found:</p>`+
+    dups.map(group=>`
+      <div class="dup-item">
+        <div class="font-black text-sm text-slate-700 dark:text-slate-200 mb-2">"${group[0].word}" <span class="text-xs text-rose-400">(${group.length} copies)</span></div>
+        ${group.map((w,i)=>`
+          <div class="flex items-center justify-between py-1.5 ${i>0?'border-t border-rose-200/30':''}">
+            <div class="text-xs text-slate-500 dark:text-slate-400 truncate max-w-[200px]">${w.meaning?.substring(0,50)||'—'}</div>
+            <div class="flex gap-1.5 ml-2">
+              <span class="lvl-badge lvl-${w.level??0} text-[9px] py-0.5 px-2">${LEVEL_LABELS[w.level??0].icon} L${w.level??0}</span>
+              ${i>0?`<button onclick="deleteDup('${w.id}')" class="px-2 py-1 rounded-lg text-[10px] font-black text-white" style="background:rgba(239,68,68,.8);">Delete</button>`:'<span class="px-2 py-1 rounded-lg text-[10px] font-black text-emerald-600" style="background:rgba(16,185,129,.1);">Keep</span>'}
+            </div>
+          </div>`).join('')}
+      </div>`).join('');
+  }
+  el('dup-modal').classList.add('open');
+};
+window.closeDupModal = () => { el('dup-modal').classList.remove('open'); };
+window.deleteDup = async (id) => {
+  try {
+    await deleteDoc(doc(db,'artifacts',APP_ID,'users',currentUser.uid,'vocab',id));
+    vWords=vWords.filter(w=>w.id!==id);
+    updateStats(); renderLibrary(); openDupModal(); toast('Deleted duplicate');
+  } catch(e){ toast('Delete failed',true); }
 };
 
 /* ── FLASHCARDS ── */
 window.startFC = (mode) => {
-  let deck = [...vWords];
-  if (mode==='weak')   deck = vWords.filter(w=>!w.mastered);
-  if (mode==='random') { deck.sort(()=>Math.random()-0.5); deck=deck.slice(0,10); }
-  else deck.sort(()=>Math.random()-0.5);
-  if (!deck.length) return toast('No words in this mode', true);
-  vFcDeck=deck; vFcIdx=0; vFcKnown=0; vFcUnknown=0;
-  renderFC();
+  let deck=[...vWords];
+  const n=parseInt(el('fc-random-count')?.value||'10');
+  if(mode==='due')    deck=vWords.filter(w=>isDue(w)&&(w.level??0)<5);
+  else if(mode==='weak') deck=vWords.filter(w=>(w.level??0)<=2);
+  else if(mode==='random'){ deck.sort(()=>Math.random()-.5); deck=deck.slice(0,n); }
+  else deck.sort(()=>Math.random()-.5);
+  if(!deck.length) return toast(mode==='due'?'No words due today!':'No words in this mode',true);
+  vFcDeck=deck; vFcIdx=0; vFcKnown=0; vFcUnknown=0; renderFC();
 };
 
 function renderFC() {
-  const area = el('v-fc-area'); if(!area) return;
-  if (vFcIdx >= vFcDeck.length) {
-    area.innerHTML = `
-      <div class="glass-card rounded-[2rem] p-10 text-center pop-in">
-        <div class="text-6xl mb-5">🎉</div>
-        <div class="text-3xl font-black text-gradient mb-2">Session Done!</div>
-        <p class="text-sm text-slate-400 mb-7">Reviewed ${vFcDeck.length} card${vFcDeck.length!==1?'s':''}</p>
-        <div class="flex gap-10 justify-center mb-7">
-          <div>
-            <div class="text-4xl font-black text-emerald-500">${vFcKnown}</div>
-            <div class="text-[10px] font-black text-slate-400 uppercase tracking-wider mt-1">Got it</div>
-          </div>
-          <div>
-            <div class="text-4xl font-black text-rose-500">${vFcUnknown}</div>
-            <div class="text-[10px] font-black text-slate-400 uppercase tracking-wider mt-1">Revisit</div>
-          </div>
-        </div>
-        <button onclick="startFC('weak')"
-                class="btn-gradient px-7 py-3.5 rounded-xl text-white text-sm font-black shadow-lg">
-          <i class="fa-solid fa-fire mr-2"></i>Drill Weak Words
-        </button>
-      </div>`;
+  const area=el('v-fc-area'); if(!area) return;
+  if(vFcIdx>=vFcDeck.length) {
+    area.innerHTML=`<div class="glass-card rounded-[2rem] p-10 text-center pop-in">
+      <div class="text-6xl mb-4">🎉</div>
+      <div class="text-3xl font-black text-gradient mb-2">Session Done!</div>
+      <p class="text-sm text-slate-400 mb-6">Reviewed ${vFcDeck.length} card${vFcDeck.length!==1?'s':''}</p>
+      <div class="flex gap-8 justify-center mb-7">
+        <div><div class="text-4xl font-black text-emerald-500">${vFcKnown}</div><div class="text-[10px] font-black text-slate-400 uppercase tracking-wider mt-1">Knew it</div></div>
+        <div><div class="text-4xl font-black text-rose-500">${vFcUnknown}</div><div class="text-[10px] font-black text-slate-400 uppercase tracking-wider mt-1">Revisit</div></div>
+      </div>
+      <div class="flex gap-3 justify-center flex-wrap">
+        <button onclick="startFC('due')" class="btn-gradient px-6 py-3 rounded-xl text-white text-sm font-black shadow-lg"><i class="fa-solid fa-clock mr-2"></i>Drill Due Words</button>
+        <button onclick="subTab('library')" class="btn-glass px-5 py-3 rounded-xl text-sm font-black"><i class="fa-solid fa-books mr-2"></i>View Library</button>
+      </div>
+    </div>`;
     return;
   }
-  const w = vFcDeck[vFcIdx];
-  const syns = (w.synonyms||[]).slice(0,4).map(s=>`<span class="vtag vtag-syn">${s}</span>`).join('');
-  const ants = (w.antonyms||[]).slice(0,3).map(s=>`<span class="vtag vtag-ant">${s}</span>`).join('');
-  area.innerHTML = `
+  const w=vFcDeck[vFcIdx];
+  const syns=(w.synonyms||[]).map(s=>`<span class="vtag-chip vtag-syn">${s}</span>`).join('');
+  const ants=(w.antonyms||[]).map(s=>`<span class="vtag-chip vtag-ant">${s}</span>`).join('');
+  area.innerHTML=`
     <div class="flex items-center justify-between text-xs font-black text-slate-400 mb-4 px-1">
       <span>Card ${vFcIdx+1} / ${vFcDeck.length}</span>
-      <div class="flex gap-4">
-        <span class="text-emerald-500">✓ ${vFcKnown}</span>
-        <span class="text-rose-500">↺ ${vFcUnknown}</span>
-      </div>
+      <div class="flex gap-4"><span class="text-emerald-500">✓ ${vFcKnown}</span><span class="text-rose-500">↺ ${vFcUnknown}</span></div>
     </div>
     <div class="fc-scene" onclick="flipFC()">
-      <div class="fc-card-inner" id="fc-inner">
+      <div class="fc-inner" id="fc-inner">
+        <!-- FRONT -->
         <div class="fc-face fc-front">
-          <div class="fc-hint mb-4">Tap to reveal meaning</div>
+          <div class="fc-hint mb-4">Tap to reveal full details</div>
           <div class="fc-word-big">${w.word}</div>
-          <div class="mt-3">${wTypeBadge(w.type||'word')}</div>
-          ${(w.tags||[]).length ? `<div class="flex flex-wrap gap-1.5 justify-center mt-4">${(w.tags||[]).map(t=>`<span class="vtag vtag-tag">${t}</span>`).join('')}</div>` : ''}
+          ${w.pos ? `<div class="text-xs text-slate-400 font-bold mt-1">(${w.pos})</div>` : ''}
+          <div class="flex items-center gap-2 mt-3 justify-center flex-wrap">
+            ${wTypeBadge(w.type||'word')}
+            ${levelBadgeHTML(w,false)}
+          </div>
+          ${(w.tags||[]).length ? `<div class="flex flex-wrap gap-1.5 justify-center mt-3">${(w.tags||[]).map(t=>`<span class="vtag-chip vtag-tag">${t}</span>`).join('')}</div>` : ''}
         </div>
+        <!-- BACK -->
         <div class="fc-face fc-back">
-          <div class="fc-hint mb-4">Meaning</div>
-          <p style="font-size:15px;line-height:1.7;margin-bottom:12px;color:#1e293b;" class="dark:text-white">${w.meaning}</p>
-          ${w.example ? `<p style="font-size:12px;color:#94a3b8;font-style:italic;border-left:2px solid rgba(99,102,241,0.4);padding-left:10px;margin-bottom:12px;text-align:left;">"${w.example}"</p>` : ''}
-          ${(syns||ants) ? `<div class="flex flex-wrap gap-1.5 justify-center">${syns}${ants}</div>` : ''}
+          <div class="fc-back-section">
+            <div class="fc-back-label">📖 Meaning</div>
+            <div class="fc-back-text font-semibold">${w.meaning}</div>
+          </div>
+          ${w.example ? `<div class="fc-back-section">
+            <div class="fc-back-label">✍️ Example</div>
+            <div class="fc-back-text italic text-slate-500 dark:text-slate-400">"${w.example}"</div>
+          </div>` : ''}
+          ${w.mnemonics ? `<div class="fc-back-section">
+            <div class="fc-back-label">🧠 Mnemonics</div>
+            <div class="fc-back-text">${w.mnemonics}</div>
+          </div>` : ''}
+          ${w.trick ? `<div class="fc-back-section">
+            <div class="fc-back-label">💡 Trick / Root</div>
+            <div class="fc-back-text">${w.trick}</div>
+          </div>` : ''}
+          ${(syns||ants) ? `<div class="fc-back-section">
+            ${syns ? `<div class="fc-back-label mb-1">Synonyms</div><div class="flex flex-wrap gap-1.5 mb-2">${syns}</div>` : ''}
+            ${ants ? `<div class="fc-back-label mb-1">Antonyms</div><div class="flex flex-wrap gap-1.5">${ants}</div>` : ''}
+          </div>` : ''}
         </div>
       </div>
     </div>
-    <div class="flex gap-3 justify-center mt-5">
-      <button onclick="rateFC(false)"
-              class="px-7 py-3 rounded-xl text-sm font-black flex items-center gap-2"
-              style="background:rgba(239,68,68,0.10);border:1px solid rgba(239,68,68,0.25);color:#ef4444;">
-        <i class="fa-solid fa-rotate-left"></i> Revisit
-      </button>
-      <button onclick="rateFC(true)"
-              class="px-7 py-3 rounded-xl text-sm font-black flex items-center gap-2"
-              style="background:rgba(16,185,129,0.10);border:1px solid rgba(16,185,129,0.25);color:#10b981;">
-        <i class="fa-solid fa-check"></i> Got it!
-      </button>
+    <!-- Level rating buttons -->
+    <div class="mt-5 space-y-3">
+      <p class="text-center text-[10px] font-black text-slate-400 uppercase tracking-widest">How well did you know this?</p>
+      <div class="grid grid-cols-3 gap-2">
+        <button onclick="rateFC(0,'${w.id}')" class="py-3 rounded-xl text-xs font-black lvl-badge lvl-0 justify-center">🔴 Didn't Know</button>
+        <button onclick="rateFC(1,'${w.id}')" class="py-3 rounded-xl text-xs font-black lvl-badge lvl-1 justify-center">🟠 Fuzzy</button>
+        <button onclick="rateFC(2,'${w.id}')" class="py-3 rounded-xl text-xs font-black lvl-badge lvl-2 justify-center">🟡 Recalled</button>
+      </div>
+      <div class="grid grid-cols-3 gap-2">
+        <button onclick="rateFC(3,'${w.id}')" class="py-3 rounded-xl text-xs font-black lvl-badge lvl-3 justify-center">🔵 Good</button>
+        <button onclick="rateFC(4,'${w.id}')" class="py-3 rounded-xl text-xs font-black lvl-badge lvl-4 justify-center">🟣 Strong</button>
+        <button onclick="rateFC(5,'${w.id}')" class="py-3 rounded-xl text-xs font-black lvl-badge lvl-5 justify-center">✅ Perfect</button>
+      </div>
     </div>`;
 }
 
-window.flipFC = () => { el('fc-inner')?.classList.toggle('is-flipped'); };
-window.rateFC = (known) => { if(known) vFcKnown++; else vFcUnknown++; vFcIdx++; renderFC(); };
+window.flipFC = () => { el('fc-inner')?.classList.toggle('flipped'); };
+
+window.rateFC = async (lvl, id) => {
+  vFcKnown += lvl>=3 ? 1 : 0;
+  vFcUnknown += lvl<3 ? 1 : 0;
+  // Update level in Firestore
+  try {
+    await updateDoc(doc(db,'artifacts',APP_ID,'users',currentUser.uid,'vocab',id),
+      { level:lvl, lastReviewed:Timestamp.now() });
+    const w=vWords.find(x=>x.id===id);
+    if(w){ w.level=lvl; w.lastReviewed=Timestamp.now(); }
+    updateStats();
+  } catch(e) { /* silent */ }
+  vFcIdx++; renderFC();
+};
 
 /* ── QUIZ ── */
 window.startQuiz = (mode) => {
-  if (vWords.length < 4) return toast('Need at least 4 words to quiz', true);
+  if(vWords.length<4) return toast('Need at least 4 words to quiz',true);
   vQuizMode=mode; vQuizIdx=0; vQuizScore=0;
-  const pool = [...vWords].sort(()=>Math.random()-0.5).slice(0,10);
-  vQuizQ = pool.map(w => {
-    const others = vWords.filter(x=>x.id!==w.id).sort(()=>Math.random()-0.5).slice(0,3);
-    return { word:w, options:[w,...others].sort(()=>Math.random()-0.5), correctId:w.id };
+  const pool=[...vWords].sort(()=>Math.random()-.5).slice(0,10);
+  vQuizQ=pool.map(w=>{
+    const others=vWords.filter(x=>x.id!==w.id).sort(()=>Math.random()-.5).slice(0,3);
+    return{ word:w, options:[w,...others].sort(()=>Math.random()-.5), correctId:w.id };
   });
   renderQuiz();
 };
 
 function renderQuiz() {
-  const area = el('v-quiz-area'); if(!area) return;
-  if (vQuizIdx >= vQuizQ.length) {
-    const pct = Math.round((vQuizScore/vQuizQ.length)*100);
-    const emoji = pct>=80?'🏆':pct>=60?'👏':'📚';
-    area.innerHTML = `
-      <div class="glass-card rounded-[2rem] p-10 text-center pop-in">
-        <div class="text-6xl mb-4">${emoji}</div>
-        <div class="text-5xl font-black text-gradient mb-2">${vQuizScore}/${vQuizQ.length}</div>
-        <p class="text-sm text-slate-400 mb-2">${pct}% correct</p>
-        <p class="text-base font-black text-slate-600 dark:text-slate-300 mb-8">
-          ${pct>=80?'Excellent mastery! 🌟':pct>=60?'Good job! Keep going 💪':'Keep practising! 📚'}
-        </p>
-        <div class="flex gap-3 justify-center flex-wrap">
-          <button onclick="startQuiz('${vQuizMode}')"
-                  class="btn-gradient px-6 py-3 rounded-xl text-white text-sm font-black shadow-lg">
-            <i class="fa-solid fa-arrows-rotate mr-2"></i>Try Again
-          </button>
-          <button onclick="startQuiz(vQuizMode==='meaning'?'word':'meaning')"
-                  class="btn-glass px-6 py-3 rounded-xl text-sm font-black">
-            <i class="fa-solid fa-shuffle mr-2"></i>Switch Mode
-          </button>
-        </div>
-      </div>`;
-    return;
-  }
-  const q   = vQuizQ[vQuizIdx];
-  const pct = (vQuizIdx/vQuizQ.length)*100;
-  const qText   = vQuizMode==='meaning'
-    ? q.word.word
-    : (q.word.meaning.length>90 ? q.word.meaning.substring(0,87)+'…' : q.word.meaning);
-  const optTxt  = vQuizMode==='meaning'
-    ? (w => w.meaning.length>60 ? w.meaning.substring(0,57)+'…' : w.meaning)
-    : (w => w.word);
-
-  area.innerHTML = `
-    <div class="glass-card rounded-[2rem] overflow-hidden anim-2">
-      <div class="p-6">
-        <div class="quiz-prog-track mb-5">
-          <div class="quiz-prog-fill" style="width:${pct}%"></div>
-        </div>
-        <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest text-center mb-3">
-          ${vQuizMode==='meaning' ? 'What does this word mean?' : 'Which word matches this meaning?'}
-        </p>
-        <div class="flex items-center justify-between mb-5">
-          <h3 class="text-xl font-black text-slate-900 dark:text-white">${qText}</h3>
-          <span class="text-xs font-black text-slate-400 flex-shrink-0 ml-3">${vQuizIdx+1}/${vQuizQ.length}</span>
-        </div>
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          ${q.options.map(opt=>`
-            <button class="quiz-opt" data-id="${opt.id}"
-                    onclick="answerQuiz('${opt.id}','${q.correctId}',this)">
-              ${optTxt(opt)}
-            </button>`).join('')}
-        </div>
+  const area=el('v-quiz-area'); if(!area) return;
+  if(vQuizIdx>=vQuizQ.length) {
+    const pct=Math.round((vQuizScore/vQuizQ.length)*100);
+    const emoji=pct>=80?'🏆':pct>=60?'👏':'📚';
+    area.innerHTML=`<div class="glass-card rounded-[2rem] p-10 text-center pop-in">
+      <div class="text-6xl mb-4">${emoji}</div>
+      <div class="text-5xl font-black text-gradient mb-2">${vQuizScore}/${vQuizQ.length}</div>
+      <p class="text-sm text-slate-400 mb-2">${pct}% correct</p>
+      <p class="text-base font-black text-slate-600 dark:text-slate-300 mb-8">${pct>=80?'Excellent! 🌟':pct>=60?'Good job! 💪':'Keep practising! 📚'}</p>
+      <div class="flex gap-3 justify-center flex-wrap">
+        <button onclick="startQuiz('${vQuizMode}')" class="btn-gradient px-6 py-3 rounded-xl text-white text-sm font-black shadow-lg"><i class="fa-solid fa-arrows-rotate mr-2"></i>Try Again</button>
+        <button onclick="startQuiz(vQuizMode==='meaning'?'word':'meaning')" class="btn-glass px-6 py-3 rounded-xl text-sm font-black"><i class="fa-solid fa-shuffle mr-2"></i>Switch Mode</button>
       </div>
     </div>`;
+    return;
+  }
+  const q=vQuizQ[vQuizIdx];
+  const pct=(vQuizIdx/vQuizQ.length)*100;
+  const qText=vQuizMode==='meaning'?q.word.word:(q.word.meaning.length>90?q.word.meaning.substring(0,87)+'…':q.word.meaning);
+  const optTxt=vQuizMode==='meaning'
+    ? (w=>w.meaning.length>60?w.meaning.substring(0,57)+'…':w.meaning)
+    : (w=>w.word);
+  area.innerHTML=`<div class="glass-card rounded-[2rem] overflow-hidden anim-2">
+    <div class="p-6">
+      <div class="qprog-track mb-5"><div class="qprog-fill" style="width:${pct}%"></div></div>
+      <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest text-center mb-3">${vQuizMode==='meaning'?'What does this word mean?':'Which word matches this meaning?'}</p>
+      <div class="flex items-center justify-between mb-5">
+        <h3 class="text-xl font-black text-slate-900 dark:text-white">${qText}</h3>
+        <span class="text-xs font-black text-slate-400 flex-shrink-0 ml-3">${vQuizIdx+1}/${vQuizQ.length}</span>
+      </div>
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        ${q.options.map(opt=>`<button class="quiz-opt" data-id="${opt.id}" onclick="answerQuiz('${opt.id}','${q.correctId}',this)">${optTxt(opt)}</button>`).join('')}
+      </div>
+    </div>
+  </div>`;
 }
 
-window.answerQuiz = (sel, correct, btn) => {
+window.answerQuiz = (sel,correct,btn) => {
   document.querySelectorAll('.quiz-opt').forEach(b=>b.disabled=true);
-  if (sel===correct) {
-    btn.classList.add('q-correct'); vQuizScore++;
-    toast('✅ Correct!');
-  } else {
-    btn.classList.add('q-wrong');
-    document.querySelector(`.quiz-opt[data-id="${correct}"]`)?.classList.add('q-correct');
-    toast('❌ Wrong!', true);
-  }
-  setTimeout(() => { vQuizIdx++; renderQuiz(); }, 1300);
+  if(sel===correct){ btn.classList.add('q-correct'); vQuizScore++; toast('✅ Correct!'); }
+  else{ btn.classList.add('q-wrong'); document.querySelector(`.quiz-opt[data-id="${correct}"]`)?.classList.add('q-correct'); toast('❌ Wrong!',true); }
+  setTimeout(()=>{ vQuizIdx++; renderQuiz(); },1300);
 };
 
+/* ═══ PROMPT GENERATOR ═══ */
+window.generatePrompt = () => {
+  const raw=el('pg-words')?.value.trim();
+  const type=el('pg-type')?.value||'mixed';
+  if(!raw) return toast('Please enter at least one word',true);
+  const words=raw.split(/[,\n]+/).map(w=>w.trim()).filter(Boolean);
+  if(!words.length) return toast('No words found',true);
 
-  /* ══════════════════════════════
-     PROMPT GENERATOR
-  ══════════════════════════════ */
-  window.generatePrompt = () => {
-    const raw  = el('pg-word-list')?.value.trim();
-    const type = el('pg-type')?.value || 'mixed';
-    if (!raw) return toast('Please enter at least one word', true);
+  const typeNote={
+    mixed: 'Each entry might be a word, idiom, or phrase — detect the correct type automatically.',
+    word:  'All entries are regular words. Set type="word" for all.',
+    idiom: 'All entries are idioms. Set type="idiom". Leave synonyms and antonyms empty.',
+    phrase:'All entries are phrases or proverbs. Set type="phrase".',
+  }[type];
+  const synAntNote=type==='idiom'
+    ? 'Leave synonyms and antonyms blank for all idioms.'
+    : 'For words provide up to 5 synonyms and 3 antonyms (semicolon-separated). For idioms/phrases leave both blank.';
 
-    // Parse word list — support newlines or commas or spaces
-    const words = raw
-      .split(/[\n,]+/)
-      .map(w => w.trim())
-      .filter(Boolean);
+  const prompt=`You are a vocabulary expert helping a student prepare for SSC CGL, SSC CHSL, and other Indian competitive exams (Banking, RRB, etc.). These exams frequently test vocabulary, idioms, one-word substitutions, and synonyms/antonyms.
 
-    if (!words.length) return toast('No words found in the list', true);
+I will give you a list of words/idioms/phrases. For each, generate detailed study material and return ONLY a valid CSV — no explanation, no markdown, no extra text.
 
-    const typeNote = {
-      mixed:  'Each word/phrase might be a regular word, an idiom, or a phrase — identify the correct type for each.',
-      word:   'All entries are regular words (nouns, verbs, adjectives, etc.). Set type="word" for all.',
-      idiom:  'All entries are idioms. Set type="idiom" for all. Leave synonyms and antonyms empty.',
-      phrase: 'All entries are phrases or proverbs. Set type="phrase" for all.',
-    }[type];
-
-    const synAntNote = type === 'idiom'
-      ? 'For idioms, synonyms and antonyms columns must be empty (leave them blank).'
-      : 'For idioms/phrases, leave synonyms and antonyms empty. For regular words, provide up to 5 synonyms and 3 antonyms separated by semicolons (;).';
-
-    const prompt = `You are a vocabulary assistant helping SSC/RRB/Bank exam aspirants in India build a word vault.
-
-I will give you a list of words/idioms/phrases. For each entry, generate the following details and output ONLY a valid CSV — no explanation, no markdown, no extra text.
-
-CSV FORMAT (strict):
-word,type,meaning,mnemonics,trick,example,synonyms,antonyms
+CSV FORMAT (strict, 9 columns):
+word,type,pos,meaning,mnemonics,trick,example,synonyms,antonyms
 
 COLUMN RULES:
-- word: the exact word, idiom or phrase as given
-- type: must be exactly one of: word | idiom | phrase
-- meaning: clear, concise definition (SSC-exam style)
-- mnemonics: a creative memory hook or story to remember the word
-- trick: a short trick, word-association, or root-word breakdown to recall quickly
-- example: one natural sentence using this word/idiom in context
-- synonyms: up to 5 synonyms separated by semicolons (;) — leave empty for idioms/phrases
-- antonyms: up to 3 antonyms separated by semicolons (;) — leave empty for idioms/phrases
+- word    : exact word/idiom/phrase as given
+- type    : exactly one of: word | idiom | phrase
+- pos     : part of speech — noun | verb | adjective | adverb | phrasal verb | idiom | phrase | proverb
+- meaning : concise SSC-exam-style definition (1-2 sentences)
+- mnemonics : a vivid, India-friendly memory hook or story to remember the word
+- trick   : word root, etymology, or quick association trick to recall it fast
+- example : one natural sentence using it (SSC/formal/exam context preferred)
+- synonyms: up to 5 synonyms separated by semicolons (;) — LEAVE BLANK for idioms/phrases
+- antonyms: up to 3 antonyms separated by semicolons (;) — LEAVE BLANK for idioms/phrases
 
 IMPORTANT RULES:
-1. Wrap any field containing commas or quotes in double-quotes
-2. Use semicolon (;) — NOT comma — to separate synonyms/antonyms
-3. Do NOT include a header row — output data rows only
-4. Output EXACTLY ${words.length} rows, one per word
+1. Wrap any field containing commas in double-quotes
+2. Use semicolon (;) NOT comma to separate synonyms/antonyms
+3. Do NOT output a header row — data rows only
+4. Output EXACTLY ${words.length} rows, one per entry
 5. ${typeNote}
 6. ${synAntNote}
-7. Keep meanings concise but precise (1–2 sentences max)
-8. Mnemonics and tricks should be vivid, memorable, and India-context-friendly where possible
+7. Mnemonics must be creative, memorable, and relatable (Hindi movie refs, Indian food, daily life etc. welcome)
+8. Tricks should mention roots/prefixes where possible (e.g. "ameli = better in Latin")
+9. Meanings should match SSC exam style — precise and exam-ready
 
 WORD LIST:
-${words.map((w, i) => `${i + 1}. ${w}`).join('\n')}
+${words.map((w,i)=>`${i+1}. ${w}`).join('\n')}
 
-Begin CSV output now (no header, data rows only):`;
+Begin CSV output now (no header row):`;
 
-    const outBox  = el('pg-output-box');
-    const outText = el('pg-prompt-text');
-    if (outText) outText.value = prompt;
-    if (outBox)  outBox.classList.remove('hidden');
+  const out=el('pg-out'), txt=el('pg-prompt-txt');
+  if(txt) txt.value=prompt;
+  if(out) out.classList.remove('hidden');
+  setTimeout(()=>out?.scrollIntoView({behavior:'smooth',block:'nearest'}),80);
+  toast(`✅ Prompt ready for ${words.length} word${words.length!==1?'s':''}!`);
+};
 
-    // Scroll to prompt
-    setTimeout(() => outBox?.scrollIntoView({ behavior:'smooth', block:'nearest' }), 80);
-    toast(`✅ Prompt ready for ${words.length} word${words.length!==1?'s':''}!`);
-  };
+window.copyPrompt = async () => {
+  const txt=el('pg-prompt-txt')?.value; if(!txt) return;
+  try {
+    await navigator.clipboard.writeText(txt);
+    const btn=el('pg-copy-btn');
+    if(btn){ const old=btn.innerHTML; btn.innerHTML='<i class="fa-solid fa-check"></i> Copied!'; btn.style.cssText='background:rgba(16,185,129,.15);border-color:rgba(16,185,129,.4);color:#10b981;'; setTimeout(()=>{ btn.innerHTML=old; btn.style=''; },2000); }
+    toast('📋 Prompt copied!');
+  } catch(e){ el('pg-prompt-txt')?.select(); toast('Select all & copy (Ctrl+A, Ctrl+C)',true); }
+};
 
-  window.copyPrompt = async () => {
-    const txt = el('pg-prompt-text')?.value;
-    if (!txt) return;
-    try {
-      await navigator.clipboard.writeText(txt);
-      const btn = el('pg-copy-btn');
-      if (btn) {
-        const old = btn.innerHTML;
-        btn.innerHTML = '<i class="fa-solid fa-check"></i> Copied!';
-        btn.style.background = 'rgba(16,185,129,0.15)';
-        btn.style.borderColor = 'rgba(16,185,129,0.4)';
-        btn.style.color = '#10b981';
-        setTimeout(() => { btn.innerHTML = old; btn.style = ''; }, 2000);
-      }
-      toast('📋 Prompt copied to clipboard!');
-    } catch(e) {
-      // Fallback: select all text
-      el('pg-prompt-text')?.select();
-      toast('Select all & copy (Ctrl+A, Ctrl+C)', true);
-    }
-  };
-
-  /* ══════════════════════════════
-     CSV PARSER & PREVIEW
-  ══════════════════════════════ */
-
-  // Robust CSV row parser — handles quoted fields with commas inside
-  function parseCSVLine(line) {
-    const result = [];
-    let cur = '', inQ = false;
-    for (let i = 0; i < line.length; i++) {
-      const ch = line[i];
-      if (ch === '"') {
-        if (inQ && line[i+1] === '"') { cur += '"'; i++; }
-        else inQ = !inQ;
-      } else if (ch === ',' && !inQ) {
-        result.push(cur.trim()); cur = '';
-      } else {
-        cur += ch;
-      }
-    }
-    result.push(cur.trim());
-    return result;
+/* ═══ CSV PARSER ═══ */
+function parseCSVLine(line) {
+  const res=[]; let cur='', inQ=false;
+  for(let i=0;i<line.length;i++){
+    const ch=line[i];
+    if(ch==='"'){ if(inQ&&line[i+1]==='"'){cur+='"';i++;}else inQ=!inQ; }
+    else if(ch===','&&!inQ){ res.push(cur.trim()); cur=''; }
+    else cur+=ch;
   }
+  res.push(cur.trim()); return res;
+}
 
-  // Parse full CSV text → array of objects
-  function parseCSV(raw) {
-    const lines = raw.trim().split(/\r?\n/).filter(l => l.trim());
-    if (!lines.length) return [];
+function parseCSV(raw) {
+  const lines=raw.trim().split(/\r?\n/).filter(l=>l.trim());
+  if(!lines.length) return [];
+  const first=parseCSVLine(lines[0]).map(c=>c.toLowerCase().trim());
+  const isHeader=first.includes('word')||first.includes('meaning');
+  return (isHeader?lines.slice(1):lines).filter(l=>l.trim()).map(line=>{
+    const c=parseCSVLine(line);
+    return{
+      word:c[0]||'', type:(['word','idiom','phrase'].includes(c[1]?.toLowerCase())?c[1].toLowerCase():'word'),
+      pos:c[2]||'', meaning:c[3]||'', mnemonics:c[4]||'', trick:c[5]||'', example:c[6]||'',
+      synonyms:(c[7]||'').split(';').map(s=>s.trim()).filter(Boolean),
+      antonyms:(c[8]||'').split(';').map(s=>s.trim()).filter(Boolean),
+    };
+  }).filter(r=>r.word&&r.meaning);
+}
 
-    const EXPECTED_COLS = ['word','type','meaning','mnemonics','trick','example','synonyms','antonyms'];
-
-    // Detect if first row is a header
-    const firstCells = parseCSVLine(lines[0]).map(c => c.toLowerCase().trim());
-    const isHeader = firstCells.includes('word') || firstCells.includes('meaning');
-    const dataLines = isHeader ? lines.slice(1) : lines;
-
-    return dataLines
-      .filter(l => l.trim())
-      .map(line => {
-        const cols = parseCSVLine(line);
-        return {
-          word:      cols[0] || '',
-          type:      (['word','idiom','phrase'].includes(cols[1]?.toLowerCase()) ? cols[1].toLowerCase() : 'word'),
-          meaning:   cols[2] || '',
-          mnemonics: cols[3] || '',
-          trick:     cols[4] || '',
-          example:   cols[5] || '',
-          synonyms:  (cols[6] || '').split(';').map(s=>s.trim()).filter(Boolean),
-          antonyms:  (cols[7] || '').split(';').map(s=>s.trim()).filter(Boolean),
-        };
-      })
-      .filter(r => r.word && r.meaning); // must have at least word + meaning
-  }
-
-  // Build preview table
-  window.parseCSVPreview = () => {
-    const raw     = el('csv-input')?.value || '';
-    const preview = el('csv-preview');
-    const bar     = el('csv-import-bar');
-    const lbl     = el('csv-count-label');
-    if (!preview) return;
-
-    if (!raw.trim()) {
-      preview.innerHTML = '';
-      bar?.classList.add('hidden');
-      return;
-    }
-
-    const rows = parseCSV(raw);
-    if (!rows.length) {
-      preview.innerHTML = '<p class="text-xs text-rose-400 font-bold py-3 text-center">Could not parse CSV. Check format.</p>';
-      bar?.classList.add('hidden');
-      return;
-    }
-
-    // Mark duplicates (words already in vault)
-    const existingWords = new Set(vWords.map(w => w.word.toLowerCase().trim()));
-
-    const thead = `<tr>
-      <th>Word</th><th>Type</th><th>Meaning</th>
-      <th>Mnemonics</th><th>Trick</th><th>Example</th>
-      <th>Synonyms</th><th>Antonyms</th>
+window.parseCSVPreview = () => {
+  const raw=el('csv-in')?.value||'', preview=el('csv-preview'), bar=el('csv-bar'), lbl=el('csv-count-lbl');
+  if(!preview) return;
+  if(!raw.trim()){ preview.innerHTML=''; bar?.classList.add('hidden'); return; }
+  const rows=parseCSV(raw);
+  if(!rows.length){ preview.innerHTML='<p class="text-xs text-rose-400 font-bold py-3 text-center">Could not parse CSV — check format.</p>'; bar?.classList.add('hidden'); return; }
+  const existing=new Set(vWords.map(w=>w.word.toLowerCase().trim()));
+  const tr=n=>n>40?n.substring(0,37)+'…':n;
+  const thead=`<tr><th>Word</th><th>Type</th><th>POS</th><th>Meaning</th><th>Mnemonics</th><th>Trick</th><th>Example</th><th>Syns</th><th>Ants</th></tr>`;
+  const tbody=rows.map(r=>{
+    const dup=existing.has(r.word.toLowerCase().trim());
+    return`<tr class="${dup?'csv-dup':''}" title="${dup?'Already in vault — will be skipped':''}">
+      <td class="csv-word-cell">${r.word}</td><td>${r.type}</td><td>${r.pos}</td>
+      <td title="${r.meaning}">${tr(r.meaning)}</td><td title="${r.mnemonics}">${tr(r.mnemonics,35)}</td>
+      <td title="${r.trick}">${tr(r.trick,35)}</td><td title="${r.example}">${tr(r.example,35)}</td>
+      <td>${r.synonyms.slice(0,3).join(', ')}</td><td>${r.antonyms.slice(0,2).join(', ')}</td>
     </tr>`;
+  }).join('');
+  const newCount=rows.filter(r=>!existing.has(r.word.toLowerCase().trim())).length;
+  const dupCount=rows.length-newCount;
+  preview.innerHTML=`<div class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">${rows.length} rows parsed${dupCount?` · <span class="text-rose-400">${dupCount} dup${dupCount!==1?'s':''} skipped</span>`:''}</div>
+    <div style="overflow-x:auto;border-radius:14px;border:1px solid rgba(99,102,241,.12);">
+      <table class="csv-table"><thead>${thead}</thead><tbody>${tbody}</tbody></table>
+    </div>`;
+  if(lbl) lbl.textContent=`${newCount} new word${newCount!==1?'s':''} ready to import`;
+  bar?.classList.toggle('hidden', newCount===0);
+};
 
-    const tbody = rows.map((r, i) => {
-      const isDup = existingWords.has(r.word.toLowerCase().trim());
-      const rowCls = isDup ? 'csv-row-skip' : '';
-      const truncate = (s, n=40) => s.length > n ? s.substring(0, n) + '…' : s;
-      return `<tr class="${rowCls}" title="${isDup ? 'Already in vault — will be skipped' : ''}">
-        <td class="csv-row-word">${r.word}</td>
-        <td>${r.type}</td>
-        <td title="${r.meaning}">${truncate(r.meaning)}</td>
-        <td title="${r.mnemonics}">${truncate(r.mnemonics,35)}</td>
-        <td title="${r.trick}">${truncate(r.trick,35)}</td>
-        <td title="${r.example}">${truncate(r.example,35)}</td>
-        <td>${r.synonyms.slice(0,3).join(', ')}</td>
-        <td>${r.antonyms.slice(0,3).join(', ')}</td>
-      </tr>`;
-    }).join('');
-
-    const newCount = rows.filter(r => !existingWords.has(r.word.toLowerCase().trim())).length;
-    const dupCount = rows.length - newCount;
-
-    preview.innerHTML = `
-      <div class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">
-        Preview — ${rows.length} rows parsed
-        ${dupCount ? `<span class="text-rose-400 ml-2">(${dupCount} duplicate${dupCount!==1?'s':''} will be skipped)</span>` : ''}
-      </div>
-      <div style="overflow-x:auto;border-radius:16px;border:1px solid rgba(99,102,241,0.12);">
-        <table class="csv-preview-table">
-          <thead>${thead}</thead>
-          <tbody>${tbody}</tbody>
-        </table>
-      </div>`;
-
-    if (newCount > 0) {
-      if (lbl) lbl.textContent = `${newCount} new word${newCount!==1?'s':''} ready to import`;
-      bar?.classList.remove('hidden');
-    } else {
-      if (lbl) lbl.textContent = 'All words already in vault';
-      bar?.classList.remove('hidden');
-      el('csv-import-btn')?.setAttribute('disabled','true');
-    }
-  };
-
-  /* ══════════════════════════════
-     CSV IMPORT TO FIRESTORE
-  ══════════════════════════════ */
-  window.importCSV = async () => {
-    if (!currentUser) return toast('Please sign in first', true);
-    const raw = el('csv-input')?.value || '';
-    const rows = parseCSV(raw);
-    if (!rows.length) return toast('No valid rows found', true);
-
-    const existingWords = new Set(vWords.map(w => w.word.toLowerCase().trim()));
-    const newRows = rows.filter(r => !existingWords.has(r.word.toLowerCase().trim()));
-
-    if (!newRows.length) return toast('All words already exist in your vault', true);
-
-    const btn = el('csv-import-btn');
-    if (btn) { btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-2"></i>Importing…'; btn.disabled = true; }
-
-    let imported = 0, failed = 0;
-
-    for (const r of newRows) {
-      try {
-        const entry = {
-          word:      r.word,
-          type:      r.type,
-          meaning:   r.meaning,
-          mnemonics: r.mnemonics,
-          trick:     r.trick,
-          example:   r.example,
-          synonyms:  r.synonyms,
-          antonyms:  r.antonyms,
-          tags:      [],
-          mastered:  false,
-          createdAt: Timestamp.now(),
-        };
-        const ref = await addDoc(vocabColl(), entry);
-        vWords.unshift({ id:ref.id, ...entry });
-        imported++;
-        // Update button progress
-        if (btn) btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin mr-2"></i>${imported}/${newRows.length}`;
-      } catch(e) {
-        failed++;
-        console.error('Import row failed:', r.word, e);
-      }
-    }
-
-    if (btn) { btn.innerHTML = '<i class="fa-solid fa-cloud-arrow-up mr-2"></i>Import All'; btn.disabled = false; }
-
-    updateStats();
-    renderLibrary();
-
-    if (failed) toast(`Imported ${imported}, failed ${failed}`, true);
-    else        toast(`✅ ${imported} word${imported!==1?'s':''} added to vault!`);
-
-    // Clear the CSV input and preview
-    if (imported > 0) {
-      if (el('csv-input'))  el('csv-input').value = '';
-      if (el('csv-preview')) el('csv-preview').innerHTML = '';
-      el('csv-import-bar')?.classList.add('hidden');
-      // Switch to library to see new words
-      setTimeout(() => subTab('library'), 800);
-    }
-  };
+window.importCSV = async () => {
+  if(!currentUser) return toast('Please sign in first',true);
+  const rows=parseCSV(el('csv-in')?.value||'');
+  if(!rows.length) return toast('No valid rows found',true);
+  const existing=new Set(vWords.map(w=>w.word.toLowerCase().trim()));
+  const newRows=rows.filter(r=>!existing.has(r.word.toLowerCase().trim()));
+  if(!newRows.length) return toast('All words already exist',true);
+  const btn=el('csv-import-btn');
+  if(btn){ btn.innerHTML='<i class="fa-solid fa-spinner fa-spin mr-2"></i>Importing…'; btn.disabled=true; }
+  let imported=0, failed=0;
+  for(const r of newRows) {
+    try{
+      const entry={...r, level:0, createdAt:Timestamp.now(), lastReviewed:Timestamp.now(), tags:[]};
+      const ref=await addDoc(vocabColl(),entry);
+      vWords.unshift({id:ref.id,...entry}); imported++;
+      if(btn) btn.innerHTML=`<i class="fa-solid fa-spinner fa-spin mr-2"></i>${imported}/${newRows.length}`;
+    }catch(e){ failed++; }
+  }
+  if(btn){ btn.innerHTML='<i class="fa-solid fa-cloud-arrow-up mr-2"></i>Import All'; btn.disabled=false; }
+  updateStats(); renderLibrary();
+  if(failed) toast(`Imported ${imported}, failed ${failed}`,true);
+  else toast(`✅ ${imported} word${imported!==1?'s':''} added to vault!`);
+  if(imported>0){
+    el('csv-in').value=''; el('csv-preview').innerHTML=''; el('csv-bar')?.classList.add('hidden');
+    setTimeout(()=>subTab('library'),700);
+  }
+};
 
 </script>
 </body>
