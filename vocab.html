@@ -191,6 +191,15 @@ html,body{overflow-x:hidden;max-width:100%;}
 .wcard-title{font-size:21px;font-weight:800;color:#1e293b;letter-spacing:-.02em;}
 .dark .wcard-title{color:#f1f5f9;}
     .dark .wcard{border-color:rgba(139,92,246,.22)!important;}
+
+    @media(min-width:768px){
+      .wcard-title{font-size:23px !important;}
+      .wcard-meaning{font-size:15.5px !important;}
+      .wcard-example{font-size:14px !important;}
+      .wcard-detail-txt{font-size:14px !important;}
+      .wcard{padding:22px 26px !important;}
+    }
+
 .wcard-pos{font-size:10px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:.07em;}
 .wcard-meaning{font-size:14.5px;color:#475569;line-height:1.65;margin:6px 0 4px;}
 .dark .wcard-meaning{color:#94a3b8;}
@@ -230,14 +239,14 @@ html,body{overflow-x:hidden;max-width:100%;}
 
 /* ── FC 3-col layout ── */
 .fc-layout{display:grid;grid-template-columns:1fr;gap:14px;}
-@media(min-width:768px){.fc-layout{grid-template-columns:190px 1fr 158px;align-items:start;}}
-@media(min-width:1024px){.fc-layout{grid-template-columns:210px 1fr 170px;}}
+@media(min-width:768px){.fc-layout{grid-template-columns:165px 1fr 148px;align-items:start;}}
+@media(min-width:1024px){.fc-layout{grid-template-columns:175px 1fr 160px;}}
 .fc-sidebar,.fc-ratingbar{position:sticky;top:110px;}
 .fc-mode-btn{width:100%;display:flex;align-items:center;gap:8px;padding:10px 12px;border-radius:12px;font-size:12px;font-weight:800;cursor:pointer;transition:all .18s;border:none;font-family:inherit;margin-bottom:6px;}
 .fc-mode-btn:last-child{margin-bottom:0;}
 .fc-mode-btn:hover{transform:translateX(3px);}
 @media(max-width:767px){.fc-ratingbar{display:none;}}
-@media(min-width:768px){.fc-scene{max-width:100%!important;}.fc-word{font-size:36px!important;}.fc-back-val{font-size:14px!important;}.fc-face{padding:34px 28px!important;}}
+@media(min-width:768px){.fc-scene{max-width:100%!important;}.fc-word{font-size:48px!important;}.fc-back-val{font-size:16px!important;}.fc-back-lbl{font-size:10px!important;}.fc-face{padding:36px 32px!important;}}
 .rate-side-btn{width:100%;display:flex;align-items:center;gap:8px;padding:10px 10px;border-radius:13px;font-size:11px;font-weight:900;cursor:pointer;border:1.5px solid transparent;transition:all .2s;font-family:inherit;margin-bottom:6px;}
 .rate-side-btn:last-child{margin-bottom:0;}
 .rate-side-btn:hover{transform:scale(1.03);}
@@ -261,7 +270,7 @@ html,body{overflow-x:hidden;max-width:100%;}
 .dark .fc-front{background:rgba(14,10,31,.8);border-color:rgba(99,102,241,.32);box-shadow:0 20px 60px rgba(0,0,0,.6);}
 .fc-back{background:linear-gradient(145deg,rgba(99,102,241,.06),rgba(217,70,239,.04));backdrop-filter:blur(24px);border:1px solid rgba(99,102,241,.22);box-shadow:0 20px 60px rgba(99,102,241,.12);transform:rotateY(180deg);overflow-y:auto;padding:20px 22px;}
 .dark .fc-back{background:linear-gradient(145deg,rgba(99,102,241,.14),rgba(217,70,239,.08));border-color:rgba(99,102,241,.28);}
-.fc-word{font-size:28px;font-weight:900;color:#1e293b;letter-spacing:-.03em;line-height:1.2;margin-bottom:8px;}
+.fc-word{font-size:32px;font-weight:900;color:#1e293b;letter-spacing:-.03em;line-height:1.2;margin-bottom:10px;}
 .dark .fc-word{color:#f1f5f9;}
 .fc-hint{font-size:10px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:#94a3b8;}
 .fc-back-row{margin-bottom:12px;padding-bottom:12px;border-bottom:1px solid rgba(99,102,241,.08);}
@@ -351,6 +360,39 @@ html,body{overflow-x:hidden;max-width:100%;}
 .empty-float{animation:floatBob 2.8s ease-in-out infinite;}
 .pop-in{animation:popIn .38s cubic-bezier(.34,1.56,.64,1) both;}
 
+
+    /* ── Desktop search expand ── */
+    #desktop-search-box.open{ width:auto !important; opacity:1 !important; }
+    #desktop-search-box.open input{ display:block; }
+    .sort-btn{ white-space:nowrap; }
+
+    /* ── Full-width vpane on desktop ── */
+    @media(min-width:768px){
+      #vpane-library, #vpane-cards, #vpane-home,
+      #vpane-add, #vpane-quiz, #vpane-stats, #vpane-import{
+        width:100%;
+      }
+      /* FC center card — min height so no scroll for most words */
+      .fc-face{ min-height:360px !important; }
+      .fc-back{ min-height:360px !important; align-items:flex-start; justify-content:flex-start !important; }
+      /* FC back row text bigger */
+      .fc-back-row{ margin-bottom:14px; padding-bottom:14px; }
+    }
+
+    /* ── Mobile: use full width, comfortable text ── */
+    @media(max-width:767px){
+      .wcard-title{ font-size:18px; }
+      .wcard-meaning{ font-size:14px; }
+      .wcard{ padding:16px 18px !important; }
+      .fc-word{ font-size:36px !important; }
+      .fc-back-val{ font-size:15px !important; }
+    }
+
+    /* ── Heatmap responsive ── */
+    @media(min-width:768px){
+      #heatmap-grid{ grid-template-columns:repeat(14,1fr) !important; }
+    }
+
   </style>
 </head>
 <body class="app-bg text-slate-800 dark:text-slate-100 min-h-screen transition-colors duration-500">
@@ -410,7 +452,7 @@ html,body{overflow-x:hidden;max-width:100%;}
   </div>
 </header>
 
-<main class="max-w-3xl mx-auto px-3 md:px-6 pb-24 pt-5 space-y-4">
+<main class="w-full max-w-none px-3 md:px-6 lg:px-10 pb-24 pt-5 space-y-4">
 
   <div id="state-loading" class="flex flex-col items-center justify-center py-28 gap-4">
     <div class="spinner"></div>
@@ -493,53 +535,76 @@ html,body{overflow-x:hidden;max-width:100%;}
 
     <!-- ══ LIBRARY ══ -->
     <div class="vpane" id="vpane-library">
-      <!-- Search -->
-      <div class="mb-3">
-        <input id="v-search" type="text" placeholder="🔍  Search word, meaning, mnemonics, tags…" oninput="renderLibrary()"
-               class="glass-input w-full px-4 py-3 rounded-xl font-medium text-sm">
+
+      <!-- Mobile search (full width, always visible on mobile) -->
+      <div class="md:hidden mb-3">
+        <input id="v-search-mobile" type="text" placeholder="🔍  Search…" oninput="syncSearch(this.value)"
+               class="glass-input w-full px-4 py-2.5 rounded-xl font-medium text-sm">
       </div>
 
-      <!-- Filter row 1: Type + Level selects -->
-      <div class="flex gap-2 flex-wrap mb-2">
-        <select id="lib-type" class="glass-input vfilter-select modern-select py-2 text-xs font-black" onchange="renderLibrary()">
+      <!-- Desktop + Mobile: single control bar -->
+      <div class="flex items-center gap-2 mb-4 flex-wrap md:flex-nowrap">
+
+        <!-- Type filter -->
+        <select id="lib-type" class="glass-input vfilter-select modern-select py-2 text-xs font-black flex-shrink-0" onchange="renderLibrary()" style="min-width:100px;">
           <option value="all">All Types</option>
           <option value="word">Words</option>
           <option value="idiom">Idioms</option>
           <option value="phrase">Phrases</option>
         </select>
-        <select id="lib-level" class="glass-input vfilter-select modern-select py-2 text-xs font-black" onchange="renderLibrary()">
+
+        <!-- Level filter -->
+        <select id="lib-level" class="glass-input vfilter-select modern-select py-2 text-xs font-black flex-shrink-0" onchange="renderLibrary()" style="min-width:130px;">
           <option value="all">All Levels</option>
           <option value="-1">🔖 Not Visited</option>
           <option value="due">⏰ Due Today</option>
-          <option value="0">🔴 L0 — Daily</option>
-          <option value="1">🟠 L1 — Weekly</option>
-          <option value="2">🟡 L2 — Biweekly</option>
-          <option value="3">🔵 L3 — 3 Weeks</option>
-          <option value="4">🟣 L4 — Monthly</option>
-          <option value="5">✅ L5 — Mastered</option>
+          <option value="0">🔴 L0 Daily</option>
+          <option value="1">🟠 L1 Weekly</option>
+          <option value="2">🟡 L2 Biweekly</option>
+          <option value="3">🔵 L3 3 Weeks</option>
+          <option value="4">🟣 L4 Monthly</option>
+          <option value="5">✅ L5 Mastered</option>
         </select>
-      </div>
 
-      <!-- Filter row 2: Sort + Bulk toggle -->
-      <div class="flex items-center justify-between gap-2 mb-4 flex-wrap">
-        <div class="flex gap-1.5 flex-wrap">
+        <!-- Sort buttons -->
+        <div class="flex gap-1.5 flex-shrink-0">
           <button class="sort-btn active" id="srt-newest" onclick="setSort('newest',this)">Newest</button>
-          <button class="sort-btn" id="srt-az"     onclick="setSort('az',this)">A → Z</button>
-          <button class="sort-btn" id="srt-level"  onclick="setSort('level',this)">Level ↑</button>
-          <button class="sort-btn" id="srt-due"    onclick="setSort('due',this)">Due First</button>
+          <button class="sort-btn" id="srt-az"     onclick="setSort('az',this)">A–Z</button>
+          <button class="sort-btn" id="srt-level"  onclick="setSort('level',this)">Level</button>
+          <button class="sort-btn" id="srt-due"    onclick="setSort('due',this)">Due</button>
         </div>
-        <div class="flex gap-2">
-          <button onclick="toggleCompact()" id="compact-toggle-btn" title="Toggle compact view"
-                  class="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-black transition hover:scale-105"
+
+        <!-- Spacer pushes icons to right on desktop -->
+        <div class="hidden md:block flex-1"></div>
+
+        <!-- Desktop: expandable search -->
+        <div class="hidden md:flex items-center gap-2 flex-shrink-0" id="desktop-search-wrap">
+          <div id="desktop-search-box" class="overflow-hidden transition-all duration-300" style="width:0;opacity:0;">
+            <input id="v-search" type="text" placeholder="Search word, meaning, tags…" oninput="renderLibrary()"
+                   class="glass-input px-3 py-2 rounded-xl font-medium text-sm" style="width:220px;">
+          </div>
+          <button onclick="toggleDesktopSearch()" id="search-icon-btn" title="Search"
+                  class="flex items-center justify-center w-9 h-9 rounded-xl transition hover:scale-105 flex-shrink-0"
                   style="background:rgba(99,102,241,.08);border:1px solid rgba(99,102,241,.18);color:#6366f1;">
-            <i class="fa-solid fa-list" id="compact-toggle-icon"></i>
-          </button>
-          <button onclick="toggleBulk()" id="bulk-toggle-btn"
-                  class="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-black transition hover:scale-105"
-                  style="background:rgba(99,102,241,.1);border:1px solid rgba(99,102,241,.2);color:#6366f1;">
-            <i class="fa-solid fa-check-square"></i> Select
+            <i class="fa-solid fa-search text-sm"></i>
           </button>
         </div>
+
+        <!-- Compact toggle -->
+        <button onclick="toggleCompact()" id="compact-toggle-btn" title="Toggle compact view"
+                class="flex items-center gap-1.5 px-2.5 py-2 rounded-xl text-xs font-black transition hover:scale-105 flex-shrink-0"
+                style="background:rgba(99,102,241,.08);border:1px solid rgba(99,102,241,.18);color:#6366f1;">
+          <i class="fa-solid fa-list" id="compact-toggle-icon"></i>
+        </button>
+
+        <!-- Bulk select -->
+        <button onclick="toggleBulk()" id="bulk-toggle-btn"
+                class="flex items-center gap-1.5 px-2.5 py-2 rounded-xl text-xs font-black transition hover:scale-105 flex-shrink-0"
+                style="background:rgba(99,102,241,.1);border:1px solid rgba(99,102,241,.2);color:#6366f1;">
+          <i class="fa-solid fa-check-square"></i>
+          <span class="hidden sm:inline">Select</span>
+        </button>
+
       </div>
 
       <div id="v-library-list"></div>
@@ -1927,6 +1992,25 @@ const _origGoTab = window.goTab;
 window.goTab = (tab) => {
   _origGoTab(tab);
   syncMnav(tab);
+};
+
+/* ── Desktop expandable search ── */
+let searchOpen = false;
+window.toggleDesktopSearch = () => {
+  searchOpen = !searchOpen;
+  const box = el('desktop-search-box');
+  const btn = el('search-icon-btn');
+  if(box) box.classList.toggle('open', searchOpen);
+  if(btn){
+    btn.style.background = searchOpen?'rgba(99,102,241,.18)':'rgba(99,102,241,.08)';
+    btn.querySelector('i').className = searchOpen?'fa-solid fa-xmark text-sm':'fa-solid fa-search text-sm';
+  }
+  if(searchOpen) setTimeout(()=>el('v-search')?.focus(),50);
+  else { if(el('v-search'))el('v-search').value=''; renderLibrary(); }
+};
+window.syncSearch = (val) => {
+  if(el('v-search')) el('v-search').value=val;
+  renderLibrary();
 };
 
 </script>
