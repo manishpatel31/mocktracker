@@ -1,0 +1,980 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>LexiPrep — Vocab Builder</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=DM+Sans:wght@400;500;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<style>
+:root {
+  --ink:    #0f1117;
+  --ink2:   #1a1d27;
+  --ink3:   #252836;
+  --card:   rgba(30,33,46,0.92);
+  --border: rgba(255,255,255,0.07);
+  --gold:   #c9a84c;
+  --gold2:  #e6c87a;
+  --teal:   #2dd4bf;
+  --rose:   #f87171;
+  --text:   #e8e6df;
+  --muted:  #7c7a72;
+  --syn:    #34d399;
+  --ant:    #f87171;
+  --idiom:  #a78bfa;
+  --phrase: #60a5fa;
+  --r: 1rem;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--ink);
+  color: var(--text);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ── Background texture ── */
+body::before {
+  content: '';
+  position: fixed; inset: 0; z-index: 0;
+  background:
+    radial-gradient(ellipse 80% 60% at 20% 10%, rgba(201,168,76,0.06) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 80% at 80% 90%, rgba(45,212,191,0.05) 0%, transparent 60%),
+    repeating-linear-gradient(0deg, transparent, transparent 40px, rgba(255,255,255,0.008) 40px, rgba(255,255,255,0.008) 41px),
+    repeating-linear-gradient(90deg, transparent, transparent 40px, rgba(255,255,255,0.008) 40px, rgba(255,255,255,0.008) 41px);
+  pointer-events: none;
+}
+
+/* ── Layout ── */
+#app { position: relative; z-index: 1; max-width: 900px; margin: 0 auto; padding: 0 16px 100px; }
+
+/* ── Header ── */
+header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 20px 0 16px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 8px;
+}
+.logo { display: flex; align-items: center; gap: 10px; }
+.logo-icon {
+  width: 38px; height: 38px; border-radius: 12px;
+  background: linear-gradient(135deg, var(--gold), var(--gold2));
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px; box-shadow: 0 4px 16px rgba(201,168,76,0.3);
+}
+.logo-text { font-family: 'Playfair Display', serif; font-size: 20px; font-weight: 900; color: var(--gold); letter-spacing: -0.02em; }
+.logo-sub { font-size: 9px; font-weight: 700; letter-spacing: 0.15em; text-transform: uppercase; color: var(--muted); }
+#auth-area { display: flex; align-items: center; gap: 10px; }
+.btn-auth {
+  display: flex; align-items: center; gap: 8px;
+  padding: 8px 16px; border-radius: 10px; border: 1px solid var(--border);
+  background: var(--card); color: var(--text); font-size: 13px; font-weight: 700;
+  cursor: pointer; transition: all 0.2s;
+}
+.btn-auth:hover { border-color: var(--gold); color: var(--gold); }
+.user-avatar {
+  width: 32px; height: 32px; border-radius: 50%; object-fit: cover;
+  border: 2px solid var(--gold); display: none;
+}
+#user-name-display { font-size: 12px; font-weight: 700; color: var(--gold); display: none; }
+
+/* ── Stats strip ── */
+#stats-strip {
+  display: flex; gap: 10px; padding: 14px 0; flex-wrap: wrap;
+}
+.stat-pill {
+  flex: 1; min-width: 80px;
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: 12px; padding: 10px 14px; text-align: center;
+}
+.stat-pill .n { font-size: 22px; font-weight: 900; color: var(--gold); font-family: 'DM Mono', monospace; }
+.stat-pill .l { font-size: 9px; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-top: 2px; }
+
+/* ── Tabs ── */
+#tab-bar {
+  display: flex; gap: 4px; padding: 6px;
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: 16px; margin-bottom: 20px; position: sticky; top: 8px; z-index: 50;
+  backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+}
+.tab-btn {
+  flex: 1; padding: 9px 6px; border: none; border-radius: 11px;
+  background: none; color: var(--muted); font-size: 11px; font-weight: 800;
+  letter-spacing: 0.05em; text-transform: uppercase; cursor: pointer; transition: all 0.2s;
+  display: flex; flex-direction: column; align-items: center; gap: 3px;
+}
+.tab-btn i { font-size: 14px; }
+.tab-btn.active { background: linear-gradient(135deg, var(--gold), var(--gold2)); color: var(--ink); box-shadow: 0 4px 14px rgba(201,168,76,0.35); }
+.tab-pane { display: none; animation: fadeUp 0.3s ease; }
+.tab-pane.active { display: block; }
+@keyframes fadeUp { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
+
+/* ── Cards ── */
+.card {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: 20px; overflow: hidden;
+  backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+}
+.card-header {
+  padding: 16px 20px; border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; gap: 10px;
+}
+.card-header h3 { font-size: 13px; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); }
+.card-body { padding: 20px; }
+
+/* ── Form ── */
+.form-group { margin-bottom: 16px; }
+.form-label { font-size: 10px; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); margin-bottom: 7px; display: block; }
+.form-input, .form-select, .form-textarea {
+  width: 100%; padding: 12px 14px; border-radius: 12px;
+  background: rgba(255,255,255,0.04); border: 1px solid var(--border);
+  color: var(--text); font-size: 14px; font-family: 'DM Sans', sans-serif; font-weight: 500;
+  outline: none; transition: border-color 0.2s;
+}
+.form-input:focus, .form-select:focus, .form-textarea:focus { border-color: var(--gold); }
+.form-input::placeholder, .form-textarea::placeholder { color: var(--muted); }
+.form-select option { background: var(--ink2); color: var(--text); }
+.form-textarea { resize: vertical; min-height: 80px; }
+.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+@media (max-width: 500px) { .form-grid { grid-template-columns: 1fr; } }
+
+/* ── Tag input ── */
+.tag-input-wrap {
+  display: flex; flex-wrap: wrap; gap: 6px; padding: 8px 10px;
+  background: rgba(255,255,255,0.04); border: 1px solid var(--border);
+  border-radius: 12px; cursor: text; min-height: 46px; align-items: center;
+  transition: border-color 0.2s;
+}
+.tag-input-wrap:focus-within { border-color: var(--gold); }
+.tag-chip {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 3px 9px; border-radius: 8px; font-size: 12px; font-weight: 700;
+}
+.tag-chip.syn { background: rgba(52,211,153,0.15); color: var(--syn); }
+.tag-chip.ant { background: rgba(248,113,113,0.15); color: var(--ant); }
+.tag-chip.tag { background: rgba(201,168,76,0.12); color: var(--gold); }
+.tag-chip button { background: none; border: none; cursor: pointer; color: inherit; opacity: 0.6; font-size: 11px; padding: 0; line-height: 1; }
+.tag-chip button:hover { opacity: 1; }
+.tag-input-wrap input {
+  background: none; border: none; outline: none; color: var(--text);
+  font-size: 13px; font-family: 'DM Sans', sans-serif; min-width: 100px; flex: 1;
+  padding: 3px 4px;
+}
+
+/* ── Buttons ── */
+.btn {
+  padding: 12px 22px; border-radius: 12px; border: none;
+  font-size: 13px; font-weight: 800; cursor: pointer; transition: all 0.2s;
+  display: inline-flex; align-items: center; gap: 8px;
+}
+.btn-gold { background: linear-gradient(135deg, var(--gold), var(--gold2)); color: var(--ink); box-shadow: 0 4px 16px rgba(201,168,76,0.3); }
+.btn-gold:hover { transform: translateY(-1px); box-shadow: 0 8px 24px rgba(201,168,76,0.4); }
+.btn-ghost { background: rgba(255,255,255,0.06); color: var(--text); border: 1px solid var(--border); }
+.btn-ghost:hover { background: rgba(255,255,255,0.1); }
+.btn-rose { background: rgba(248,113,113,0.15); color: var(--rose); border: 1px solid rgba(248,113,113,0.2); }
+.btn-teal { background: rgba(45,212,191,0.12); color: var(--teal); border: 1px solid rgba(45,212,191,0.2); }
+.btn-sm { padding: 7px 14px; font-size: 11px; border-radius: 9px; }
+.btn-icon { width: 34px; height: 34px; padding: 0; border-radius: 9px; justify-content: center; }
+.btn-full { width: 100%; justify-content: center; }
+
+/* ── Word type badges ── */
+.type-badge {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 2px 9px; border-radius: 7px; font-size: 10px; font-weight: 800;
+  letter-spacing: 0.06em; text-transform: uppercase;
+}
+.type-word    { background: rgba(201,168,76,0.15); color: var(--gold); }
+.type-idiom   { background: rgba(167,139,250,0.15); color: var(--idiom); }
+.type-phrase  { background: rgba(96,165,250,0.15); color: var(--phrase); }
+.type-synonym { background: rgba(52,211,153,0.15); color: var(--syn); }
+
+/* ── Library word cards ── */
+.word-card {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: 18px; padding: 18px 20px; margin-bottom: 10px;
+  transition: border-color 0.2s, transform 0.2s;
+}
+.word-card:hover { border-color: rgba(201,168,76,0.25); transform: translateY(-1px); }
+.word-card-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; margin-bottom: 10px; }
+.word-title {
+  font-family: 'Playfair Display', serif; font-size: 22px; font-weight: 700; color: var(--text); line-height: 1.2;
+}
+.word-title em { font-style: italic; color: var(--gold); }
+.word-actions { display: flex; gap: 6px; flex-shrink: 0; }
+.word-meaning { font-size: 14px; color: var(--muted); line-height: 1.6; margin-bottom: 10px; }
+.word-example { font-size: 13px; color: var(--muted); font-style: italic; border-left: 2px solid var(--gold); padding-left: 10px; margin-bottom: 12px; opacity: 0.8; }
+.chips-row { display: flex; flex-wrap: wrap; gap: 6px; }
+
+/* ── Search + filter ── */
+.search-bar {
+  display: flex; gap: 8px; margin-bottom: 14px;
+}
+.search-input {
+  flex: 1; padding: 11px 14px; border-radius: 12px;
+  background: var(--card); border: 1px solid var(--border);
+  color: var(--text); font-size: 14px; outline: none; font-family: 'DM Sans', sans-serif;
+}
+.search-input:focus { border-color: var(--gold); }
+.filter-chips { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 14px; }
+.filter-chip {
+  padding: 5px 13px; border-radius: 9px; font-size: 11px; font-weight: 800;
+  letter-spacing: 0.05em; text-transform: uppercase; cursor: pointer;
+  background: rgba(255,255,255,0.05); border: 1px solid var(--border); color: var(--muted);
+  transition: all 0.15s;
+}
+.filter-chip.active { background: rgba(201,168,76,0.12); border-color: var(--gold); color: var(--gold); }
+
+/* ── Flashcard ── */
+#flashcard-area { min-height: 380px; display: flex; flex-direction: column; align-items: center; gap: 20px; }
+.flashcard-wrap {
+  width: 100%; max-width: 500px;
+  perspective: 1200px; cursor: pointer;
+}
+.flashcard {
+  width: 100%; min-height: 280px;
+  position: relative; transform-style: preserve-3d;
+  transition: transform 0.55s cubic-bezier(0.34,1.56,0.64,1);
+  border-radius: 24px;
+}
+.flashcard.flipped { transform: rotateY(180deg); }
+.flashcard-face {
+  position: absolute; inset: 0;
+  backface-visibility: hidden; -webkit-backface-visibility: hidden;
+  border-radius: 24px; padding: 36px 32px;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  text-align: center;
+}
+.fc-front {
+  background: linear-gradient(135deg, var(--ink2), var(--ink3));
+  border: 1px solid rgba(201,168,76,0.25);
+  box-shadow: 0 20px 60px rgba(0,0,0,0.5), inset 0 1px 0 rgba(201,168,76,0.1);
+}
+.fc-back {
+  background: linear-gradient(135deg, var(--ink3), #1e2030);
+  border: 1px solid rgba(45,212,191,0.25);
+  box-shadow: 0 20px 60px rgba(0,0,0,0.5), inset 0 1px 0 rgba(45,212,191,0.1);
+  transform: rotateY(180deg);
+}
+.fc-hint { font-size: 10px; font-weight: 800; letter-spacing: 0.15em; text-transform: uppercase; color: var(--muted); margin-bottom: 16px; }
+.fc-word { font-family: 'Playfair Display', serif; font-size: 32px; font-weight: 900; color: var(--gold); line-height: 1.2; margin-bottom: 8px; }
+.fc-type { margin-bottom: 12px; }
+.fc-meaning { font-size: 15px; color: var(--text); line-height: 1.6; margin-bottom: 14px; }
+.fc-chips { display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; }
+.fc-progress { font-size: 11px; color: var(--muted); font-family: 'DM Mono', monospace; }
+.fc-controls { display: flex; gap: 12px; align-items: center; }
+.fc-know { padding: 12px 28px; border-radius: 14px; border: none; font-size: 14px; font-weight: 800; cursor: pointer; transition: all 0.2s; }
+.fc-know.yes { background: rgba(52,211,153,0.15); color: var(--syn); border: 1px solid rgba(52,211,153,0.3); }
+.fc-know.yes:hover { background: rgba(52,211,153,0.25); }
+.fc-know.no  { background: rgba(248,113,113,0.15); color: var(--rose); border: 1px solid rgba(248,113,113,0.3); }
+.fc-know.no:hover  { background: rgba(248,113,113,0.25); }
+.fc-session-stats {
+  display: flex; gap: 20px; padding: 14px 24px;
+  background: var(--card); border: 1px solid var(--border); border-radius: 16px;
+  font-size: 13px;
+}
+.fc-session-stats span { font-weight: 800; }
+.fc-session-stats .k { color: var(--syn); }
+.fc-session-stats .dk { color: var(--rose); }
+#fc-mode-bar { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; margin-bottom: 4px; }
+
+/* ── Quiz ── */
+.quiz-q { font-family: 'Playfair Display', serif; font-size: 20px; font-weight: 700; color: var(--text); margin-bottom: 6px; text-align: center; }
+.quiz-prompt { font-size: 12px; color: var(--muted); text-align: center; margin-bottom: 20px; letter-spacing: 0.06em; text-transform: uppercase; font-weight: 700; }
+.quiz-options { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+@media (max-width: 460px) { .quiz-options { grid-template-columns: 1fr; } }
+.quiz-opt {
+  padding: 14px 16px; border-radius: 14px;
+  background: rgba(255,255,255,0.04); border: 1px solid var(--border);
+  color: var(--text); font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.2s;
+  text-align: left;
+}
+.quiz-opt:hover:not(:disabled) { border-color: var(--gold); background: rgba(201,168,76,0.06); }
+.quiz-opt.correct  { background: rgba(52,211,153,0.12) !important; border-color: var(--syn) !important; color: var(--syn) !important; }
+.quiz-opt.wrong    { background: rgba(248,113,113,0.12) !important; border-color: var(--rose) !important; color: var(--rose) !important; }
+.quiz-opt:disabled { cursor: default; }
+.quiz-progress { height: 5px; background: rgba(255,255,255,0.07); border-radius: 3px; margin-bottom: 20px; overflow: hidden; }
+.quiz-progress-fill { height: 100%; background: linear-gradient(90deg, var(--gold), var(--gold2)); border-radius: 3px; transition: width 0.4s; }
+.quiz-result {
+  text-align: center; padding: 30px 20px;
+}
+.quiz-score-big { font-family: 'Playfair Display', serif; font-size: 56px; font-weight: 900; color: var(--gold); }
+.quiz-score-sub { font-size: 14px; color: var(--muted); margin-top: 6px; }
+
+/* ── Empty state ── */
+.empty-state { text-align: center; padding: 50px 20px; color: var(--muted); }
+.empty-state i { font-size: 36px; margin-bottom: 14px; display: block; opacity: 0.3; }
+.empty-state h4 { font-size: 16px; font-weight: 800; margin-bottom: 8px; color: var(--text); opacity: 0.5; }
+.empty-state p { font-size: 13px; max-width: 260px; margin: 0 auto; }
+
+/* ── Toast ── */
+#toast {
+  position: fixed; bottom: 90px; left: 50%; transform: translateX(-50%) translateY(20px);
+  background: var(--card); border: 1px solid var(--border); padding: 10px 20px;
+  border-radius: 12px; font-size: 13px; font-weight: 700; z-index: 200;
+  opacity: 0; transition: all 0.3s; pointer-events: none; white-space: nowrap;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+}
+#toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+#toast.ok  { border-color: var(--syn); color: var(--syn); }
+#toast.err { border-color: var(--rose); color: var(--rose); }
+
+/* ── Auth gate ── */
+#auth-gate {
+  text-align: center; padding: 60px 20px; display: none;
+}
+#auth-gate h2 { font-family: 'Playfair Display', serif; font-size: 28px; color: var(--gold); margin-bottom: 10px; }
+#auth-gate p  { color: var(--muted); font-size: 14px; margin-bottom: 24px; }
+
+/* ── Loader ── */
+#loader { text-align: center; padding: 40px; color: var(--muted); font-size: 13px; }
+.spinner {
+  width: 28px; height: 28px; border: 3px solid rgba(201,168,76,0.2);
+  border-top-color: var(--gold); border-radius: 50%; animation: spin 0.7s linear infinite;
+  margin: 0 auto 12px;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ── Back link ── */
+.back-link {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: 11px; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase;
+  color: var(--muted); text-decoration: none; transition: color 0.2s;
+  padding: 6px 0;
+}
+.back-link:hover { color: var(--gold); }
+
+/* ── Mobile bottom nav ── */
+</style>
+</head>
+<body>
+
+<div id="app">
+
+  <!-- HEADER -->
+  <header>
+    <div>
+      <a href="./index.html" class="back-link"><i class="fa-solid fa-arrow-left"></i> MockTracker</a>
+      <div class="logo" style="margin-top:6px;">
+        <div class="logo-icon">📖</div>
+        <div>
+          <div class="logo-text">LexiPrep</div>
+          <div class="logo-sub">Vocab Builder</div>
+        </div>
+      </div>
+    </div>
+    <div id="auth-area">
+      <img id="user-photo" class="user-avatar" src="" alt="">
+      <span id="user-name-display"></span>
+      <button class="btn-auth" id="sign-in-btn"><i class="fa-brands fa-google"></i> Sign In</button>
+      <button class="btn-auth" id="sign-out-btn" style="display:none;"><i class="fa-solid fa-right-from-bracket"></i> Out</button>
+    </div>
+  </header>
+
+  <!-- STATS STRIP -->
+  <div id="stats-strip">
+    <div class="stat-pill"><div class="n" id="stat-total">0</div><div class="l">Words</div></div>
+    <div class="stat-pill"><div class="n" id="stat-words">0</div><div class="l">Meanings</div></div>
+    <div class="stat-pill"><div class="n" id="stat-idioms">0</div><div class="l">Idioms</div></div>
+    <div class="stat-pill"><div class="n" id="stat-mastered">0</div><div class="l">Mastered</div></div>
+  </div>
+
+  <!-- AUTH GATE -->
+  <div id="auth-gate">
+    <h2>Sign in to access your vocab</h2>
+    <p>Your words are synced securely with Google — same account as MockTracker Pro.</p>
+    <button class="btn btn-gold" id="sign-in-gate-btn"><i class="fa-brands fa-google"></i> Continue with Google</button>
+  </div>
+
+  <!-- LOADER -->
+  <div id="loader"><div class="spinner"></div>Loading your vault…</div>
+
+  <!-- MAIN CONTENT -->
+  <div id="main-content" style="display:none;">
+
+    <!-- TAB BAR -->
+    <div id="tab-bar">
+      <button class="tab-btn active" onclick="switchTab('library')" id="tab-library"><i class="fa-solid fa-books"></i>Library</button>
+      <button class="tab-btn" onclick="switchTab('add')" id="tab-add"><i class="fa-solid fa-plus-circle"></i>Add Word</button>
+      <button class="tab-btn" onclick="switchTab('flashcard')" id="tab-flashcard"><i class="fa-solid fa-clone"></i>Flashcards</button>
+      <button class="tab-btn" onclick="switchTab('quiz')" id="tab-quiz"><i class="fa-solid fa-bullseye"></i>Quiz</button>
+    </div>
+
+    <!-- ══ LIBRARY TAB ══ -->
+    <div class="tab-pane active" id="pane-library">
+      <div class="search-bar">
+        <input class="search-input" type="text" id="search-inp" placeholder="🔍  Search words, meanings, idioms…" oninput="renderLibrary()">
+        <button class="btn btn-ghost btn-icon" onclick="renderLibrary()" title="Refresh"><i class="fa-solid fa-arrows-rotate"></i></button>
+      </div>
+      <div class="filter-chips" id="filter-chips">
+        <div class="filter-chip active" data-filter="all" onclick="setFilter('all',this)">All</div>
+        <div class="filter-chip" data-filter="word" onclick="setFilter('word',this)">Words</div>
+        <div class="filter-chip" data-filter="idiom" onclick="setFilter('idiom',this)">Idioms</div>
+        <div class="filter-chip" data-filter="phrase" onclick="setFilter('phrase',this)">Phrases</div>
+        <div class="filter-chip" data-filter="mastered" onclick="setFilter('mastered',this)">⭐ Mastered</div>
+      </div>
+      <div id="library-list"></div>
+    </div>
+
+    <!-- ══ ADD WORD TAB ══ -->
+    <div class="tab-pane" id="pane-add">
+      <div class="card">
+        <div class="card-header">
+          <i class="fa-solid fa-pen-nib" style="color:var(--gold)"></i>
+          <h3 id="add-form-title">Add New Entry</h3>
+          <button class="btn btn-ghost btn-sm" id="cancel-edit-btn" onclick="cancelEdit()" style="display:none;margin-left:auto;">Cancel Edit</button>
+        </div>
+        <div class="card-body">
+          <input type="hidden" id="edit-id">
+
+          <div class="form-grid">
+            <div class="form-group">
+              <label class="form-label">Word / Idiom / Phrase *</label>
+              <input class="form-input" type="text" id="inp-word" placeholder="e.g. Ameliorate" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Type</label>
+              <select class="form-select" id="inp-type" onchange="onTypeChange()">
+                <option value="word">Word (Noun/Verb/Adj)</option>
+                <option value="idiom">Idiom</option>
+                <option value="phrase">Phrase / Proverb</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Meaning / Definition *</label>
+            <textarea class="form-textarea" id="inp-meaning" placeholder="Clear, concise definition…" rows="2" required></textarea>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Example Sentence</label>
+            <textarea class="form-textarea" id="inp-example" placeholder="Use it in a sentence to remember better…" rows="2"></textarea>
+          </div>
+
+          <div id="syn-ant-section">
+            <div class="form-group">
+              <label class="form-label">Synonyms <span style="color:var(--muted);font-weight:400;text-transform:none;letter-spacing:0;">(press Enter or comma to add)</span></label>
+              <div class="tag-input-wrap" id="syn-wrap" onclick="document.getElementById('syn-input').focus()">
+                <input id="syn-input" placeholder="Type and press Enter…" onkeydown="tagKeydown(event,'synonyms')">
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Antonyms <span style="color:var(--muted);font-weight:400;text-transform:none;letter-spacing:0;">(press Enter or comma to add)</span></label>
+              <div class="tag-input-wrap" id="ant-wrap" onclick="document.getElementById('ant-input').focus()">
+                <input id="ant-input" placeholder="Type and press Enter…" onkeydown="tagKeydown(event,'antonyms')">
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Tags <span style="color:var(--muted);font-weight:400;text-transform:none;letter-spacing:0;">(e.g. SSC, formal, positive)</span></label>
+            <div class="tag-input-wrap" id="tags-wrap" onclick="document.getElementById('tags-input').focus()">
+              <input id="tags-input" placeholder="Add tag…" onkeydown="tagKeydown(event,'tags')">
+            </div>
+          </div>
+
+          <div style="display:flex;gap:10px;margin-top:4px;">
+            <button class="btn btn-gold btn-full" id="save-word-btn" onclick="saveWord()">
+              <i class="fa-solid fa-floppy-disk"></i> <span id="save-btn-txt">Save to Vault</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ FLASHCARD TAB ══ -->
+    <div class="tab-pane" id="pane-flashcard">
+      <div id="fc-mode-bar">
+        <button class="btn btn-ghost btn-sm" id="fc-btn-all" onclick="startFlashcards('all')"><i class="fa-solid fa-layer-group"></i> All Words</button>
+        <button class="btn btn-ghost btn-sm" id="fc-btn-weak" onclick="startFlashcards('weak')"><i class="fa-solid fa-fire"></i> Weak (Not Mastered)</button>
+        <button class="btn btn-teal btn-sm" id="fc-btn-random" onclick="startFlashcards('random')"><i class="fa-solid fa-shuffle"></i> Random 10</button>
+      </div>
+      <div id="flashcard-area">
+        <div class="empty-state">
+          <i class="fa-solid fa-clone"></i>
+          <h4>Choose a mode above</h4>
+          <p>Start a flashcard session to test your recall</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ QUIZ TAB ══ -->
+    <div class="tab-pane" id="pane-quiz">
+      <div id="quiz-area">
+        <div class="empty-state" style="padding:40px 20px;">
+          <i class="fa-solid fa-bullseye"></i>
+          <h4>Ready to test yourself?</h4>
+          <p style="margin-bottom:20px;">MCQ quiz from your saved vocab. Need at least 4 words.</p>
+          <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;">
+            <button class="btn btn-gold" onclick="startQuiz('meaning')"><i class="fa-solid fa-book"></i> Meaning Quiz</button>
+            <button class="btn btn-ghost" onclick="startQuiz('word')"><i class="fa-solid fa-pen"></i> Word from Meaning</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /main-content -->
+</div><!-- /app -->
+
+<div id="toast"></div>
+
+<!-- FIREBASE -->
+<script type="module">
+import { initializeApp }        from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged }
+                                 from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
+import { getFirestore, collection, doc, addDoc, updateDoc, deleteDoc, getDocs,
+         query, orderBy, Timestamp, setDoc }
+                                 from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+
+// ── Firebase init (same project as MockTracker Pro) ──
+const firebaseConfig = {
+  apiKey: "AIzaSyCLvZzZ-Hx9LsvuL1zK4xuZcF_1P28h4sI",
+  authDomain: "mock-analysis-aaf4b.firebaseapp.com",
+  projectId: "mock-analysis-aaf4b",
+  storageBucket: "mock-analysis-aaf4b.firebasestorage.app",
+  messagingSenderId: "88057484168",
+  appId: "1:88057484168:web:70e580fe70573a4866a03d"
+};
+const APP_COLLECTION = 'mock-tracker-pro-final';
+
+const fApp  = initializeApp(firebaseConfig, 'lexiprep');
+const auth  = getAuth(fApp);
+const db    = getFirestore(fApp);
+const provider = new GoogleAuthProvider();
+
+// ── State ──
+let user    = null;
+let words   = [];        // all words from Firestore
+let filter  = 'all';
+let fcDeck  = [];        // current flashcard deck
+let fcIdx   = 0;
+let fcKnown = 0;
+let fcUnknown = 0;
+let quizQ   = [];        // quiz questions
+let quizIdx = 0;
+let quizScore = 0;
+let quizMode = 'meaning';
+
+// tag state for add form
+const tagState = { synonyms: [], antonyms: [], tags: [] };
+
+// ── Helpers ──
+function el(id) { return document.getElementById(id); }
+function toast(msg, type='ok') {
+  const t = el('toast');
+  t.textContent = msg; t.className = 'show ' + type;
+  setTimeout(() => t.className = '', 2500);
+}
+function getUserVocabRef() {
+  return collection(db, 'artifacts', APP_COLLECTION, 'users', user.uid, 'vocab');
+}
+
+// ── Auth ──
+el('sign-in-btn').onclick = () => signInWithPopup(auth, provider).catch(e => toast('Sign-in failed: ' + e.message, 'err'));
+el('sign-in-gate-btn').onclick = () => signInWithPopup(auth, provider).catch(e => toast('Sign-in failed: ' + e.message, 'err'));
+el('sign-out-btn').onclick = () => signOut(auth);
+
+onAuthStateChanged(auth, async (u) => {
+  user = u;
+  el('loader').style.display = 'none';
+
+  if (u) {
+    el('sign-in-btn').style.display  = 'none';
+    el('sign-out-btn').style.display = 'block';
+    el('auth-gate').style.display    = 'none';
+    el('main-content').style.display = 'block';
+    const photo = el('user-photo');
+    if (u.photoURL) { photo.src = u.photoURL; photo.style.display = 'block'; }
+    el('user-name-display').textContent = u.displayName?.split(' ')[0] || '';
+    el('user-name-display').style.display = 'block';
+    await loadWords();
+  } else {
+    el('sign-in-btn').style.display  = 'block';
+    el('sign-out-btn').style.display = 'none';
+    el('auth-gate').style.display    = 'block';
+    el('main-content').style.display = 'none';
+  }
+});
+
+// ── Load words ──
+async function loadWords() {
+  try {
+    const q = query(getUserVocabRef(), orderBy('createdAt', 'desc'));
+    const snap = await getDocs(q);
+    words = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    updateStats();
+    renderLibrary();
+  } catch(e) { toast('Load error: ' + e.message, 'err'); }
+}
+
+function updateStats() {
+  el('stat-total').textContent    = words.length;
+  el('stat-words').textContent    = words.filter(w => w.type === 'word').length;
+  el('stat-idioms').textContent   = words.filter(w => w.type === 'idiom').length;
+  el('stat-mastered').textContent = words.filter(w => w.mastered).length;
+}
+
+// ── Library render ──
+window.setFilter = (f, chip) => {
+  filter = f;
+  document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+  chip.classList.add('active');
+  renderLibrary();
+};
+
+window.renderLibrary = () => {
+  const q = (el('search-inp')?.value || '').toLowerCase().trim();
+  let list = [...words];
+  if (filter === 'mastered') list = list.filter(w => w.mastered);
+  else if (filter !== 'all') list = list.filter(w => w.type === filter);
+  if (q) list = list.filter(w =>
+    w.word?.toLowerCase().includes(q) ||
+    w.meaning?.toLowerCase().includes(q) ||
+    (w.synonyms||[]).some(s => s.toLowerCase().includes(q)) ||
+    (w.antonyms||[]).some(s => s.toLowerCase().includes(q)) ||
+    (w.tags||[]).some(s => s.toLowerCase().includes(q))
+  );
+
+  const lib = el('library-list');
+  if (!list.length) {
+    lib.innerHTML = `<div class="empty-state"><i class="fa-solid fa-book-open"></i><h4>${words.length ? 'No matches' : 'Your vault is empty'}</h4><p>${words.length ? 'Try a different search or filter.' : 'Add your first word using the Add Word tab.'}</p></div>`;
+    return;
+  }
+  lib.innerHTML = list.map(w => wordCardHTML(w)).join('');
+};
+
+function typeBadge(t) {
+  const map = { word:'type-word', idiom:'type-idiom', phrase:'type-phrase' };
+  const label = { word:'Word', idiom:'Idiom', phrase:'Phrase' };
+  return `<span class="type-badge ${map[t]||'type-word'}">${label[t]||t}</span>`;
+}
+
+function wordCardHTML(w) {
+  const syns = (w.synonyms||[]).map(s => `<span class="tag-chip syn">${s}</span>`).join('');
+  const ants = (w.antonyms||[]).map(s => `<span class="tag-chip ant">${s}</span>`).join('');
+  const tags = (w.tags||[]).map(s => `<span class="tag-chip tag">${s}</span>`).join('');
+  const starCol = w.mastered ? 'var(--gold)' : 'var(--muted)';
+  return `<div class="word-card" id="wcard-${w.id}">
+    <div class="word-card-head">
+      <div>
+        <div class="word-title">${w.word}</div>
+        <div style="margin-top:5px;">${typeBadge(w.type||'word')}</div>
+      </div>
+      <div class="word-actions">
+        <button class="btn btn-ghost btn-icon btn-sm" onclick="toggleMastered('${w.id}')" title="${w.mastered?'Unmark':'Mark as mastered'}">
+          <i class="fa-${w.mastered?'solid':'regular'} fa-star" style="color:${starCol}"></i>
+        </button>
+        <button class="btn btn-ghost btn-icon btn-sm" onclick="editWord('${w.id}')" title="Edit"><i class="fa-solid fa-pen" style="color:var(--gold)"></i></button>
+        <button class="btn btn-rose btn-icon btn-sm" onclick="deleteWord('${w.id}')" title="Delete"><i class="fa-solid fa-trash"></i></button>
+      </div>
+    </div>
+    <p class="word-meaning">${w.meaning}</p>
+    ${w.example ? `<p class="word-example">"${w.example}"</p>` : ''}
+    <div class="chips-row">
+      ${syns}${ants}${tags}
+    </div>
+  </div>`;
+}
+
+// ── Tag input ──
+window.tagKeydown = (e, field) => {
+  const input = e.target;
+  const val = input.value.trim().replace(/,/g,'');
+  if ((e.key === 'Enter' || e.key === ',') && val) {
+    e.preventDefault();
+    if (!tagState[field].includes(val)) {
+      tagState[field].push(val);
+      renderTags(field);
+    }
+    input.value = '';
+  } else if (e.key === 'Backspace' && !input.value && tagState[field].length) {
+    tagState[field].pop();
+    renderTags(field);
+  }
+};
+
+function renderTags(field) {
+  const wrapId = { synonyms: 'syn-wrap', antonyms: 'ant-wrap', tags: 'tags-wrap' }[field];
+  const inputId = { synonyms: 'syn-input', antonyms: 'ant-input', tags: 'tags-input' }[field];
+  const cls = { synonyms: 'syn', antonyms: 'ant', tags: 'tag' }[field];
+  const wrap = el(wrapId);
+  const inp  = el(inputId);
+  // Remove old chips
+  wrap.querySelectorAll('.tag-chip').forEach(c => c.remove());
+  // Re-add
+  tagState[field].forEach((tag, i) => {
+    const chip = document.createElement('span');
+    chip.className = `tag-chip ${cls}`;
+    chip.innerHTML = `${tag} <button onclick="removeTag('${field}',${i})">×</button>`;
+    wrap.insertBefore(chip, inp);
+  });
+}
+window.removeTag = (field, i) => {
+  tagState[field].splice(i, 1);
+  renderTags(field);
+};
+
+window.onTypeChange = () => {
+  const t = el('inp-type').value;
+  el('syn-ant-section').style.display = t === 'word' ? 'block' : 'none';
+};
+
+// ── Save / Edit / Delete ──
+window.saveWord = async () => {
+  if (!user) return toast('Please sign in first', 'err');
+  const word    = el('inp-word').value.trim();
+  const meaning = el('inp-meaning').value.trim();
+  if (!word || !meaning) return toast('Word and meaning are required', 'err');
+
+  const editId = el('edit-id').value;
+  const entry = {
+    word, meaning,
+    type:     el('inp-type').value,
+    example:  el('inp-example').value.trim(),
+    synonyms: [...tagState.synonyms],
+    antonyms: [...tagState.antonyms],
+    tags:     [...tagState.tags],
+  };
+
+  try {
+    if (editId) {
+      await updateDoc(doc(db, 'artifacts', APP_COLLECTION, 'users', user.uid, 'vocab', editId), { ...entry, updatedAt: Timestamp.now() });
+      const idx = words.findIndex(w => w.id === editId);
+      if (idx !== -1) words[idx] = { ...words[idx], ...entry };
+      toast('✅ Updated!');
+    } else {
+      entry.createdAt = Timestamp.now();
+      entry.mastered = false;
+      const ref = await addDoc(getUserVocabRef(), entry);
+      words.unshift({ id: ref.id, ...entry });
+      toast('✅ Saved to vault!');
+    }
+    resetForm();
+    updateStats();
+    renderLibrary();
+    switchTab('library');
+  } catch(e) { toast('Save failed: ' + e.message, 'err'); }
+};
+
+window.editWord = (id) => {
+  const w = words.find(x => x.id === id);
+  if (!w) return;
+  el('edit-id').value = id;
+  el('inp-word').value = w.word || '';
+  el('inp-type').value = w.type || 'word';
+  el('inp-meaning').value = w.meaning || '';
+  el('inp-example').value = w.example || '';
+  tagState.synonyms = [...(w.synonyms||[])];
+  tagState.antonyms = [...(w.antonyms||[])];
+  tagState.tags = [...(w.tags||[])];
+  ['synonyms','antonyms','tags'].forEach(f => renderTags(f));
+  onTypeChange();
+  el('add-form-title').textContent = 'Edit Entry';
+  el('save-btn-txt').textContent = 'Update Entry';
+  el('cancel-edit-btn').style.display = 'block';
+  switchTab('add');
+  window.scrollTo(0, 0);
+};
+
+window.cancelEdit = () => { resetForm(); };
+function resetForm() {
+  el('edit-id').value = '';
+  el('inp-word').value = ''; el('inp-type').value = 'word';
+  el('inp-meaning').value = ''; el('inp-example').value = '';
+  tagState.synonyms = []; tagState.antonyms = []; tagState.tags = [];
+  ['synonyms','antonyms','tags'].forEach(f => renderTags(f));
+  el('add-form-title').textContent = 'Add New Entry';
+  el('save-btn-txt').textContent = 'Save to Vault';
+  el('cancel-edit-btn').style.display = 'none';
+  onTypeChange();
+}
+
+window.deleteWord = async (id) => {
+  if (!confirm('Delete this entry?')) return;
+  try {
+    await deleteDoc(doc(db, 'artifacts', APP_COLLECTION, 'users', user.uid, 'vocab', id));
+    words = words.filter(w => w.id !== id);
+    updateStats(); renderLibrary();
+    toast('Deleted', 'ok');
+  } catch(e) { toast('Delete failed', 'err'); }
+};
+
+window.toggleMastered = async (id) => {
+  const w = words.find(x => x.id === id);
+  if (!w) return;
+  const newVal = !w.mastered;
+  try {
+    await updateDoc(doc(db, 'artifacts', APP_COLLECTION, 'users', user.uid, 'vocab', id), { mastered: newVal });
+    w.mastered = newVal;
+    updateStats(); renderLibrary();
+    toast(newVal ? '⭐ Marked as mastered!' : 'Unmarked', 'ok');
+  } catch(e) { toast('Update failed', 'err'); }
+};
+
+// ── FLASHCARDS ──
+window.startFlashcards = (mode) => {
+  let deck = [...words];
+  if (mode === 'weak')   deck = words.filter(w => !w.mastered);
+  if (mode === 'random') deck = words.sort(() => Math.random()-0.5).slice(0, 10);
+  else deck = deck.sort(() => Math.random()-0.5);
+
+  if (!deck.length) return toast('No words available for this mode', 'err');
+
+  fcDeck = deck; fcIdx = 0; fcKnown = 0; fcUnknown = 0;
+  renderFlashcard();
+};
+
+function renderFlashcard() {
+  const area = el('flashcard-area');
+  if (fcIdx >= fcDeck.length) {
+    area.innerHTML = `
+      <div class="card" style="width:100%;max-width:500px;text-align:center;padding:40px 30px;">
+        <div style="font-size:48px;margin-bottom:16px;">🎉</div>
+        <div style="font-family:'Playfair Display',serif;font-size:28px;color:var(--gold);font-weight:900;margin-bottom:8px;">Session Complete!</div>
+        <div style="color:var(--muted);font-size:14px;margin-bottom:24px;">You reviewed ${fcDeck.length} cards</div>
+        <div style="display:flex;gap:16px;justify-content:center;margin-bottom:24px;">
+          <div style="text-align:center;"><div style="font-size:32px;font-weight:900;color:var(--syn);">${fcKnown}</div><div style="font-size:11px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.08em;">Known</div></div>
+          <div style="text-align:center;"><div style="font-size:32px;font-weight:900;color:var(--rose);">${fcUnknown}</div><div style="font-size:11px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.08em;">Revisit</div></div>
+        </div>
+        <button class="btn btn-gold" onclick="startFlashcards('weak')"><i class="fa-solid fa-fire"></i> Drill Weak Again</button>
+      </div>`;
+    return;
+  }
+
+  const w = fcDeck[fcIdx];
+  const syns = (w.synonyms||[]).slice(0,4).map(s => `<span class="tag-chip syn">${s}</span>`).join('');
+  const ants = (w.antonyms||[]).slice(0,3).map(s => `<span class="tag-chip ant">${s}</span>`).join('');
+
+  area.innerHTML = `
+    <div class="fc-session-stats">
+      <div>Card <span>${fcIdx+1}</span> / ${fcDeck.length}</div>
+      <div class="k"><i class="fa-solid fa-check"></i> <span>${fcKnown}</span></div>
+      <div class="dk"><i class="fa-solid fa-rotate-left"></i> <span>${fcUnknown}</span></div>
+    </div>
+    <div class="flashcard-wrap" onclick="flipCard()">
+      <div class="flashcard" id="fc-card">
+        <div class="flashcard-face fc-front">
+          <div class="fc-hint">Tap to reveal meaning</div>
+          <div class="fc-word">${w.word}</div>
+          <div class="fc-type">${typeBadge(w.type||'word')}</div>
+          ${(w.tags||[]).length ? `<div style="margin-top:10px;">${(w.tags||[]).map(t=>`<span class="tag-chip tag">${t}</span>`).join('')}</div>` : ''}
+        </div>
+        <div class="flashcard-face fc-back">
+          <div class="fc-hint">Meaning</div>
+          <div class="fc-meaning">${w.meaning}</div>
+          ${w.example ? `<div style="font-size:12px;color:var(--muted);font-style:italic;border-left:2px solid var(--teal);padding-left:10px;margin-bottom:14px;text-align:left;">"${w.example}"</div>` : ''}
+          <div class="fc-chips">${syns}${ants}</div>
+        </div>
+      </div>
+    </div>
+    <div class="fc-controls">
+      <button class="fc-know no" onclick="fcRate(false)"><i class="fa-solid fa-rotate-left"></i> Revisit</button>
+      <button class="fc-know yes" onclick="fcRate(true)"><i class="fa-solid fa-check"></i> Got it!</button>
+    </div>`;
+}
+
+window.flipCard = () => { el('fc-card')?.classList.toggle('flipped'); };
+window.fcRate = (known) => {
+  if (known) fcKnown++; else fcUnknown++;
+  fcIdx++;
+  renderFlashcard();
+};
+
+// ── QUIZ ──
+window.startQuiz = (mode) => {
+  if (words.length < 4) return toast('Need at least 4 words to start quiz', 'err');
+  quizMode = mode;
+  quizIdx = 0; quizScore = 0;
+
+  // Build questions: shuffle words, take up to 10
+  const pool = [...words].sort(() => Math.random()-0.5).slice(0, 10);
+  quizQ = pool.map(w => {
+    // 3 wrong options from other words
+    const others = words.filter(x => x.id !== w.id).sort(() => Math.random()-0.5).slice(0,3);
+    const options = [w, ...others].sort(() => Math.random()-0.5);
+    return { word: w, options, correctId: w.id };
+  });
+  renderQuiz();
+};
+
+function renderQuiz() {
+  const area = el('quiz-area');
+  if (quizIdx >= quizQ.length) {
+    const pct = Math.round((quizScore / quizQ.length) * 100);
+    const emoji = pct >= 80 ? '🏆' : pct >= 60 ? '👏' : '📚';
+    area.innerHTML = `
+      <div class="quiz-result card">
+        <div class="card-body">
+          <div style="font-size:40px;margin-bottom:12px;">${emoji}</div>
+          <div class="quiz-score-big">${quizScore}/${quizQ.length}</div>
+          <div class="quiz-score-sub">${pct}% · ${pct>=80?'Excellent!':pct>=60?'Good job!':'Keep practicing!'}</div>
+          <div style="display:flex;gap:10px;justify-content:center;margin-top:24px;flex-wrap:wrap;">
+            <button class="btn btn-gold" onclick="startQuiz('${quizMode}')"><i class="fa-solid fa-arrows-rotate"></i> Try Again</button>
+            <button class="btn btn-ghost" onclick="startQuiz(quizMode==='meaning'?'word':'meaning')"><i class="fa-solid fa-shuffle"></i> Switch Mode</button>
+          </div>
+        </div>
+      </div>`;
+    return;
+  }
+
+  const q = quizQ[quizIdx];
+  const pct = (quizIdx / quizQ.length) * 100;
+
+  let questionText, optionFn;
+  if (quizMode === 'meaning') {
+    questionText = q.word.word;
+    optionFn = (w) => w.meaning.length > 60 ? w.meaning.substring(0, 57) + '…' : w.meaning;
+  } else {
+    questionText = q.word.meaning.length > 80 ? q.word.meaning.substring(0, 77) + '…' : q.word.meaning;
+    optionFn = (w) => w.word;
+  }
+
+  area.innerHTML = `
+    <div class="card">
+      <div class="card-body">
+        <div class="quiz-progress"><div class="quiz-progress-fill" style="width:${pct}%"></div></div>
+        <div class="quiz-prompt">${quizMode === 'meaning' ? 'What does this word mean?' : 'Which word matches this meaning?'}</div>
+        <div class="quiz-q">${questionText}</div>
+        <div style="margin-bottom:20px;"></div>
+        <div class="quiz-options">
+          ${q.options.map(opt => `
+            <button class="quiz-opt" data-id="${opt.id}" onclick="answerQuiz('${opt.id}','${q.correctId}',this)">
+              ${optionFn(opt)}
+            </button>`).join('')}
+        </div>
+      </div>
+    </div>`;
+}
+
+window.answerQuiz = (selected, correct, btn) => {
+  document.querySelectorAll('.quiz-opt').forEach(b => b.disabled = true);
+  if (selected === correct) {
+    btn.classList.add('correct'); quizScore++;
+    toast('✅ Correct!');
+  } else {
+    btn.classList.add('wrong');
+    document.querySelector(`.quiz-opt[data-id="${correct}"]`)?.classList.add('correct');
+    toast('❌ Wrong!', 'err');
+  }
+  setTimeout(() => { quizIdx++; renderQuiz(); }, 1200);
+};
+
+// ── Tab switching ──
+window.switchTab = (tab) => {
+  document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  el('pane-' + tab)?.classList.add('active');
+  el('tab-' + tab)?.classList.add('active');
+  if (tab === 'add' && !el('edit-id').value) resetForm();
+};
+
+// Init type change
+window.onTypeChange();
+
+</script>
+</body>
+</html>
