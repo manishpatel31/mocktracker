@@ -1880,20 +1880,24 @@ function renderOrbit(subAgg,sorted){
     hintEl.textContent=_orbitSel>=0?'Tap again to close':'Tap a node to expand';
   }
 
-  // ── Event delegation: ONE listener on the SVG ──
-  svg.addEventListener('click',e=>{
-    // Walk up from target looking for a node group
-    let el2=e.target;
-    while(el2&&el2!==svg){
-      if(el2.dataset&&el2.dataset.nodeid!==undefined){
-        const id=parseInt(el2.dataset.nodeid,10);
-        selectNode(id);
-        return;
-      }
-      el2=el2.parentElement;
-    }
-  });
-
+  // ── Event delegation: Math-based hit detection ──
+  svg.addEventListener('click', e => {
+    const rect = svg.getBoundingClientRect();
+    const mouseX = e.clientX - rect.left;
+    const mouseY = e.clientY - rect.top;
+    
+    // Check distance from click to each node's center
+    for (let i = 0; i < _positions.length; i++) {
+      const pos = _positions[i];
+      const dist = Math.hypot(mouseX - pos.x, mouseY - pos.y);
+      
+      // nodeR is 26. We add 10 to give a generous, easy-to-tap target area
+      if (dist <= nodeR + 10) {
+        selectNode(pos.node.id);
+        return;
+      }
+    }
+  });
   function selectNode(id){
     if(_orbitSel===id){
       _orbitSel=-1;
