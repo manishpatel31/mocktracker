@@ -1728,10 +1728,9 @@
                 </div>
 
                 <!-- ── SAVE BUTTON ── -->
-                <button type="submit" class="w-full py-5 rounded-2xl btn-gradient text-white text-base font-black shadow-xl shadow-brand-500/30 transition active:scale-[0.98] flex items-center justify-center gap-3"
-                        data-aos="zoom-in" data-aos-duration="600" data-aos-delay="350">
+                <button type="submit" id="btn-save-mock" class="w-full py-5 rounded-2xl btn-gradient text-white text-base font-black shadow-xl shadow-brand-500/30 transition active:scale-[0.98] flex items-center justify-center gap-3">
                     <i class="fa-solid fa-floppy-disk text-lg"></i>
-                    Save Mock to Vault
+                    <span id="save-btn-label">Save Mock to Vault</span>
                 </button>
 
             </form>
@@ -2233,7 +2232,8 @@
         function getTargetKey() { return 'mockpro_target_' + (state?.selectedExamGroup || 'default') + '_' + (state?.currentTier || 'tier1'); }
         function loadTargetScore() {
             const v = parseInt(localStorage.getItem(getTargetKey()) || '0');
-            state.targetScore = v || (EXAM_GROUPS[state.selectedExamGroup]?.total ? Math.round(EXAM_GROUPS[state.selectedExamGroup].total * 0.8) : 160);
+            const cfg = (typeof getCurrentTierConfig === 'function') ? getCurrentTierConfig() : EXAM_GROUPS[state.selectedExamGroup];
+            state.targetScore = v || (cfg?.total ? Math.round(cfg.total * 0.8) : 160);
         }
 
         // ── EXAM CONFIGS ──
@@ -4101,7 +4101,19 @@ Give a concise pre-mock briefing in this EXACT JSON (no markdown, no backticks):
             const g = greetingByTime();
             if (emojiEl) emojiEl.textContent = g.emoji;
             textEl.textContent = g.text + ', ' + name + '!';
-            if (subEl) subEl.textContent = getDailyMotivationalLine();
+
+            // Show exam + tier context in subtitle
+            if (subEl) {
+                const cfg = getCurrentTierConfig ? getCurrentTierConfig() : null;
+                const examName = cfg ? cfg.name : (EXAM_GROUPS[state?.selectedExamGroup]?.name || '');
+                const tierLabel = (state?.currentTier === 'tier2')
+                    ? (EXAM_TIER2_GROUPS[state?.selectedExamGroup]?.tierLabel || 'Mains')
+                    : 'Pre';
+                const examLine = examName
+                    ? `Ready to conquer ${examName}${examName.includes('Tier')||examName.includes('CBT') ? '' : ' ('+tierLabel+')'}? 🎯`
+                    : getDailyMotivationalLine();
+                subEl.textContent = examLine;
+            }
         }
 
         function showWelcomeToast(name) {
@@ -5150,12 +5162,12 @@ Give a concise pre-mock briefing in this EXACT JSON (no markdown, no backticks):
             const fill = el('target-ring-fill');
             if (fill) fill.style.strokeDashoffset = offset;
             safeSetText('target-pct', Math.round(pct) + '%');
-            // Always sync input to current exam's target
+            // Sync input to current exam+tier target
             const inp = el('target-input');
             if (inp) inp.value = state.targetScore || '';
-            const grp = EXAM_GROUPS[state.selectedExamGroup];
+            const cfg = (typeof getCurrentTierConfig === 'function') ? getCurrentTierConfig() : EXAM_GROUPS[state.selectedExamGroup];
             const maxEl = el('target-max-label');
-            if (maxEl && grp) maxEl.textContent = '/ ' + grp.total;
+            if (maxEl && cfg) maxEl.textContent = '/ ' + cfg.total;
         }
 
         window.saveTargetScore = function() {
@@ -5435,6 +5447,7 @@ Give a concise pre-mock briefing in this EXACT JSON (no markdown, no backticks):
 
         // ── Render Home ──
         function renderHome() {
+            renderWelcomeGreeting();
             const tabHome = el('tab-home');
             if (!tabHome || !tabHome.classList.contains('active')) return;
             renderPreMockCard(); // refresh pre-mock card whenever home renders
@@ -5574,20 +5587,26 @@ Give a concise pre-mock briefing in this EXACT JSON (no markdown, no backticks):
             tl.classList.toggle('hidden', !hasTasks);
             tl.innerHTML = active.map(t => {
                 const done = t.done && t.done[date];
-                return `<div class="glass-card p-5 rounded-[2rem] flex items-center justify-between border-l-[6px] border-brand-500 hover-glow transition">
-                    <div class="flex items-center gap-3">
-                        <input type="checkbox" ${done?'checked':''} onchange="toggleTask('${t.id}')" class="w-6 h-6 rounded-xl accent-brand-600 cursor-pointer">
-                        <span class="text-base font-black text-slate-700 dark:text-white ${done?'line-through opacity-40':''}">${t.name}</span>
+                return `<div class="glass-card p-4 rounded-[2rem] flex items-center gap-3 border-l-[6px] border-brand-500 hover-glow transition">
+                    <input type="checkbox" ${done?'checked':''} onchange="toggleTask('${t.id}')" class="w-6 h-6 rounded-xl accent-brand-600 cursor-pointer flex-shrink-0">
+                    <span class="text-base font-black text-slate-700 dark:text-white flex-1 min-w-0 truncate ${done?'line-through opacity-40':''}">${t.name}</span>
+                    <span class="pill bg-brand-100 dark:bg-brand-900/30 text-brand-600 dark:text-brand-400 flex-shrink-0">Active</span>
+                    <div class="flex gap-1 flex-shrink-0">
+                        <button onclick="window.editTask('${t.id}')" title="Edit" class="w-7 h-7 rounded-xl bg-amber-100 dark:bg-amber-900/30 text-amber-600 flex items-center justify-center transition hover:scale-110"><i class="fa-solid fa-pen text-xs"></i></button>
+                        <button onclick="window.deleteTask('${t.id}')" title="Delete" class="w-7 h-7 rounded-xl bg-rose-100 dark:bg-rose-900/30 text-rose-500 flex items-center justify-center transition hover:scale-110"><i class="fa-solid fa-trash text-xs"></i></button>
                     </div>
-                    <span class="pill bg-brand-100 dark:bg-brand-900/30 text-brand-600 dark:text-brand-400">Active</span>
                 </div>`;
             }).join('') + upcoming.map(t => `
-                <div class="p-5 rounded-[2rem] border-2 border-dashed border-white/40 dark:border-white/10 flex justify-between items-center opacity-70">
-                    <div>
+                <div class="p-4 rounded-[2rem] border-2 border-dashed border-white/40 dark:border-white/10 flex items-center gap-3 opacity-70">
+                    <div class="flex-1 min-w-0">
                         <span class="text-base font-black text-slate-700 dark:text-slate-300">${t.name}</span>
                         <p class="text-xs font-black text-brand-400 uppercase mt-1">Due: ${t.days?.[0]!==undefined?dayNames[t.days[0]]:'N/A'}</p>
                     </div>
-                    <span class="pill bg-indigo-100 dark:bg-indigo-900/20 text-indigo-600 dark:text-indigo-400">Upcoming</span>
+                    <span class="pill bg-indigo-100 dark:bg-indigo-900/20 text-indigo-600 dark:text-indigo-400 flex-shrink-0">Upcoming</span>
+                    <div class="flex gap-1 flex-shrink-0">
+                        <button onclick="window.editTask('${t.id}')" title="Edit" class="w-7 h-7 rounded-xl bg-amber-100 dark:bg-amber-900/30 text-amber-600 flex items-center justify-center transition hover:scale-110"><i class="fa-solid fa-pen text-xs"></i></button>
+                        <button onclick="window.deleteTask('${t.id}')" title="Delete" class="w-7 h-7 rounded-xl bg-rose-100 dark:bg-rose-900/30 text-rose-500 flex items-center justify-center transition hover:scale-110"><i class="fa-solid fa-trash text-xs"></i></button>
+                    </div>
                 </div>`).join('');
         }
 
@@ -6074,6 +6093,10 @@ Give a concise pre-mock briefing in this EXACT JSON (no markdown, no backticks):
         el('inp-date').valueAsDate = new Date();
 
         el('form-task')?.addEventListener('submit', async (e) => {
+            // Clear editing state on close
+            const formTask = el('form-task');
+            const editingTaskId = formTask?.dataset.editingId || null;
+            if (formTask) delete formTask.dataset.editingId;
             e.preventDefault();
             if (state.isDemoMode) { alert("Cannot add tasks in Demo Mode."); return; }
             const nameInp = el('task-name-inp');
@@ -6090,7 +6113,7 @@ Give a concise pre-mock briefing in this EXACT JSON (no markdown, no backticks):
         el('form-score')?.addEventListener('submit', async (e) => {
             e.preventDefault();
             if (state.isDemoMode) { alert("Cannot save mocks in Demo Mode — exit demo first."); return; }
-            const group = EXAM_GROUPS[state.selectedExamGroup]; if (!group) return alert("Select exam first!");
+            const group = getCurrentTierConfig() || EXAM_GROUPS[state.selectedExamGroup]; if (!group) return alert("Select exam first!");
             let entry = {
                 platform: el('inp-platform').value,
                 exam: (state.currentTier==='tier2'&&EXAM_TIER2_GROUPS[state.selectedExamGroup])?EXAM_TIER2_GROUPS[state.selectedExamGroup].exams[0]:group.exams[0],
@@ -6132,6 +6155,31 @@ Give a concise pre-mock briefing in this EXACT JSON (no markdown, no backticks):
         });
 
         window.toggleTask = toggleTask;
+
+        window.deleteTask = async function(id) {
+            if (!confirm('Delete this task?')) return;
+            state.tasks = state.tasks.filter(t => t.id != id);
+            if (state.user && !state.isDemoMode) {
+                try { await deleteDoc(doc(db,'artifacts',appId,'users',state.user.uid,'tasks',id)); }
+                catch(e) { console.error('deleteTask:', e); }
+            }
+            renderTaskList();
+        };
+
+        window.editTask = function(id) {
+            const t = state.tasks.find(x => x.id == id); if (!t) return;
+            // Populate the Add Task modal with existing values then open
+            const nameInp = el('task-name-input') || document.querySelector('#form-task input[type=text]');
+            if (nameInp) nameInp.value = t.name || '';
+            // Check the days
+            document.querySelectorAll('#task-days input[type=checkbox]').forEach(cb => {
+                cb.checked = (t.days||[]).includes(parseInt(cb.value));
+            });
+            // Store editing id on the form
+            const form = el('form-task');
+            if (form) form.dataset.editingId = id;
+            window.openModal('modal-task');
+        };
         if (localStorage.getItem('theme') === 'dark') document.documentElement.classList.add('dark');
         updateOfflineUI(); // Feature #19 — show queue badge on load if items exist
         // ─── MOBILE NAV: Programmatic binding ───────────────────
