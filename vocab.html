@@ -314,6 +314,33 @@
     /* ─── Empty state float ─── */
     .empty-float { animation:floatBob 2.8s ease-in-out infinite; }
     .pop-in { animation:popIn 0.38s cubic-bezier(0.34,1.56,0.64,1) both; }
+
+    /* ─── Import Tab extras ─── */
+    .csv-preview-table { width:100%; border-collapse:separate; border-spacing:0; font-size:11px; }
+    .csv-preview-table thead th {
+      padding:8px 12px; font-size:9px; font-weight:900; letter-spacing:0.08em;
+      text-transform:uppercase; color:#94a3b8;
+      background:rgba(255,255,255,0.35); border-bottom:1px solid rgba(99,102,241,0.12);
+      white-space:nowrap;
+    }
+    .dark .csv-preview-table thead th { background:rgba(14,10,31,0.5); }
+    .csv-preview-table tbody td {
+      padding:8px 12px; border-bottom:1px solid rgba(99,102,241,0.06);
+      color:#475569; vertical-align:top; max-width:160px;
+      overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+    }
+    .dark .csv-preview-table tbody td { color:#94a3b8; border-color:rgba(139,92,246,0.08); }
+    .csv-preview-table tbody tr:last-child td { border-bottom:none; }
+    .csv-preview-table tbody tr:hover td { background:rgba(99,102,241,0.04); }
+    .csv-row-word { font-weight:900 !important; color:#1e293b !important; font-size:12px !important; }
+    .dark .csv-row-word { color:#f1f5f9 !important; }
+    .csv-row-skip { opacity:0.45; }
+    .csv-row-skip td:first-child::after {
+      content:" (duplicate)"; font-size:9px; font-weight:700;
+      color:#ef4444; margin-left:4px;
+    }
+    #pg-prompt-text { font-size:11px; line-height:1.65; }
+
   </style>
 </head>
 
@@ -448,6 +475,9 @@
       </button>
       <button class="vocab-subtab"        id="vstab-quiz"      onclick="subTab('quiz')">
         <i class="fa-solid fa-bullseye"></i>Quiz
+      </button>
+      <button class="vocab-subtab"        id="vstab-import"    onclick="subTab('import')">
+        <i class="fa-solid fa-file-import"></i>Import
       </button>
     </div>
 
@@ -602,6 +632,150 @@
         </div>
       </div>
     </div>
+
+
+    <!-- ── IMPORT ── -->
+    <div class="vocab-pane" id="vpane-import">
+
+      <!-- ── SECTION A: PROMPT GENERATOR ── -->
+      <div class="glass-card rounded-[1.8rem] overflow-hidden mb-5 anim-2">
+        <div class="px-6 py-4 border-b border-white/30 dark:border-white/5 flex items-center gap-3"
+             style="background:linear-gradient(135deg,rgba(99,102,241,0.07),rgba(217,70,239,0.05));">
+          <span class="w-7 h-7 rounded-xl btn-gradient text-white flex items-center justify-center text-sm shadow-lg flex-shrink-0">
+            <i class="fa-solid fa-wand-magic-sparkles"></i>
+          </span>
+          <div class="flex-1 min-w-0">
+            <div class="text-sm font-black text-slate-700 dark:text-slate-200 uppercase tracking-wider">AI Prompt Generator</div>
+            <p class="text-xs text-slate-400 font-medium mt-0.5">Generate a prompt → paste into any AI → get CSV back</p>
+          </div>
+        </div>
+        <div class="p-6 space-y-4">
+
+          <!-- How it works steps -->
+          <div class="grid grid-cols-3 gap-3 mb-2">
+            <div class="text-center p-3 rounded-2xl" style="background:rgba(99,102,241,0.06);border:1px solid rgba(99,102,241,0.12);">
+              <div class="w-8 h-8 rounded-xl btn-gradient text-white flex items-center justify-center text-xs font-black mx-auto mb-2">1</div>
+              <p class="text-xs font-bold text-slate-600 dark:text-slate-300">Paste word list below</p>
+            </div>
+            <div class="text-center p-3 rounded-2xl" style="background:rgba(217,70,239,0.06);border:1px solid rgba(217,70,239,0.12);">
+              <div class="w-8 h-8 rounded-xl btn-gradient text-white flex items-center justify-center text-xs font-black mx-auto mb-2">2</div>
+              <p class="text-xs font-bold text-slate-600 dark:text-slate-300">Copy prompt → paste to AI</p>
+            </div>
+            <div class="text-center p-3 rounded-2xl" style="background:rgba(16,185,129,0.06);border:1px solid rgba(16,185,129,0.12);">
+              <div class="w-8 h-8 rounded-xl btn-gradient text-white flex items-center justify-center text-xs font-black mx-auto mb-2">3</div>
+              <p class="text-xs font-bold text-slate-600 dark:text-slate-300">Copy AI output → import below</p>
+            </div>
+          </div>
+
+          <div class="space-y-1.5">
+            <label class="text-xs font-black text-slate-400 uppercase tracking-widest">
+              Your Word List
+              <span class="font-normal normal-case text-slate-300 ml-1">(one per line, or comma/space separated)</span>
+            </label>
+            <textarea id="pg-word-list"
+                      class="glass-input w-full px-4 py-3 rounded-xl font-medium text-sm resize-none"
+                      rows="4"
+                      placeholder="ameliorate&#10;ephemeral&#10;serendipity&#10;...or: ameliorate, ephemeral, serendipity"></textarea>
+          </div>
+
+          <div class="flex gap-3 flex-wrap items-center">
+            <div class="space-y-1">
+              <label class="text-xs font-black text-slate-400 uppercase tracking-widest">Type</label>
+              <select id="pg-type" class="glass-input px-3 py-2.5 rounded-xl font-bold text-sm modern-select" style="min-width:130px;">
+                <option value="mixed">Mixed (auto-detect)</option>
+                <option value="word">Words only</option>
+                <option value="idiom">Idioms only</option>
+                <option value="phrase">Phrases only</option>
+              </select>
+            </div>
+            <button onclick="generatePrompt()"
+                    class="btn-gradient px-6 py-3 rounded-xl text-white text-sm font-black shadow-lg flex items-center gap-2 mt-5">
+              <i class="fa-solid fa-wand-magic-sparkles"></i> Generate Prompt
+            </button>
+          </div>
+
+          <!-- Generated prompt output -->
+          <div id="pg-output-box" class="hidden space-y-3">
+            <div class="flex items-center justify-between">
+              <label class="text-xs font-black text-slate-400 uppercase tracking-widest">Generated Prompt — Copy & paste to AI</label>
+              <button onclick="copyPrompt()"
+                      id="pg-copy-btn"
+                      class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-black transition hover:scale-105"
+                      style="background:rgba(99,102,241,0.12);border:1px solid rgba(99,102,241,0.25);color:#6366f1;">
+                <i class="fa-solid fa-copy"></i> Copy
+              </button>
+            </div>
+            <div class="relative">
+              <textarea id="pg-prompt-text"
+                        class="glass-input w-full px-4 py-3 rounded-xl font-mono text-xs resize-none"
+                        rows="10" readonly></textarea>
+            </div>
+            <div class="flex items-center gap-2 p-3 rounded-xl text-xs font-semibold"
+                 style="background:rgba(251,191,36,0.1);border:1px solid rgba(251,191,36,0.2);color:#d97706;">
+              <i class="fa-solid fa-lightbulb text-amber-400"></i>
+              Works with ChatGPT, Claude, Gemini, or any AI. After AI replies, copy the CSV output and paste it in the Import section below.
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- ── SECTION B: CSV IMPORT ── -->
+      <div class="glass-card rounded-[1.8rem] overflow-hidden anim-3">
+        <div class="px-6 py-4 border-b border-white/30 dark:border-white/5 flex items-center gap-3"
+             style="background:linear-gradient(135deg,rgba(16,185,129,0.07),rgba(6,182,212,0.05));">
+          <span class="w-7 h-7 rounded-2xl flex items-center justify-center text-sm shadow-lg flex-shrink-0"
+                style="background:linear-gradient(135deg,#10b981,#06b6d4);">
+            <i class="fa-solid fa-file-csv text-white"></i>
+          </span>
+          <div class="flex-1 min-w-0">
+            <div class="text-sm font-black text-slate-700 dark:text-slate-200 uppercase tracking-wider">CSV Import</div>
+            <p class="text-xs text-slate-400 font-medium mt-0.5">Paste AI-generated CSV here to bulk-add to your vault</p>
+          </div>
+        </div>
+        <div class="p-6 space-y-4">
+
+          <!-- Expected format hint -->
+          <div class="p-3 rounded-2xl text-xs font-mono overflow-x-auto"
+               style="background:rgba(0,0,0,0.04);border:1px solid rgba(99,102,241,0.12);color:#64748b;">
+            <div class="font-black text-slate-500 dark:text-slate-400 font-sans mb-1.5 text-[10px] uppercase tracking-widest not-italic">Expected columns:</div>
+            word, type, meaning, mnemonics, trick, example, synonyms, antonyms
+          </div>
+
+          <div class="space-y-1.5">
+            <div class="flex items-center justify-between">
+              <label class="text-xs font-black text-slate-400 uppercase tracking-widest">Paste CSV Here</label>
+              <button onclick="el('csv-input').value='';el('csv-preview').innerHTML='';el('csv-import-bar').classList.add('hidden');"
+                      class="text-xs font-black text-rose-400 hover:text-rose-600 transition">Clear</button>
+            </div>
+            <textarea id="csv-input"
+                      class="glass-input w-full px-4 py-3 rounded-xl font-mono text-xs resize-none"
+                      rows="7"
+                      oninput="parseCSVPreview()"
+                      placeholder="word,type,meaning,mnemonics,trick,example,synonyms,antonyms&#10;ameliorate,word,&quot;to make better&quot;,&quot;A meal that's better&quot;,..."></textarea>
+          </div>
+
+          <!-- Preview table -->
+          <div id="csv-preview" class="overflow-x-auto rounded-2xl"></div>
+
+          <!-- Import action bar -->
+          <div id="csv-import-bar" class="hidden flex items-center justify-between gap-3 p-4 rounded-2xl"
+               style="background:rgba(16,185,129,0.08);border:1px solid rgba(16,185,129,0.20);">
+            <div>
+              <span class="text-sm font-black text-emerald-600 dark:text-emerald-400" id="csv-count-label">0 words ready</span>
+              <p class="text-xs text-slate-400 mt-0.5">Duplicates (same word) will be skipped automatically</p>
+            </div>
+            <button onclick="importCSV()"
+                    id="csv-import-btn"
+                    class="btn-gradient px-6 py-3 rounded-xl text-white text-sm font-black shadow-lg flex items-center gap-2 flex-shrink-0">
+              <i class="fa-solid fa-cloud-arrow-up"></i> Import All
+            </button>
+          </div>
+
+        </div>
+      </div>
+
+    </div><!-- /vpane-import -->
 
   </div><!-- /state-main -->
 
@@ -1092,6 +1266,287 @@ window.answerQuiz = (sel, correct, btn) => {
   }
   setTimeout(() => { vQuizIdx++; renderQuiz(); }, 1300);
 };
+
+
+  /* ══════════════════════════════
+     PROMPT GENERATOR
+  ══════════════════════════════ */
+  window.generatePrompt = () => {
+    const raw  = el('pg-word-list')?.value.trim();
+    const type = el('pg-type')?.value || 'mixed';
+    if (!raw) return toast('Please enter at least one word', true);
+
+    // Parse word list — support newlines or commas or spaces
+    const words = raw
+      .split(/[
+,]+/)
+      .map(w => w.trim())
+      .filter(Boolean);
+
+    if (!words.length) return toast('No words found in the list', true);
+
+    const typeNote = {
+      mixed:  'Each word/phrase might be a regular word, an idiom, or a phrase — identify the correct type for each.',
+      word:   'All entries are regular words (nouns, verbs, adjectives, etc.). Set type="word" for all.',
+      idiom:  'All entries are idioms. Set type="idiom" for all. Leave synonyms and antonyms empty.',
+      phrase: 'All entries are phrases or proverbs. Set type="phrase" for all.',
+    }[type];
+
+    const synAntNote = type === 'idiom'
+      ? 'For idioms, synonyms and antonyms columns must be empty (leave them blank).'
+      : 'For idioms/phrases, leave synonyms and antonyms empty. For regular words, provide up to 5 synonyms and 3 antonyms separated by semicolons (;).';
+
+    const prompt = `You are a vocabulary assistant helping SSC/RRB/Bank exam aspirants in India build a word vault.
+
+I will give you a list of words/idioms/phrases. For each entry, generate the following details and output ONLY a valid CSV — no explanation, no markdown, no extra text.
+
+CSV FORMAT (strict):
+word,type,meaning,mnemonics,trick,example,synonyms,antonyms
+
+COLUMN RULES:
+- word: the exact word, idiom or phrase as given
+- type: must be exactly one of: word | idiom | phrase
+- meaning: clear, concise definition (SSC-exam style)
+- mnemonics: a creative memory hook or story to remember the word
+- trick: a short trick, word-association, or root-word breakdown to recall quickly
+- example: one natural sentence using this word/idiom in context
+- synonyms: up to 5 synonyms separated by semicolons (;) — leave empty for idioms/phrases
+- antonyms: up to 3 antonyms separated by semicolons (;) — leave empty for idioms/phrases
+
+IMPORTANT RULES:
+1. Wrap any field containing commas or quotes in double-quotes
+2. Use semicolon (;) — NOT comma — to separate synonyms/antonyms
+3. Do NOT include a header row — output data rows only
+4. Output EXACTLY ${words.length} rows, one per word
+5. ${typeNote}
+6. ${synAntNote}
+7. Keep meanings concise but precise (1–2 sentences max)
+8. Mnemonics and tricks should be vivid, memorable, and India-context-friendly where possible
+
+WORD LIST:
+${words.map((w, i) => `${i + 1}. ${w}`).join('
+')}
+
+Begin CSV output now (no header, data rows only):`;
+
+    const outBox  = el('pg-output-box');
+    const outText = el('pg-prompt-text');
+    if (outText) outText.value = prompt;
+    if (outBox)  outBox.classList.remove('hidden');
+
+    // Scroll to prompt
+    setTimeout(() => outBox?.scrollIntoView({ behavior:'smooth', block:'nearest' }), 80);
+    toast(`✅ Prompt ready for ${words.length} word${words.length!==1?'s':''}!`);
+  };
+
+  window.copyPrompt = async () => {
+    const txt = el('pg-prompt-text')?.value;
+    if (!txt) return;
+    try {
+      await navigator.clipboard.writeText(txt);
+      const btn = el('pg-copy-btn');
+      if (btn) {
+        const old = btn.innerHTML;
+        btn.innerHTML = '<i class="fa-solid fa-check"></i> Copied!';
+        btn.style.background = 'rgba(16,185,129,0.15)';
+        btn.style.borderColor = 'rgba(16,185,129,0.4)';
+        btn.style.color = '#10b981';
+        setTimeout(() => { btn.innerHTML = old; btn.style = ''; }, 2000);
+      }
+      toast('📋 Prompt copied to clipboard!');
+    } catch(e) {
+      // Fallback: select all text
+      el('pg-prompt-text')?.select();
+      toast('Select all & copy (Ctrl+A, Ctrl+C)', true);
+    }
+  };
+
+  /* ══════════════════════════════
+     CSV PARSER & PREVIEW
+  ══════════════════════════════ */
+
+  // Robust CSV row parser — handles quoted fields with commas inside
+  function parseCSVLine(line) {
+    const result = [];
+    let cur = '', inQ = false;
+    for (let i = 0; i < line.length; i++) {
+      const ch = line[i];
+      if (ch === '"') {
+        if (inQ && line[i+1] === '"') { cur += '"'; i++; }
+        else inQ = !inQ;
+      } else if (ch === ',' && !inQ) {
+        result.push(cur.trim()); cur = '';
+      } else {
+        cur += ch;
+      }
+    }
+    result.push(cur.trim());
+    return result;
+  }
+
+  // Parse full CSV text → array of objects
+  function parseCSV(raw) {
+    const lines = raw.trim().split(/\r?\n/).filter(l => l.trim());
+    if (!lines.length) return [];
+
+    const EXPECTED_COLS = ['word','type','meaning','mnemonics','trick','example','synonyms','antonyms'];
+
+    // Detect if first row is a header
+    const firstCells = parseCSVLine(lines[0]).map(c => c.toLowerCase().trim());
+    const isHeader = firstCells.includes('word') || firstCells.includes('meaning');
+    const dataLines = isHeader ? lines.slice(1) : lines;
+
+    return dataLines
+      .filter(l => l.trim())
+      .map(line => {
+        const cols = parseCSVLine(line);
+        return {
+          word:      cols[0] || '',
+          type:      (['word','idiom','phrase'].includes(cols[1]?.toLowerCase()) ? cols[1].toLowerCase() : 'word'),
+          meaning:   cols[2] || '',
+          mnemonics: cols[3] || '',
+          trick:     cols[4] || '',
+          example:   cols[5] || '',
+          synonyms:  (cols[6] || '').split(';').map(s=>s.trim()).filter(Boolean),
+          antonyms:  (cols[7] || '').split(';').map(s=>s.trim()).filter(Boolean),
+        };
+      })
+      .filter(r => r.word && r.meaning); // must have at least word + meaning
+  }
+
+  // Build preview table
+  window.parseCSVPreview = () => {
+    const raw     = el('csv-input')?.value || '';
+    const preview = el('csv-preview');
+    const bar     = el('csv-import-bar');
+    const lbl     = el('csv-count-label');
+    if (!preview) return;
+
+    if (!raw.trim()) {
+      preview.innerHTML = '';
+      bar?.classList.add('hidden');
+      return;
+    }
+
+    const rows = parseCSV(raw);
+    if (!rows.length) {
+      preview.innerHTML = '<p class="text-xs text-rose-400 font-bold py-3 text-center">Could not parse CSV. Check format.</p>';
+      bar?.classList.add('hidden');
+      return;
+    }
+
+    // Mark duplicates (words already in vault)
+    const existingWords = new Set(vWords.map(w => w.word.toLowerCase().trim()));
+
+    const thead = `<tr>
+      <th>Word</th><th>Type</th><th>Meaning</th>
+      <th>Mnemonics</th><th>Trick</th><th>Example</th>
+      <th>Synonyms</th><th>Antonyms</th>
+    </tr>`;
+
+    const tbody = rows.map((r, i) => {
+      const isDup = existingWords.has(r.word.toLowerCase().trim());
+      const rowCls = isDup ? 'csv-row-skip' : '';
+      const truncate = (s, n=40) => s.length > n ? s.substring(0, n) + '…' : s;
+      return `<tr class="${rowCls}" title="${isDup ? 'Already in vault — will be skipped' : ''}">
+        <td class="csv-row-word">${r.word}</td>
+        <td>${r.type}</td>
+        <td title="${r.meaning}">${truncate(r.meaning)}</td>
+        <td title="${r.mnemonics}">${truncate(r.mnemonics,35)}</td>
+        <td title="${r.trick}">${truncate(r.trick,35)}</td>
+        <td title="${r.example}">${truncate(r.example,35)}</td>
+        <td>${r.synonyms.slice(0,3).join(', ')}</td>
+        <td>${r.antonyms.slice(0,3).join(', ')}</td>
+      </tr>`;
+    }).join('');
+
+    const newCount = rows.filter(r => !existingWords.has(r.word.toLowerCase().trim())).length;
+    const dupCount = rows.length - newCount;
+
+    preview.innerHTML = `
+      <div class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">
+        Preview — ${rows.length} rows parsed
+        ${dupCount ? `<span class="text-rose-400 ml-2">(${dupCount} duplicate${dupCount!==1?'s':''} will be skipped)</span>` : ''}
+      </div>
+      <div style="overflow-x:auto;border-radius:16px;border:1px solid rgba(99,102,241,0.12);">
+        <table class="csv-preview-table">
+          <thead>${thead}</thead>
+          <tbody>${tbody}</tbody>
+        </table>
+      </div>`;
+
+    if (newCount > 0) {
+      if (lbl) lbl.textContent = `${newCount} new word${newCount!==1?'s':''} ready to import`;
+      bar?.classList.remove('hidden');
+    } else {
+      if (lbl) lbl.textContent = 'All words already in vault';
+      bar?.classList.remove('hidden');
+      el('csv-import-btn')?.setAttribute('disabled','true');
+    }
+  };
+
+  /* ══════════════════════════════
+     CSV IMPORT TO FIRESTORE
+  ══════════════════════════════ */
+  window.importCSV = async () => {
+    if (!currentUser) return toast('Please sign in first', true);
+    const raw = el('csv-input')?.value || '';
+    const rows = parseCSV(raw);
+    if (!rows.length) return toast('No valid rows found', true);
+
+    const existingWords = new Set(vWords.map(w => w.word.toLowerCase().trim()));
+    const newRows = rows.filter(r => !existingWords.has(r.word.toLowerCase().trim()));
+
+    if (!newRows.length) return toast('All words already exist in your vault', true);
+
+    const btn = el('csv-import-btn');
+    if (btn) { btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-2"></i>Importing…'; btn.disabled = true; }
+
+    let imported = 0, failed = 0;
+
+    for (const r of newRows) {
+      try {
+        const entry = {
+          word:      r.word,
+          type:      r.type,
+          meaning:   r.meaning,
+          mnemonics: r.mnemonics,
+          trick:     r.trick,
+          example:   r.example,
+          synonyms:  r.synonyms,
+          antonyms:  r.antonyms,
+          tags:      [],
+          mastered:  false,
+          createdAt: Timestamp.now(),
+        };
+        const ref = await addDoc(vocabColl(), entry);
+        vWords.unshift({ id:ref.id, ...entry });
+        imported++;
+        // Update button progress
+        if (btn) btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin mr-2"></i>${imported}/${newRows.length}`;
+      } catch(e) {
+        failed++;
+        console.error('Import row failed:', r.word, e);
+      }
+    }
+
+    if (btn) { btn.innerHTML = '<i class="fa-solid fa-cloud-arrow-up mr-2"></i>Import All'; btn.disabled = false; }
+
+    updateStats();
+    renderLibrary();
+
+    if (failed) toast(`Imported ${imported}, failed ${failed}`, true);
+    else        toast(`✅ ${imported} word${imported!==1?'s':''} added to vault!`);
+
+    // Clear the CSV input and preview
+    if (imported > 0) {
+      if (el('csv-input'))  el('csv-input').value = '';
+      if (el('csv-preview')) el('csv-preview').innerHTML = '';
+      el('csv-import-bar')?.classList.add('hidden');
+      // Switch to library to see new words
+      setTimeout(() => subTab('library'), 800);
+    }
+  };
 
 </script>
 </body>
