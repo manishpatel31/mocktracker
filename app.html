@@ -1082,15 +1082,23 @@
                 <p class="text-slate-500 dark:text-slate-400 text-xs mt-1">Select the exam you're preparing for</p>
             </div>
 
-            <!-- Compact 2x2 grid -->
+            <!-- 2-column exam grid — 5 exams -->
             <div class="p-4 grid grid-cols-2 gap-3">
-                <div onclick="selectExam('SSC_CGL_CHSL')" class="exam-card glass-card p-4 rounded-[1.25rem] border-2 border-transparent cursor-pointer" data-exam="SSC_CGL_CHSL">
+                <div onclick="selectExam('SSC_CGL')" class="exam-card glass-card p-4 rounded-[1.25rem] border-2 border-transparent cursor-pointer" data-exam="SSC_CGL">
                     <div class="flex items-center justify-between mb-2">
                         <div class="w-8 h-8 rounded-xl bg-blue-100 dark:bg-blue-900/30 text-blue-600 flex items-center justify-center text-sm"><i class="fa-solid fa-briefcase"></i></div>
                         <i class="fa-solid fa-check-circle text-lg text-brand-600 opacity-0 check-icon transition"></i>
                     </div>
-                    <h3 class="text-sm font-black text-slate-900 dark:text-white leading-tight">SSC CGL / CHSL</h3>
+                    <h3 class="text-sm font-black text-slate-900 dark:text-white leading-tight">SSC CGL</h3>
                     <div class="flex gap-1 mt-1.5 flex-wrap"><span class="pill bg-blue-100 dark:bg-blue-900/30 text-blue-600">+2 / -0.5</span><span class="pill bg-blue-100 dark:bg-blue-900/30 text-blue-600">200 marks</span></div>
+                </div>
+                <div onclick="selectExam('SSC_CHSL')" class="exam-card glass-card p-4 rounded-[1.25rem] border-2 border-transparent cursor-pointer" data-exam="SSC_CHSL">
+                    <div class="flex items-center justify-between mb-2">
+                        <div class="w-8 h-8 rounded-xl bg-sky-100 dark:bg-sky-900/30 text-sky-600 flex items-center justify-center text-sm"><i class="fa-solid fa-file-pen"></i></div>
+                        <i class="fa-solid fa-check-circle text-lg text-brand-600 opacity-0 check-icon transition"></i>
+                    </div>
+                    <h3 class="text-sm font-black text-slate-900 dark:text-white leading-tight">SSC CHSL</h3>
+                    <div class="flex gap-1 mt-1.5 flex-wrap"><span class="pill bg-sky-100 dark:bg-sky-900/30 text-sky-600">+2 / -0.5</span><span class="pill bg-sky-100 dark:bg-sky-900/30 text-sky-600">200 marks</span></div>
                 </div>
                 <div onclick="selectExam('RRB_NTPC')" class="exam-card glass-card p-4 rounded-[1.25rem] border-2 border-transparent cursor-pointer" data-exam="RRB_NTPC">
                     <div class="flex items-center justify-between mb-2">
@@ -1660,6 +1668,7 @@
 
                     <!-- Normal subject-wise entry -->
                     <div id="normal-entry-section" class="p-6">
+                        <div id="exam-total-marks-banner"></div>
                         <div id="subject-cards-grid" class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
                             <!-- Subject cards rendered by JS -->
                         </div>
@@ -2229,19 +2238,93 @@
 
         // ── EXAM CONFIGS ──
         const EXAM_GROUPS = {
-            "SSC_CGL_CHSL": { name:"SSC CGL/CHSL", exams:["SSC CGL","SSC CHSL"], subjects:["Reasoning","GK","Quant","English"], c:2, w:0.5, total:200, quickEntry:false },
-            "RRB_NTPC":     { name:"RRB NTPC",     exams:["RRB NTPC"],            subjects:["GK/Science","Maths","Reasoning"],    c:1, w:0.33, total:100, quickEntry:true },
-            "SSC_MTS":      { name:"SSC MTS",       exams:["SSC MTS"],             subjects:["Maths","Reasoning","GK","English"],   c:3, w:1,    total:270, quickEntry:false },
-            "BANK_PO":      { name:"Bank PO",        exams:["Bank PO"],             subjects:["English","Quant","Reasoning"],        c:1, w:0.25, total:100, quickEntry:false }
+            "SSC_CGL": { name:"SSC CGL", exams:["SSC CGL"], c:2, w:0.5, total:200, quickEntry:false,
+                subjects:[
+                    { name:"General Intelligence", q:25, c:2, w:0.5, total:50 },
+                    { name:"General Awareness",    q:25, c:2, w:0.5, total:50 },
+                    { name:"Quantitative Aptitude",q:25, c:2, w:0.5, total:50 },
+                    { name:"English Comprehension",q:25, c:2, w:0.5, total:50 }
+                ]
+            },
+            "SSC_CHSL": { name:"SSC CHSL", exams:["SSC CHSL"], c:2, w:0.5, total:200, quickEntry:false,
+                subjects:[
+                    { name:"English Language",     q:25, c:2, w:0.5, total:50 },
+                    { name:"General Intelligence", q:25, c:2, w:0.5, total:50 },
+                    { name:"Quantitative Aptitude",q:25, c:2, w:0.5, total:50 },
+                    { name:"General Awareness",    q:25, c:2, w:0.5, total:50 }
+                ]
+            },
+            "RRB_NTPC": { name:"RRB NTPC", exams:["RRB NTPC"], c:1, w:1/3, total:100, quickEntry:false,
+                subjects:[
+                    { name:"General Awareness",             q:40, c:1, w:1/3, total:40 },
+                    { name:"Mathematics",                   q:30, c:1, w:1/3, total:30 },
+                    { name:"General Intelligence & Reasoning", q:30, c:1, w:1/3, total:30 }
+                ]
+            },
+            "SSC_MTS": { name:"SSC MTS", exams:["SSC MTS"], c:3, w:0, total:270, quickEntry:false,
+                subjects:[
+                    { name:"Mathematics",       q:20, c:3, w:0,   total:60 },
+                    { name:"Reasoning",         q:20, c:3, w:0,   total:60 },
+                    { name:"General Awareness", q:25, c:3, w:1,   total:75 },
+                    { name:"English Language",  q:25, c:3, w:1,   total:75 }
+                ]
+            },
+            "BANK_PO": { name:"Bank PO", exams:["Bank PO"], c:1, w:0.25, total:100, quickEntry:false,
+                subjects:[
+                    { name:"English Language",  q:30, c:1, w:0.25, total:30 },
+                    { name:"Quantitative Aptitude", q:35, c:1, w:0.25, total:35 },
+                    { name:"Reasoning Ability", q:35, c:1, w:0.25, total:35 }
+                ]
+            }
         };
 
 
         // ── TIER 2 / MAINS EXAM CONFIGS ──
         const EXAM_TIER2_GROUPS = {
-            "SSC_CGL_CHSL": { name:"SSC CGL/CHSL Tier 2", tierLabel:"Tier 2",  exams:["SSC CGL","SSC CHSL"], subjects:["Maths","Reasoning","English Language","GK / Current Affairs"], c:3, w:1,    total:390, quickEntry:false, info:"130Q · +3 / −1 · 390 marks",   examLabel:"SSC CGL/CHSL — Tier 2 (Mains)" },
-            "RRB_NTPC":     { name:"RRB NTPC CBT 2",       tierLabel:"CBT 2",   exams:["RRB NTPC"],           subjects:["GK / Awareness","Maths","Reasoning"],                          c:1, w:0.33, total:120, quickEntry:true,  info:"120Q · +1 / −0.33 · 120 marks", examLabel:"RRB NTPC — CBT 2"              },
-            "SSC_MTS":      { name:"SSC MTS Tier 2",       tierLabel:"Tier 2",  exams:["SSC MTS"],            subjects:["Essay","Letter / Application"],                                c:1, w:0,    total:50,  quickEntry:false, info:"Descriptive · 50 marks",         examLabel:"SSC MTS — Tier 2 (Descriptive)" },
-            "BANK_PO":      { name:"Bank PO Mains",         tierLabel:"Phase 2", exams:["Bank PO"],            subjects:["Reasoning & Computer","English Language","Data Analysis","GK / Banking"], c:1, w:0.25, total:200, quickEntry:false, info:"155Q · +1 / −0.25 · 200 marks", examLabel:"Bank PO — Phase 2 (Mains)" }
+            "SSC_CGL":  { name:"SSC CGL Tier 2",  tierLabel:"Tier 2", exams:["SSC CGL"],  c:3, w:1, total:390, quickEntry:false,
+                            info:"130Q · +3 / −1 · 390 marks", examLabel:"SSC CGL — Tier 2 (Mains)",
+                            subjects:[
+                                { name:"Mathematical Abilities",           q:30, c:3, w:1, total:90  },
+                                { name:"Reasoning & General Intelligence", q:30, c:3, w:1, total:90  },
+                                { name:"English Language & Comprehension", q:45, c:3, w:1, total:135 },
+                                { name:"General Awareness",               q:25, c:3, w:1, total:75  },
+                                { name:"Computer Knowledge (Qualifying)",  q:20, c:3, w:1, total:60, qualifying:true }
+                            ]
+                        },
+            "SSC_CHSL": { name:"SSC CHSL Tier 2", tierLabel:"Tier 2", exams:["SSC CHSL"], c:3, w:1, total:360, quickEntry:false,
+                            info:"120Q · +3 / −1 · 360 marks", examLabel:"SSC CHSL — Tier 2 (Mains)",
+                            subjects:[
+                                { name:"Mathematical Abilities",           q:30, c:3, w:1, total:90  },
+                                { name:"Reasoning & General Intelligence", q:30, c:3, w:1, total:90  },
+                                { name:"English Language & Comprehension", q:40, c:3, w:1, total:120 },
+                                { name:"General Awareness",               q:20, c:3, w:1, total:60  },
+                                { name:"Computer Knowledge (Qualifying)",  q:15, c:3, w:1, total:45, qualifying:true }
+                            ]
+                        },
+            "RRB_NTPC": { name:"RRB NTPC CBT 2", tierLabel:"CBT 2", exams:["RRB NTPC"], c:1, w:1/3, total:120, quickEntry:false,
+                            info:"120Q · +1 / −0.33 · 120 marks", examLabel:"RRB NTPC — CBT 2",
+                            subjects:[
+                                { name:"General Awareness",             q:50, c:1, w:1/3, total:50 },
+                                { name:"Mathematics",                   q:35, c:1, w:1/3, total:35 },
+                                { name:"General Intelligence & Reasoning", q:35, c:1, w:1/3, total:35 }
+                            ]
+                        },
+            "SSC_MTS":  { name:"SSC MTS Tier 2", tierLabel:"Tier 2", exams:["SSC MTS"], c:1, w:0, total:50, quickEntry:false,
+                            info:"Descriptive · 50 marks", examLabel:"SSC MTS — Tier 2 (Descriptive)",
+                            subjects:[
+                                { name:"Essay",                q:1, c:25, w:0, total:25 },
+                                { name:"Letter / Application", q:1, c:25, w:0, total:25 }
+                            ]
+                        },
+            "BANK_PO":  { name:"Bank PO Mains", tierLabel:"Phase 2", exams:["Bank PO"], c:1, w:0.25, total:200, quickEntry:false,
+                            info:"155Q · +1 / −0.25 · 200 marks", examLabel:"Bank PO — Phase 2 (Mains)",
+                            subjects:[
+                                { name:"Reasoning & Computer",  q:45, c:1, w:0.25, total:45 },
+                                { name:"English Language",      q:35, c:1, w:0.25, total:35 },
+                                { name:"Data Analysis & Interpretation", q:35, c:1, w:0.25, total:35 },
+                                { name:"GK & Banking Awareness",q:40, c:1, w:0.25, total:40 }
+                            ]
+                        }
         };
 
         // ── TIER helpers ──
@@ -2343,7 +2426,7 @@
             return {
                 mocks: [
                     {   // Mock 1 — starting point, avg performer
-                        id:'dm1', platform:'Testbook', exam:'SSC CGL', examGroup:'SSC_CGL_CHSL',
+                        id:'dm1', platform:'Testbook', exam:'SSC CGL', examGroup:'SSC_CGL',
                         name:'SSC CGL Tier-1 Mock #1', category:'Full', date:d(28),
                         score:123.0, max:200, perc:72.3, time:65, quickEntry:false,
                         subjects:[
@@ -2358,7 +2441,7 @@
                         weak:'Trigonometry, Blood Relations, Para Jumbles'
                     },
                     {   // Mock 2 — decent improvement
-                        id:'dm2', platform:'Oliveboard', exam:'SSC CGL', examGroup:'SSC_CGL_CHSL',
+                        id:'dm2', platform:'Oliveboard', exam:'SSC CGL', examGroup:'SSC_CGL',
                         name:'SSC CGL Tier-1 Mock #2', category:'Full', date:d(21),
                         score:139.5, max:200, perc:78.9, time:62, quickEntry:false,
                         subjects:[
@@ -2373,7 +2456,7 @@
                         weak:'Mensuration formulas, Synonyms/Antonyms, Modern History dates'
                     },
                     {   // Mock 3 — slight dip (bad day)
-                        id:'dm3', platform:'The Pundits', exam:'SSC CGL', examGroup:'SSC_CGL_CHSL',
+                        id:'dm3', platform:'The Pundits', exam:'SSC CGL', examGroup:'SSC_CGL',
                         name:'SSC CGL Tier-1 Mock #3', category:'Full', date:d(14),
                         score:117.5, max:200, perc:68.4, time:68, quickEntry:false,
                         subjects:[
@@ -2388,7 +2471,7 @@
                         weak:'Syllogisms, Geography GK, Speed Time Distance shortcuts'
                     },
                     {   // Mock 4 — strong recovery
-                        id:'dm4', platform:'Adda247', exam:'SSC CGL', examGroup:'SSC_CGL_CHSL',
+                        id:'dm4', platform:'Adda247', exam:'SSC CGL', examGroup:'SSC_CGL',
                         name:'SSC CGL Tier-1 Mock #4', category:'Full', date:d(7),
                         score:153.5, max:200, perc:87.2, time:58, quickEntry:false,
                         subjects:[
@@ -2403,7 +2486,7 @@
                         weak:'Coding-Decoding advanced patterns, Percentage applications'
                     },
                     {   // Mock 5 — best so far (latest)
-                        id:'dm5', platform:'Testbook', exam:'SSC CGL', examGroup:'SSC_CGL_CHSL',
+                        id:'dm5', platform:'Testbook', exam:'SSC CGL', examGroup:'SSC_CGL',
                         name:'SSC CGL Tier-1 Mock #5', category:'Full', date:d(2),
                         score:163.0, max:200, perc:93.6, time:55, quickEntry:false,
                         subjects:[
@@ -2474,7 +2557,7 @@
             state._realExamGroup = state.selectedExamGroup; // also stash exam selection
 
             state.isDemoMode = true;
-            state.selectedExamGroup = 'SSC_CGL_CHSL';
+            state.selectedExamGroup = 'SSC_CGL';
             state.currentTier = 'tier1';
             updateExamBadge();
             updateFormForExam();
@@ -5814,7 +5897,7 @@ Give a concise pre-mock briefing in this EXACT JSON (no markdown, no backticks):
             const sc = el('sec-checkboxes');
             if (sc) sc.innerHTML = group.subjects.map(s => `
                 <label class="cursor-pointer glass-card px-4 py-3 rounded-2xl text-xs font-black text-slate-500 uppercase tracking-widest hover:border-brand-500 transition flex items-center gap-2 select-none">
-                    <input type="checkbox" value="${s}" class="sec-cb accent-brand-600 w-4 h-4 rounded" onchange="window.renderFormRows()"> ${s}
+                    <input type="checkbox" value="${s.name}" class="sec-cb accent-brand-600 w-4 h-4 rounded" onchange="window.renderFormRows()"> ${s.name}
                 </label>`).join('');
             window.renderFormRows();
         }
@@ -5822,52 +5905,86 @@ Give a concise pre-mock briefing in this EXACT JSON (no markdown, no backticks):
         window.renderFormRows = () => {
             const catVal = el('inp-cat'), group = getCurrentTierConfig() || EXAM_GROUPS[state.selectedExamGroup];
             if (!group || !catVal) return;
-            let subs = group.subjects;
+            let subs = group.subjects;  // array of {name, q, c, w, total, qualifying?}
             const divSec = el('div-sec-select');
             if (catVal.value === 'Sectional') {
                 if (divSec) divSec.classList.remove('hidden');
-                const checked = Array.from(document.querySelectorAll('.sec-cb:checked')).map(c=>c.value);
-                if (checked.length) subs = checked;
+                const checked = Array.from(document.querySelectorAll('.sec-cb:checked')).map(cb=>cb.value);
+                if (checked.length) subs = subs.filter(s => checked.includes(s.name));
             } else { if (divSec) divSec.classList.add('hidden'); }
 
-            // New card-based grid for subjects
+            // Total marks banner
+            const totalBanner = el('exam-total-marks-banner');
+            if (totalBanner) {
+                const scored = subs.filter(s => !s.qualifying);
+                const bannerTotal = scored.reduce((a,s)=>a+s.total, 0);
+                totalBanner.innerHTML = `
+                    <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;padding:10px 14px;border-radius:14px;background:linear-gradient(135deg,rgba(99,102,241,0.12),rgba(168,85,247,0.10));border:1px solid rgba(99,102,241,0.25);margin-bottom:12px;">
+                        <div style="display:flex;align-items:center;gap:8px;">
+                            <span style="font-size:15px;">📋</span>
+                            <span style="font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:0.08em;color:var(--c-slate-500);">${group.name}</span>
+                        </div>
+                        <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
+                            <span style="font-size:11px;font-weight:800;color:#6366f1;">Total: <span style="font-size:15px;">${bannerTotal}</span> marks</span>
+                            <span style="font-size:11px;font-weight:700;color:var(--c-slate-400);">+${group.c} / −${group.w} per Q</span>
+                        </div>
+                    </div>`;
+                totalBanner.style.display = 'block';
+            }
+
+            // Subject cards with per-subject metadata
             const grid = el('subject-cards-grid');
-            if (grid) grid.innerHTML = subs.map(s => `
-                <div class="glass-card rounded-2xl p-4 border border-white/40 dark:border-white/5" data-sub="${s}">
-                    <p class="text-xs font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-3">${s}</p>
-                    <div class="grid grid-cols-4 gap-2">
+            if (grid) grid.innerHTML = subs.map(s => {
+                const isQual = s.qualifying;
+                const negStr = s.w === 0 ? 'No Neg' : ('−' + (s.w === 1/3 ? '0.33' : s.w));
+                return `
+                <div class="glass-card rounded-2xl p-3 border border-white/40 dark:border-white/5${isQual?' opacity-60':''}" data-sub="${s.name}" data-c="${s.c}" data-w="${s.w}">
+                    <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px;">
+                        <p style="font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:0.07em;color:${isQual?'#f59e0b':'var(--c-slate-500)'};">${s.name}${isQual ? ' <span style="font-size:9px;background:rgba(245,158,11,0.15);color:#f59e0b;padding:1px 5px;border-radius:4px;">QUAL</span>' : ''}</p>
+                    </div>
+                    <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px;">
+                        <span style="font-size:9px;font-weight:800;padding:2px 7px;border-radius:6px;background:rgba(99,102,241,0.1);color:#6366f1;">${s.q}Q</span>
+                        <span style="font-size:9px;font-weight:800;padding:2px 7px;border-radius:6px;background:rgba(16,185,129,0.1);color:#10b981;">+${s.c}/Q</span>
+                        <span style="font-size:9px;font-weight:800;padding:2px 7px;border-radius:6px;background:rgba(239,68,68,0.1);color:#ef4444;">${negStr}</span>
+                        <span style="font-size:9px;font-weight:800;padding:2px 7px;border-radius:6px;background:rgba(148,163,184,0.15);color:var(--c-slate-500);">${s.total}M</span>
+                    </div>
+                    <div class="grid grid-cols-4 gap-1.5">
                         <div class="text-center">
-                            <p class="text-xs font-black text-emerald-500 uppercase mb-1">Right</p>
-                            <input type="number" min="0" class="score-inp c w-full text-emerald-600 text-lg font-black" placeholder="0" oninput="window.calcScore()" style="background:rgba(16,185,129,0.08);border-radius:8px;padding:6px 4px;">
+                            <p style="font-size:9px;font-weight:900;color:#10b981;text-transform:uppercase;margin-bottom:3px;">Right</p>
+                            <input type="number" min="0" class="score-inp c w-full text-emerald-600 text-lg font-black" placeholder="0" oninput="window.calcScore()" style="background:rgba(16,185,129,0.08);border-radius:8px;padding:6px 4px;text-align:center;border:none;outline:none;width:100%;">
                         </div>
                         <div class="text-center">
-                            <p class="text-xs font-black text-rose-500 uppercase mb-1">Wrong</p>
-                            <input type="number" min="0" class="score-inp w w-full text-rose-500 text-lg font-black" placeholder="0" oninput="window.calcScore()" style="background:rgba(239,68,68,0.08);border-radius:8px;padding:6px 4px;">
+                            <p style="font-size:9px;font-weight:900;color:#ef4444;text-transform:uppercase;margin-bottom:3px;">Wrong</p>
+                            <input type="number" min="0" class="score-inp w w-full text-rose-500 text-lg font-black" placeholder="0" oninput="window.calcScore()" style="background:rgba(239,68,68,0.08);border-radius:8px;padding:6px 4px;text-align:center;border:none;outline:none;width:100%;">
                         </div>
                         <div class="text-center">
-                            <p class="text-xs font-black text-slate-400 uppercase mb-1">Skip</p>
-                            <input type="number" min="0" class="score-inp u w-full text-slate-400 text-lg font-black" placeholder="0" style="background:rgba(148,163,184,0.08);border-radius:8px;padding:6px 4px;">
+                            <p style="font-size:9px;font-weight:900;color:#94a3b8;text-transform:uppercase;margin-bottom:3px;">Skip</p>
+                            <input type="number" min="0" class="score-inp u w-full text-slate-400 text-lg font-black" placeholder="0" style="background:rgba(148,163,184,0.08);border-radius:8px;padding:6px 4px;text-align:center;border:none;outline:none;width:100%;">
                         </div>
                         <div class="text-center">
-                            <p class="text-xs font-black text-orange-500 uppercase mb-1">Silly</p>
-                            <input type="number" min="0" class="score-inp s w-full text-orange-500 text-lg font-black" placeholder="0" style="background:rgba(249,115,22,0.08);border-radius:8px;padding:6px 4px;">
+                            <p style="font-size:9px;font-weight:900;color:#f97316;text-transform:uppercase;margin-bottom:3px;">Silly</p>
+                            <input type="number" min="0" class="score-inp s w-full text-orange-500 text-lg font-black" placeholder="0" style="background:rgba(249,115,22,0.08);border-radius:8px;padding:6px 4px;text-align:center;border:none;outline:none;width:100%;">
                         </div>
                     </div>
-                </div>`).join('');
+                </div>`;
+            }).join('');
 
-            // Keep hidden tbody in sync for form submit (reads data-sub from cards now)
+            // Sync hidden tbody
             const tbody = el('inp-subs-body');
-            if (tbody) tbody.innerHTML = subs.map(s => `<tr data-sub="${s}"></tr>`).join('');
+            if (tbody) tbody.innerHTML = subs.map(s => `<tr data-sub="${s.name}"></tr>`).join('');
 
             window.calcScore();
         };
 
         window.calcScore = () => {
-            const group = EXAM_GROUPS[state.selectedExamGroup]; if (!group) return;
+            const group = getCurrentTierConfig() || EXAM_GROUPS[state.selectedExamGroup]; if (!group) return;
             let score = 0;
             document.querySelectorAll('#subject-cards-grid [data-sub]').forEach(card => {
                 const c = parseFloat(card.querySelector('.c')?.value||0), w = parseFloat(card.querySelector('.w')?.value||0);
-                score += (c * group.c) - (w * group.w);
+                // Use per-subject marking stored in data-c / data-w (falls back to group-level)
+                const cMark = parseFloat(card.dataset.c || group.c);
+                const wMark = parseFloat(card.dataset.w || group.w);
+                score += (c * cMark) - (w * wMark);
             });
             safeSetText('calc-score', score.toFixed(2));
         };
