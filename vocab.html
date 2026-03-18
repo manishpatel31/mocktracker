@@ -59,7 +59,66 @@ html,body{overflow-x:hidden;max-width:100%;}
 #toast.err{background:linear-gradient(135deg,#ef4444,#dc2626);}
 #toast.ok{background:linear-gradient(135deg,#10b981,#059669);}
 
-/* ── Header tab pills ── */
+
+    /* ── Mobile bottom nav ── */
+    @media(max-width:767px){
+      #header-tab-row{ display:none !important; }
+      main{ padding-bottom:90px !important; }
+    }
+    #mobile-bottom-nav{
+      display:none; position:fixed; bottom:0; left:0; right:0; z-index:50;
+      background:rgba(255,255,255,.88); backdrop-filter:blur(24px) saturate(200%);
+      -webkit-backdrop-filter:blur(24px) saturate(200%);
+      border-top:1px solid rgba(255,255,255,.65);
+      box-shadow:0 -4px 24px rgba(99,102,241,.1);
+      padding:6px 0 env(safe-area-inset-bottom,6px);
+    }
+    .dark #mobile-bottom-nav{
+      background:rgba(6,4,15,.88); border-top:1px solid rgba(139,92,246,.18);
+      box-shadow:0 -4px 24px rgba(0,0,0,.4);
+    }
+    @media(max-width:767px){ #mobile-bottom-nav{ display:block; } }
+    .mnav-btn{
+      flex:1; display:flex; flex-direction:column; align-items:center;
+      justify-content:center; gap:3px; padding:8px 4px 6px;
+      border:none; background:none; cursor:pointer; color:#94a3b8;
+      font-size:9px; font-weight:800; letter-spacing:.04em; text-transform:uppercase;
+      transition:all .2s; -webkit-tap-highlight-color:transparent; font-family:inherit;
+    }
+    .mnav-btn i{ font-size:19px; display:block; }
+    .mnav-btn.active{ color:#6366f1; }
+    .dark .mnav-btn.active{ color:#818cf8; }
+    .mnav-btn.active i{ filter:drop-shadow(0 0 6px rgba(99,102,241,.5)); }
+    /* FAB */
+    #fab-add{
+      position:fixed; bottom:80px; right:20px; z-index:60;
+      width:56px; height:56px; border-radius:50%;
+      background:linear-gradient(135deg,#6366f1,#d946ef); color:white;
+      border:none; cursor:pointer; font-size:22px;
+      box-shadow:0 8px 28px rgba(99,102,241,.45),0 2px 8px rgba(0,0,0,.15);
+      display:none; align-items:center; justify-content:center;
+      transition:transform .2s,box-shadow .2s; -webkit-tap-highlight-color:transparent;
+    }
+    #fab-add:hover{ transform:scale(1.08); box-shadow:0 12px 36px rgba(99,102,241,.55); }
+    #fab-add:active{ transform:scale(.95); }
+    @media(max-width:767px){ #fab-add{ display:flex; } }
+    /* Library compact view */
+    .lib-compact .wcard{ padding:11px 14px !important; margin-bottom:6px !important; }
+    .lib-compact .wcard-title{ font-size:14px !important; }
+    .lib-compact .wcard-meaning{ font-size:12px !important; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:100%; display:block; margin:2px 0 0 !important; }
+    .lib-compact .wcard-example,.lib-compact .wcard-divider,.lib-compact .wcard-detail-lbl,.lib-compact .wcard-detail-txt,.lib-compact .chip{ display:none !important; }
+    .lib-compact .wcard-pos{ font-size:9px; }
+    .lib-compact .wcard-actions{ opacity:0; transition:opacity .15s; }
+    .lib-compact .wcard:hover .wcard-actions{ opacity:1; }
+    @media(max-width:767px){ .lib-compact .wcard-actions{ opacity:1; } }
+    /* Form section grouping */
+    .form-section{ background:rgba(255,255,255,.22); border:1px solid rgba(255,255,255,.45); border-radius:16px; padding:14px 16px; }
+    .dark .form-section{ background:rgba(255,255,255,.04); border-color:rgba(139,92,246,.15); }
+    .form-section-label{ font-size:9px; font-weight:900; letter-spacing:.12em; text-transform:uppercase; color:#94a3b8; margin-bottom:12px; display:flex; align-items:center; gap:6px; }
+    /* Heatmap enlarged */
+    .heat-cell{ width:18px !important; height:18px !important; border-radius:4px !important; }
+
+    /* ── Header tab pills ── */
     #header-tab-row::-webkit-scrollbar{display:none;}
     .htab{
       display:inline-flex;align-items:center;gap:7px;
@@ -216,7 +275,7 @@ html,body{overflow-x:hidden;max-width:100%;}
 
 /* ── Level rating buttons in flashcard ── */
 .rate-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:14px;}
-.rate-btn{padding:12px 6px;border-radius:14px;font-size:10px;font-weight:900;cursor:pointer;border:2px solid transparent;transition:all .2s;display:flex;flex-direction:column;align-items:center;gap:3px;text-align:center;}
+.rate-btn{padding:16px 8px;min-height:60px;border-radius:14px;font-size:10px;font-weight:900;cursor:pointer;border:2px solid transparent;transition:all .2s;display:flex;flex-direction:column;align-items:center;gap:3px;text-align:center;}
 .rate-btn:hover{transform:translateY(-2px);filter:brightness(1.1);}
 .rate-btn .rate-icon{font-size:18px;}
 .rate-btn .rate-lbl{font-size:9px;letter-spacing:.04em;text-transform:uppercase;}
@@ -469,11 +528,18 @@ html,body{overflow-x:hidden;max-width:100%;}
           <button class="sort-btn" id="srt-level"  onclick="setSort('level',this)">Level ↑</button>
           <button class="sort-btn" id="srt-due"    onclick="setSort('due',this)">Due First</button>
         </div>
-        <button onclick="toggleBulk()" id="bulk-toggle-btn"
-                class="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-black transition hover:scale-105"
-                style="background:rgba(99,102,241,.1);border:1px solid rgba(99,102,241,.2);color:#6366f1;">
-          <i class="fa-solid fa-check-square"></i> Select
-        </button>
+        <div class="flex gap-2">
+          <button onclick="toggleCompact()" id="compact-toggle-btn" title="Toggle compact view"
+                  class="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-black transition hover:scale-105"
+                  style="background:rgba(99,102,241,.08);border:1px solid rgba(99,102,241,.18);color:#6366f1;">
+            <i class="fa-solid fa-list" id="compact-toggle-icon"></i>
+          </button>
+          <button onclick="toggleBulk()" id="bulk-toggle-btn"
+                  class="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-black transition hover:scale-105"
+                  style="background:rgba(99,102,241,.1);border:1px solid rgba(99,102,241,.2);color:#6366f1;">
+            <i class="fa-solid fa-check-square"></i> Select
+          </button>
+        </div>
       </div>
 
       <div id="v-library-list"></div>
@@ -487,71 +553,96 @@ html,body{overflow-x:hidden;max-width:100%;}
           <span class="text-sm font-black text-slate-700 dark:text-slate-200 uppercase tracking-wider" id="v-form-title">Add New Entry</span>
           <button id="v-cancel-btn" onclick="cancelEdit()" class="hidden ml-auto btn-glass px-3 py-1.5 rounded-xl text-xs font-black text-rose-500">Cancel</button>
         </div>
-        <div class="p-5 space-y-4">
+        <div class="p-5 space-y-3">
           <input type="hidden" id="v-edit-id">
-          <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
-            <div class="col-span-2 space-y-1.5">
-              <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Word / Idiom *</label>
-              <input class="glass-input w-full px-3 py-2.5 rounded-xl font-bold text-sm" type="text" id="v-inp-word" placeholder="e.g. Ameliorate">
-            </div>
-            <div class="space-y-1.5">
-              <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Type</label>
-              <select class="glass-input w-full px-3 py-2.5 rounded-xl font-bold text-sm modern-select" id="v-inp-type" onchange="onTypeChange()">
-                <option value="word">Word</option><option value="idiom">Idiom</option><option value="phrase">Phrase</option>
-              </select>
-            </div>
-            <div class="space-y-1.5">
-              <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest">POS</label>
-              <select class="glass-input w-full px-3 py-2.5 rounded-xl font-bold text-sm modern-select" id="v-inp-pos">
-                <option value="">—</option>
-                <option value="noun">Noun</option><option value="verb">Verb</option>
-                <option value="adjective">Adjective</option><option value="adverb">Adverb</option>
-                <option value="phrasal verb">Phrasal Verb</option><option value="idiom">Idiom</option>
-                <option value="phrase">Phrase</option><option value="proverb">Proverb</option>
-              </select>
-            </div>
-          </div>
-          <div class="space-y-1.5">
-            <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Meaning / Definition *</label>
-            <textarea class="glass-input w-full px-3 py-2.5 rounded-xl font-medium text-sm resize-none" id="v-inp-meaning" rows="2" placeholder="Clear, concise definition…"></textarea>
-          </div>
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <div class="space-y-1.5">
-              <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest">🧠 Mnemonics</label>
-              <textarea class="glass-input w-full px-3 py-2.5 rounded-xl font-medium text-sm resize-none" id="v-inp-mnemonics" rows="2" placeholder="Memory hook or story…"></textarea>
-            </div>
-            <div class="space-y-1.5">
-              <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest">💡 Trick / Root</label>
-              <textarea class="glass-input w-full px-3 py-2.5 rounded-xl font-medium text-sm resize-none" id="v-inp-trick" rows="2" placeholder="Word root or quick trick…"></textarea>
-            </div>
-          </div>
-          <div class="space-y-1.5">
-            <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Example Sentence</label>
-            <textarea class="glass-input w-full px-3 py-2.5 rounded-xl font-medium text-sm resize-none" id="v-inp-example" rows="2" placeholder="Use it in a sentence…"></textarea>
-          </div>
-          <div id="syn-ant-sec">
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <div class="space-y-1.5">
-                <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Synonyms <span class="font-normal normal-case text-slate-300">(Enter)</span></label>
-                <div class="tag-box" id="v-syn-wrap" onclick="document.getElementById('v-syn-inp').focus()"><input id="v-syn-inp" placeholder="Type and press Enter…" onkeydown="tagKey(event,'synonyms')"></div>
+
+          <!-- Section 1: Core Details -->
+          <div class="form-section">
+            <div class="form-section-label"><i class="fa-solid fa-pen-to-square text-indigo-400"></i> Core Details</div>
+            <div class="space-y-3">
+              <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                <div class="col-span-2 space-y-1.5">
+                  <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Word / Idiom *</label>
+                  <input class="glass-input w-full px-3 py-2.5 rounded-xl font-bold text-sm" type="text" id="v-inp-word" placeholder="e.g. Ameliorate">
+                </div>
+                <div class="space-y-1.5">
+                  <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Type</label>
+                  <select class="glass-input w-full px-3 py-2.5 rounded-xl font-bold text-sm modern-select" id="v-inp-type" onchange="onTypeChange()">
+                    <option value="word">Word</option><option value="idiom">Idiom</option><option value="phrase">Phrase</option>
+                  </select>
+                </div>
+                <div class="space-y-1.5">
+                  <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest">POS</label>
+                  <select class="glass-input w-full px-3 py-2.5 rounded-xl font-bold text-sm modern-select" id="v-inp-pos">
+                    <option value="">—</option>
+                    <option value="noun">Noun</option><option value="verb">Verb</option>
+                    <option value="adjective">Adjective</option><option value="adverb">Adverb</option>
+                    <option value="phrasal verb">Phrasal Verb</option><option value="idiom">Idiom</option>
+                    <option value="phrase">Phrase</option><option value="proverb">Proverb</option>
+                  </select>
+                </div>
               </div>
               <div class="space-y-1.5">
-                <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Antonyms <span class="font-normal normal-case text-slate-300">(Enter)</span></label>
-                <div class="tag-box" id="v-ant-wrap" onclick="document.getElementById('v-ant-inp').focus()"><input id="v-ant-inp" placeholder="Type and press Enter…" onkeydown="tagKey(event,'antonyms')"></div>
+                <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Meaning / Definition *</label>
+                <textarea class="glass-input w-full px-3 py-2.5 rounded-xl font-medium text-sm resize-none" id="v-inp-meaning" rows="2" placeholder="Clear, concise definition…"></textarea>
               </div>
             </div>
           </div>
-          <div class="space-y-1.5">
-            <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Tags <span class="font-normal normal-case text-slate-300">(Enter)</span></label>
-            <div class="tag-box" id="v-tags-wrap" onclick="document.getElementById('v-tags-inp').focus()"><input id="v-tags-inp" placeholder="Add tag…" onkeydown="tagKey(event,'tags')"></div>
+
+          <!-- Section 2: Memory Hooks -->
+          <div class="form-section">
+            <div class="form-section-label"><i class="fa-solid fa-brain text-purple-400"></i> Memory Hooks</div>
+            <div class="space-y-3">
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div class="space-y-1.5">
+                  <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest">🧠 Mnemonics</label>
+                  <textarea class="glass-input w-full px-3 py-2.5 rounded-xl font-medium text-sm resize-none" id="v-inp-mnemonics" rows="2" placeholder="Memory hook or story…"></textarea>
+                </div>
+                <div class="space-y-1.5">
+                  <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest">💡 Trick / Root</label>
+                  <textarea class="glass-input w-full px-3 py-2.5 rounded-xl font-medium text-sm resize-none" id="v-inp-trick" rows="2" placeholder="Word root or quick trick…"></textarea>
+                </div>
+              </div>
+              <div class="space-y-1.5">
+                <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Example Sentence</label>
+                <textarea class="glass-input w-full px-3 py-2.5 rounded-xl font-medium text-sm resize-none" id="v-inp-example" rows="2" placeholder="Use it in a sentence…"></textarea>
+              </div>
+            </div>
           </div>
-          <div class="space-y-1.5">
-            <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest">📝 Personal Notes</label>
-            <textarea class="glass-input w-full px-3 py-2.5 rounded-xl font-medium text-sm resize-none" id="v-inp-notes" rows="2" placeholder="Your own memory note, exam context, or personal example…"></textarea>
+
+          <!-- Section 3: Relations -->
+          <div class="form-section">
+            <div class="form-section-label"><i class="fa-solid fa-diagram-project text-teal-400"></i> Relations &amp; Notes</div>
+            <div class="space-y-3">
+              <div id="syn-ant-sec">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div class="space-y-1.5">
+                    <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Synonyms <span class="font-normal normal-case text-slate-300">(Enter)</span></label>
+                    <div class="tag-box" id="v-syn-wrap" onclick="document.getElementById('v-syn-inp').focus()"><input id="v-syn-inp" placeholder="Type and press Enter…" onkeydown="tagKey(event,'synonyms')"></div>
+                  </div>
+                  <div class="space-y-1.5">
+                    <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Antonyms <span class="font-normal normal-case text-slate-300">(Enter)</span></label>
+                    <div class="tag-box" id="v-ant-wrap" onclick="document.getElementById('v-ant-inp').focus()"><input id="v-ant-inp" placeholder="Type and press Enter…" onkeydown="tagKey(event,'antonyms')"></div>
+                  </div>
+                </div>
+              </div>
+              <div class="space-y-1.5">
+                <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Tags <span class="font-normal normal-case text-slate-300">(Enter)</span></label>
+                <div class="tag-box" id="v-tags-wrap" onclick="document.getElementById('v-tags-inp').focus()"><input id="v-tags-inp" placeholder="Add tag…" onkeydown="tagKey(event,'tags')"></div>
+              </div>
+              <div class="space-y-1.5">
+                <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest">📝 Personal Notes</label>
+                <textarea class="glass-input w-full px-3 py-2.5 rounded-xl font-medium text-sm resize-none" id="v-inp-notes" rows="2" placeholder="Your own memory note, exam context…"></textarea>
+              </div>
+            </div>
           </div>
-          <button onclick="saveWord()" class="w-full py-3.5 rounded-2xl btn-gradient text-white text-sm font-black shadow-xl transition active:scale-[.98] flex items-center justify-center gap-2">
-            <i class="fa-solid fa-floppy-disk"></i><span id="v-save-txt">Save to Vault</span>
-          </button>
+
+          <!-- Sticky save button -->
+          <div style="position:sticky;bottom:80px;z-index:40;padding-top:4px;">
+            <button onclick="saveWord()" class="w-full py-3.5 rounded-2xl btn-gradient text-white text-sm font-black shadow-xl transition active:scale-[.98] flex items-center justify-center gap-2" style="box-shadow:0 8px 28px rgba(99,102,241,.45);">
+              <i class="fa-solid fa-floppy-disk"></i><span id="v-save-txt">Save to Vault</span>
+            </button>
+          </div>
         </div>
       </div>
     </div>
@@ -872,9 +963,12 @@ window.toggleTheme = () => {
   const dark = document.documentElement.classList.toggle('dark');
   localStorage.setItem('lp_theme', dark ? 'dark' : 'light');
 };
-if (localStorage.getItem('lp_theme')==='dark' ||
-    (!localStorage.getItem('lp_theme') && localStorage.getItem('theme')==='dark'))
-  document.documentElement.classList.add('dark');
+(function(){
+  const stored = localStorage.getItem('lp_theme');
+  const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+  if(stored === 'dark' || (!stored && prefersDark) || (!stored && localStorage.getItem('theme')==='dark'))
+    document.documentElement.classList.add('dark');
+})();
 
 /* ── Auth ── */
 window.doSignIn = async () => {
@@ -991,7 +1085,7 @@ function renderHeatmap(dates) {
     const has = dateSet.has(dateStr);
     const alpha = has ? '.85' : '.08';
     const border = has ? `rgba(99,102,241,.6)` : 'transparent';
-    return `<div class="heat-cell" title="${dateStr}" style="height:14px;background:rgba(99,102,241,${alpha});border:1px solid ${border};border-radius:3px;"></div>`;
+    return `<div class="heat-cell" title="${dateStr}" style="background:rgba(99,102,241,${alpha});border:1px solid ${border};"></div>`;
   }).join('');
 }
 
@@ -1098,7 +1192,7 @@ function wordCardHTML(w) {
               ${lvlBadgeHTML(w)}
             </div>
           </div>
-          ${!vBulkMode ? `<div class="flex gap-1.5 flex-shrink-0">
+          ${!vBulkMode ? `<div class="flex gap-1.5 flex-shrink-0 wcard-actions">
             <button onclick="editWord('${w.id}')" class="btn-glass w-8 h-8 rounded-xl flex items-center justify-center text-xs text-indigo-500"><i class="fa-solid fa-pen"></i></button>
             <button onclick="askDeleteOne('${w.id}')" class="w-8 h-8 rounded-xl flex items-center justify-center text-xs text-rose-500" style="background:rgba(239,68,68,.09);border:1px solid rgba(239,68,68,.2);"><i class="fa-solid fa-trash"></i></button>
           </div>` : ''}
@@ -1440,11 +1534,9 @@ function renderFC() {
   const ants=(w.antonyms||[]).map(s=>`<span class="chip chip-ant">${s}</span>`).join('');
 
   const frontContent = currentMode==='fill' ? renderFillFront(w) : `
-    <div class="fc-hint mb-4">Tap to reveal full details</div>
+    <div class="fc-hint mb-3">Tap to reveal</div>
     <div class="fc-word">${w.word}</div>
-    ${w.pos?`<div class="text-xs text-slate-400 font-bold mt-2">(${w.pos})</div>`:''}
-    <div class="flex items-center gap-2 mt-3 justify-center flex-wrap">${wTypeBadge(w.type||'word')}${lvlBadgeHTML(w,false)}</div>
-    ${(w.tags||[]).length?`<div class="flex flex-wrap gap-1.5 justify-center mt-3">${(w.tags||[]).map(t=>`<span class="chip chip-tag">${t}</span>`).join('')}</div>`:''}`;
+    ${w.pos?`<div class="text-sm text-slate-400 font-bold mt-2">(${w.pos})</div>`:''}`;
 
   area.innerHTML = `
     <div class="fc-scene" onclick="flipFC()">
@@ -1471,7 +1563,11 @@ function renderFC() {
 }
 
 function renderBackContent(w, syns, ants) {
+  const tags=(w.tags||[]).map(t=>`<span class="chip chip-tag">${t}</span>`).join('');
   return `
+    <div class="flex flex-wrap gap-1.5 mb-3 pb-3" style="border-bottom:1px solid rgba(99,102,241,.1);">
+      ${wTypeBadge(w.type||'word')}${lvlBadgeHTML(w,false)}${tags}
+    </div>
     <div class="fc-back-row"><div class="fc-back-lbl">📖 Meaning</div><div class="fc-back-val">${w.meaning}</div></div>
     ${w.example?`<div class="fc-back-row"><div class="fc-back-lbl">✍️ Example</div><div class="fc-back-val italic">"${w.example}"</div></div>`:''}
     ${w.mnemonics?`<div class="fc-back-row"><div class="fc-back-lbl">🧠 Mnemonics</div><div class="fc-back-val">${w.mnemonics}</div></div>`:''}
@@ -1806,6 +1902,60 @@ window.importCSV=async()=>{
   if(imported>0){el('csv-in').value='';el('csv-prev').innerHTML='';el('csv-bar')?.classList.add('hidden');setTimeout(()=>goTab('library'),700);}
 };
 
+
+/* ── Compact view toggle ── */
+let vCompact = false;
+window.toggleCompact = () => {
+  vCompact = !vCompact;
+  const list = el('v-library-list');
+  if(list) list.classList.toggle('lib-compact', vCompact);
+  const icon = el('compact-toggle-icon');
+  if(icon) { icon.className = vCompact ? 'fa-solid fa-table-list' : 'fa-solid fa-list'; }
+  const btn = el('compact-toggle-btn');
+  if(btn) btn.style.background = vCompact ? 'rgba(99,102,241,.2)' : 'rgba(99,102,241,.08)';
+};
+
+/* ── Sync mobile bottom nav ── */
+const MNAV_MAP = {home:'mnav-home',library:'mnav-library',cards:'mnav-cards',quiz:'mnav-quiz',stats:'mnav-stats'};
+window.syncMnav = (tab) => {
+  document.querySelectorAll('.mnav-btn').forEach(b=>b.classList.remove('active'));
+  const mid = MNAV_MAP[tab]; if(mid){const b=el(mid);if(b)b.classList.add('active');}
+};
+
+/* ── Patch goTab to sync mnav ── */
+const _origGoTab = window.goTab;
+window.goTab = (tab) => {
+  _origGoTab(tab);
+  syncMnav(tab);
+};
+
 </script>
+
+<!-- Mobile bottom nav -->
+<nav id="mobile-bottom-nav">
+  <div style="display:flex;max-width:480px;margin:0 auto;">
+    <button class="mnav-btn active" id="mnav-home"    onclick="goTab('home');syncMnav('home')">
+      <i class="fa-solid fa-house"></i>Home
+    </button>
+    <button class="mnav-btn"        id="mnav-library" onclick="goTab('library');syncMnav('library')">
+      <i class="fa-solid fa-books"></i>Library
+    </button>
+    <button class="mnav-btn"        id="mnav-cards"   onclick="goTab('cards');syncMnav('cards')">
+      <i class="fa-solid fa-clone"></i>Cards
+    </button>
+    <button class="mnav-btn"        id="mnav-quiz"    onclick="goTab('quiz');syncMnav('quiz')">
+      <i class="fa-solid fa-bullseye"></i>Quiz
+    </button>
+    <button class="mnav-btn"        id="mnav-stats"   onclick="goTab('stats');syncMnav('stats')">
+      <i class="fa-solid fa-chart-bar"></i>Stats
+    </button>
+  </div>
+</nav>
+
+<!-- FAB: Add Word (mobile only) -->
+<button id="fab-add" onclick="goTab('add');syncMnav('')" title="Add Word">
+  <i class="fa-solid fa-plus"></i>
+</button>
+
 </body>
 </html>
