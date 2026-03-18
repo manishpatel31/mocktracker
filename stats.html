@@ -1972,7 +1972,7 @@ function renderOrbit(subAgg,sorted){
   let _angle=0,_lastT=0;
   function loop(t){
     if(_orbitSel<0){
-      if(_lastT)_angle+=(t-_lastT)*0.0035;
+      if(_lastT)_angle+=(t-_lastT)*0.0005;
       _lastT=t;
       drawFrame(_angle);
     } else { _lastT=0; }
