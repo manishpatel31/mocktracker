@@ -560,79 +560,56 @@
       </div>
     </div>
 
-    <!-- ROW 4: SUBJECT DONUT + TABLE -->
+    <!-- ROW 4: SUBJECT ACCURACY (centred donut) + SUBJECT ORBIT -->
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 anim-6">
 
+      <!-- DONUT — centered, click-to-expand -->
       <div class="glass-card p-6 md:p-7 rounded-[2rem]">
-        <h3 class="font-extrabold text-sm text-slate-800 dark:text-white uppercase tracking-widest mb-5 flex items-center gap-2">
+        <h3 class="font-extrabold text-sm text-slate-800 dark:text-white uppercase tracking-widest mb-4 flex items-center gap-2">
           <i class="fa-solid fa-chart-pie text-fuchsia-500"></i> Subject Accuracy
         </h3>
-        <div class="flex items-center gap-6 flex-wrap">
-          <div style="position:relative;width:160px;height:160px;flex-shrink:0;">
-            <canvas id="chart-donut"></canvas>
+        <!-- chart centred -->
+        <div style="display:flex;justify-content:center;align-items:center;margin-bottom:12px;">
+          <div style="position:relative;width:200px;height:200px;flex-shrink:0;">
+            <canvas id="chart-donut" width="200" height="200"></canvas>
             <div id="donut-center"
                  style="position:absolute;inset:0;display:flex;flex-direction:column;
                         align-items:center;justify-content:center;pointer-events:none;">
-              <span id="donut-pct" class="text-xl font-black text-gradient leading-none">—%</span>
-              <span class="text-[9px] font-black text-slate-400 uppercase tracking-wide mt-0.5">accuracy</span>
+              <span id="donut-pct" class="text-2xl font-black text-gradient leading-none">—%</span>
+              <span class="text-[9px] font-black text-slate-400 uppercase tracking-wide mt-1">accuracy</span>
             </div>
           </div>
-          <div id="donut-legend" class="flex flex-col gap-2 flex-1 min-w-0"></div>
         </div>
-        <p id="donut-insight" class="mt-4 text-xs font-semibold text-center leading-relaxed
+        <p class="text-[10px] font-bold text-center text-slate-400 mb-3">Tap any segment to see subject details</p>
+        <!-- detail card (hidden until click) -->
+        <div id="donut-detail-card" style="display:none;border-radius:16px;padding:14px 16px;transition:all 0.3s;"
+             class="animate-fade"></div>
+        <p id="donut-insight" class="mt-3 text-xs font-semibold text-center leading-relaxed
                                       text-slate-500 dark:text-slate-400 hidden"></p>
+        <!-- hidden stubs kept for JS compat -->
+        <div id="donut-legend" style="display:none;"></div>
+        <p id="subject-empty" class="hidden text-center text-xs font-bold text-slate-400 py-6 uppercase tracking-widest opacity-50">
+          Subject data not available
+        </p>
+        <tbody id="subject-table-body" style="display:none;"></tbody>
       </div>
 
+      <!-- ORBIT — horizontal connected circles -->
       <div class="glass-card rounded-[2rem] overflow-hidden">
         <div class="px-5 py-4 border-b border-white/30 dark:border-white/5"
              style="background:rgba(255,255,255,0.20);">
           <h3 class="text-sm font-extrabold text-slate-800 dark:text-white uppercase tracking-widest flex items-center gap-2">
-            <i class="fa-solid fa-table-cells text-indigo-500"></i> Subject Mastery
+            <i class="fa-solid fa-circle-nodes text-indigo-500"></i> Subject Mastery Orbit
           </h3>
+          <p class="text-[10px] font-bold text-slate-400 mt-1">Tap a node to expand details</p>
         </div>
-        <div class="overflow-x-auto">
-          <table class="w-full text-left text-xs">
-            <thead class="font-black text-slate-400 uppercase tracking-widest"
-                   style="background:rgba(255,255,255,0.18);">
-              <tr>
-                <th class="px-4 py-3">Subject</th>
-                <th class="px-3 py-3 text-center">Accuracy</th>
-                <th class="px-3 py-3 text-center">Avg Score</th>
-                <th class="px-3 py-3 text-center">Status</th>
-              </tr>
-            </thead>
-            <tbody id="subject-table-body"
-                   class="divide-y divide-white/20 dark:divide-white/5"
-                   style="background:rgba(255,255,255,0.08);">
-            </tbody>
-          </table>
-        </div>
-        <p id="subject-empty"
-           class="hidden text-center text-xs font-bold text-slate-400 py-8 uppercase tracking-widest opacity-50">
-          Subject data not available (quick-entry mocks only)
+        <div id="orbit-wrap" style="padding:28px 16px 16px;"></div>
+        <div id="orbit-detail-panel" style="display:none;border-top:1px solid rgba(99,102,241,0.12);"></div>
+        <p id="orbit-empty" class="hidden text-center text-xs font-bold text-slate-400 py-6 uppercase tracking-widest opacity-50">
+          Subject data not available
         </p>
       </div>
 
-    </div>
-
-    <!-- ROW 4b: SUBJECT MASTERY ORBIT -->
-    <div class="anim-6" style="margin-top:0;">
-      <div class="glass-card rounded-[2rem] overflow-visible">
-        <div class="px-6 py-4 flex items-center justify-between border-b border-white/30 dark:border-white/5"
-             style="background:rgba(255,255,255,0.20);border-radius:2rem 2rem 0 0;">
-          <h3 class="text-sm font-extrabold text-slate-800 dark:text-white uppercase tracking-widest flex items-center gap-2">
-            <i class="fa-solid fa-atom text-fuchsia-500"></i> Subject Mastery Orbit
-          </h3>
-          <span id="orbit-overall" class="text-xs font-black text-gradient"></span>
-        </div>
-        <!-- orbit SVG lives here -->
-        <div id="orbit-wrap" style="position:relative;width:100%;min-height:340px;border-radius:0 0 2rem 2rem;overflow:hidden;"></div>
-        <!-- detail panel drops below the orbit -->
-        <div id="orbit-detail-panel" style="display:none;border-top:1px solid rgba(139,92,246,0.15);"></div>
-        <p id="orbit-empty" class="hidden text-center text-xs font-bold text-slate-400 py-8 uppercase tracking-widest opacity-50">
-          Subject data not available (quick-entry mocks only)
-        </p>
-      </div>
     </div>
 
     <!-- ROW 5: CALENDAR + BEST DAY -->
@@ -1558,29 +1535,32 @@ function renderCharts(sorted) {
 
 /* ── Subject donut + table — merged subjects ── */
 function renderSubjectData(sorted) {
-  // Aggregate normalizing subject names across all exams
   const subAgg={};
   sorted.forEach(m=>{
     const cfg=EXAM_GROUPS[m.examGroup]||{c:2,w:0.5};
     (m.subjects||[]).forEach(s=>{
-      const key=normalizeSubject(s.name);  // merged key
+      const key=normalizeSubject(s.name);
       if (!subAgg[key]) subAgg[key]={c:0,w:0,score:0,n:0};
       subAgg[key].c+=s.c; subAgg[key].w+=s.w;
       subAgg[key].score+=(s.c*cfg.c)-(s.w*cfg.w); subAgg[key].n++;
     });
   });
   const subjects=Object.keys(subAgg);
-  const tbl=el('subject-table-body'), emp=el('subject-empty'), ins=el('donut-insight');
+  const emp=el('subject-empty'), ins=el('donut-insight');
   if (!subjects.length) {
-    if(tbl)tbl.innerHTML=''; if(emp)emp.classList.remove('hidden'); renderDonutEmpty(); return;
+    if(emp)emp.classList.remove('hidden');
+    renderDonutEmpty(); return;
   }
   if(emp)emp.classList.add('hidden');
+
   const accArr=subjects.map(name=>{
     const d=subAgg[name]; return d.c+d.w>0?d.c/(d.c+d.w)*100:0;
   });
   const overallAcc=accArr.reduce((a,b)=>a+b,0)/accArr.length;
   const weakest=subjects[accArr.indexOf(Math.min(...accArr))];
   const strongest=subjects[accArr.indexOf(Math.max(...accArr))];
+
+  /* ── DONUT ── */
   if (charts.donut){charts.donut.destroy();charts.donut=null;}
   const ctxD=el('chart-donut');
   if(ctxD){
@@ -1588,43 +1568,319 @@ function renderSubjectData(sorted) {
       type:'doughnut',
       data:{labels:subjects,datasets:[{data:accArr.map(a=>parseFloat(a.toFixed(1))),
         backgroundColor:subjects.map((_,i)=>PALETTE[i%PALETTE.length]+'CC'),
-        borderColor:subjects.map((_,i)=>PALETTE[i%PALETTE.length]),borderWidth:2,hoverOffset:8}]},
-      options:{responsive:false,cutout:'68%',plugins:{legend:{display:false},
-        tooltip:{callbacks:{label:ctx=>` ${ctx.label}: ${ctx.parsed.toFixed(1)}%`}}}}
+        borderColor:subjects.map((_,i)=>PALETTE[i%PALETTE.length]),
+        borderWidth:3, hoverOffset:12, hoverBorderWidth:4}]},
+      options:{
+        responsive:false, cutout:'70%',
+        plugins:{legend:{display:false},
+          tooltip:{callbacks:{label:ctx=>` ${ctx.label}: ${ctx.parsed.toFixed(1)}%`}}},
+        onClick(evt, elements){
+          if(!elements.length) return;
+          const idx=elements[0].index;
+          showDonutDetail(subjects[idx], subAgg[subjects[idx]], accArr[idx], PALETTE[idx%PALETTE.length]);
+        }
+      }
     });
     el('donut-pct').textContent=overallAcc.toFixed(1)+'%';
-    const leg=el('donut-legend');
-    if(leg)leg.innerHTML=subjects.map((name,i)=>{
-      const col=PALETTE[i%PALETTE.length];
-      return `<div class="flex items-center justify-between gap-2">
-        <div class="flex items-center gap-1.5 min-w-0">
-          <div style="width:10px;height:10px;border-radius:3px;background:${col};flex-shrink:0;"></div>
-          <span class="text-xs font-bold text-slate-600 dark:text-slate-300 truncate">${name}</span>
-        </div>
-        <span class="text-xs font-black flex-shrink-0" style="color:${col};">${accArr[i].toFixed(0)}%</span>
-      </div>`;
-    }).join('');
     if(ins){ins.textContent=`💡 Strongest: ${strongest} · Needs work: ${weakest}`;ins.classList.remove('hidden');}
   }
-  if(tbl)tbl.innerHTML=subjects.map((name,i)=>{
-    const d=subAgg[name],acc=accArr[i],avg=(d.score/d.n).toFixed(1),col=PALETTE[i%PALETTE.length];
-    const status=acc>85?'Expert':acc>65?'Solid':'Needs Work';
-    const sc=acc>85?'bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400':acc>65?'bg-indigo-100 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-400':'bg-rose-100 dark:bg-rose-900/30 text-rose-700 dark:text-rose-400';
-    return `<tr class="transition-colors hover:bg-indigo-500/5">
-      <td class="px-4 py-3"><div class="flex items-center gap-2"><div style="width:8px;height:8px;border-radius:50%;background:${col};flex-shrink:0;"></div><span class="font-black text-slate-700 dark:text-slate-200">${name}</span></div></td>
-      <td class="px-3 py-3 text-center font-black" style="color:${col};">${acc.toFixed(1)}%</td>
-      <td class="px-3 py-3 text-center font-bold text-slate-500 dark:text-slate-400">${avg}</td>
-      <td class="px-3 py-3 text-center"><span class="pill ${sc}">${status}</span></td>
-    </tr>`;
-  }).join('');
-  // Orbit — deferred so the DOM has painted and getBoundingClientRect() returns real width
-  requestAnimationFrame(()=>renderOrbit(subAgg,sorted));
+
+  /* ── ORBIT ── */
+  requestAnimationFrame(()=>renderOrbit(subAgg, sorted));
 }
+
+/* ── Donut segment detail popup ── */
+function showDonutDetail(name, d, acc, color) {
+  const card = el('donut-detail-card'); if(!card) return;
+  const isDark = document.documentElement.classList.contains('dark');
+  const tc  = isDark?'#f1f5f9':'#1e293b';
+  const avg = (d.score/d.n).toFixed(1);
+  const status = acc>85?{label:'Expert',bg:'rgba(34,197,94,0.13)',col:'#22c55e'}
+               : acc>65?{label:'Solid', bg:'rgba(234,179,8,0.13)', col:'#eab308'}
+               :         {label:'Needs Work',bg:'rgba(239,68,68,0.13)',col:'#ef4444'};
+  // animate in
+  card.style.display='block';
+  card.style.opacity='0';
+  card.style.transform='translateY(8px)';
+  card.style.background=isDark?'rgba(14,10,31,0.5)':'rgba(255,255,255,0.7)';
+  card.style.border=`1.5px solid ${color}40`;
+  card.innerHTML=`
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
+      <div style="width:14px;height:14px;border-radius:50%;background:${color};flex-shrink:0;"></div>
+      <span style="font-size:14px;font-weight:800;color:${tc};">${name}</span>
+      <span style="margin-left:auto;font-size:11px;font-weight:900;padding:2px 10px;border-radius:999px;background:${status.bg};color:${status.col};">${status.label}</span>
+    </div>
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+      <span style="font-size:11px;font-weight:700;color:#64748b;white-space:nowrap;">Accuracy</span>
+      <div style="flex:1;height:6px;background:rgba(0,0,0,0.07);border-radius:999px;overflow:hidden;">
+        <div style="height:100%;width:${acc.toFixed(0)}%;background:${color};border-radius:999px;transition:width 0.8s ease;"></div>
+      </div>
+      <span style="font-size:16px;font-weight:900;color:${color};white-space:nowrap;">${acc.toFixed(1)}%</span>
+    </div>
+    <div style="display:flex;gap:6px;">
+      <div style="flex:1;padding:8px;border-radius:10px;background:rgba(34,197,94,0.10);text-align:center;">
+        <div style="font-size:17px;font-weight:900;color:#22c55e;">${d.c}</div>
+        <div style="font-size:9px;font-weight:700;color:#64748b;margin-top:1px;">Correct</div>
+      </div>
+      <div style="flex:1;padding:8px;border-radius:10px;background:rgba(239,68,68,0.10);text-align:center;">
+        <div style="font-size:17px;font-weight:900;color:#ef4444;">${d.w}</div>
+        <div style="font-size:9px;font-weight:700;color:#64748b;margin-top:1px;">Wrong</div>
+      </div>
+      <div style="flex:1;padding:8px;border-radius:10px;background:rgba(99,102,241,0.10);text-align:center;">
+        <div style="font-size:17px;font-weight:900;color:#6366f1;">${avg}</div>
+        <div style="font-size:9px;font-weight:700;color:#64748b;margin-top:1px;">Avg Score</div>
+      </div>
+    </div>`;
+  requestAnimationFrame(()=>{
+    card.style.transition='opacity 0.3s ease,transform 0.3s cubic-bezier(0.22,1,0.36,1)';
+    card.style.opacity='1';
+    card.style.transform='translateY(0)';
+  });
+}
+
 function renderDonutEmpty(){
   if(charts.donut){charts.donut.destroy();charts.donut=null;}
   const ctxD=el('chart-donut');if(!ctxD)return;
-  charts.donut=new Chart(ctxD.getContext('2d'),{type:'doughnut',data:{labels:['No data'],datasets:[{data:[1],backgroundColor:['rgba(99,102,241,0.1)'],borderColor:['rgba(99,102,241,0.2)'],borderWidth:1}]},options:{responsive:false,cutout:'68%',plugins:{legend:{display:false},tooltip:{enabled:false}}}});
+  charts.donut=new Chart(ctxD.getContext('2d'),{type:'doughnut',data:{labels:['No data'],datasets:[{data:[1],backgroundColor:['rgba(99,102,241,0.1)'],borderColor:['rgba(99,102,241,0.2)'],borderWidth:1}]},options:{responsive:false,cutout:'70%',plugins:{legend:{display:false},tooltip:{enabled:false}}}});
   el('donut-pct').textContent='—';
+}
+
+/* ════════════════════════════════════
+   SUBJECT MASTERY ORBIT — horizontal stationary nodes
+════════════════════════════════════ */
+function renderOrbit(subAgg, sorted) {
+  const wrap=el('orbit-wrap'), detPanel=el('orbit-detail-panel'), emp=el('orbit-empty');
+  if(!wrap) return;
+
+  const subjects = Object.keys(subAgg);
+  if(!subjects.length){
+    if(emp) emp.classList.remove('hidden');
+    if(detPanel){ detPanel.style.display='none'; }
+    return;
+  }
+  if(emp) emp.classList.add('hidden');
+
+  const isDark = document.documentElement.classList.contains('dark');
+  const tc  = isDark?'#f1f5f9':'#1e293b';
+  const mc  = isDark?'#94a3b8':'#64748b';
+  const STATUS = {
+    strong: {label:'Expert',    color:'#22c55e', ring:'#16a34a', bg:'rgba(34,197,94,0.13)'},
+    average:{label:'Solid',     color:'#eab308', ring:'#ca8a04', bg:'rgba(234,179,8,0.13)'},
+    weak:   {label:'Needs Work',color:'#ef4444', ring:'#dc2626', bg:'rgba(239,68,68,0.13)'},
+  };
+  const ICONS = {'Maths':'∑','Reasoning':'◈','English':'A','GK / General Awareness':'◉','Computer':'⌨'};
+
+  // Build node data
+  const nodes = subjects.map((name,i)=>{
+    const d=subAgg[name];
+    const acc = d.c+d.w>0 ? d.c/(d.c+d.w)*100 : 0;
+    const status = acc>85?'strong':acc>65?'average':'weak';
+    return { id:i, name, acc, avgScore:(d.score/d.n).toFixed(1),
+             status, c:d.c, w:d.w, n:d.n,
+             icon: ICONS[name]||name.charAt(0).toUpperCase(),
+             color: PALETTE[i%PALETTE.length] };
+  });
+
+  const R   = 38;  // node radius
+  const gap = 80;  // gap between nodes
+  const n   = nodes.length;
+  const totalW = n*2*R + (n-1)*gap;
+  const W   = wrap.offsetWidth || 380;
+  const H   = 130;
+  const startX = Math.max(R+10, (W - totalW)/2 + R);
+  const cy  = H/2;
+
+  // Node centres
+  const cx = nodes.map((_,i) => startX + i*(2*R+gap));
+
+  // Build SVG
+  const svgNS = 'http://www.w3.org/2000/svg';
+  const svg = document.createElementNS(svgNS,'svg');
+  svg.setAttribute('viewBox',`0 0 ${W} ${H}`);
+  svg.setAttribute('width','100%');
+  svg.setAttribute('height', H+'px');
+  svg.style.display='block';
+  svg.style.overflow='visible';
+
+  // Connection lines
+  for(let i=0;i<n-1;i++){
+    const line = document.createElementNS(svgNS,'line');
+    line.setAttribute('x1', cx[i]+R); line.setAttribute('y1', cy);
+    line.setAttribute('x2', cx[i+1]-R); line.setAttribute('y2', cy);
+    line.setAttribute('stroke','rgba(99,102,241,0.25)');
+    line.setAttribute('stroke-width','2');
+    line.setAttribute('stroke-dasharray','5 4');
+    svg.appendChild(line);
+  }
+
+  // Draw nodes
+  nodes.forEach((node,i)=>{
+    const cfg = STATUS[node.status];
+    const x   = cx[i];
+    const g   = document.createElementNS(svgNS,'g');
+    g.setAttribute('transform',`translate(${x},${cy})`);
+    g.setAttribute('data-nid', i);
+    g.style.cursor = 'pointer';
+
+    // bg circle
+    const bg = document.createElementNS(svgNS,'circle');
+    bg.setAttribute('r', R); bg.setAttribute('fill', cfg.bg);
+    bg.setAttribute('stroke', cfg.ring); bg.setAttribute('stroke-width','2');
+    g.appendChild(bg);
+
+    // mastery arc
+    const arcR = R-5, arcC = 2*Math.PI*arcR;
+    const arcOff = arcC - (node.acc/100)*arcC;
+    const arc = document.createElementNS(svgNS,'circle');
+    arc.setAttribute('r', arcR); arc.setAttribute('fill','none');
+    arc.setAttribute('stroke', cfg.color); arc.setAttribute('stroke-width','3');
+    arc.setAttribute('stroke-linecap','round');
+    arc.setAttribute('stroke-dasharray', arcC);
+    arc.setAttribute('stroke-dashoffset', arcOff);
+    arc.setAttribute('transform','rotate(-90)');
+    g.appendChild(arc);
+
+    // icon text
+    const icon = document.createElementNS(svgNS,'text');
+    icon.setAttribute('text-anchor','middle'); icon.setAttribute('y','5');
+    icon.setAttribute('font-size','16'); icon.setAttribute('font-weight','700');
+    icon.setAttribute('fill', isDark?'#e2e8f0':'#1e293b');
+    icon.textContent = node.icon;
+    g.appendChild(icon);
+
+    // accuracy % above node
+    const pct = document.createElementNS(svgNS,'text');
+    pct.setAttribute('text-anchor','middle'); pct.setAttribute('y',-(R+10));
+    pct.setAttribute('font-size','10'); pct.setAttribute('font-weight','900');
+    pct.setAttribute('fill', cfg.color);
+    pct.textContent = node.acc.toFixed(0)+'%';
+    g.appendChild(pct);
+
+    // subject name below node
+    const words = node.name.split(' ');
+    const line1 = words.slice(0,2).join(' ');
+    const line2 = words.length>2 ? words.slice(2).join(' ') : null;
+    const lbl1 = document.createElementNS(svgNS,'text');
+    lbl1.setAttribute('text-anchor','middle'); lbl1.setAttribute('y', R+16);
+    lbl1.setAttribute('font-size','9.5'); lbl1.setAttribute('font-weight','700');
+    lbl1.setAttribute('fill', tc);
+    lbl1.textContent = line1;
+    g.appendChild(lbl1);
+    if(line2){
+      const lbl2 = document.createElementNS(svgNS,'text');
+      lbl2.setAttribute('text-anchor','middle'); lbl2.setAttribute('y', R+27);
+      lbl2.setAttribute('font-size','8.5'); lbl2.setAttribute('font-weight','600');
+      lbl2.setAttribute('fill', mc);
+      lbl2.textContent = line2;
+      g.appendChild(lbl2);
+    }
+
+    // status dot at bottom of circle
+    const dot = document.createElementNS(svgNS,'circle');
+    dot.setAttribute('cx','0'); dot.setAttribute('cy', R-5);
+    dot.setAttribute('r','5'); dot.setAttribute('fill', cfg.color);
+    g.appendChild(dot);
+
+    svg.appendChild(g);
+  });
+
+  wrap.innerHTML = '';
+  wrap.appendChild(svg);
+
+  // Legend row below svg
+  const legDiv = document.createElement('div');
+  legDiv.style.cssText='display:flex;gap:14px;justify-content:center;margin-top:8px;';
+  Object.values(STATUS).forEach(s=>{
+    legDiv.innerHTML += `<div style="display:flex;align-items:center;gap:5px;">
+      <div style="width:8px;height:8px;border-radius:50%;background:${s.color};"></div>
+      <span style="font-size:10px;font-weight:700;color:${mc};">${s.label}</span>
+    </div>`;
+  });
+  wrap.appendChild(legDiv);
+
+  // ── Event delegation ──
+  let selectedNid = -1;
+  svg.addEventListener('click', e=>{
+    let el2 = e.target;
+    while(el2 && el2!==svg){
+      if(el2.dataset && el2.dataset.nid!==undefined){
+        const nid = parseInt(el2.dataset.nid);
+        if(selectedNid===nid){ selectedNid=-1; closeOrbitDetail(); }
+        else { selectedNid=nid; openOrbitDetail(nodes[nid], STATUS, tc, mc, isDark); }
+        // visual feedback — pulse the node
+        const g = svg.querySelector(`[data-nid="${nid}"]`);
+        if(g){ g.style.transition='transform 0.2s cubic-bezier(0.34,1.56,0.64,1)'; g.style.transform=`translate(${cx[nid]}px,${cy}px) scale(${selectedNid===nid?1.12:1})`; }
+        return;
+      }
+      el2 = el2.parentElement;
+    }
+  });
+
+  function closeOrbitDetail(){
+    if(detPanel){ detPanel.style.display='none'; detPanel.innerHTML=''; }
+    // reset all node scales
+    svg.querySelectorAll('[data-nid]').forEach(g=>{
+      const nid = parseInt(g.dataset.nid);
+      g.style.transform = `translate(${cx[nid]}px,${cy}px) scale(1)`;
+    });
+  }
+
+  function openOrbitDetail(node, STATUS, tc, mc, isDark){
+    if(!detPanel) return;
+    const cfg = STATUS[node.status];
+    const bdr = isDark?'rgba(255,255,255,0.07)':'rgba(99,102,241,0.12)';
+    const cardBg = isDark?'rgba(255,255,255,0.04)':'rgba(99,102,241,0.05)';
+    detPanel.style.display='block';
+    detPanel.style.padding='18px 20px';
+    detPanel.style.background = isDark?'rgba(12,8,28,0.4)':'rgba(255,255,255,0.55)';
+    // animate
+    detPanel.style.opacity='0';
+    detPanel.style.transform='translateY(6px)';
+    detPanel.innerHTML=`
+      <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:flex-start;">
+        <!-- Identity + mastery bar -->
+        <div style="flex:1;min-width:180px;">
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">
+            <div style="width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;
+                 font-size:16px;font-weight:700;color:${cfg.color};background:${cfg.bg};border:1px solid ${cfg.color}44;">
+              ${node.icon}</div>
+            <div>
+              <p style="font-size:13px;font-weight:800;color:${tc};margin:0;">${node.name}</p>
+              <p style="font-size:10px;color:${mc};margin:2px 0 0;">Avg score: <span style="color:${cfg.color};font-weight:800;">${node.avgScore}</span></p>
+            </div>
+            <span style="margin-left:auto;font-size:11px;font-weight:900;padding:3px 10px;border-radius:999px;
+                background:${cfg.bg};color:${cfg.color};border:1px solid ${cfg.color}44;">${cfg.label}</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;">
+            <span style="font-size:11px;font-weight:700;color:${mc};white-space:nowrap;">Mastery</span>
+            <div style="flex:1;height:6px;background:${isDark?'rgba(255,255,255,0.08)':'rgba(0,0,0,0.07)'};border-radius:999px;overflow:hidden;">
+              <div style="height:100%;width:${node.acc.toFixed(0)}%;background:linear-gradient(90deg,${cfg.ring},${cfg.color});border-radius:999px;transition:width 0.9s ease;"></div>
+            </div>
+            <span style="font-size:16px;font-weight:900;color:${cfg.color};white-space:nowrap;">${node.acc.toFixed(1)}%</span>
+          </div>
+        </div>
+        <!-- Stats chips -->
+        <div style="display:flex;gap:8px;flex-shrink:0;">
+          <div style="padding:8px 14px;border-radius:12px;background:rgba(34,197,94,0.10);border:1px solid rgba(34,197,94,0.2);text-align:center;">
+            <div style="font-size:18px;font-weight:900;color:#22c55e;">${node.c}</div>
+            <div style="font-size:9px;font-weight:700;color:#64748b;margin-top:2px;">Correct</div>
+          </div>
+          <div style="padding:8px 14px;border-radius:12px;background:rgba(239,68,68,0.10);border:1px solid rgba(239,68,68,0.2);text-align:center;">
+            <div style="font-size:18px;font-weight:900;color:#ef4444;">${node.w}</div>
+            <div style="font-size:9px;font-weight:700;color:#64748b;margin-top:2px;">Wrong</div>
+          </div>
+          <div style="padding:8px 14px;border-radius:12px;background:rgba(99,102,241,0.10);border:1px solid rgba(99,102,241,0.2);text-align:center;">
+            <div style="font-size:18px;font-weight:900;color:#6366f1;">${node.n}</div>
+            <div style="font-size:9px;font-weight:700;color:#64748b;margin-top:2px;">Mocks</div>
+          </div>
+        </div>
+      </div>`;
+    requestAnimationFrame(()=>{
+      detPanel.style.transition='opacity 0.3s ease,transform 0.3s cubic-bezier(0.22,1,0.36,1)';
+      detPanel.style.opacity='1';
+      detPanel.style.transform='translateY(0)';
+    });
+  }
 }
 
 /* ── Calendar ── */
@@ -1710,280 +1966,6 @@ function renderRecentList(sorted){
       <div class="text-right flex-shrink-0"><p class="text-sm font-black" style="color:${col};">${m.score}</p><p class="text-[9px] font-bold text-slate-400">${norm.toFixed(0)}%</p></div>
     </div>`;
   }).join('')||'<p class="text-xs text-slate-400 text-center py-4">No mocks yet</p>';
-}
-
-/* ════════════════════════════════════════════════════
-   SUBJECT MASTERY ORBIT  — vanilla SVG, event delegation
-════════════════════════════════════════════════════ */
-let _orbitRAF=null;
-let _orbitSel=-1;  // selected node id (-1 = none)
-
-const ORBIT_CFG={
-  strong: {label:'Expert',    color:'#22c55e',ring:'#16a34a',bg:'rgba(34,197,94,0.13)'},
-  average:{label:'Solid',     color:'#eab308',ring:'#ca8a04',bg:'rgba(234,179,8,0.13)'},
-  weak:   {label:'Needs Work',color:'#ef4444',ring:'#dc2626',bg:'rgba(239,68,68,0.13)'},
-};
-const ORBIT_ICONS={'Maths':'∑','Reasoning':'◈','English':'A','GK / General Awareness':'◉','Computer':'⌨'};
-function orbitIcon(n){return ORBIT_ICONS[n]||n.charAt(0).toUpperCase();}
-
-function buildOrbitData(subAgg,sorted){
-  const subjects=Object.keys(subAgg);
-  const coMap={};
-  sorted.forEach(m=>{
-    const ns=(m.subjects||[]).map(s=>normalizeSubject(s.name)).filter(n=>subjects.includes(n));
-    for(let i=0;i<ns.length;i++)for(let j=i+1;j<ns.length;j++){
-      const k=[ns[i],ns[j]].sort().join('|||');coMap[k]=(coMap[k]||0)+1;
-    }
-  });
-  return subjects.map((name,i)=>{
-    const d=subAgg[name];
-    const acc=d.c+d.w>0?d.c/(d.c+d.w)*100:0;
-    const status=acc>85?'strong':acc>65?'average':'weak';
-    const relatedIds=subjects.map((o,j)=>j!==i&&coMap[[name,o].sort().join('|||')]?j:-1).filter(j=>j>=0);
-    return{id:i,name,mastery:Math.round(acc),avgScore:(d.score/d.n).toFixed(1),
-           status,icon:orbitIcon(name),relatedIds,c:d.c,w:d.w,n:d.n};
-  });
-}
-
-function renderOrbit(subAgg,sorted){
-  const wrap=el('orbit-wrap'),detPanel=el('orbit-detail-panel'),emp=el('orbit-empty');
-  if(!wrap)return;
-  if(_orbitRAF){cancelAnimationFrame(_orbitRAF);_orbitRAF=null;}
-  _orbitSel=-1;
-
-  const nodes=buildOrbitData(subAgg,sorted);
-  if(!nodes.length){
-    if(emp)emp.classList.remove('hidden');
-    if(detPanel){detPanel.style.display='none';}
-    return;
-  }
-  if(emp)emp.classList.add('hidden');
-  const overallAcc=nodes.reduce((s,n)=>s+n.mastery,0)/nodes.length;
-  const ov=el('orbit-overall');if(ov)ov.textContent=`Overall ${overallAcc.toFixed(0)}% accuracy`;
-
-  const W=wrap.getBoundingClientRect().width||wrap.offsetWidth||640;
-  const H=Math.max(300,Math.min(W*0.62,400));
-  wrap.innerHTML='';
-  wrap.style.height=H+'px';
-
-  const isDark=document.documentElement.classList.contains('dark');
-  const textCol=isDark?'#f1f5f9':'#1e293b';
-  const mutedCol=isDark?'#94a3b8':'#64748b';
-  const svgNS='http://www.w3.org/2000/svg';
-
-  const svg=document.createElementNS(svgNS,'svg');
-  svg.setAttribute('viewBox',`0 0 ${W} ${H}`);
-  svg.setAttribute('width','100%');svg.setAttribute('height','100%');
-  svg.style.display='block';svg.style.cursor='default';
-  wrap.appendChild(svg);
-
-  // defs
-  const defs=document.createElementNS(svgNS,'defs');
-  const rg=document.createElementNS(svgNS,'radialGradient');
-  rg.id='orb_glow';rg.setAttribute('cx','50%');rg.setAttribute('cy','50%');rg.setAttribute('r','50%');
-  [{o:'0%',c:'#6366f1',op:0.3},{o:'100%',c:'#6366f1',op:0}].forEach(({o,c,op})=>{
-    const s=document.createElementNS(svgNS,'stop');s.setAttribute('offset',o);s.setAttribute('stop-color',c);s.setAttribute('stop-opacity',op);rg.appendChild(s);
-  });
-  defs.appendChild(rg);
-  if(isDark){
-    const pat=document.createElementNS(svgNS,'pattern');pat.id='orb_grid';pat.setAttribute('width','32');pat.setAttribute('height','32');pat.setAttribute('patternUnits','userSpaceOnUse');
-    const pp=document.createElementNS(svgNS,'path');pp.setAttribute('d','M 32 0 L 0 0 0 32');pp.setAttribute('fill','none');pp.setAttribute('stroke','#818cf8');pp.setAttribute('stroke-width','0.4');
-    pat.appendChild(pp);defs.appendChild(pat);
-    const gr=document.createElementNS(svgNS,'rect');gr.setAttribute('width','100%');gr.setAttribute('height','100%');gr.setAttribute('fill','url(#orb_grid)');gr.setAttribute('opacity','0.055');svg.appendChild(gr);
-  }
-  svg.insertBefore(defs,svg.firstChild);
-
-  // Layer groups (created once, mutated each frame)
-  const glowEl=document.createElementNS(svgNS,'circle');svg.appendChild(glowEl);
-  const ringEl=document.createElementNS(svgNS,'circle');svg.appendChild(ringEl);
-  const linesG=document.createElementNS(svgNS,'g');svg.appendChild(linesG);
-  const spokesG=document.createElementNS(svgNS,'g');svg.appendChild(spokesG);
-  // Hub (static — drawn once)
-  const cx=W/2,cy=H/2;
-  const hub=document.createElementNS(svgNS,'g');
-  function addEl(tag,attrs,parent){const e=document.createElementNS(svgNS,tag);Object.entries(attrs).forEach(([k,v])=>e.setAttribute(k,v));if(parent)parent.appendChild(e);return e;}
-  addEl('circle',{cx,cy,r:34,fill:'rgba(99,102,241,0.10)',stroke:'rgba(139,92,246,0.28)','stroke-width':1.5},hub);
-  addEl('circle',{cx,cy,r:22,fill:'rgba(99,102,241,0.16)',stroke:'rgba(139,92,246,0.35)','stroke-width':1},hub);
-  function hubTxt(t,dy){const e=addEl('text',{x:cx,y:cy+dy,'text-anchor':'middle',fill:'#a5b4fc','font-size':8,'font-weight':700,'letter-spacing':'0.1em'},hub);e.textContent=t;}
-  hubTxt('SUBJECT',-5);hubTxt('ORBIT',8);
-  svg.appendChild(hub);
-  const nodesG=document.createElementNS(svgNS,'g');nodesG.id='orb_nodesG';svg.appendChild(nodesG);
-
-  // Legend (static)
-  const legG=document.createElementNS(svgNS,'g');let lx=12;
-  Object.values(ORBIT_CFG).forEach(c=>{
-    addEl('circle',{cx:lx+4,cy:H-14,r:4,fill:c.color},legG);
-    const lt=addEl('text',{x:lx+12,y:H-10,'font-size':10,'font-weight':600,fill:mutedCol},legG);lt.textContent=c.label;
-    lx+=c.label.length*6.2+20;
-  });
-  const hintEl=addEl('text',{x:W-10,y:H-10,'text-anchor':'end','font-size':10,'font-weight':600,fill:mutedCol},legG);
-  hintEl.textContent='Tap a node to expand';
-  svg.appendChild(legG);
-
-  // Store per-frame positions for hit-testing (event delegation)
-  let _positions=[];
-  const nodeR=26;
-
-  function getPositions(angleRad){
-    const orbitR=Math.min(cx,cy)*0.60;
-    return nodes.map((node,i)=>{
-      const a=(2*Math.PI*i)/nodes.length-Math.PI/2+angleRad;
-      return{x:cx+orbitR*Math.cos(a),y:cy+orbitR*Math.sin(a),node};
-    });
-  }
-
-  function drawFrame(angleRad){
-    const orbitR=Math.min(cx,cy)*0.60;
-    glowEl.setAttribute('cx',cx);glowEl.setAttribute('cy',cy);glowEl.setAttribute('r',orbitR*0.32);glowEl.setAttribute('fill','url(#orb_glow)');
-    ringEl.setAttribute('cx',cx);ringEl.setAttribute('cy',cy);ringEl.setAttribute('r',orbitR);ringEl.setAttribute('fill','none');
-    ringEl.setAttribute('stroke','rgba(139,92,246,0.2)');ringEl.setAttribute('stroke-width',1.5);ringEl.setAttribute('stroke-dasharray','6 5');
-
-    _positions=getPositions(angleRad);
-    linesG.innerHTML='';spokesG.innerHTML='';nodesG.innerHTML='';
-
-    // Connections
-    const drawn=new Set();
-    nodes.forEach(n=>n.relatedIds.forEach(rid=>{
-      if(rid<=n.id)return;const key=n.id+'-'+rid;if(drawn.has(key))return;drawn.add(key);
-      const f=_positions[n.id],t=_positions[rid];
-      const act=_orbitSel===n.id||_orbitSel===rid;
-      addEl('line',{x1:f.x,y1:f.y,x2:t.x,y2:t.y,
-        stroke:act?'rgba(167,139,250,0.5)':'rgba(99,102,241,0.12)',
-        'stroke-width':act?1.8:1,...(act?{}:{'stroke-dasharray':'4 5'})},linesG);
-    }));
-
-    _positions.forEach(({x,y,node})=>{
-      const cfg=ORBIT_CFG[node.status];
-      const isAct=_orbitSel===node.id;
-      // Spoke
-      const dx=x-cx,dy=y-cy,len=Math.hypot(dx,dy)||1,ux=dx/len,uy=dy/len;
-      addEl('line',{x1:cx+ux*35,y1:cy+uy*35,x2:x-ux*nodeR,y2:y-uy*nodeR,
-        stroke:isAct?cfg.color:'rgba(99,102,241,0.10)','stroke-width':isAct?1.5:1},spokesG);
-      // Node group
-      const g=document.createElementNS(svgNS,'g');
-      g.setAttribute('transform',`translate(${x},${y})`);
-      g.setAttribute('data-nodeid',node.id);
-      g.style.cursor='pointer';
-      if(isAct)addEl('circle',{r:nodeR+8,fill:'none',stroke:cfg.color,'stroke-width':1.5,'stroke-opacity':0.5},g);
-      addEl('circle',{r:nodeR,fill:cfg.bg,stroke:isAct?cfg.ring:'rgba(255,255,255,0.10)','stroke-width':isAct?2:1},g);
-      const arcR=nodeR-4,arcC=2*Math.PI*arcR,arcOff=arcC-(node.mastery/100)*arcC;
-      addEl('circle',{r:arcR,fill:'none',stroke:cfg.color,'stroke-width':3,'stroke-linecap':'round',
-        'stroke-dasharray':arcC,'stroke-dashoffset':arcOff,transform:'rotate(-90)'},g);
-      const ic=addEl('text',{'text-anchor':'middle',y:5,'font-size':14,'font-weight':700,fill:isAct?cfg.color:mutedCol},g);ic.textContent=node.icon;
-      const sc=addEl('text',{'text-anchor':'middle',y:-(nodeR+7),'font-size':9,'font-weight':800,fill:cfg.color},g);sc.textContent=node.mastery+'%';
-      const words=node.name.split(' ');
-      const t1=addEl('text',{'text-anchor':'middle',y:nodeR+15,'font-size':9.5,'font-weight':700,fill:textCol},g);t1.textContent=words.slice(0,2).join(' ');
-      if(words.length>2){const t2=addEl('text',{'text-anchor':'middle',y:nodeR+26,'font-size':8.5,'font-weight':600,fill:mutedCol},g);t2.textContent=words.slice(2).join(' ');}
-      nodesG.appendChild(g);
-    });
-
-    hintEl.textContent=_orbitSel>=0?'Tap again to close':'Tap a node to expand';
-  }
-
-  // ── Event delegation: Math-based hit detection ──
-  svg.addEventListener('click', e => {
-    const rect = svg.getBoundingClientRect();
-    const mouseX = e.clientX - rect.left;
-    const mouseY = e.clientY - rect.top;
-    
-    // Check distance from click to each node's center
-    for (let i = 0; i < _positions.length; i++) {
-      const pos = _positions[i];
-      const dist = Math.hypot(mouseX - pos.x, mouseY - pos.y);
-      
-      // nodeR is 26. We add 10 to give a generous, easy-to-tap target area
-      if (dist <= nodeR + 10) {
-        selectNode(pos.node.id);
-        return;
-      }
-    }
-  });
-  function selectNode(id){
-    if(_orbitSel===id){
-      _orbitSel=-1;
-      drawFrame(_angle);
-      if(detPanel){detPanel.style.display='none';detPanel.innerHTML='';}
-    } else {
-      _orbitSel=id;
-      drawFrame(_angle);
-      showDetailPanel(nodes[id]);
-    }
-  }
-
-  function showDetailPanel(node){
-    if(!detPanel)return;
-    const cfg=ORBIT_CFG[node.status];
-    const related=nodes.filter(n=>node.relatedIds.includes(n.id));
-    const tc=isDark?'#f1f5f9':'#1e293b';
-    const mc=isDark?'#94a3b8':'#64748b';
-    const cardBg=isDark?'rgba(255,255,255,0.04)':'rgba(99,102,241,0.05)';
-    const bdr=isDark?'rgba(255,255,255,0.08)':'rgba(99,102,241,0.12)';
-    detPanel.style.display='block';
-    detPanel.style.padding='20px 24px 20px';
-    detPanel.style.background=isDark?'rgba(12,8,28,0.6)':'rgba(255,255,255,0.6)';
-    detPanel.innerHTML=`
-      <div style="display:flex;gap:14px;flex-wrap:wrap;align-items:flex-start;">
-        <!-- Left: identity + bar -->
-        <div style="flex:1;min-width:200px;">
-          <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">
-            <div style="width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:700;color:${cfg.color};background:${cfg.bg};border:1px solid ${cfg.color}44;">${node.icon}</div>
-            <div>
-              <p style="font-size:14px;font-weight:800;color:${tc};margin:0;">${node.name}</p>
-              <p style="font-size:11px;color:${mc};margin:2px 0 0;">Avg score: <span style="color:${cfg.color};font-weight:800;">${node.avgScore}</span></p>
-            </div>
-            <div style="margin-left:auto;">
-              <span style="font-size:11px;font-weight:800;padding:3px 11px;border-radius:999px;background:${cfg.bg};color:${cfg.color};border:1px solid ${cfg.color}44;">${cfg.label}</span>
-            </div>
-          </div>
-          <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px;">
-            <span style="font-size:11px;font-weight:700;color:${mc};white-space:nowrap;">Mastery</span>
-            <div style="flex:1;height:6px;background:${isDark?'rgba(255,255,255,0.08)':'rgba(0,0,0,0.07)'};border-radius:999px;overflow:hidden;">
-              <div style="height:100%;width:${node.mastery}%;background:linear-gradient(90deg,${cfg.ring},${cfg.color});border-radius:999px;transition:width 0.8s ease;"></div>
-            </div>
-            <span style="font-size:15px;font-weight:900;color:${cfg.color};white-space:nowrap;">${node.mastery}%</span>
-          </div>
-        </div>
-        <!-- Right: stats chips -->
-        <div style="display:flex;gap:8px;flex-shrink:0;">
-          <div style="padding:8px 14px;border-radius:12px;background:rgba(34,197,94,0.10);border:1px solid rgba(34,197,94,0.2);text-align:center;">
-            <div style="font-size:18px;font-weight:900;color:#22c55e;">${node.c}</div>
-            <div style="font-size:9px;font-weight:700;color:#64748b;margin-top:2px;">Correct</div>
-          </div>
-          <div style="padding:8px 14px;border-radius:12px;background:rgba(239,68,68,0.10);border:1px solid rgba(239,68,68,0.2);text-align:center;">
-            <div style="font-size:18px;font-weight:900;color:#ef4444;">${node.w}</div>
-            <div style="font-size:9px;font-weight:700;color:#64748b;margin-top:2px;">Wrong</div>
-          </div>
-          <div style="padding:8px 14px;border-radius:12px;background:rgba(99,102,241,0.10);border:1px solid rgba(99,102,241,0.2);text-align:center;">
-            <div style="font-size:18px;font-weight:900;color:#6366f1;">${node.n}</div>
-            <div style="font-size:9px;font-weight:700;color:#64748b;margin-top:2px;">Mocks</div>
-          </div>
-        </div>
-      </div>
-      ${related.length?`
-      <div style="margin-top:14px;padding-top:14px;border-top:1px solid ${bdr};">
-        <p style="font-size:9px;font-weight:800;color:#475569;text-transform:uppercase;letter-spacing:.09em;margin:0 0 8px;">Co-appears with</p>
-        <div style="display:flex;gap:8px;flex-wrap:wrap;">
-          ${related.map(r=>{const rc=ORBIT_CFG[r.status];return`<div style="display:flex;align-items:center;gap:7px;padding:6px 10px;border-radius:10px;background:${cardBg};border:1px solid ${bdr};">
-            <span style="font-size:14px;font-weight:700;color:${rc.color};">${r.icon}</span>
-            <div><p style="font-size:11px;font-weight:700;color:${tc};margin:0;">${r.name}</p><p style="font-size:9px;color:#64748b;margin:0;">${r.mastery}% mastery</p></div>
-          </div>`;}).join('')}
-        </div>
-      </div>`:''}
-    `;
-  }
-
-  // Animation
-  let _angle=0,_lastT=0;
-  function loop(t){
-    if(_orbitSel<0){
-      if(_lastT)_angle+=(t-_lastT)*0.0005;
-      _lastT=t;
-      drawFrame(_angle);
-    } else { _lastT=0; }
-    _orbitRAF=requestAnimationFrame(loop);
-  }
-  drawFrame(0);
-  _orbitRAF=requestAnimationFrame(loop);
 }
 
 /* ── Helpers ── */
