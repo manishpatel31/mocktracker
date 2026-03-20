@@ -617,11 +617,11 @@ html,body{overflow-x:hidden;max-width:100%;}
         </div>
         <div class="p-5 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
 
-          <!-- Cloze Test -->
+          <!-- Cloze Test MCQ -->
           <button onclick="selectPracticeMode('cloze')" class="practice-mode-btn glass-card rounded-2xl p-4 text-left border-2 border-transparent hover:border-indigo-400/40 hover:scale-[1.02] transition-all" id="mode-cloze">
             <div class="w-10 h-10 rounded-xl mb-3 flex items-center justify-center text-xl" style="background:linear-gradient(135deg,rgba(99,102,241,.15),rgba(168,85,247,.1));">📝</div>
-            <div class="text-sm font-black text-slate-800 dark:text-white mb-1">Cloze Test</div>
-            <div class="text-xs text-slate-400 leading-relaxed">AI writes a passage using your words. Fill the blanks like a real SSC exam.</div>
+            <div class="text-sm font-black text-slate-800 dark:text-white mb-1">Cloze Test <span style="font-size:9px;background:rgba(99,102,241,.15);color:#6366f1;padding:1px 6px;border-radius:4px;margin-left:4px;">MCQ</span></div>
+            <div class="text-xs text-slate-400 leading-relaxed">Level-wise passage with 5 blanks. Choose from 4 close options per blank.</div>
             <span class="inline-block mt-2 text-[9px] font-black px-2 py-0.5 rounded" style="background:rgba(99,102,241,.1);color:#6366f1;">MOST EXAM-LIKE</span>
           </button>
 
@@ -633,35 +633,59 @@ html,body{overflow-x:hidden;max-width:100%;}
             <span class="inline-block mt-2 text-[9px] font-black px-2 py-0.5 rounded" style="background:rgba(245,158,11,.1);color:#d97706;">HIGH IMPACT</span>
           </button>
 
-          <!-- Smart Debrief -->
-          <button onclick="selectPracticeMode('debrief')" class="practice-mode-btn glass-card rounded-2xl p-4 text-left border-2 border-transparent hover:border-emerald-400/40 hover:scale-[1.02] transition-all" id="mode-debrief">
-            <div class="w-10 h-10 rounded-xl mb-3 flex items-center justify-center text-xl" style="background:linear-gradient(135deg,rgba(16,185,129,.15),rgba(6,182,212,.1));">🧠</div>
+          <!-- Synonym & Antonym Test -->
+          <button onclick="selectPracticeMode('synant')" class="practice-mode-btn glass-card rounded-2xl p-4 text-left border-2 border-transparent hover:border-emerald-400/40 hover:scale-[1.02] transition-all" id="mode-synant">
+            <div class="w-10 h-10 rounded-xl mb-3 flex items-center justify-center text-xl" style="background:linear-gradient(135deg,rgba(16,185,129,.15),rgba(6,182,212,.1));">🔁</div>
+            <div class="text-sm font-black text-slate-800 dark:text-white mb-1">Synonym &amp; Antonym</div>
+            <div class="text-xs text-slate-400 leading-relaxed">SSC MCQ — pick the correct synonym or antonym from 4 close options.</div>
+            <span class="inline-block mt-2 text-[9px] font-black px-2 py-0.5 rounded" style="background:rgba(16,185,129,.1);color:#10b981;">SSC FORMAT</span>
+          </button>
+
+          <!-- Idiom Test -->
+          <button onclick="selectPracticeMode('idiom')" class="practice-mode-btn glass-card rounded-2xl p-4 text-left border-2 border-transparent hover:border-purple-400/40 hover:scale-[1.02] transition-all" id="mode-idiom">
+            <div class="w-10 h-10 rounded-xl mb-3 flex items-center justify-center text-xl" style="background:linear-gradient(135deg,rgba(168,85,247,.15),rgba(217,70,239,.1));">💡</div>
+            <div class="text-sm font-black text-slate-800 dark:text-white mb-1">Idiom &amp; Phrase Test</div>
+            <div class="text-xs text-slate-400 leading-relaxed">MCQ on idioms from your library — meaning, usage and fill-in-the-blank.</div>
+            <span class="inline-block mt-2 text-[9px] font-black px-2 py-0.5 rounded" style="background:rgba(168,85,247,.1);color:#a855f7;">FROM LIBRARY</span>
+          </button>
+
+          <!-- Spelling Test -->
+          <button onclick="selectPracticeMode('spelling')" class="practice-mode-btn glass-card rounded-2xl p-4 text-left border-2 border-transparent hover:border-rose-400/40 hover:scale-[1.02] transition-all" id="mode-spelling">
+            <div class="w-10 h-10 rounded-xl mb-3 flex items-center justify-center text-xl" style="background:linear-gradient(135deg,rgba(239,68,68,.12),rgba(245,158,11,.08));">🔤</div>
+            <div class="text-sm font-black text-slate-800 dark:text-white mb-1">Correct Spelling Finder</div>
+            <div class="text-xs text-slate-400 leading-relaxed">4 spellings, 1 correct — find it. Tricky misspellings to test your eye.</div>
+            <span class="inline-block mt-2 text-[9px] font-black px-2 py-0.5 rounded" style="background:rgba(239,68,68,.1);color:#ef4444;">TRICKY TRAPS</span>
+          </button>
+
+          <!-- Comprehensive Test -->
+          <button onclick="selectPracticeMode('comprehensive')" class="practice-mode-btn glass-card rounded-2xl p-4 text-left border-2 border-transparent hover:border-cyan-400/40 hover:scale-[1.02] transition-all" id="mode-comprehensive">
+            <div class="w-10 h-10 rounded-xl mb-3 flex items-center justify-center text-xl" style="background:linear-gradient(135deg,rgba(6,182,212,.15),rgba(99,102,241,.1));">🏆</div>
+            <div class="text-sm font-black text-slate-800 dark:text-white mb-1">Comprehensive Test</div>
+            <div class="text-xs text-slate-400 leading-relaxed">All types in one: cloze + syn/ant + idiom + spelling. Full SSC mock.</div>
+            <span class="inline-block mt-2 text-[9px] font-black px-2 py-0.5 rounded" style="background:rgba(6,182,212,.1);color:#0891b2;">FULL MOCK</span>
+          </button>
+
+          <!-- Smart Flashcard -->
+          <button onclick="selectPracticeMode('debrief')" class="practice-mode-btn glass-card rounded-2xl p-4 text-left border-2 border-transparent hover:border-teal-400/40 hover:scale-[1.02] transition-all" id="mode-debrief">
+            <div class="w-10 h-10 rounded-xl mb-3 flex items-center justify-center text-xl" style="background:linear-gradient(135deg,rgba(20,184,166,.15),rgba(6,182,212,.1));">🧠</div>
             <div class="text-sm font-black text-slate-800 dark:text-white mb-1">Smart Flashcard</div>
             <div class="text-xs text-slate-400 leading-relaxed">Quiz + AI explains why a word is tricky after each wrong answer.</div>
-            <span class="inline-block mt-2 text-[9px] font-black px-2 py-0.5 rounded" style="background:rgba(16,185,129,.1);color:#10b981;">WITH AI COACHING</span>
+            <span class="inline-block mt-2 text-[9px] font-black px-2 py-0.5 rounded" style="background:rgba(20,184,166,.1);color:#0d9488;">AI COACHING</span>
           </button>
 
           <!-- Weakness Diagnosis -->
           <button onclick="selectPracticeMode('diagnosis')" class="practice-mode-btn glass-card rounded-2xl p-4 text-left border-2 border-transparent hover:border-rose-400/40 hover:scale-[1.02] transition-all" id="mode-diagnosis">
             <div class="w-10 h-10 rounded-xl mb-3 flex items-center justify-center text-xl" style="background:linear-gradient(135deg,rgba(239,68,68,.12),rgba(217,70,239,.08));">🔍</div>
             <div class="text-sm font-black text-slate-800 dark:text-white mb-1">Weakness Diagnosis</div>
-            <div class="text-xs text-slate-400 leading-relaxed">AI analyzes your L0/L1 words and finds patterns. Study smarter, not harder.</div>
+            <div class="text-xs text-slate-400 leading-relaxed">AI analyzes your L0/L1 words and finds patterns. Study smarter.</div>
             <span class="inline-block mt-2 text-[9px] font-black px-2 py-0.5 rounded" style="background:rgba(239,68,68,.1);color:#ef4444;">AI ANALYSIS</span>
           </button>
 
-          <!-- Sentence Builder -->
-          <button onclick="selectPracticeMode('sentence')" class="practice-mode-btn glass-card rounded-2xl p-4 text-left border-2 border-transparent hover:border-purple-400/40 hover:scale-[1.02] transition-all" id="mode-sentence">
-            <div class="w-10 h-10 rounded-xl mb-3 flex items-center justify-center text-xl" style="background:linear-gradient(135deg,rgba(168,85,247,.15),rgba(217,70,239,.1));">✍️</div>
-            <div class="text-sm font-black text-slate-800 dark:text-white mb-1">Sentence Builder</div>
-            <div class="text-xs text-slate-400 leading-relaxed">Use 3 vault words in one sentence. AI scores your sentence and gives feedback.</div>
-            <span class="inline-block mt-2 text-[9px] font-black px-2 py-0.5 rounded" style="background:rgba(168,85,247,.1);color:#a855f7;">ACTIVE RECALL</span>
-          </button>
-
           <!-- Word Coach Chat -->
-          <button onclick="selectPracticeMode('coach')" class="practice-mode-btn glass-card rounded-2xl p-4 text-left border-2 border-transparent hover:border-cyan-400/40 hover:scale-[1.02] transition-all" id="mode-coach">
+          <button onclick="selectPracticeMode('coach')" class="practice-mode-btn glass-card rounded-2xl p-4 text-left border-2 border-transparent hover:border-sky-400/40 hover:scale-[1.02] transition-all" id="mode-coach">
             <div class="w-10 h-10 rounded-xl mb-3 flex items-center justify-center text-xl" style="background:linear-gradient(135deg,rgba(6,182,212,.15),rgba(59,130,246,.1));">💬</div>
             <div class="text-sm font-black text-slate-800 dark:text-white mb-1">Word Coach Chat</div>
-            <div class="text-xs text-slate-400 leading-relaxed">Ask AI anything about a word — etymology, usage, exam tips, similar words.</div>
+            <div class="text-xs text-slate-400 leading-relaxed">Ask AI anything about a word — etymology, usage, exam tips.</div>
             <span class="inline-block mt-2 text-[9px] font-black px-2 py-0.5 rounded" style="background:rgba(6,182,212,.1);color:#0891b2;">FREE CHAT</span>
           </button>
 
@@ -895,7 +919,7 @@ function renderPracticeAIBanner(){
   const key=getAIKey();
   if(key){
     banner.className='ai-status-bar active';
-    banner.innerHTML=`<div class="w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0" style="background:linear-gradient(135deg,#6366f1,#d946ef);"><i class="fa-solid fa-robot text-white" style="font-size:13px;"></i></div><div class="flex-1 min-w-0"><p class="text-sm font-black text-slate-800 dark:text-white">AI Mode Active ✨</p><p class="text-xs text-slate-500 mt-0.5">Groq (Llama 3.3) connected · All 6 practice modes available</p></div><span class="text-[10px] font-black px-2 py-1 rounded-lg flex-shrink-0" style="background:rgba(16,185,129,.12);color:#10b981;">● Live</span>`;
+    banner.innerHTML=`<div class="w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0" style="background:linear-gradient(135deg,#6366f1,#d946ef);"><i class="fa-solid fa-robot text-white" style="font-size:13px;"></i></div><div class="flex-1 min-w-0"><p class="text-sm font-black text-slate-800 dark:text-white">AI Mode Active ✨</p><p class="text-xs text-slate-500 mt-0.5">Groq (Llama 3.3) connected · 9 practice modes available</p></div><span class="text-[10px] font-black px-2 py-1 rounded-lg flex-shrink-0" style="background:rgba(16,185,129,.12);color:#10b981;">● Live</span>`;
   }else{
     banner.className='ai-status-bar inactive';
     banner.innerHTML=`<div class="text-2xl flex-shrink-0">⚠️</div><div class="flex-1 min-w-0"><p class="text-sm font-black text-slate-800 dark:text-white">AI key not set</p><p class="text-xs text-slate-500 mt-0.5">Go to <strong>MockTracker App → Tools → AI Mode</strong> and set your free Groq key once.</p></div><a href="app.html" class="text-xs font-black px-3 py-1.5 rounded-xl flex-shrink-0 hover:scale-105 transition" style="background:rgba(245,158,11,.15);color:#d97706;border:1px solid rgba(245,158,11,.3);">Set Key →</a>`;
@@ -927,209 +951,267 @@ function renderPracticeMode(mode){
     confuse:renderConfuseSetup,
     debrief:renderDebriefSetup,
     diagnosis:renderDiagnosisSetup,
-    sentence:renderSentenceSetup,
+    synant:renderSynAntSetup,
+    idiom:renderIdiomSetup,
+    spelling:renderSpellingSetup,
+    comprehensive:renderComprehensiveSetup,
     coach:renderCoachSetup
   };
   if(modes[mode]) modes[mode]();
 }
 
 /* ──────────────────────────────
-   1. CLOZE TEST
+   1. CLOZE TEST (MCQ)
 ────────────────────────────── */
 function renderClozeSetup(){
   const area=el('practice-area');
-  const total=vWords.length;
+  const lvlCounts={};
+  [-1,0,1,2,3,4,5].forEach(l=>{lvlCounts[l]=vWords.filter(w=>(w.level??-1)===l&&(w.type==='word'||!w.type)).length;});
+  const lvlMeta={'-1':{icon:'🔖',label:'Not Visited',cls:'rgba(148,163,184,.15)'},0:{icon:'🔴',label:'L0 · Daily Drill',cls:'rgba(239,68,68,.12)'},1:{icon:'🟠',label:'L1 · Familiar',cls:'rgba(249,115,22,.12)'},2:{icon:'🟡',label:'L2 · Learning',cls:'rgba(234,179,8,.12)'},3:{icon:'🔵',label:'L3 · Good',cls:'rgba(59,130,246,.12)'},4:{icon:'🟣',label:'L4 · Strong',cls:'rgba(99,102,241,.12)'},5:{icon:'✅',label:'L5 · Mastered',cls:'rgba(16,185,129,.12)'}};
   area.innerHTML=`
     <div class="glass-card rounded-[2rem] overflow-hidden">
       <div class="px-5 py-4 border-b border-white/30 dark:border-white/5 flex items-center gap-3" style="background:linear-gradient(135deg,rgba(99,102,241,.1),rgba(217,70,239,.07));">
         <div class="w-9 h-9 rounded-xl flex items-center justify-center text-xl" style="background:linear-gradient(135deg,#6366f1,#a855f7);">📝</div>
-        <div><h3 class="text-sm font-black text-slate-900 dark:text-white">Cloze Test Generator</h3><p class="text-xs text-slate-400 mt-0.5">AI writes an SSC-style passage using your words</p></div>
+        <div><h3 class="text-sm font-black text-slate-900 dark:text-white">Cloze Test · MCQ Format</h3><p class="text-xs text-slate-400 mt-0.5">5 blanks · 4 options each · SSC-style passage</p></div>
       </div>
-      <div class="p-5 space-y-4">
-        <div class="grid grid-cols-2 gap-3">
-          <div>
-            <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest block mb-1.5">Words to use</label>
-            <input type="number" id="cloze-count" value="5" min="3" max="10" class="glass-input w-full px-3 py-2.5 rounded-xl font-bold text-sm text-center">
-          </div>
-          <div>
-            <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest block mb-1.5">Pick from</label>
-            <select id="cloze-pool" class="glass-input w-full px-3 py-2.5 rounded-xl font-bold text-sm modern-select">
-              <option value="all">All words</option>
-              <option value="weak">Weak (L0–L1)</option>
-              <option value="due">Due today</option>
-            </select>
-          </div>
-        </div>
+      <div class="p-5 space-y-5">
+        <!-- Step 1: Choose Level -->
         <div>
-          <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest block mb-1.5">Passage difficulty</label>
-          <div class="flex gap-2">
-            <button class="diff-btn flex-1 py-2 rounded-xl text-xs font-black border-2 border-indigo-400 text-indigo-600" style="background:rgba(99,102,241,.1);" data-diff="easy">Easy</button>
-            <button class="diff-btn flex-1 py-2 rounded-xl text-xs font-black border border-slate-300 dark:border-slate-600 text-slate-500" data-diff="medium">Medium</button>
-            <button class="diff-btn flex-1 py-2 rounded-xl text-xs font-black border border-slate-300 dark:border-slate-600 text-slate-500" data-diff="hard">Hard (SSC Level)</button>
+          <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3 flex items-center gap-2"><span class="w-5 h-5 rounded-full flex items-center justify-center text-[9px] font-black text-white" style="background:#6366f1;">1</span> Choose Level</p>
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
+            ${[5,4,3,2,1,0].map(l=>`
+              <button class="cloze-lvl-btn px-3 py-2.5 rounded-xl border text-xs font-black transition hover:scale-[1.02] text-left flex items-center gap-2 ${lvlCounts[l]>=5?'opacity-100':'opacity-40'}"
+                data-lvl="${l}" style="background:${lvlMeta[l].cls};border-color:${lvlMeta[l].cls.replace('.12','0.35').replace('.15','0.35')};" title="${lvlCounts[l]} words">
+                <span>${lvlMeta[l].icon}</span><span class="leading-tight">${lvlMeta[l].label}<br><span class="font-normal opacity-70">${lvlCounts[l]} words</span></span>
+              </button>`).join('')}
+            <button class="cloze-lvl-btn col-span-2 sm:col-span-2 px-3 py-2.5 rounded-xl border text-xs font-black transition hover:scale-[1.02] flex items-center justify-center gap-2"
+              data-lvl="random" style="background:linear-gradient(135deg,rgba(99,102,241,.1),rgba(217,70,239,.08));border-color:rgba(99,102,241,.3);">
+              🎲 <span>Random (any level)</span>
+            </button>
+          </div>
+          <p id="cloze-lvl-msg" class="text-xs text-slate-400 mt-2 text-center hidden"></p>
+        </div>
+        <!-- Step 2: Question type mix -->
+        <div>
+          <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3 flex items-center gap-2"><span class="w-5 h-5 rounded-full flex items-center justify-center text-[9px] font-black text-white" style="background:#6366f1;">2</span> Options Style</p>
+          <div class="grid grid-cols-3 gap-2">
+            <button class="cloze-style-btn flex-1 py-2 rounded-xl text-xs font-black border-2 transition" data-style="mixed" style="background:rgba(99,102,241,.1);border-color:#6366f1;color:#6366f1;">Mixed ✨</button>
+            <button class="cloze-style-btn flex-1 py-2 rounded-xl text-xs font-black border transition text-slate-500" data-style="vocab" style="border-color:rgba(148,163,184,.3);">Vocab-based</button>
+            <button class="cloze-style-btn flex-1 py-2 rounded-xl text-xs font-black border transition text-slate-500" data-style="grammar" style="border-color:rgba(148,163,184,.3);">Grammar-based</button>
           </div>
         </div>
-        <button onclick="generateClozeTest()" class="w-full py-3.5 rounded-2xl btn-gradient text-white font-black text-sm flex items-center justify-center gap-2 shimmer-btn">
-          <i class="fa-solid fa-wand-magic-sparkles"></i> Generate Passage
+        <button onclick="generateClozeTest()" id="cloze-gen-btn" class="w-full py-3.5 rounded-2xl btn-gradient text-white font-black text-sm flex items-center justify-center gap-2 shimmer-btn opacity-50 cursor-not-allowed" disabled>
+          <i class="fa-solid fa-wand-magic-sparkles"></i> Select a Level First
         </button>
       </div>
     </div>
     <div id="cloze-result" class="mt-4"></div>`;
 
-  // Difficulty selector logic
-  area.querySelectorAll('.diff-btn').forEach(b=>{
+  // Level selector
+  let selectedLevel=null;
+  area.querySelectorAll('.cloze-lvl-btn').forEach(b=>{
     b.onclick=()=>{
-      area.querySelectorAll('.diff-btn').forEach(x=>{
-        x.style.background='';x.style.borderWidth='1px';x.style.borderColor='';x.style.color='#64748b';
-      });
+      area.querySelectorAll('.cloze-lvl-btn').forEach(x=>{x.style.outline='';x.style.boxShadow='';});
+      b.style.outline='2px solid #6366f1';b.style.boxShadow='0 0 0 3px rgba(99,102,241,.2)';
+      selectedLevel=b.dataset.lvl;
+      const genBtn=el('cloze-gen-btn');
+      if(genBtn){genBtn.disabled=false;genBtn.classList.remove('opacity-50','cursor-not-allowed');genBtn.innerHTML='<i class="fa-solid fa-wand-magic-sparkles"></i> Generate MCQ Passage';}
+    };
+  });
+  // Style selector
+  area.querySelectorAll('.cloze-style-btn').forEach(b=>{
+    b.onclick=()=>{
+      area.querySelectorAll('.cloze-style-btn').forEach(x=>{x.style.background='';x.style.borderWidth='1px';x.style.borderColor='rgba(148,163,184,.3)';x.style.color='#64748b';});
       b.style.background='rgba(99,102,241,.1)';b.style.borderWidth='2px';b.style.borderColor='#6366f1';b.style.color='#6366f1';
       b.setAttribute('data-selected','1');
     };
   });
+  // Save level ref for generate fn
+  area._getLevel=()=>selectedLevel;
 }
 
 window.generateClozeTest=async function(){
-  const count=parseInt(el('cloze-count')?.value||5);
-  const pool=el('cloze-pool')?.value||'all';
-  const diffBtn=document.querySelector('.diff-btn[data-selected]');
-  const diff=diffBtn?diffBtn.getAttribute('data-diff'):'easy';
+  const area=el('practice-area');
   const result=el('cloze-result');if(!result)return;
+  const selectedLevel=area?._getLevel?.()??'random';
+  const styleBtn=area?.querySelector('.cloze-style-btn[data-selected]');
+  const optStyle=styleBtn?styleBtn.dataset.style:'mixed';
 
   let wordPool=vWords.filter(w=>w.type==='word'||!w.type);
-  if(pool==='weak') wordPool=wordPool.filter(w=>(w.level??-1)<=1);
-  else if(pool==='due') wordPool=wordPool.filter(w=>isDue(w)&&(w.level??-1)<5);
-  if(wordPool.length<3){result.innerHTML=`<div class="glass-card rounded-2xl p-6 text-center text-slate-400 text-sm">Not enough words in this pool. Add more words or change the filter.</div>`;return;}
-  const chosen=wordPool.sort(()=>Math.random()-.5).slice(0,Math.min(count,wordPool.length));
-  const wordList=chosen.map(w=>`${w.word} (${w.meaning})`).join(', ');
-  const diffGuide={easy:'simple, clear sentences suitable for Class 10 level',medium:'moderate complexity, newspaper editorial level',hard:'formal, sophisticated prose at SSC CGL exam level with complex sentence structures'};
+  if(selectedLevel!=='random'){
+    const lvl=parseInt(selectedLevel);
+    wordPool=wordPool.filter(w=>(w.level??-1)===lvl);
+  }
+  if(wordPool.length<5){
+    result.innerHTML=`<div class="glass-card rounded-2xl p-6 text-center text-slate-400 text-sm">⚠️ Need at least 5 words at this level. Add more words or choose a different level.</div>`;
+    return;
+  }
+  const chosen=wordPool.sort(()=>Math.random()-.5).slice(0,5);
+  const wordListFull=chosen.map((w,i)=>`${i+1}. "${w.word}" — meaning: ${w.meaning}${w.pos?', POS: '+w.pos:''}${w.synonyms?.length?' synonyms: '+w.synonyms.slice(0,3).join('/'):''}${w.antonyms?.length?' antonyms: '+w.antonyms.slice(0,2).join('/'):''}${w.trick?' trick: '+w.trick:''}`).join('\n');
 
-  result.innerHTML=`<div class="glass-card rounded-[2rem] p-8 text-center"><div class="spinner mx-auto mb-4"></div><p class="text-sm font-black text-slate-400 uppercase tracking-widest">AI is writing your passage…</p></div>`;
+  const styleGuide={
+    mixed:'Mix of all distractor types: 2 vocab-near-synonyms, 1 grammar/form-change, 1 antonym — vary per question',
+    vocab:'All 4 options are real English words with similar meaning — highest confusion',
+    grammar:'Options differ by part of speech (noun/verb/adj/adv) or word form — tests grammar awareness'
+  };
+
+  result.innerHTML=`<div class="glass-card rounded-[2rem] p-8 text-center"><div class="spinner mx-auto mb-4"></div><p class="text-sm font-black text-slate-400 uppercase tracking-widest">AI is writing your MCQ passage…</p><p class="text-xs text-slate-300 mt-2">Building confusing options to challenge you</p></div>`;
 
   try{
-    const prompt=`Create a cloze test passage for SSC/competitive exam preparation.
+    const prompt=`You are an expert SSC CGL/CHSL exam paper setter. Create a high-quality MCQ cloze test.
 
-WORDS TO USE: ${wordList}
+WORDS TO TEST (use ALL 5):
+${wordListFull}
 
-REQUIREMENTS:
-- Write a coherent paragraph (150-200 words) at ${diffGuide[diff]} difficulty
-- Use ALL the given words naturally in context
-- Replace each target word with a numbered blank: (1)___, (2)___, etc.
-- After the passage, provide an "Answer Key" section listing: (1) word - one-line explanation of why it fits
-- The passage should be on a topic like economy, environment, social issues, science, or history — exam-relevant topics
-- Topic for this passage: ${['economy','environment','social issues','science','history','technology'][Math.floor(Math.random()*6)]}
+TASK:
+1. Write a coherent, exam-quality passage (120-160 words) at SSC CGL level on one of: economy, governance, environment, science, history, social issues.
+2. Replace each target word with a blank: (1)_____, (2)_____, ... (5)_____
+3. For EACH blank provide EXACTLY 4 MCQ options (a, b, c, d).
+   Options style: ${styleGuide[optStyle]}
+   - The correct answer must be one of the 4 options (label it "correct")
+   - Distractors must feel genuinely plausible — no obviously wrong answers
+   - For some blanks add a "trap": a word that looks/sounds similar but is wrong
 
-Return ONLY the passage and answer key. No extra explanation.`;
+Respond ONLY in this exact JSON (no markdown, no backticks, no commentary):
+{
+  "topic": "topic name",
+  "passage": "passage text with (1)_____ ... (5)_____ blanks",
+  "questions": [
+    {
+      "num": 1,
+      "options": ["option_a","option_b","option_c","option_d"],
+      "correct": "exact correct option text",
+      "hint": "one line — why this word fits here"
+    }
+  ]
+}`;
 
-    const response=await callGroq(prompt,600);
-    // Split into passage and answer key
-    const parts=response.split(/answer key/i);
-    const passage=parts[0].trim();
-    const answerKey=parts[1]?parts[1].trim():'';
+    const raw=await callGroq(prompt,900);
+    const parsed=JSON.parse(raw.replace(/```json|```/g,'').trim());
+    const isDark=document.documentElement.classList.contains('dark');
+    const tc=isDark?'#f1f5f9':'#1e293b';
 
-    // Build interactive blanks
-    const isDarkMode=document.documentElement.classList.contains('dark');
-    const tc=isDarkMode?'#f1f5f9':'#1e293b';
-    const mc=isDarkMode?'#94a3b8':'#64748b';
+    // State tracking
+    const userAnswers={};
+    const qData=parsed.questions||[];
 
-    let passageHTML=passage;
-    const blankAnswers={};
-    chosen.forEach((w,i)=>{
-      blankAnswers[i+1]=w.word;
+    // Build passage with inline MCQ option labels
+    let passageHTML=parsed.passage||'';
+    qData.forEach((q,i)=>{
+      passageHTML=passageHTML.replace(new RegExp(`\\(${q.num}\\)_+`),
+        `<span class="cloze-q-ref" style="display:inline-block;min-width:100px;padding:1px 10px;border-radius:8px;background:rgba(99,102,241,.12);border:2px dashed rgba(99,102,241,.4);font-weight:900;font-size:13px;color:#6366f1;margin:0 3px;vertical-align:middle;cursor:pointer;" onclick="scrollToClozeQ(${q.num})">(${q.num}) _____</span>`);
     });
-    // Replace (N)___ with interactive inputs
-    passageHTML=passageHTML.replace(/\((\d+)\)___/g,(match,num)=>{
-      const word=blankAnswers[parseInt(num)];
-      return `<input class="cloze-input glass-input" data-answer="${word.toLowerCase()}" data-num="${num}" 
-        style="display:inline-block;width:${Math.max(80,word.length*11)}px;padding:2px 8px;border-radius:8px;
-        font-weight:700;font-size:14px;text-align:center;margin:0 3px;vertical-align:middle;
-        border:2px dashed rgba(99,102,241,.5);background:rgba(99,102,241,.07);color:${tc};" 
-        placeholder="(${num})">`;
-    });
+
+    let questionsHTML=qData.map(q=>{
+      const shuffled=[...q.options].sort(()=>Math.random()-.5);
+      return `<div class="cloze-mcq-block mb-4 p-4 rounded-2xl" id="cloze-q-${q.num}" style="background:rgba(255,255,255,.42);border:1.5px solid rgba(99,102,241,.1);">
+        <p class="text-xs font-black text-indigo-500 mb-2">Blank (${q.num})</p>
+        <div class="grid grid-cols-2 gap-2">
+          ${shuffled.map((opt,idx)=>`
+            <button class="cloze-opt-btn text-xs font-bold py-2.5 px-3 rounded-xl border text-left transition hover:scale-[1.02]"
+              style="background:rgba(255,255,255,.5);border-color:rgba(148,163,184,.3);color:${tc};"
+              data-q="${q.num}" data-opt="${opt.replace(/"/g,'&quot;')}" data-correct="${q.correct.replace(/"/g,'&quot;')}"
+              onclick="selectClozeOpt(this)">
+              <span class="font-black text-indigo-400 mr-1">${String.fromCharCode(65+idx)}.</span> ${opt}
+            </button>`).join('')}
+        </div>
+        <p class="cloze-hint text-[10px] text-slate-400 mt-2 hidden italic">${q.hint}</p>
+      </div>`;
+    }).join('');
 
     result.innerHTML=`
-      <div class="glass-card rounded-[2rem] overflow-hidden">
+      <div class="glass-card rounded-[2rem] overflow-hidden pop-in">
         <div class="px-5 py-4 border-b border-white/30 dark:border-white/5 flex items-center justify-between" style="background:rgba(255,255,255,.2);">
           <div>
-            <h3 class="text-sm font-black text-slate-800 dark:text-white">Your Cloze Passage</h3>
-            <p class="text-xs text-slate-400 mt-0.5">Fill all blanks, then check your answers</p>
+            <h3 class="text-sm font-black text-slate-800 dark:text-white">Cloze Passage — ${parsed.topic||'SSC Level'}</h3>
+            <p class="text-xs text-slate-400 mt-0.5">Read the passage, then answer the MCQs below</p>
           </div>
-          <span class="text-xs font-black px-2 py-1 rounded-lg" style="background:rgba(99,102,241,.1);color:#6366f1;">${chosen.length} blanks</span>
+          <div class="flex gap-2">
+            <span class="text-xs font-black px-2 py-1 rounded-lg" style="background:rgba(99,102,241,.1);color:#6366f1;">5 blanks</span>
+            <span class="text-xs font-black px-2 py-1 rounded-lg" style="background:rgba(245,158,11,.1);color:#d97706;">Level: ${selectedLevel==='random'?'Mixed':selectedLevel==='5'?'L5':'L'+selectedLevel}</span>
+          </div>
         </div>
         <div class="p-5">
-          <div class="p-5 rounded-2xl mb-4" style="background:rgba(255,255,255,.45);border:1px solid rgba(99,102,241,.1);line-height:2.2;font-size:15px;color:${tc};">
+          <!-- Passage -->
+          <div class="p-5 rounded-2xl mb-5" style="background:rgba(255,255,255,.45);border:1px solid rgba(99,102,241,.1);line-height:2.2;font-size:15px;color:${tc};">
             ${passageHTML}
           </div>
-          <!-- Word bank -->
-          <div class="mb-4">
-            <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Word Bank</p>
-            <div class="flex flex-wrap gap-2">
-              ${chosen.sort(()=>Math.random()-.5).map(w=>`<span class="practice-word-chip" style="background:rgba(99,102,241,.1);border:1px solid rgba(99,102,241,.2);color:#6366f1;" onclick="fillClozeBlank('${w.word}')">${w.word}</span>`).join('')}
-            </div>
+          <!-- MCQ Questions -->
+          <div id="cloze-questions">
+            <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3">Choose the correct word for each blank</p>
+            ${questionsHTML}
           </div>
-          <div class="flex gap-3 flex-wrap">
+          <div class="flex gap-3 flex-wrap mt-2">
             <button onclick="checkClozeAnswers()" class="btn-gradient flex-1 py-3 rounded-xl text-white font-black text-sm flex items-center justify-center gap-2">
-              <i class="fa-solid fa-check"></i> Check Answers
+              <i class="fa-solid fa-check"></i> Submit Answers
             </button>
-            <button onclick="revealClozeAnswers()" class="btn-glass flex-shrink-0 px-5 py-3 rounded-xl text-sm font-black">Reveal All</button>
+            <button onclick="showClozeHints()" class="btn-glass flex-shrink-0 px-5 py-3 rounded-xl text-sm font-black">💡 Hints</button>
             <button onclick="generateClozeTest()" class="btn-glass flex-shrink-0 px-5 py-3 rounded-xl text-sm font-black text-indigo-500">New Passage</button>
           </div>
           <div id="cloze-score" class="hidden mt-4 p-4 rounded-2xl text-center font-black"></div>
-          ${answerKey?`
-          <div id="cloze-answer-key" class="hidden mt-4 p-4 rounded-2xl" style="background:rgba(99,102,241,.06);border:1px solid rgba(99,102,241,.15);">
-            <p class="text-[10px] font-black text-indigo-500 uppercase tracking-widest mb-3">Answer Key & Explanations</p>
-            <div class="text-sm text-slate-600 dark:text-slate-300 leading-relaxed whitespace-pre-line">${answerKey}</div>
-          </div>`:''}
         </div>
       </div>`;
 
-    // Wire up enter-to-fill on cloze inputs
-    result.querySelectorAll('.cloze-input').forEach(inp=>{
-      inp.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();checkClozeAnswers();}});
-    });
+    // Store correct answers for checking
+    result._qData=qData;
 
   }catch(e){
-    result.innerHTML=`<div class="glass-card rounded-2xl p-6 text-center"><p class="text-sm text-rose-500 font-bold">${e.message==='NO_KEY'?'Set your Groq API key first.':'Error: '+e.message}</p></div>`;
+    result.innerHTML=`<div class="glass-card rounded-2xl p-6 text-center"><p class="text-sm text-rose-500 font-bold">${e.message==='NO_KEY'?'Set your Groq API key first.':'Error: '+e.message}</p><button onclick="generateClozeTest()" class="mt-3 btn-glass px-4 py-2 rounded-xl text-sm font-black">Retry</button></div>`;
   }
 };
 
-// Track focused blank for word bank
-let focusedBlank=null;
-window.fillClozeBlank=function(word){
-  const inputs=document.querySelectorAll('.cloze-input');
-  // Find the first empty blank
-  let target=focusedBlank;
-  if(!target){for(const inp of inputs){if(!inp.value){target=inp;break;}}}
-  if(target){target.value=word;target.focus();}
+window.selectClozeOpt=function(btn){
+  const q=btn.dataset.q;
+  const block=document.getElementById('cloze-q-'+q);
+  if(!block)return;
+  if(block.dataset.answered==='1')return; // already checked
+  block.querySelectorAll('.cloze-opt-btn').forEach(b=>{
+    b.style.background='rgba(255,255,255,.5)';b.style.borderColor='rgba(148,163,184,.3)';
+    b.style.color=document.documentElement.classList.contains('dark')?'#f1f5f9':'#1e293b';
+  });
+  btn.style.background='rgba(99,102,241,.12)';btn.style.borderColor='#6366f1';btn.style.color='#6366f1';
+  btn.setAttribute('data-selected','1');
+  block.querySelectorAll('.cloze-opt-btn').forEach(b=>b.removeAttribute('data-selected'));
+  btn.setAttribute('data-selected','1');
+};
+
+window.scrollToClozeQ=function(n){
+  const el2=document.getElementById('cloze-q-'+n);
+  if(el2)el2.scrollIntoView({behavior:'smooth',block:'center'});
+};
+
+window.showClozeHints=function(){
+  document.querySelectorAll('.cloze-hint').forEach(h=>h.classList.toggle('hidden'));
 };
 
 window.checkClozeAnswers=function(){
-  const inputs=document.querySelectorAll('.cloze-input');
-  if(!inputs.length)return;
-  let correct=0;
-  inputs.forEach(inp=>{
-    const ans=inp.getAttribute('data-answer')||'';
-    const val=inp.value.trim().toLowerCase();
-    if(val===ans){inp.classList.add('correct');inp.style.borderColor='#10b981';inp.style.background='rgba(16,185,129,.1)';correct++;}
-    else{inp.classList.add('wrong');inp.style.borderColor='#ef4444';inp.style.background='rgba(239,68,68,.08)';}
+  const blocks=document.querySelectorAll('.cloze-mcq-block');
+  let correct=0,total=blocks.length,answered=0;
+  blocks.forEach(block=>{
+    const selected=block.querySelector('.cloze-opt-btn[data-selected]');
+    const correctAns=block.querySelector('.cloze-opt-btn')?.dataset.correct||'';
+    if(!selected)return;
+    answered++;
+    block.dataset.answered='1';
+    const isCorrect=selected.dataset.opt===correctAns;
+    if(isCorrect){correct++;selected.style.background='rgba(16,185,129,.15)';selected.style.borderColor='#10b981';selected.style.color='#10b981';}
+    else{
+      selected.style.background='rgba(239,68,68,.1)';selected.style.borderColor='#ef4444';selected.style.color='#ef4444';
+      // Reveal correct
+      block.querySelectorAll('.cloze-opt-btn').forEach(b=>{if(b.dataset.opt===correctAns){b.style.background='rgba(16,185,129,.12)';b.style.borderColor='#10b981';b.style.color='#10b981';}});
+    }
+    block.querySelector('.cloze-hint')?.classList.remove('hidden');
   });
+  if(answered<total){toast('Please answer all '+total+' questions first','err');return;}
   const score=el('cloze-score');
-  const key=el('cloze-answer-key');
   if(score){
-    const pct=Math.round((correct/inputs.length)*100);
+    const pct=Math.round((correct/total)*100);
     score.classList.remove('hidden');
     score.style.background=pct>=80?'rgba(16,185,129,.1)':pct>=50?'rgba(245,158,11,.1)':'rgba(239,68,68,.08)';
     score.style.border=`1px solid ${pct>=80?'rgba(16,185,129,.3)':pct>=50?'rgba(245,158,11,.3)':'rgba(239,68,68,.2)'}`;
     score.style.color=pct>=80?'#10b981':pct>=50?'#d97706':'#ef4444';
-    score.textContent=`${correct} / ${inputs.length} correct (${pct}%) ${pct>=80?'🏆 Excellent!':pct>=50?'📈 Good effort!':'📚 Keep studying!'}`;
+    score.innerHTML=`<div class="text-2xl mb-1">${pct>=80?'🏆':pct>=50?'📈':'📚'}</div><div class="text-xl">${correct} / ${total} correct (${pct}%)</div><div class="text-xs font-semibold mt-1 opacity-70">${pct>=80?'Excellent! You nailed it.':pct>=50?'Good effort — review the wrong ones.':'Keep studying these words!'}</div>`;
   }
-  if(key) key.classList.remove('hidden');
-};
-
-window.revealClozeAnswers=function(){
-  document.querySelectorAll('.cloze-input').forEach(inp=>{
-    inp.value=inp.getAttribute('data-answer')||'';
-    inp.classList.add('revealed');inp.style.borderStyle='solid';inp.style.borderColor='#6366f1';inp.style.background='rgba(99,102,241,.1)';
-  });
-  const key=el('cloze-answer-key');if(key)key.classList.remove('hidden');
 };
 
 /* ──────────────────────────────
@@ -1509,122 +1591,673 @@ Give a detailed diagnosis in this EXACT JSON (no markdown, no backticks):
 };
 
 /* ──────────────────────────────
-   5. SENTENCE BUILDER
+   NEW 3. SYNONYM & ANTONYM TEST
 ────────────────────────────── */
-function renderSentenceSetup(){
+function renderSynAntSetup(){
   const area=el('practice-area');
+  const wordCount=vWords.filter(w=>w.type==='word'||!w.type).length;
   area.innerHTML=`
     <div class="glass-card rounded-[2rem] overflow-hidden">
-      <div class="px-5 py-4 border-b border-white/30 dark:border-white/5 flex items-center gap-3" style="background:linear-gradient(135deg,rgba(168,85,247,.1),rgba(217,70,239,.07));">
-        <div class="w-9 h-9 rounded-xl flex items-center justify-center text-xl" style="background:linear-gradient(135deg,#a855f7,#d946ef);">✍️</div>
-        <div><h3 class="text-sm font-black text-slate-900 dark:text-white">Sentence Builder Challenge</h3><p class="text-xs text-slate-400 mt-0.5">Use all 3 words in one sentence. AI scores your attempt.</p></div>
+      <div class="px-5 py-4 border-b border-white/30 dark:border-white/5 flex items-center gap-3" style="background:linear-gradient(135deg,rgba(16,185,129,.1),rgba(6,182,212,.07));">
+        <div class="w-9 h-9 rounded-xl flex items-center justify-center text-xl" style="background:linear-gradient(135deg,#10b981,#06b6d4);">🔁</div>
+        <div><h3 class="text-sm font-black text-slate-900 dark:text-white">Synonym &amp; Antonym Test</h3><p class="text-xs text-slate-400 mt-0.5">SSC MCQ format — 4 options per question from your library</p></div>
       </div>
-      <div class="p-5">
-        <p class="text-sm text-slate-500 dark:text-slate-400 mb-4">The best way to truly learn a word is to use it. AI picks 3 words from your vault — write one coherent sentence using all three.</p>
-        <button onclick="generateSentenceChallenge()" class="w-full py-3.5 rounded-2xl btn-gradient text-white font-black text-sm flex items-center justify-center gap-2 shimmer-btn">
-          <i class="fa-solid fa-dice-three"></i> Pick 3 Words
+      <div class="p-5 space-y-4">
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest block mb-1.5">Test Type</label>
+            <select id="synant-type" class="glass-input w-full px-3 py-2.5 rounded-xl font-bold text-sm modern-select">
+              <option value="mixed">Mixed (Syn + Ant)</option>
+              <option value="synonym">Synonyms Only</option>
+              <option value="antonym">Antonyms Only</option>
+            </select>
+          </div>
+          <div>
+            <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest block mb-1.5">No. of Questions</label>
+            <select id="synant-count" class="glass-input w-full px-3 py-2.5 rounded-xl font-bold text-sm modern-select">
+              <option value="5">5 Questions</option>
+              <option value="8" selected>8 Questions</option>
+              <option value="10">10 Questions</option>
+            </select>
+          </div>
+        </div>
+        <div class="p-3 rounded-xl" style="background:rgba(16,185,129,.07);border:1px solid rgba(16,185,129,.15);">
+          <p class="text-xs text-slate-500 dark:text-slate-400">📚 <strong>${wordCount} words</strong> in your library · Options drawn from your vault + AI-generated distractors for maximum confusion</p>
+        </div>
+        <button onclick="generateSynAntTest()" class="w-full py-3.5 rounded-2xl btn-gradient text-white font-black text-sm flex items-center justify-center gap-2 shimmer-btn">
+          <i class="fa-solid fa-wand-magic-sparkles"></i> Generate Test
         </button>
       </div>
     </div>
-    <div id="sentence-result" class="mt-4"></div>`;
+    <div id="synant-result" class="mt-4"></div>`;
 }
 
-window.generateSentenceChallenge=async function(){
-  const result=el('sentence-result');if(!result)return;
-  if(vWords.length<3){result.innerHTML=`<div class="glass-card rounded-2xl p-6 text-center text-slate-400 text-sm">Need at least 3 words in your vault.</div>`;return;}
-  const chosen=vWords.filter(w=>w.type==='word'||!w.type).sort(()=>Math.random()-.5).slice(0,3);
-  if(chosen.length<3){result.innerHTML=`<div class="glass-card rounded-2xl p-6 text-center text-slate-400 text-sm">Add more words of type "word" to your vault.</div>`;return;}
-  const isDarkMode=document.documentElement.classList.contains('dark');
-  const tc=isDarkMode?'#f1f5f9':'#1e293b';
+window.generateSynAntTest=async function(){
+  const result=el('synant-result');if(!result)return;
+  const testType=el('synant-type')?.value||'mixed';
+  const count=parseInt(el('synant-count')?.value||8);
+  let pool=vWords.filter(w=>w.type==='word'||!w.type);
+  if(pool.length<4){result.innerHTML=`<div class="glass-card rounded-2xl p-6 text-center text-slate-400 text-sm">Need at least 4 words in your library.</div>`;return;}
+  const chosen=pool.sort(()=>Math.random()-.5).slice(0,Math.min(count+5,pool.length));
+  const wordData=chosen.map(w=>`"${w.word}" — ${w.meaning}${w.synonyms?.length?' | syn: '+w.synonyms.slice(0,4).join(', '):''}${w.antonyms?.length?' | ant: '+w.antonyms.slice(0,3).join(', '):''}`).join('\n');
 
-  result.innerHTML=`
-    <div class="glass-card rounded-[2rem] overflow-hidden">
-      <div class="px-5 py-4 border-b border-white/30 dark:border-white/5" style="background:rgba(255,255,255,.2);">
-        <h3 class="text-sm font-black text-slate-800 dark:text-white">Use all 3 words in one sentence</h3>
-      </div>
-      <div class="p-5">
-        <div class="flex gap-3 justify-center flex-wrap mb-5">
-          ${chosen.map(w=>`
-            <div class="px-4 py-3 rounded-2xl text-center" style="background:rgba(168,85,247,.1);border:2px solid rgba(168,85,247,.25);">
-              <div class="text-base font-black" style="color:#a855f7;">${w.word}</div>
-              <div class="text-xs text-slate-400 mt-0.5">${w.pos||''}</div>
-            </div>`).join('')}
-        </div>
-        <div class="space-y-2 mb-4">
-          <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Your Sentence</label>
-          <textarea id="sentence-inp" rows="3" placeholder="Write a sentence using all 3 words…" class="glass-input w-full px-4 py-3 rounded-xl font-medium text-sm resize-none"></textarea>
-        </div>
-        <div class="flex gap-3">
-          <button onclick="checkSentence(${JSON.stringify(chosen.map(w=>w.word))},${JSON.stringify(chosen.map(w=>w.meaning))})" class="btn-gradient flex-1 py-3 rounded-xl text-white font-black text-sm flex items-center justify-center gap-2">
-            <i class="fa-solid fa-paper-plane"></i> Submit for AI Review
-          </button>
-          <button onclick="generateSentenceChallenge()" class="btn-glass px-5 py-3 rounded-xl text-sm font-black">New Words</button>
-        </div>
-        <div id="sentence-feedback" class="hidden mt-4"></div>
-      </div>
-    </div>`;
-};
-
-window.checkSentence=async function(words,meanings){
-  const inp=el('sentence-inp');
-  const fb=el('sentence-feedback');
-  if(!inp||!fb) return;
-  const sentence=inp.value.trim();
-  if(!sentence){toast('Write a sentence first','err');return;}
-
-  fb.classList.remove('hidden');
-  fb.innerHTML=`<div class="p-4 rounded-2xl" style="background:rgba(99,102,241,.06);border:1px solid rgba(99,102,241,.12);"><div class="flex items-center gap-2"><div class="spinner" style="width:20px;height:20px;border-width:2px;"></div><span class="text-xs font-black text-indigo-500">AI is reviewing your sentence…</span></div></div>`;
+  result.innerHTML=`<div class="glass-card rounded-[2rem] p-8 text-center"><div class="spinner mx-auto mb-4"></div><p class="text-sm font-black text-slate-400 uppercase tracking-widest">AI is crafting confusing options…</p></div>`;
 
   try{
-    const prompt=`A student was given these 3 words:
-${words.map((w,i)=>`- ${w}: ${meanings[i]}`).join('\n')}
+    const typeGuide={mixed:'Alternate between synonym and antonym questions, label each clearly',synonym:'All questions ask for synonym',antonym:'All questions ask for antonym'};
+    const prompt=`You are an SSC CGL/CHSL expert paper setter creating a Synonym & Antonym MCQ test.
 
-They wrote this sentence: "${sentence}"
+WORD LIBRARY:
+${wordData}
 
-Review their attempt as an SSC exam coach. Respond ONLY in this JSON (no markdown):
+TASK: Create exactly ${count} MCQ questions.
+Test type: ${typeGuide[testType]}
+
+Rules for each question:
+- Question: "Choose the [SYNONYM/ANTONYM] of: [WORD]"
+- 4 options (a,b,c,d) — EXACTLY 1 correct answer
+- The 3 wrong options must be:
+  * Plausible — real English words that could confuse a student
+  * For synonym questions: include 1 near-synonym (different nuance), 1 antonym trap, 1 unrelated but impressive-sounding word
+  * For antonym questions: include 1 near-antonym (slightly off), 1 synonym trap, 1 unrelated formal word
+  * Words should come from the library wherever possible as distractors
+- Mark the correct answer precisely
+
+Respond ONLY in this JSON (no markdown, no backticks):
 {
-  "score": 8,
-  "used_correctly": ["word1","word2"],
-  "used_incorrectly": ["word3"],
-  "feedback": "2-3 sentences of specific feedback on usage, grammar, and meaning",
-  "improved_version": "A better version of their sentence if score < 8, else praise it",
-  "tip": "One specific grammar or vocabulary tip based on what you saw"
+  "questions": [
+    {
+      "num": 1,
+      "type": "SYNONYM",
+      "word": "target word",
+      "options": ["option_a","option_b","option_c","option_d"],
+      "correct": "exact correct option",
+      "explanation": "brief one-line explanation"
+    }
+  ]
 }`;
 
-    const raw=await callGroq(prompt,400);
+    const raw=await callGroq(prompt,1000);
     const parsed=JSON.parse(raw.replace(/```json|```/g,'').trim());
-    const isDarkMode=document.documentElement.classList.contains('dark');
-    const scoreColor=parsed.score>=8?'#10b981':parsed.score>=5?'#f59e0b':'#ef4444';
-    const tc=isDarkMode?'#f1f5f9':'#1e293b';
+    const qs=parsed.questions||[];
+    const isDark=document.documentElement.classList.contains('dark');
+    const tc=isDark?'#f1f5f9':'#1e293b';
 
-    fb.innerHTML=`
-      <div class="space-y-3">
-        <div class="flex items-center gap-4 p-4 rounded-2xl" style="background:rgba(255,255,255,.45);border:1px solid rgba(99,102,241,.12);">
-          <div class="text-4xl font-black" style="color:${scoreColor};">${parsed.score}<span class="text-lg">/10</span></div>
-          <div class="flex-1">
-            <div class="flex gap-1.5 flex-wrap">
-              ${(parsed.used_correctly||[]).map(w=>`<span class="text-xs font-black px-2 py-0.5 rounded" style="background:rgba(16,185,129,.12);color:#10b981;">✓ ${w}</span>`).join('')}
-              ${(parsed.used_incorrectly||[]).map(w=>`<span class="text-xs font-black px-2 py-0.5 rounded" style="background:rgba(239,68,68,.1);color:#ef4444;">✗ ${w}</span>`).join('')}
-            </div>
+    let score=0;let answered=0;
+    const qHTML=qs.slice(0,count).map(q=>{
+      const shuffled=[...q.options].sort(()=>Math.random()-.5);
+      const typeClr=q.type==='SYNONYM'?'#10b981':'#ef4444';
+      const typeBg=q.type==='SYNONYM'?'rgba(16,185,129,.12)':'rgba(239,68,68,.1)';
+      return `<div class="sa-q-block mb-4 p-4 rounded-2xl" id="sa-q-${q.num}" style="background:rgba(255,255,255,.42);border:1.5px solid rgba(148,163,184,.15);">
+        <div class="flex items-center gap-2 mb-3">
+          <span class="text-[9px] font-black px-2 py-0.5 rounded" style="background:${typeBg};color:${typeClr};">${q.type}</span>
+          <p class="text-sm font-black" style="color:${tc};">Choose the ${q.type.toLowerCase()} of: <span style="color:#6366f1;font-size:16px;">${q.word}</span></p>
+        </div>
+        <div class="grid grid-cols-2 gap-2">
+          ${shuffled.map((opt,idx)=>`
+            <button class="sa-opt-btn text-xs font-bold py-2.5 px-3 rounded-xl border text-left transition hover:scale-[1.02]"
+              style="background:rgba(255,255,255,.5);border-color:rgba(148,163,184,.3);color:${tc};"
+              data-q="${q.num}" data-opt="${opt.replace(/"/g,'&quot;')}" data-correct="${q.correct.replace(/"/g,'&quot;')}"
+              onclick="pickSAOpt(this)">
+              <span class="font-black text-indigo-400 mr-1">${String.fromCharCode(65+idx)}.</span> ${opt}
+            </button>`).join('')}
+        </div>
+        <p class="sa-expl text-[10px] text-slate-400 mt-2 hidden italic">💡 ${q.explanation}</p>
+      </div>`;
+    }).join('');
+
+    result.innerHTML=`
+      <div class="glass-card rounded-[2rem] overflow-hidden pop-in">
+        <div class="px-5 py-4 border-b border-white/30 dark:border-white/5 flex items-center justify-between" style="background:rgba(255,255,255,.2);">
+          <div><h3 class="text-sm font-black text-slate-800 dark:text-white">Synonym &amp; Antonym MCQ</h3><p class="text-xs text-slate-400">${count} questions · SSC format</p></div>
+          <span id="sa-score-live" class="text-xs font-black px-2 py-1 rounded-lg" style="background:rgba(99,102,241,.1);color:#6366f1;">0 / ${count}</span>
+        </div>
+        <div class="p-5">
+          ${qHTML}
+          <div class="flex gap-3 flex-wrap mt-2">
+            <button onclick="checkSATest()" class="btn-gradient flex-1 py-3 rounded-xl text-white font-black text-sm flex items-center justify-center gap-2"><i class="fa-solid fa-check"></i> Submit All</button>
+            <button onclick="generateSynAntTest()" class="btn-glass px-5 py-3 rounded-xl text-sm font-black text-indigo-500">New Test</button>
           </div>
+          <div id="sa-final-score" class="hidden mt-4 p-4 rounded-2xl text-center font-black"></div>
         </div>
-        <div class="p-4 rounded-2xl" style="background:rgba(99,102,241,.06);border:1px solid rgba(99,102,241,.12);">
-          <p class="text-sm text-slate-700 dark:text-slate-200 leading-relaxed">${parsed.feedback}</p>
-        </div>
-        ${parsed.improved_version&&parsed.score<8?`
-        <div class="p-4 rounded-2xl" style="background:rgba(16,185,129,.06);border:1px solid rgba(16,185,129,.15);">
-          <p class="text-[10px] font-black text-emerald-500 uppercase tracking-widest mb-2">✨ Better Version</p>
-          <p class="text-sm italic text-slate-700 dark:text-slate-200">"${parsed.improved_version}"</p>
-        </div>`:''}
-        <div class="p-3 rounded-xl" style="background:rgba(245,158,11,.07);border:1px solid rgba(245,158,11,.15);">
-          <p class="text-[10px] font-black text-amber-600 uppercase tracking-widest mb-1">💡 Tip</p>
-          <p class="text-xs text-slate-600 dark:text-slate-300">${parsed.tip}</p>
-        </div>
-        <button onclick="generateSentenceChallenge()" class="w-full py-3 rounded-xl btn-gradient text-white font-black text-sm">Try New Words</button>
       </div>`;
   }catch(e){
-    fb.innerHTML=`<div class="p-4 rounded-2xl text-sm text-rose-500">${e.message==='NO_KEY'?'Set your Groq API key first.':'Error: '+e.message}</div>`;
+    result.innerHTML=`<div class="glass-card rounded-2xl p-6 text-center"><p class="text-sm text-rose-500 font-bold">${e.message==='NO_KEY'?'Set your Groq API key first.':'Error: '+e.message}</p><button onclick="generateSynAntTest()" class="mt-3 btn-glass px-4 py-2 rounded-xl text-sm font-black">Retry</button></div>`;
   }
+};
+
+window.pickSAOpt=function(btn){
+  const q=btn.dataset.q;
+  const block=document.getElementById('sa-q-'+q);
+  if(!block||block.dataset.answered==='1')return;
+  block.querySelectorAll('.sa-opt-btn').forEach(b=>{b.style.background='rgba(255,255,255,.5)';b.style.borderColor='rgba(148,163,184,.3)';b.removeAttribute('data-selected');});
+  btn.style.background='rgba(99,102,241,.12)';btn.style.borderColor='#6366f1';btn.style.color='#6366f1';btn.setAttribute('data-selected','1');
+};
+
+window.checkSATest=function(){
+  const blocks=document.querySelectorAll('.sa-q-block');
+  let correct=0,total=blocks.length;
+  let allAnswered=true;
+  blocks.forEach(block=>{
+    const selected=block.querySelector('.sa-opt-btn[data-selected]');
+    if(!selected){allAnswered=false;return;}
+    block.dataset.answered='1';
+    const isOk=selected.dataset.opt===selected.dataset.correct;
+    if(isOk){correct++;selected.style.background='rgba(16,185,129,.15)';selected.style.borderColor='#10b981';selected.style.color='#10b981';}
+    else{
+      selected.style.background='rgba(239,68,68,.1)';selected.style.borderColor='#ef4444';selected.style.color='#ef4444';
+      block.querySelectorAll('.sa-opt-btn').forEach(b=>{if(b.dataset.opt===b.dataset.correct){b.style.background='rgba(16,185,129,.12)';b.style.borderColor='#10b981';b.style.color='#10b981';}});
+    }
+    block.querySelector('.sa-expl')?.classList.remove('hidden');
+    block.querySelectorAll('.sa-opt-btn').forEach(b=>b.disabled=true);
+  });
+  if(!allAnswered){toast('Answer all questions first','err');return;}
+  const sc=el('sa-final-score');
+  if(sc){const pct=Math.round((correct/total)*100);sc.classList.remove('hidden');sc.style.background=pct>=80?'rgba(16,185,129,.1)':pct>=50?'rgba(245,158,11,.1)':'rgba(239,68,68,.08)';sc.style.border=`1px solid ${pct>=80?'rgba(16,185,129,.3)':pct>=50?'rgba(245,158,11,.3)':'rgba(239,68,68,.2)'}`;sc.style.color=pct>=80?'#10b981':pct>=50?'#d97706':'#ef4444';sc.innerHTML=`<div class="text-2xl mb-1">${pct>=80?'🏆':pct>=50?'👍':'📖'}</div><div class="text-xl">${correct} / ${total} (${pct}%)</div><div class="text-xs font-semibold mt-1 opacity-70">${pct>=80?'Outstanding!':pct>=50?'Good work, review the missed ones.':'Practice more — focus on syn/ant pairs!'}</div>`;}
+};
+
+/* ──────────────────────────────
+   NEW 4. IDIOM TEST
+────────────────────────────── */
+function renderIdiomSetup(){
+  const area=el('practice-area');
+  const idioms=vWords.filter(w=>w.type==='idiom'||w.type==='phrase');
+  area.innerHTML=`
+    <div class="glass-card rounded-[2rem] overflow-hidden">
+      <div class="px-5 py-4 border-b border-white/30 dark:border-white/5 flex items-center gap-3" style="background:linear-gradient(135deg,rgba(168,85,247,.1),rgba(217,70,239,.07));">
+        <div class="w-9 h-9 rounded-xl flex items-center justify-center text-xl" style="background:linear-gradient(135deg,#a855f7,#d946ef);">💡</div>
+        <div><h3 class="text-sm font-black text-slate-900 dark:text-white">Idiom &amp; Phrase Test</h3><p class="text-xs text-slate-400 mt-0.5">MCQ from your library · SSC exam format</p></div>
+      </div>
+      <div class="p-5 space-y-4">
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest block mb-1.5">Question Style</label>
+            <select id="idiom-style" class="glass-input w-full px-3 py-2.5 rounded-xl font-bold text-sm modern-select">
+              <option value="meaning">What does it mean?</option>
+              <option value="usage">Fill the blank (usage)</option>
+              <option value="mixed">Mixed</option>
+            </select>
+          </div>
+          <div>
+            <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest block mb-1.5">Questions</label>
+            <select id="idiom-count" class="glass-input w-full px-3 py-2.5 rounded-xl font-bold text-sm modern-select">
+              <option value="5">5 Questions</option>
+              <option value="8" selected>8 Questions</option>
+              <option value="10">10 Questions</option>
+            </select>
+          </div>
+        </div>
+        <div class="p-3 rounded-xl ${idioms.length<3?'':'hidden'}" style="background:rgba(245,158,11,.07);border:1px solid rgba(245,158,11,.15);" id="idiom-warn">
+          <p class="text-xs text-amber-600">⚠️ Only <strong>${idioms.length} idiom/phrase</strong> entries found. Add more entries of type "Idiom" or "Phrase" for a better test. AI will still generate questions using available idioms + common ones.</p>
+        </div>
+        <div class="p-3 rounded-xl" style="background:rgba(168,85,247,.07);border:1px solid rgba(168,85,247,.15);">
+          <p class="text-xs text-slate-500 dark:text-slate-400">💡 Questions are generated <strong>only from your library idioms/phrases</strong>. If you have fewer than 5, AI uses what's available and generates confusing distractors.</p>
+        </div>
+        <button onclick="generateIdiomTest()" class="w-full py-3.5 rounded-2xl btn-gradient text-white font-black text-sm flex items-center justify-center gap-2 shimmer-btn">
+          <i class="fa-solid fa-wand-magic-sparkles"></i> Generate Idiom Test
+        </button>
+      </div>
+    </div>
+    <div id="idiom-result" class="mt-4"></div>`;
+}
+
+window.generateIdiomTest=async function(){
+  const result=el('idiom-result');if(!result)return;
+  const style=el('idiom-style')?.value||'mixed';
+  const count=parseInt(el('idiom-count')?.value||8);
+  let idioms=vWords.filter(w=>w.type==='idiom'||w.type==='phrase');
+  // Also include words with idiom-like entries
+  if(idioms.length<3){
+    const extra=vWords.filter(w=>w.type==='word'&&w.example&&w.example.length>20).slice(0,5);
+    idioms=[...idioms,...extra];
+  }
+  if(!idioms.length){result.innerHTML=`<div class="glass-card rounded-2xl p-6 text-center text-slate-400 text-sm">No idioms or phrases in your library. Add entries of type "Idiom" or "Phrase" first.</div>`;return;}
+
+  const idiomData=idioms.sort(()=>Math.random()-.5).slice(0,Math.min(count+3,idioms.length))
+    .map(w=>`"${w.word}" — ${w.meaning}${w.example?' | e.g.: '+w.example:''}`).join('\n');
+
+  result.innerHTML=`<div class="glass-card rounded-[2rem] p-8 text-center"><div class="spinner mx-auto mb-4"></div><p class="text-sm font-black text-slate-400 uppercase tracking-widest">AI is building your idiom test…</p></div>`;
+
+  try{
+    const styleGuide={meaning:'Each question: "What does the idiom/phrase mean?" — 4 meaning options',usage:'Each question: sentence with blank to fill with the correct idiom — 4 idiom options',mixed:'Alternate between meaning questions and usage/fill-in-blank questions'};
+    const prompt=`You are an expert SSC CGL exam paper setter specialising in idioms and phrases.
+
+IDIOMS/PHRASES FROM STUDENT'S LIBRARY:
+${idiomData}
+
+TASK: Create exactly ${count} SSC-format MCQ questions.
+Question style: ${styleGuide[style]}
+
+For each question:
+- Use ONLY idioms/phrases from the library above as the main target
+- 4 options (a,b,c,d) — exactly 1 correct
+- Wrong options must be genuinely confusing — use similar idioms, partial meanings, or related phrases
+- For usage questions: write a clear, exam-quality sentence context
+- Keep language formal and SSC CGL standard
+
+Respond ONLY in this JSON (no markdown, no backticks):
+{
+  "questions": [
+    {
+      "num": 1,
+      "qtype": "MEANING",
+      "idiom": "the idiom/phrase",
+      "sentence": "sentence with _____ (only for usage type, else null)",
+      "options": ["a","b","c","d"],
+      "correct": "exact correct option",
+      "explanation": "why this is correct"
+    }
+  ]
+}`;
+
+    const raw=await callGroq(prompt,1100);
+    const parsed=JSON.parse(raw.replace(/```json|```/g,'').trim());
+    const qs=parsed.questions||[];
+    const isDark=document.documentElement.classList.contains('dark');
+    const tc=isDark?'#f1f5f9':'#1e293b';
+
+    const qHTML=qs.slice(0,count).map(q=>{
+      const shuffled=[...q.options].sort(()=>Math.random()-.5);
+      const isMeaning=q.qtype==='MEANING';
+      return `<div class="idiom-q-block mb-4 p-4 rounded-2xl" id="idiom-q-${q.num}" style="background:rgba(255,255,255,.42);border:1.5px solid rgba(168,85,247,.1);">
+        <div class="flex items-start gap-2 mb-3">
+          <span class="text-[9px] font-black px-2 py-0.5 rounded flex-shrink-0 mt-0.5" style="background:rgba(168,85,247,.12);color:#a855f7;">${q.qtype}</span>
+          <div>
+            ${isMeaning?`<p class="text-sm font-black" style="color:${tc};">What does "<span style="color:#a855f7;">${q.idiom}</span>" mean?</p>`:
+            `<p class="text-sm text-slate-500 mb-1">Fill the blank:</p><p class="text-sm font-semibold p-3 rounded-xl" style="background:rgba(168,85,247,.07);border:1px solid rgba(168,85,247,.15);color:${tc};">${(q.sentence||'').replace('_____','<span style="display:inline-block;min-width:80px;border-bottom:2px solid #a855f7;color:#a855f7;font-weight:900;">_____</span>')}</p>`}
+          </div>
+        </div>
+        <div class="grid grid-cols-1 gap-2">
+          ${shuffled.map((opt,idx)=>`
+            <button class="idiom-opt-btn text-xs font-bold py-2.5 px-3 rounded-xl border text-left transition hover:scale-[1.01]"
+              style="background:rgba(255,255,255,.5);border-color:rgba(148,163,184,.3);color:${tc};"
+              data-q="${q.num}" data-opt="${opt.replace(/"/g,'&quot;')}" data-correct="${q.correct.replace(/"/g,'&quot;')}"
+              onclick="pickIdiomOpt(this)">
+              <span class="font-black text-purple-400 mr-1">${String.fromCharCode(65+idx)}.</span> ${opt}
+            </button>`).join('')}
+        </div>
+        <p class="idiom-expl text-[10px] text-slate-400 mt-2 hidden italic">💡 ${q.explanation}</p>
+      </div>`;
+    }).join('');
+
+    result.innerHTML=`
+      <div class="glass-card rounded-[2rem] overflow-hidden pop-in">
+        <div class="px-5 py-4 border-b border-white/30 dark:border-white/5 flex items-center justify-between" style="background:rgba(255,255,255,.2);">
+          <div><h3 class="text-sm font-black text-slate-800 dark:text-white">Idiom &amp; Phrase MCQ</h3><p class="text-xs text-slate-400">${count} questions · SSC CGL format</p></div>
+        </div>
+        <div class="p-5">
+          ${qHTML}
+          <div class="flex gap-3 flex-wrap mt-2">
+            <button onclick="checkIdiomTest()" class="btn-gradient flex-1 py-3 rounded-xl text-white font-black text-sm flex items-center justify-center gap-2"><i class="fa-solid fa-check"></i> Submit All</button>
+            <button onclick="generateIdiomTest()" class="btn-glass px-5 py-3 rounded-xl text-sm font-black text-purple-500">New Test</button>
+          </div>
+          <div id="idiom-final-score" class="hidden mt-4 p-4 rounded-2xl text-center font-black"></div>
+        </div>
+      </div>`;
+  }catch(e){
+    result.innerHTML=`<div class="glass-card rounded-2xl p-6 text-center"><p class="text-sm text-rose-500 font-bold">${e.message==='NO_KEY'?'Set your Groq API key first.':'Error: '+e.message}</p><button onclick="generateIdiomTest()" class="mt-3 btn-glass px-4 py-2 rounded-xl text-sm font-black">Retry</button></div>`;
+  }
+};
+
+window.pickIdiomOpt=function(btn){
+  const q=btn.dataset.q;
+  const block=document.getElementById('idiom-q-'+q);
+  if(!block||block.dataset.answered==='1')return;
+  block.querySelectorAll('.idiom-opt-btn').forEach(b=>{b.style.background='rgba(255,255,255,.5)';b.style.borderColor='rgba(148,163,184,.3)';b.removeAttribute('data-selected');});
+  btn.style.background='rgba(168,85,247,.12)';btn.style.borderColor='#a855f7';btn.style.color='#a855f7';btn.setAttribute('data-selected','1');
+};
+
+window.checkIdiomTest=function(){
+  const blocks=document.querySelectorAll('.idiom-q-block');
+  let correct=0,total=blocks.length,allAnswered=true;
+  blocks.forEach(block=>{
+    const sel=block.querySelector('.idiom-opt-btn[data-selected]');
+    if(!sel){allAnswered=false;return;}
+    block.dataset.answered='1';
+    const ok=sel.dataset.opt===sel.dataset.correct;
+    if(ok){correct++;sel.style.background='rgba(16,185,129,.15)';sel.style.borderColor='#10b981';sel.style.color='#10b981';}
+    else{sel.style.background='rgba(239,68,68,.1)';sel.style.borderColor='#ef4444';sel.style.color='#ef4444';block.querySelectorAll('.idiom-opt-btn').forEach(b=>{if(b.dataset.opt===b.dataset.correct){b.style.background='rgba(16,185,129,.12)';b.style.borderColor='#10b981';b.style.color='#10b981';}});}
+    block.querySelector('.idiom-expl')?.classList.remove('hidden');
+    block.querySelectorAll('.idiom-opt-btn').forEach(b=>b.disabled=true);
+  });
+  if(!allAnswered){toast('Answer all questions first','err');return;}
+  const sc=el('idiom-final-score');
+  if(sc){const pct=Math.round((correct/total)*100);sc.classList.remove('hidden');sc.style.background=pct>=80?'rgba(16,185,129,.1)':pct>=50?'rgba(245,158,11,.1)':'rgba(239,68,68,.08)';sc.style.border=`1px solid ${pct>=80?'rgba(16,185,129,.3)':pct>=50?'rgba(245,158,11,.3)':'rgba(239,68,68,.2)'}`;sc.style.color=pct>=80?'#10b981':pct>=50?'#d97706':'#ef4444';sc.innerHTML=`<div class="text-2xl mb-1">${pct>=80?'🏆':pct>=50?'💪':'📚'}</div><div class="text-xl">${correct} / ${total} (${pct}%)</div><div class="text-xs font-semibold mt-1 opacity-70">${pct>=80?'Brilliant! You know your idioms.':pct>=50?'Good — revise the ones you missed.':'Idioms need more practice — review your library!'}</div>`;}
+};
+
+/* ──────────────────────────────
+   NEW 5. SPELLING TEST
+────────────────────────────── */
+function renderSpellingSetup(){
+  const area=el('practice-area');
+  area.innerHTML=`
+    <div class="glass-card rounded-[2rem] overflow-hidden">
+      <div class="px-5 py-4 border-b border-white/30 dark:border-white/5 flex items-center gap-3" style="background:linear-gradient(135deg,rgba(239,68,68,.09),rgba(245,158,11,.06));">
+        <div class="w-9 h-9 rounded-xl flex items-center justify-center text-xl" style="background:linear-gradient(135deg,#ef4444,#f59e0b);">🔤</div>
+        <div><h3 class="text-sm font-black text-slate-900 dark:text-white">Correct Spelling Finder</h3><p class="text-xs text-slate-400 mt-0.5">4 spellings · only 1 is correct · spot the right one</p></div>
+      </div>
+      <div class="p-5 space-y-4">
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest block mb-1.5">Difficulty</label>
+            <select id="spell-diff" class="glass-input w-full px-3 py-2.5 rounded-xl font-bold text-sm modern-select">
+              <option value="moderate">Moderate (SSC CHSL)</option>
+              <option value="hard" selected>Hard (SSC CGL)</option>
+              <option value="tricky">Very Tricky (expert)</option>
+            </select>
+          </div>
+          <div>
+            <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest block mb-1.5">Questions</label>
+            <select id="spell-count" class="glass-input w-full px-3 py-2.5 rounded-xl font-bold text-sm modern-select">
+              <option value="5">5 Questions</option>
+              <option value="8" selected>8 Questions</option>
+              <option value="10">10 Questions</option>
+            </select>
+          </div>
+        </div>
+        <div class="p-3 rounded-xl" style="background:rgba(239,68,68,.06);border:1px solid rgba(239,68,68,.15);">
+          <p class="text-xs text-slate-500 dark:text-slate-400">🎯 Words drawn from your library. Wrong options are crafted to target common spelling traps — silent letters, double consonants, ie/ei confusion, etc.</p>
+        </div>
+        <button onclick="generateSpellingTest()" class="w-full py-3.5 rounded-2xl btn-gradient text-white font-black text-sm flex items-center justify-center gap-2 shimmer-btn">
+          <i class="fa-solid fa-wand-magic-sparkles"></i> Generate Spelling Test
+        </button>
+      </div>
+    </div>
+    <div id="spell-result" class="mt-4"></div>`;
+}
+
+window.generateSpellingTest=async function(){
+  const result=el('spell-result');if(!result)return;
+  const diff=el('spell-diff')?.value||'hard';
+  const count=parseInt(el('spell-count')?.value||8);
+  const pool=vWords.filter(w=>w.word&&w.word.length>4).sort(()=>Math.random()-.5).slice(0,count+5);
+  if(pool.length<4){result.innerHTML=`<div class="glass-card rounded-2xl p-6 text-center text-slate-400 text-sm">Need at least 4 words in your library for a spelling test.</div>`;return;}
+  const wordList=pool.slice(0,count).map(w=>w.word).join(', ');
+
+  result.innerHTML=`<div class="glass-card rounded-[2rem] p-8 text-center"><div class="spinner mx-auto mb-4"></div><p class="text-sm font-black text-slate-400 uppercase tracking-widest">AI is crafting spelling traps…</p></div>`;
+
+  const diffGuide={moderate:'Common misspellings, double letters, dropped vowels — moderate challenge',hard:'Tricky: silent letters, ie/ei, -ance/-ence, -ible/-able confusions — SSC CGL level',tricky:'Expert traps: rare spelling rules, double confusion (two plausible options), phonetic traps'};
+  try{
+    const prompt=`You are an SSC exam expert. Create a "Correct Spelling" MCQ test.
+
+WORDS FROM STUDENT'S LIBRARY: ${wordList}
+
+TASK: Create exactly ${count} questions.
+For EACH word:
+- Show 4 spelling options (a,b,c,d): the CORRECT spelling + 3 cleverly wrong versions
+- Wrong versions target: ${diffGuide[diff]}
+- Make wrong options look VERY plausible — this should be hard
+- Wrong options must be real-looking, not gibberish
+- Question format: "Choose the correctly spelled word:"
+
+Respond ONLY in this JSON (no markdown, no backticks):
+{
+  "questions": [
+    {
+      "num": 1,
+      "word": "correct spelling",
+      "options": ["opt_a","opt_b","opt_c","opt_d"],
+      "correct": "exact correct spelling",
+      "trap_note": "what made the wrong options tricky (e.g., 'double-l vs single-l')"
+    }
+  ]
+}`;
+
+    const raw=await callGroq(prompt,900);
+    const parsed=JSON.parse(raw.replace(/```json|```/g,'').trim());
+    const qs=parsed.questions||[];
+    const isDark=document.documentElement.classList.contains('dark');
+    const tc=isDark?'#f1f5f9':'#1e293b';
+
+    const qHTML=qs.slice(0,count).map(q=>{
+      const shuffled=[...q.options].sort(()=>Math.random()-.5);
+      return `<div class="spell-q-block mb-4 p-4 rounded-2xl" id="spell-q-${q.num}" style="background:rgba(255,255,255,.42);border:1.5px solid rgba(239,68,68,.1);">
+        <p class="text-xs font-black text-rose-400 mb-2">Q${q.num}. Choose the correctly spelled word:</p>
+        <div class="grid grid-cols-2 gap-2">
+          ${shuffled.map((opt,idx)=>`
+            <button class="spell-opt-btn font-mono text-sm font-bold py-2.5 px-3 rounded-xl border text-left transition hover:scale-[1.02]"
+              style="background:rgba(255,255,255,.5);border-color:rgba(148,163,184,.3);color:${tc};"
+              data-q="${q.num}" data-opt="${opt.replace(/"/g,'&quot;')}" data-correct="${q.correct.replace(/"/g,'&quot;')}"
+              onclick="pickSpellOpt(this)">
+              <span class="font-black text-rose-400 mr-1 font-sans">${String.fromCharCode(65+idx)}.</span> ${opt}
+            </button>`).join('')}
+        </div>
+        <p class="spell-trap text-[10px] text-slate-400 mt-2 hidden italic">🪤 Trap: ${q.trap_note}</p>
+      </div>`;
+    }).join('');
+
+    result.innerHTML=`
+      <div class="glass-card rounded-[2rem] overflow-hidden pop-in">
+        <div class="px-5 py-4 border-b border-white/30 dark:border-white/5 flex items-center justify-between" style="background:rgba(255,255,255,.2);">
+          <div><h3 class="text-sm font-black text-slate-800 dark:text-white">Correct Spelling Finder</h3><p class="text-xs text-slate-400">${count} questions · ${diff} difficulty</p></div>
+        </div>
+        <div class="p-5">
+          ${qHTML}
+          <div class="flex gap-3 flex-wrap mt-2">
+            <button onclick="checkSpellingTest()" class="btn-gradient flex-1 py-3 rounded-xl text-white font-black text-sm flex items-center justify-center gap-2"><i class="fa-solid fa-check"></i> Submit All</button>
+            <button onclick="generateSpellingTest()" class="btn-glass px-5 py-3 rounded-xl text-sm font-black text-rose-500">New Test</button>
+          </div>
+          <div id="spell-final-score" class="hidden mt-4 p-4 rounded-2xl text-center font-black"></div>
+        </div>
+      </div>`;
+  }catch(e){
+    result.innerHTML=`<div class="glass-card rounded-2xl p-6 text-center"><p class="text-sm text-rose-500 font-bold">${e.message==='NO_KEY'?'Set your Groq API key first.':'Error: '+e.message}</p><button onclick="generateSpellingTest()" class="mt-3 btn-glass px-4 py-2 rounded-xl text-sm font-black">Retry</button></div>`;
+  }
+};
+
+window.pickSpellOpt=function(btn){
+  const q=btn.dataset.q;
+  const block=document.getElementById('spell-q-'+q);
+  if(!block||block.dataset.answered==='1')return;
+  block.querySelectorAll('.spell-opt-btn').forEach(b=>{b.style.background='rgba(255,255,255,.5)';b.style.borderColor='rgba(148,163,184,.3)';b.removeAttribute('data-selected');});
+  btn.style.background='rgba(239,68,68,.1)';btn.style.borderColor='#ef4444';btn.style.color='#ef4444';btn.setAttribute('data-selected','1');
+};
+
+window.checkSpellingTest=function(){
+  const blocks=document.querySelectorAll('.spell-q-block');
+  let correct=0,total=blocks.length,allAnswered=true;
+  blocks.forEach(block=>{
+    const sel=block.querySelector('.spell-opt-btn[data-selected]');
+    if(!sel){allAnswered=false;return;}
+    block.dataset.answered='1';
+    const ok=sel.dataset.opt===sel.dataset.correct;
+    if(ok){correct++;sel.style.background='rgba(16,185,129,.15)';sel.style.borderColor='#10b981';sel.style.color='#10b981';}
+    else{sel.style.background='rgba(239,68,68,.1)';sel.style.borderColor='#ef4444';sel.style.color='#ef4444';block.querySelectorAll('.spell-opt-btn').forEach(b=>{if(b.dataset.opt===b.dataset.correct){b.style.background='rgba(16,185,129,.12)';b.style.borderColor='#10b981';b.style.color='#10b981';}});}
+    block.querySelector('.spell-trap')?.classList.remove('hidden');
+    block.querySelectorAll('.spell-opt-btn').forEach(b=>b.disabled=true);
+  });
+  if(!allAnswered){toast('Answer all questions first','err');return;}
+  const sc=el('spell-final-score');
+  if(sc){const pct=Math.round((correct/total)*100);sc.classList.remove('hidden');sc.style.background=pct>=80?'rgba(16,185,129,.1)':pct>=50?'rgba(245,158,11,.1)':'rgba(239,68,68,.08)';sc.style.border=`1px solid ${pct>=80?'rgba(16,185,129,.3)':pct>=50?'rgba(245,158,11,.3)':'rgba(239,68,68,.2)'}`;sc.style.color=pct>=80?'#10b981':pct>=50?'#d97706':'#ef4444';sc.innerHTML=`<div class="text-2xl mb-1">${pct>=80?'🏆':pct>=50?'🔡':'📝'}</div><div class="text-xl">${correct} / ${total} (${pct}%)</div><div class="text-xs font-semibold mt-1 opacity-70">${pct>=80?'Perfect speller!':pct>=50?'Good — review the tricky ones.':'Spelling needs work — read words carefully!'}</div>`;}
+};
+
+/* ──────────────────────────────
+   NEW 6. COMPREHENSIVE TEST
+────────────────────────────── */
+function renderComprehensiveSetup(){
+  const area=el('practice-area');
+  const totalWords=vWords.length;
+  const idiomCount=vWords.filter(w=>w.type==='idiom'||w.type==='phrase').length;
+  area.innerHTML=`
+    <div class="glass-card rounded-[2rem] overflow-hidden">
+      <div class="px-5 py-4 border-b border-white/30 dark:border-white/5 flex items-center gap-3" style="background:linear-gradient(135deg,rgba(6,182,212,.1),rgba(99,102,241,.07));">
+        <div class="w-9 h-9 rounded-xl flex items-center justify-center text-xl" style="background:linear-gradient(135deg,#06b6d4,#6366f1);">🏆</div>
+        <div><h3 class="text-sm font-black text-slate-900 dark:text-white">Comprehensive Test</h3><p class="text-xs text-slate-400 mt-0.5">All question types in one full SSC mock test</p></div>
+      </div>
+      <div class="p-5 space-y-4">
+        <div>
+          <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest block mb-3">Include Question Types</label>
+          <div class="space-y-2">
+            ${[
+              {id:'comp-cloze',label:'Cloze Test (MCQ)',icon:'📝',desc:'Passage with 5 MCQ blanks',def:true},
+              {id:'comp-synant',label:'Synonym / Antonym',icon:'🔁',desc:'4 MCQ questions',def:true},
+              {id:'comp-idiom',label:'Idiom & Phrase',icon:'💡',desc:'4 MCQ questions',def:idiomCount>0},
+              {id:'comp-spell',label:'Correct Spelling',icon:'🔤',desc:'4 MCQ questions',def:true},
+              {id:'comp-confuse',label:'Confusable Pairs',icon:'🤔',desc:'2 confusable pair Qs',def:true},
+            ].map(t=>`
+              <label class="flex items-center gap-3 p-3 rounded-xl cursor-pointer transition hover:scale-[1.01]" style="background:rgba(255,255,255,.35);border:1px solid rgba(255,255,255,.6);">
+                <input type="checkbox" id="${t.id}" ${t.def?'checked':''} class="w-4 h-4 accent-indigo-500 flex-shrink-0">
+                <span class="text-lg flex-shrink-0">${t.icon}</span>
+                <div class="flex-1">
+                  <span class="text-sm font-black text-slate-800 dark:text-white">${t.label}</span>
+                  <span class="text-xs text-slate-400 ml-2">${t.desc}</span>
+                </div>
+              </label>`).join('')}
+          </div>
+        </div>
+        <div class="p-3 rounded-xl" style="background:rgba(6,182,212,.06);border:1px solid rgba(6,182,212,.15);">
+          <p class="text-xs text-slate-500 dark:text-slate-400">🏆 Your library: <strong>${totalWords} words</strong> · <strong>${idiomCount} idioms/phrases</strong> — All questions drawn exclusively from your vault.</p>
+        </div>
+        <button onclick="generateComprehensiveTest()" class="w-full py-3.5 rounded-2xl btn-gradient text-white font-black text-sm flex items-center justify-center gap-2 shimmer-btn">
+          <i class="fa-solid fa-trophy"></i> Generate Full Mock Test
+        </button>
+      </div>
+    </div>
+    <div id="comp-result" class="mt-4"></div>`;
+}
+
+window.generateComprehensiveTest=async function(){
+  const result=el('comp-result');if(!result)return;
+  const include={cloze:el('comp-cloze')?.checked,synant:el('comp-synant')?.checked,idiom:el('comp-idiom')?.checked,spell:el('comp-spell')?.checked,confuse:el('comp-confuse')?.checked};
+  if(!Object.values(include).some(Boolean)){toast('Select at least one test type','err');return;}
+
+  result.innerHTML=`<div class="glass-card rounded-[2rem] p-8 text-center"><div class="spinner mx-auto mb-4"></div><p class="text-sm font-black text-slate-400 uppercase tracking-widest">Generating comprehensive mock test…</p><p class="text-xs text-slate-300 mt-2">This may take 20–30 seconds</p></div>`;
+
+  // Build word pools
+  const words=vWords.filter(w=>w.type==='word'||!w.type);
+  const idioms=vWords.filter(w=>w.type==='idiom'||w.type==='phrase');
+  const wordSample=words.sort(()=>Math.random()-.5).slice(0,15).map(w=>`"${w.word}": ${w.meaning}${w.synonyms?.length?' syn:'+w.synonyms.slice(0,3).join('/'):''}${w.antonyms?.length?' ant:'+w.antonyms.slice(0,2).join('/'):''}`).join('\n');
+  const idiomSample=idioms.sort(()=>Math.random()-.5).slice(0,6).map(w=>`"${w.word}": ${w.meaning}`).join('\n');
+
+  const sections=[];
+  if(include.cloze)sections.push(`"cloze": {passage with (1)-(5) blanks using 5 words from library, plus MCQ options for each blank — 4 options per blank, 1 correct}`);
+  if(include.synant)sections.push(`"synant": {4 synonym/antonym MCQ questions alternating, using library words}`);
+  if(include.idiom&&idioms.length>0)sections.push(`"idiom": {4 idiom/phrase MCQ questions from library}`);
+  if(include.spell)sections.push(`"spelling": {4 correct-spelling MCQ questions using library words — 4 options each, 1 correct spelling}`);
+  if(include.confuse)sections.push(`"confuse": {2 confusable pair questions using library words — sentence + 2 options}`);
+
+  try{
+    const prompt=`You are an expert SSC CGL exam paper setter. Create a comprehensive mock test.
+
+WORD LIBRARY:
+${wordSample}
+
+${idiomSample?`IDIOM/PHRASE LIBRARY:\n${idiomSample}\n`:''}
+
+TASK: Generate a full SSC mock test with these sections:
+${sections.join('\n')}
+
+Rules:
+- Use ONLY words from the provided library
+- All distractors must be genuinely confusing — real English words
+- SSC CGL exam quality throughout
+- For cloze: passage 100-130 words, coherent, exam-relevant topic
+
+Respond ONLY in this exact JSON structure (no markdown):
+{
+  ${include.cloze?`"cloze": {
+    "topic": "topic",
+    "passage": "passage text with (1)_____ to (5)_____",
+    "questions": [{"num":1,"options":["a","b","c","d"],"correct":"x","hint":"why"}]
+  },`:''}
+  ${include.synant?`"synant": [{"num":1,"type":"SYNONYM","word":"w","options":["a","b","c","d"],"correct":"x","explanation":"e"}],`:''}
+  ${include.idiom&&idioms.length>0?`"idiom": [{"num":1,"qtype":"MEANING","idiom":"i","sentence":null,"options":["a","b","c","d"],"correct":"x","explanation":"e"}],`:''}
+  ${include.spell?`"spelling": [{"num":1,"word":"w","options":["a","b","c","d"],"correct":"x","trap_note":"t"}],`:''}
+  ${include.confuse?`"confuse": [{"word1":"w1","word2":"w2","sentence":"s with _____","correct":"x","why_correct":"y","key_difference":"k"}]`:''}
+}`;
+
+    const raw=await callGroq(prompt,2000);
+    const parsed=JSON.parse(raw.replace(/```json|```/g,'').trim());
+    const isDark=document.documentElement.classList.contains('dark');
+    const tc=isDark?'#f1f5f9':'#1e293b';
+
+    let sectionsHTML='';
+    let totalQ=0;
+
+    // CLOZE section
+    if(parsed.cloze){
+      const c=parsed.cloze;const qs=c.questions||[];totalQ+=qs.length;
+      let passHTML=c.passage||'';
+      qs.forEach(q=>{passHTML=passHTML.replace(new RegExp(`\\(${q.num}\\)_+`),`<span class="comp-cloze-ref" style="display:inline-block;min-width:80px;padding:1px 8px;border-radius:6px;background:rgba(99,102,241,.12);border:2px dashed rgba(99,102,241,.4);font-weight:900;font-size:12px;color:#6366f1;margin:0 2px;vertical-align:middle;">(${q.num})___</span>`);});
+      const qsHTML=qs.map(q=>{const sh=[...q.options].sort(()=>Math.random()-.5);return`<div class="comp-q mb-3 p-3 rounded-xl" id="comp-cloze-q${q.num}" style="background:rgba(255,255,255,.35);border:1px solid rgba(99,102,241,.1);"><p class="text-xs font-black text-indigo-500 mb-2">Blank (${q.num})</p><div class="grid grid-cols-2 gap-1.5">${sh.map((o,i)=>`<button class="comp-opt text-xs font-bold py-2 px-2.5 rounded-lg border text-left hover:scale-[1.01] transition" style="background:rgba(255,255,255,.5);border-color:rgba(148,163,184,.25);color:${tc};" data-sec="cloze" data-qid="comp-cloze-q${q.num}" data-opt="${o.replace(/"/g,'&quot;')}" data-correct="${q.correct.replace(/"/g,'&quot;')}" onclick="pickCompOpt(this)"><span class="font-black text-indigo-400 mr-0.5">${String.fromCharCode(65+i)}.</span>${o}</button>`).join('')}</div><p class="comp-hint text-[9px] text-slate-400 mt-1 hidden">${q.hint}</p></div>`;}).join('');
+      sectionsHTML+=`<div class="mb-6"><div class="flex items-center gap-2 mb-3"><span class="text-lg">📝</span><h4 class="text-sm font-black text-slate-800 dark:text-white">Section A — Cloze Test</h4><span class="text-[9px] font-black px-2 py-0.5 rounded ml-auto" style="background:rgba(99,102,241,.1);color:#6366f1;">${qs.length} Qs</span></div><div class="p-4 rounded-2xl mb-3 text-sm leading-relaxed" style="background:rgba(255,255,255,.45);border:1px solid rgba(99,102,241,.08);color:${tc};line-height:2;">${passHTML}</div>${qsHTML}</div>`;
+    }
+
+    // SYN/ANT section
+    if(parsed.synant){
+      const qs=parsed.synant;totalQ+=qs.length;
+      const qsHTML=qs.map(q=>{const sh=[...q.options].sort(()=>Math.random()-.5);const tc2=q.type==='SYNONYM'?'#10b981':'#ef4444';return`<div class="comp-q mb-3 p-3 rounded-xl" id="comp-sa-q${q.num}" style="background:rgba(255,255,255,.35);border:1px solid rgba(16,185,129,.1);"><p class="text-xs font-black mb-2" style="color:${tc2};">${q.type}: Choose the ${q.type.toLowerCase()} of "<span style="font-size:14px;">${q.word}</span>"</p><div class="grid grid-cols-2 gap-1.5">${sh.map((o,i)=>`<button class="comp-opt text-xs font-bold py-2 px-2.5 rounded-lg border text-left hover:scale-[1.01] transition" style="background:rgba(255,255,255,.5);border-color:rgba(148,163,184,.25);color:${tc};" data-sec="sa" data-qid="comp-sa-q${q.num}" data-opt="${o.replace(/"/g,'&quot;')}" data-correct="${q.correct.replace(/"/g,'&quot;')}" onclick="pickCompOpt(this)"><span class="font-black text-emerald-400 mr-0.5">${String.fromCharCode(65+i)}.</span>${o}</button>`).join('')}</div><p class="comp-hint text-[9px] text-slate-400 mt-1 hidden">${q.explanation}</p></div>`;}).join('');
+      sectionsHTML+=`<div class="mb-6"><div class="flex items-center gap-2 mb-3"><span class="text-lg">🔁</span><h4 class="text-sm font-black text-slate-800 dark:text-white">Section B — Synonyms &amp; Antonyms</h4><span class="text-[9px] font-black px-2 py-0.5 rounded ml-auto" style="background:rgba(16,185,129,.1);color:#10b981;">${qs.length} Qs</span></div>${qsHTML}</div>`;
+    }
+
+    // IDIOM section
+    if(parsed.idiom){
+      const qs=parsed.idiom;totalQ+=qs.length;
+      const qsHTML=qs.map(q=>{const sh=[...q.options].sort(()=>Math.random()-.5);return`<div class="comp-q mb-3 p-3 rounded-xl" id="comp-id-q${q.num}" style="background:rgba(255,255,255,.35);border:1px solid rgba(168,85,247,.1);"><p class="text-xs font-black text-purple-500 mb-1">${q.qtype}</p><p class="text-xs font-bold mb-2" style="color:${tc};">${q.qtype==='MEANING'?`What does "<span style="color:#a855f7;">${q.idiom}</span>" mean?`:(q.sentence||'').replace('_____','<u style="color:#a855f7;">_____</u>')}</p><div class="grid grid-cols-1 gap-1.5">${sh.map((o,i)=>`<button class="comp-opt text-xs font-bold py-2 px-2.5 rounded-lg border text-left hover:scale-[1.01] transition" style="background:rgba(255,255,255,.5);border-color:rgba(148,163,184,.25);color:${tc};" data-sec="idiom" data-qid="comp-id-q${q.num}" data-opt="${o.replace(/"/g,'&quot;')}" data-correct="${q.correct.replace(/"/g,'&quot;')}" onclick="pickCompOpt(this)"><span class="font-black text-purple-400 mr-0.5">${String.fromCharCode(65+i)}.</span>${o}</button>`).join('')}</div><p class="comp-hint text-[9px] text-slate-400 mt-1 hidden">${q.explanation}</p></div>`;}).join('');
+      sectionsHTML+=`<div class="mb-6"><div class="flex items-center gap-2 mb-3"><span class="text-lg">💡</span><h4 class="text-sm font-black text-slate-800 dark:text-white">Section C — Idioms &amp; Phrases</h4><span class="text-[9px] font-black px-2 py-0.5 rounded ml-auto" style="background:rgba(168,85,247,.1);color:#a855f7;">${qs.length} Qs</span></div>${qsHTML}</div>`;
+    }
+
+    // SPELLING section
+    if(parsed.spelling){
+      const qs=parsed.spelling;totalQ+=qs.length;
+      const qsHTML=qs.map(q=>{const sh=[...q.options].sort(()=>Math.random()-.5);return`<div class="comp-q mb-3 p-3 rounded-xl" id="comp-sp-q${q.num}" style="background:rgba(255,255,255,.35);border:1px solid rgba(239,68,68,.1);"><p class="text-xs font-black text-rose-400 mb-2">Choose the correctly spelled word:</p><div class="grid grid-cols-2 gap-1.5">${sh.map((o,i)=>`<button class="comp-opt font-mono text-xs font-bold py-2 px-2.5 rounded-lg border text-left hover:scale-[1.01] transition" style="background:rgba(255,255,255,.5);border-color:rgba(148,163,184,.25);color:${tc};" data-sec="spell" data-qid="comp-sp-q${q.num}" data-opt="${o.replace(/"/g,'&quot;')}" data-correct="${q.correct.replace(/"/g,'&quot;')}" onclick="pickCompOpt(this)"><span class="font-black text-rose-400 mr-0.5 font-sans">${String.fromCharCode(65+i)}.</span>${o}</button>`).join('')}</div><p class="comp-hint text-[9px] text-slate-400 mt-1 hidden">🪤 ${q.trap_note}</p></div>`;}).join('');
+      const sec=include.idiom&&idioms.length>0?'D':'C';
+      sectionsHTML+=`<div class="mb-6"><div class="flex items-center gap-2 mb-3"><span class="text-lg">🔤</span><h4 class="text-sm font-black text-slate-800 dark:text-white">Section ${sec} — Correct Spelling</h4><span class="text-[9px] font-black px-2 py-0.5 rounded ml-auto" style="background:rgba(239,68,68,.1);color:#ef4444;">${qs.length} Qs</span></div>${qsHTML}</div>`;
+    }
+
+    // CONFUSE section
+    if(parsed.confuse){
+      const qs=parsed.confuse;totalQ+=qs.length;
+      const qsHTML=qs.map((q,i)=>`<div class="comp-q mb-3 p-3 rounded-xl" id="comp-cf-q${i}" style="background:rgba(255,255,255,.35);border:1px solid rgba(245,158,11,.1);"><p class="text-xs font-bold mb-2 text-slate-600 dark:text-slate-300">"${q.sentence||''}"</p><div class="grid grid-cols-2 gap-1.5"><button class="comp-opt text-xs font-bold py-2 px-3 rounded-lg border text-left hover:scale-[1.01] transition" style="background:rgba(255,255,255,.5);border-color:rgba(148,163,184,.25);color:${tc};" data-sec="confuse" data-qid="comp-cf-q${i}" data-opt="${(q.word1||'').replace(/"/g,'&quot;')}" data-correct="${(q.correct||'').replace(/"/g,'&quot;')}" onclick="pickCompOpt(this)">A. ${q.word1}</button><button class="comp-opt text-xs font-bold py-2 px-3 rounded-lg border text-left hover:scale-[1.01] transition" style="background:rgba(255,255,255,.5);border-color:rgba(148,163,184,.25);color:${tc};" data-sec="confuse" data-qid="comp-cf-q${i}" data-opt="${(q.word2||'').replace(/"/g,'&quot;')}" data-correct="${(q.correct||'').replace(/"/g,'&quot;')}" onclick="pickCompOpt(this)">B. ${q.word2}</button></div><p class="comp-hint text-[9px] text-slate-400 mt-1 hidden">✅ ${q.correct} — ${q.key_difference}</p></div>`).join('');
+      const sec=include.idiom&&idioms.length>0?'E':'D';
+      sectionsHTML+=`<div class="mb-6"><div class="flex items-center gap-2 mb-3"><span class="text-lg">🤔</span><h4 class="text-sm font-black text-slate-800 dark:text-white">Section ${sec} — Confusable Pairs</h4><span class="text-[9px] font-black px-2 py-0.5 rounded ml-auto" style="background:rgba(245,158,11,.1);color:#d97706;">${qs.length} Qs</span></div>${qsHTML}</div>`;
+      totalQ+=qs.length;
+    }
+
+    result.innerHTML=`
+      <div class="glass-card rounded-[2rem] overflow-hidden pop-in">
+        <div class="px-5 py-4 border-b border-white/30 dark:border-white/5 flex items-center justify-between" style="background:linear-gradient(135deg,rgba(6,182,212,.08),rgba(99,102,241,.06));">
+          <div><h3 class="text-sm font-black text-slate-800 dark:text-white">🏆 Comprehensive Mock Test</h3><p class="text-xs text-slate-400">Complete all sections — SSC format</p></div>
+          <span class="text-xs font-black px-2 py-1 rounded-lg" style="background:rgba(6,182,212,.1);color:#0891b2;">${totalQ} Questions</span>
+        </div>
+        <div class="p-5">
+          ${sectionsHTML}
+          <div class="flex gap-3 flex-wrap mt-2">
+            <button onclick="checkComprehensiveTest()" class="btn-gradient flex-1 py-3 rounded-xl text-white font-black text-sm flex items-center justify-center gap-2"><i class="fa-solid fa-check-double"></i> Submit All Sections</button>
+            <button onclick="generateComprehensiveTest()" class="btn-glass px-5 py-3 rounded-xl text-sm font-black">New Test</button>
+          </div>
+          <div id="comp-final-score" class="hidden mt-4 p-4 rounded-2xl text-center font-black"></div>
+        </div>
+      </div>`;
+  }catch(e){
+    result.innerHTML=`<div class="glass-card rounded-2xl p-6 text-center"><p class="text-sm text-rose-500 font-bold">${e.message==='NO_KEY'?'Set your Groq API key first.':'Error: '+e.message}</p><button onclick="generateComprehensiveTest()" class="mt-3 btn-glass px-4 py-2 rounded-xl text-sm font-black">Retry</button></div>`;
+  }
+};
+
+window.pickCompOpt=function(btn){
+  const qid=btn.dataset.qid;
+  const block=document.getElementById(qid);
+  if(!block||block.dataset.answered==='1')return;
+  block.querySelectorAll('.comp-opt').forEach(b=>{b.style.background='rgba(255,255,255,.5)';b.style.borderColor='rgba(148,163,184,.25)';b.removeAttribute('data-selected');});
+  btn.style.background='rgba(99,102,241,.12)';btn.style.borderColor='#6366f1';btn.style.color='#6366f1';btn.setAttribute('data-selected','1');
+};
+
+window.checkComprehensiveTest=function(){
+  const blocks=document.querySelectorAll('.comp-q');
+  let correct=0,total=blocks.length,allAnswered=true;
+  blocks.forEach(block=>{
+    const sel=block.querySelector('.comp-opt[data-selected]');
+    if(!sel){allAnswered=false;return;}
+    block.dataset.answered='1';
+    const ok=sel.dataset.opt===sel.dataset.correct;
+    if(ok){correct++;sel.style.background='rgba(16,185,129,.15)';sel.style.borderColor='#10b981';sel.style.color='#10b981';}
+    else{sel.style.background='rgba(239,68,68,.1)';sel.style.borderColor='#ef4444';sel.style.color='#ef4444';block.querySelectorAll('.comp-opt').forEach(b=>{if(b.dataset.opt===b.dataset.correct){b.style.background='rgba(16,185,129,.12)';b.style.borderColor='#10b981';b.style.color='#10b981';}});}
+    block.querySelector('.comp-hint')?.classList.remove('hidden');
+    block.querySelectorAll('.comp-opt').forEach(b=>b.disabled=true);
+  });
+  if(!allAnswered){toast('Please answer all questions before submitting','err');return;}
+  const sc=el('comp-final-score');
+  if(sc){const pct=Math.round((correct/total)*100);sc.classList.remove('hidden');sc.style.background=pct>=80?'rgba(16,185,129,.1)':pct>=50?'rgba(245,158,11,.1)':'rgba(239,68,68,.08)';sc.style.border=`1px solid ${pct>=80?'rgba(16,185,129,.3)':pct>=50?'rgba(245,158,11,.3)':'rgba(239,68,68,.2)'}`;sc.style.color=pct>=80?'#10b981':pct>=50?'#d97706':'#ef4444';const grade=pct>=90?'A+':pct>=80?'A':pct>=65?'B':pct>=50?'C':'D';sc.innerHTML=`<div class="text-3xl mb-2">${pct>=80?'🏆':pct>=50?'📈':'📚'}</div><div class="text-2xl font-black">${correct} / ${total}</div><div class="text-lg">${pct}% — Grade ${grade}</div><div class="text-xs font-semibold mt-2 opacity-70">${pct>=80?'Outstanding performance! SSC ready.':pct>=50?'Good attempt — revise weak areas and retry.':'Keep practising — focus on your weak sections.'}</div>`;}
 };
 
 /* ──────────────────────────────
