@@ -252,6 +252,22 @@
             color: white !important;
             box-shadow: 0 4px 16px rgba(99,102,241,0.4);
         }
+        .planner-priority-chip {
+            font-size: 10px;
+            font-weight: 800;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            padding: 4px 10px;
+            border-radius: 999px;
+        }
+        .planner-priority-high { background: rgba(239,68,68,0.14); color: #ef4444; }
+        .planner-priority-medium { background: rgba(245,158,11,0.14); color: #d97706; }
+        .planner-priority-low { background: rgba(16,185,129,0.14); color: #059669; }
+        .dark .planner-priority-high { background: rgba(239,68,68,0.24); color: #fda4af; }
+        .dark .planner-priority-medium { background: rgba(245,158,11,0.24); color: #fcd34d; }
+        .dark .planner-priority-low { background: rgba(16,185,129,0.24); color: #6ee7b7; }
+        .planner-drag-handle { cursor: grab; }
+        .planner-dragging { opacity: 0.55; transform: scale(0.99); }
 
         /* ═══════════════════════════════════════
            TYPOGRAPHY HELPERS
@@ -1210,6 +1226,7 @@
             <button onclick="window.app.nav('log')"      id="nav-log"      class="nav-link px-5 py-2.5 rounded-xl transition-all duration-300">Log Score</button>
             <button onclick="window.app.nav('history')"  id="nav-history"  class="nav-link px-5 py-2.5 rounded-xl transition-all duration-300">Mock Vault</button>
             <button onclick="window.app.nav('analysis')" id="nav-analysis" class="nav-link px-5 py-2.5 rounded-xl transition-all duration-300">Deep Analysis</button>
+            <button onclick="window.app.nav('planner')"  id="nav-planner"  class="nav-link px-5 py-2.5 rounded-xl transition-all duration-300">Planner <span id="planner-nav-badge" class="hidden ml-1.5 px-1.5 py-0.5 rounded-full text-[9px] font-black bg-rose-500 text-white leading-none">0</span></button>
             <button onclick="window.app.nav('tools')"    id="nav-tools"    class="nav-link px-5 py-2.5 rounded-xl transition-all duration-300">Tools</button>
         </nav>
 
@@ -1970,6 +1987,91 @@
             </div><!-- /analysis-content -->
         </div>
 
+        <!-- PLANNER TAB -->
+        <div id="tab-planner" class="tab-content max-w-6xl mx-auto pt-5 pb-28 space-y-6">
+            <div class="glass-card rounded-[2rem] overflow-hidden">
+                <div class="px-6 py-5 flex items-center justify-between gap-4 flex-wrap" style="background:linear-gradient(135deg,rgba(99,102,241,0.1),rgba(168,85,247,0.08));border-bottom:1px solid rgba(255,255,255,0.2);">
+                    <div class="flex items-center gap-3">
+                        <div class="w-11 h-11 rounded-2xl flex items-center justify-center text-white shadow-md" style="background:linear-gradient(135deg,#6366f1,#a855f7);">
+                            <i class="fa-solid fa-calendar-check"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-lg font-black text-slate-900 dark:text-white">Study Planner</h3>
+                            <p class="text-xs font-bold text-slate-400">Plan next-day and weekly study tasks by subject and priority</p>
+                        </div>
+                    </div>
+                    <div class="text-xs font-black uppercase tracking-widest text-brand-500">SSC Focused</div>
+                </div>
+
+                <div class="p-6">
+                    <form id="planner-form" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-6 gap-3">
+                        <input id="planner-title" type="text" required placeholder="Task title (e.g., Geometry revision set)"
+                               class="glass-input xl:col-span-2 w-full px-4 py-3 rounded-2xl font-bold">
+                        <input id="planner-date" type="date" required class="glass-input w-full px-4 py-3 rounded-2xl font-bold">
+                        <select id="planner-subject" class="glass-input w-full px-4 py-3 rounded-2xl font-bold"></select>
+                        <select id="planner-priority" class="glass-input w-full px-4 py-3 rounded-2xl font-bold">
+                            <option value="high">High Priority</option>
+                            <option value="medium" selected>Medium Priority</option>
+                            <option value="low">Low Priority</option>
+                        </select>
+                        <div class="flex gap-2">
+                            <button type="submit" id="planner-save-btn" class="btn-gradient w-full rounded-2xl px-4 py-3 text-white font-black text-sm">Add Task</button>
+                            <button type="button" id="planner-cancel-btn" class="hidden rounded-2xl px-4 py-3 font-black text-xs border border-white/40 dark:border-white/10 text-slate-500 dark:text-slate-300">Cancel</button>
+                        </div>
+                        <textarea id="planner-notes" rows="2" placeholder="Optional notes..."
+                                  class="glass-input xl:col-span-6 w-full px-4 py-3 rounded-2xl font-semibold resize-none"></textarea>
+                    </form>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div class="glass-card p-5 rounded-[1.6rem]">
+                    <p class="text-xs font-black uppercase tracking-widest text-slate-400">Planned</p>
+                    <h4 id="planner-stat-total" class="text-3xl font-black text-brand-500 mt-1">0</h4>
+                </div>
+                <div class="glass-card p-5 rounded-[1.6rem]">
+                    <p class="text-xs font-black uppercase tracking-widest text-slate-400">Due Tomorrow</p>
+                    <h4 id="planner-stat-tomorrow" class="text-3xl font-black text-amber-500 mt-1">0</h4>
+                </div>
+                <div class="glass-card p-5 rounded-[1.6rem]">
+                    <p class="text-xs font-black uppercase tracking-widest text-slate-400">Completed</p>
+                    <h4 id="planner-stat-done" class="text-3xl font-black text-emerald-500 mt-1">0</h4>
+                </div>
+            </div>
+
+            <div id="planner-reminder-bar" class="hidden glass-card p-4 rounded-[1.6rem] border border-rose-300/35 dark:border-rose-700/35">
+                <div class="flex items-center justify-between gap-3 flex-wrap">
+                    <p id="planner-reminder-text" class="text-sm font-black text-rose-500">No urgent planner tasks.</p>
+                    <button onclick="window.app.nav('planner')" class="px-3 py-1.5 rounded-lg text-xs font-black text-white" style="background:linear-gradient(135deg,#ef4444,#f59e0b);">Review Now</button>
+                </div>
+            </div>
+
+            <div class="glass-card p-4 rounded-[1.6rem]">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                    <select id="planner-filter-subject" class="glass-input px-4 py-2.5 rounded-xl font-bold"></select>
+                    <select id="planner-filter-priority" class="glass-input px-4 py-2.5 rounded-xl font-bold">
+                        <option value="all">All Priorities</option>
+                        <option value="high">High Priority</option>
+                        <option value="medium">Medium Priority</option>
+                        <option value="low">Low Priority</option>
+                    </select>
+                    <select id="planner-filter-window" class="glass-input px-4 py-2.5 rounded-xl font-bold">
+                        <option value="all">All Dates</option>
+                        <option value="tomorrow">Tomorrow</option>
+                        <option value="3days">Next 3 Days</option>
+                        <option value="7days">Next 7 Days</option>
+                    </select>
+                </div>
+            </div>
+
+            <div id="planner-list" class="grid grid-cols-1 lg:grid-cols-2 gap-4"></div>
+            <div id="planner-empty" class="hidden empty-state">
+                <div class="empty-icon">🗓️</div>
+                <p class="font-black text-slate-600 dark:text-slate-300 text-lg">No planner tasks yet</p>
+                <p class="text-sm text-slate-400 max-w-sm">Create tomorrow's subject-wise plan now and track completion with priority tags.</p>
+            </div>
+        </div>
+
         <!-- TOOLS TAB -->
         <div id="tab-tools" class="tab-content max-w-4xl mx-auto space-y-6 pt-5 pb-28">
 
@@ -2231,6 +2333,7 @@
         <div style="padding:4px 20px 10px;border-bottom:1px solid rgba(0,0,0,0.06);"><p style="font-size:11px;font-weight:900;letter-spacing:0.1em;text-transform:uppercase;color:#94a3b8;">Navigation</p></div>
         <div style="padding:8px 12px 20px;">
             <button id="hmenu-history" class="hmenu-item" style="width:100%;display:flex;align-items:center;gap:14px;padding:13px 12px;border:none;background:none;cursor:pointer;border-radius:14px;text-align:left;touch-action:manipulation;-webkit-tap-highlight-color:transparent;"><span style="width:38px;height:38px;border-radius:11px;background:#e0e7ff;display:flex;align-items:center;justify-content:center;flex-shrink:0;pointer-events:none;"><i class="fa-solid fa-list" style="font-size:16px;color:#6366f1;pointer-events:none;"></i></span><div style="pointer-events:none;"><div style="font-size:14px;font-weight:800;color:#1e293b;">Mock Vault</div><div style="font-size:11px;color:#94a3b8;margin-top:1px;">Browse all your past mocks</div></div></button>
+            <button id="hmenu-planner" class="hmenu-item" style="width:100%;display:flex;align-items:center;gap:14px;padding:13px 12px;border:none;background:none;cursor:pointer;border-radius:14px;text-align:left;touch-action:manipulation;-webkit-tap-highlight-color:transparent;"><span style="width:38px;height:38px;border-radius:11px;background:#ede9fe;display:flex;align-items:center;justify-content:center;flex-shrink:0;pointer-events:none;"><i class="fa-solid fa-calendar-check" style="font-size:16px;color:#7c3aed;pointer-events:none;"></i></span><div style="pointer-events:none;"><div style="font-size:14px;font-weight:800;color:#1e293b;">Planner</div><div style="font-size:11px;color:#94a3b8;margin-top:1px;">Schedule upcoming subject tasks</div></div></button>
             <button id="hmenu-tools" class="hmenu-item" style="width:100%;display:flex;align-items:center;gap:14px;padding:13px 12px;border:none;background:none;cursor:pointer;border-radius:14px;text-align:left;touch-action:manipulation;-webkit-tap-highlight-color:transparent;"><span style="width:38px;height:38px;border-radius:11px;background:#ede9fe;display:flex;align-items:center;justify-content:center;flex-shrink:0;pointer-events:none;"><i class="fa-solid fa-wrench" style="font-size:16px;color:#7c3aed;pointer-events:none;"></i></span><div style="pointer-events:none;"><div style="font-size:14px;font-weight:800;color:#1e293b;">Tools</div><div style="font-size:11px;color:#94a3b8;margin-top:1px;">Export, restore &amp; offline queue</div></div></button>
             <button id="hmenu-switch" class="hmenu-item" style="width:100%;display:flex;align-items:center;gap:14px;padding:13px 12px;border:none;background:none;cursor:pointer;border-radius:14px;text-align:left;touch-action:manipulation;-webkit-tap-highlight-color:transparent;"><span style="width:38px;height:38px;border-radius:11px;background:#e0f2fe;display:flex;align-items:center;justify-content:center;flex-shrink:0;pointer-events:none;"><i class="fa-solid fa-exchange-alt" style="font-size:16px;color:#0284c7;pointer-events:none;"></i></span><div style="pointer-events:none;"><div style="font-size:14px;font-weight:800;color:#1e293b;">Switch Exam</div><div style="font-size:11px;color:#94a3b8;margin-top:1px;">Change exam — SSC, RRB, Bank PO</div></div></button>
             <button id="hmenu-exams" class="hmenu-item" style="width:100%;display:flex;align-items:center;gap:14px;padding:13px 12px;border:none;background:none;cursor:pointer;border-radius:14px;text-align:left;touch-action:manipulation;-webkit-tap-highlight-color:transparent;"><span style="width:38px;height:38px;border-radius:11px;background:linear-gradient(135deg,#ede9fe,#e0e7ff);display:flex;align-items:center;justify-content:center;flex-shrink:0;pointer-events:none;"><i class="fa-solid fa-calendar-days" style="font-size:16px;color:#6366f1;pointer-events:none;"></i></span><div style="pointer-events:none;"><div style="font-size:14px;font-weight:800;color:#1e293b;" class="dark:text-white">Upcoming Exams</div><div style="font-size:11px;color:#94a3b8;margin-top:1px;">Track exam dates &amp; get AI reminders</div></div></button>
@@ -2253,8 +2356,15 @@
         const appId = 'mock-tracker-pro-final';
         const TARGET_KEY = 'mockpro_target_score'; // legacy key, now per-exam below
         const QUEUE_KEY  = 'mockpro_offline_queue';
-        const TABS       = ['home','log','history','analysis','tools'];
+        const PLANNER_KEY = 'mockpro_study_planner_v1';
+        const PLANNER_FIRESTORE_COLLECTION = 'plannerTasks';
+        const TABS       = ['home','log','history','analysis','planner','tools'];
         let   currentTab = 0;
+        // ── Planner Firebase Sync ──
+        let plannerUnsub = null;
+        let plannerDidMergeLocal = false;
+        let plannerLocalSnapshotForMerge = [];
+        let plannerOrderSyncTimer = null;
 
         // Per-exam target score helpers
         function getTargetKey() { return 'mockpro_target_' + (state?.selectedExamGroup || 'default') + '_' + (state?.currentTier || 'tier1'); }
@@ -2566,6 +2676,295 @@
             _realMocks: [], _realTasks: [], _realLinks: [],   // stash real data during demo
             targetScore: 160  // will be loaded per-exam once exam is selected
         };
+        const plannerState = {
+            tasks: [],
+            editingId: null,
+            filterSubject: 'all',
+            filterPriority: 'all',
+            filterWindow: 'all',
+            dragId: null
+        };
+
+        const DEFAULT_PLANNER_SUBJECTS = [
+            'General Intelligence',
+            'General Awareness',
+            'Quantitative Aptitude',
+            'English Comprehension'
+        ];
+
+        function getPlannerSubjects() {
+            const grp = EXAM_GROUPS[state.selectedExamGroup];
+            const fromExam = (grp?.subjects || []).map(s => s.name).filter(Boolean);
+            const pick = fromExam.length >= 4 ? fromExam.slice(0, 4) : DEFAULT_PLANNER_SUBJECTS;
+            return Array.from(new Set([...pick, ...DEFAULT_PLANNER_SUBJECTS])).slice(0, 4);
+        }
+
+        function loadPlannerTasks() {
+            try {
+                const raw = JSON.parse(localStorage.getItem(PLANNER_KEY) || '[]');
+                plannerState.tasks = Array.isArray(raw) ? raw : [];
+            } catch(e) {
+                plannerState.tasks = [];
+            }
+            let needsOrder = false;
+            plannerState.tasks = plannerState.tasks.map((t, i) => {
+                if (typeof t.order !== 'number') { needsOrder = true; return { ...t, order: i + 1 }; }
+                return t;
+            });
+            if (needsOrder) savePlannerTasks();
+        }
+
+        function savePlannerTasks() {
+            localStorage.setItem(PLANNER_KEY, JSON.stringify(plannerState.tasks));
+        }
+
+        function plannerFirebaseCanSync(uid) {
+            return !!db && !!uid && !state.isDemoMode;
+        }
+
+        async function plannerFirebaseUpsertTask(task, uid) {
+            if (!plannerFirebaseCanSync(uid)) return;
+            if (!task || !task.id) return;
+            try {
+                await setDoc(
+                    doc(db, 'artifacts', appId, 'users', uid, PLANNER_FIRESTORE_COLLECTION, task.id),
+                    { ...task, updatedAt: Timestamp.now() },
+                    { merge: true }
+                );
+            } catch (e) {
+                console.error('plannerFirebaseUpsertTask:', e);
+            }
+        }
+
+        async function plannerFirebaseDeleteTask(id, uid) {
+            if (!plannerFirebaseCanSync(uid)) return;
+            if (!id) return;
+            try {
+                await deleteDoc(
+                    doc(db, 'artifacts', appId, 'users', uid, PLANNER_FIRESTORE_COLLECTION, id)
+                );
+            } catch (e) {
+                console.error('plannerFirebaseDeleteTask:', e);
+            }
+        }
+
+        async function plannerFirebaseSyncOrders(uid) {
+            if (!plannerFirebaseCanSync(uid)) return;
+            // Keep it safe for larger task counts: still sync order for first 50.
+            const tasks = plannerState.tasks.slice(0, 50);
+            await Promise.all(tasks.map(t => plannerFirebaseUpsertTask(t, uid)));
+        }
+
+        function plannerScheduleOrderSync(uid) {
+            if (!uid) return;
+            if (plannerOrderSyncTimer) clearTimeout(plannerOrderSyncTimer);
+            plannerOrderSyncTimer = setTimeout(() => {
+                plannerFirebaseSyncOrders(uid);
+            }, 650);
+        }
+
+        function plannerStopFirebaseSync() {
+            try {
+                if (plannerUnsub) plannerUnsub();
+            } catch (e) {}
+            plannerUnsub = null;
+            plannerDidMergeLocal = false;
+            plannerLocalSnapshotForMerge = [];
+            if (plannerOrderSyncTimer) {
+                clearTimeout(plannerOrderSyncTimer);
+                plannerOrderSyncTimer = null;
+            }
+        }
+
+        function plannerStartFirebaseSyncForUid(uid) {
+            if (!db || !uid || state.isDemoMode) return;
+            plannerStopFirebaseSync();
+            plannerLocalSnapshotForMerge = plannerState.tasks.slice();
+
+            const colRef = collection(db, 'artifacts', appId, 'users', uid, PLANNER_FIRESTORE_COLLECTION);
+            plannerUnsub = onSnapshot(colRef, (s) => {
+                if (state.isDemoMode) return;
+
+                const remote = s.docs.map(d => ({ id: d.id, ...d.data() }));
+                const normalized = remote.map((t, i) => ({
+                    ...t,
+                    order: (typeof t.order === 'number' && isFinite(t.order)) ? t.order : (i + 1)
+                }));
+
+                if (!plannerDidMergeLocal) {
+                    const remoteIds = new Set(normalized.map(t => t.id));
+                    const toAdd = plannerLocalSnapshotForMerge.filter(t => !remoteIds.has(t.id));
+                    plannerDidMergeLocal = true;
+                    if (toAdd.length) {
+                        Promise.all(toAdd.map(t => plannerFirebaseUpsertTask(t, uid))).catch(() => {});
+                    }
+                    plannerState.tasks = normalized.concat(toAdd);
+                } else {
+                    plannerState.tasks = normalized;
+                }
+
+                // Normalize order to a clean 1..N sequence
+                plannerState.tasks = plannerState.tasks
+                    .slice()
+                    .sort((a, b) => (a.order || 0) - (b.order || 0))
+                    .map((t, i) => ({ ...t, order: i + 1 }));
+
+                savePlannerTasks();
+                renderPlannerTab();
+            });
+        }
+
+        function setupPlannerSubjectOptions() {
+            const subjects = getPlannerSubjects();
+            const subjectSel = el('planner-subject');
+            const filterSel = el('planner-filter-subject');
+            if (subjectSel) {
+                subjectSel.innerHTML = subjects.map(s => `<option value="${s}">${s}</option>`).join('');
+            }
+            if (filterSel) {
+                const prev = plannerState.filterSubject || 'all';
+                filterSel.innerHTML = `<option value="all">All Subjects</option>` + subjects.map(s => `<option value="${s}">${s}</option>`).join('');
+                filterSel.value = subjects.includes(prev) ? prev : 'all';
+                plannerState.filterSubject = filterSel.value;
+            }
+        }
+
+        function getPlannerDateMeta(dateStr) {
+            const now = new Date();
+            const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+            const taskDate = new Date(dateStr + 'T00:00:00');
+            const diff = Math.round((taskDate - today) / 86400000);
+            if (diff === 0) return { label: 'Today', cls: 'text-amber-500' };
+            if (diff === 1) return { label: 'Tomorrow', cls: 'text-brand-500' };
+            if (diff > 1) return { label: `In ${diff} days`, cls: 'text-slate-500 dark:text-slate-300' };
+            return { label: `${Math.abs(diff)} day(s) overdue`, cls: 'text-rose-500' };
+        }
+
+        function plannerPriorityWeight(priority) {
+            return priority === 'high' ? 1 : priority === 'medium' ? 2 : 3;
+        }
+
+        function getTodayIso() {
+            const d = new Date();
+            return new Date(d.getFullYear(), d.getMonth(), d.getDate()).toISOString().slice(0,10);
+        }
+
+        function getPlannerUrgentCounts() {
+            const todayIso = getTodayIso();
+            const active = plannerState.tasks.filter(t => !t.done);
+            const dueToday = active.filter(t => t.date === todayIso).length;
+            const overdue = active.filter(t => t.date < todayIso).length;
+            return { dueToday, overdue, urgent: dueToday + overdue };
+        }
+
+        function updatePlannerReminderBadges() {
+            const counts = getPlannerUrgentCounts();
+            const navBadge = el('planner-nav-badge');
+            if (navBadge) {
+                if (counts.urgent > 0) {
+                    navBadge.classList.remove('hidden');
+                    navBadge.textContent = String(counts.urgent);
+                } else navBadge.classList.add('hidden');
+            }
+            const bar = el('planner-reminder-bar');
+            const text = el('planner-reminder-text');
+            if (bar && text) {
+                if (counts.urgent > 0) {
+                    bar.classList.remove('hidden');
+                    text.textContent = counts.overdue > 0
+                        ? `${counts.overdue} overdue and ${counts.dueToday} due today. Prioritize these first.`
+                        : `${counts.dueToday} task(s) due today. Quick win if you complete these now.`;
+                } else {
+                    bar.classList.add('hidden');
+                }
+            }
+        }
+
+        function plannerWithinWindow(taskDate, windowKey) {
+            if (windowKey === 'all') return true;
+            const base = new Date();
+            const today = new Date(base.getFullYear(), base.getMonth(), base.getDate());
+            const dt = new Date(taskDate + 'T00:00:00');
+            const diff = Math.round((dt - today) / 86400000);
+            if (windowKey === 'tomorrow') return diff === 1;
+            if (windowKey === '3days') return diff >= 0 && diff <= 3;
+            if (windowKey === '7days') return diff >= 0 && diff <= 7;
+            return true;
+        }
+
+        function resetPlannerForm() {
+            plannerState.editingId = null;
+            const form = el('planner-form');
+            if (form) form.reset();
+            const dt = el('planner-date');
+            if (dt) {
+                const t = new Date();
+                t.setDate(t.getDate() + 1);
+                dt.value = t.toISOString().slice(0,10);
+            }
+            const saveBtn = el('planner-save-btn');
+            if (saveBtn) saveBtn.textContent = 'Add Task';
+            el('planner-cancel-btn')?.classList.add('hidden');
+            setupPlannerSubjectOptions();
+        }
+
+        function renderPlannerTab() {
+            setupPlannerSubjectOptions();
+            const list = el('planner-list');
+            if (!list) return;
+            const empty = el('planner-empty');
+            const all = plannerState.tasks.slice().sort((a,b) => (a.order || 0) - (b.order || 0));
+            const filtered = all.filter(t => {
+                if (plannerState.filterSubject !== 'all' && t.subject !== plannerState.filterSubject) return false;
+                if (plannerState.filterPriority !== 'all' && t.priority !== plannerState.filterPriority) return false;
+                if (!plannerWithinWindow(t.date, plannerState.filterWindow)) return false;
+                return true;
+            });
+
+            const tomorrowIso = (() => { const d = new Date(); d.setDate(d.getDate()+1); return d.toISOString().slice(0,10); })();
+            safeSetText('planner-stat-total', all.length);
+            safeSetText('planner-stat-tomorrow', all.filter(t => t.date === tomorrowIso && !t.done).length);
+            safeSetText('planner-stat-done', all.filter(t => !!t.done).length);
+            updatePlannerReminderBadges();
+
+            if (!filtered.length) {
+                list.innerHTML = '';
+                empty?.classList.remove('hidden');
+                return;
+            }
+            empty?.classList.add('hidden');
+
+            list.innerHTML = filtered.map(t => {
+                const meta = getPlannerDateMeta(t.date);
+                const pCls = t.priority === 'high' ? 'planner-priority-high' : t.priority === 'medium' ? 'planner-priority-medium' : 'planner-priority-low';
+                return `
+                <div draggable="true" ondragstart="window.onPlannerDragStart(event,'${t.id}')" ondragover="window.onPlannerDragOver(event)" ondrop="window.onPlannerDrop(event,'${t.id}')" ondragend="window.onPlannerDragEnd(event)" class="glass-card p-5 rounded-[1.6rem] border ${t.done ? 'border-emerald-300/40 dark:border-emerald-700/40' : 'border-white/40 dark:border-white/10'}">
+                    <div class="flex items-start justify-between gap-3">
+                        <div class="min-w-0">
+                            <h4 class="text-base font-black ${t.done ? 'line-through text-slate-400' : 'text-slate-900 dark:text-white'}">${t.title}</h4>
+                            <div class="mt-1 flex flex-wrap items-center gap-2 text-xs font-bold">
+                                <span class="px-2.5 py-1 rounded-full bg-brand-100 dark:bg-brand-900/30 text-brand-600 dark:text-brand-300">${t.subject}</span>
+                                <span class="planner-priority-chip ${pCls}">${t.priority}</span>
+                                <span class="${meta.cls}">${meta.label}</span>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <span title="Drag to reorder" class="planner-drag-handle w-7 h-7 rounded-xl bg-slate-100 dark:bg-slate-800/60 text-slate-400 flex items-center justify-center"><i class="fa-solid fa-grip-vertical text-xs"></i></span>
+                            <input type="checkbox" ${t.done ? 'checked' : ''} onchange="window.togglePlannedTask('${t.id}')" class="w-5 h-5 rounded-lg accent-emerald-500 mt-1 cursor-pointer flex-shrink-0">
+                        </div>
+                    </div>
+                    ${t.notes ? `<p class="text-sm text-slate-500 dark:text-slate-300 mt-3 leading-relaxed">${t.notes}</p>` : ''}
+                    <div class="mt-4 flex items-center justify-between text-xs">
+                        <span class="font-black text-slate-400 uppercase tracking-wider">${t.date}</span>
+                        <div class="flex items-center gap-2">
+                            <button onclick="window.duplicatePlannedTask('${t.id}')" title="Duplicate to next day" class="w-8 h-8 rounded-xl bg-brand-100 dark:bg-brand-900/30 text-brand-600 flex items-center justify-center hover:scale-105 transition"><i class="fa-solid fa-copy text-xs"></i></button>
+                            <button onclick="window.editPlannedTask('${t.id}')" class="w-8 h-8 rounded-xl bg-amber-100 dark:bg-amber-900/30 text-amber-600 flex items-center justify-center hover:scale-105 transition"><i class="fa-solid fa-pen text-xs"></i></button>
+                            <button onclick="window.deletePlannedTask('${t.id}')" class="w-8 h-8 rounded-xl bg-rose-100 dark:bg-rose-900/30 text-rose-500 flex items-center justify-center hover:scale-105 transition"><i class="fa-solid fa-trash text-xs"></i></button>
+                        </div>
+                    </div>
+                </div>`;
+            }).join('');
+        }
 
         // ────────────────────────────────────────────────────
         //  DEMO MODE  (exposed globally BEFORE module loads)
@@ -2585,6 +2984,8 @@
             state._realExamGroup = state.selectedExamGroup; // also stash exam selection
 
             state.isDemoMode = true;
+            // Planner: demo mode should not sync or save to cloud
+            plannerStopFirebaseSync();
             state.selectedExamGroup = 'SSC_CGL';
             state.currentTier = 'tier1';
             updateExamBadge();
@@ -2626,6 +3027,10 @@
             updateFormForExam();
             renderTierStrip();
             processData();
+            // Planner: reload from Firebase if user is signed in
+            if (state.user) plannerStartFirebaseSyncForUid(state.user.uid);
+            else loadPlannerTasks();
+            renderPlannerTab();
             window.app.nav('home');
 
             // If no real exam was ever chosen, re-prompt
@@ -4931,6 +5336,7 @@ Give a concise pre-mock briefing in this EXACT JSON (no markdown, no backticks):
                 const btn = el(`nav-${tabId}`); if (btn) btn.classList.add('active');
                 currentTab = TABS.indexOf(tabId);
                 if (tabId === 'tools') { try { renderExamList(); } catch(e) {} }
+                if (tabId === 'planner') { try { renderPlannerTab(); } catch(e) {} }
                 processData();
                 // Re-trigger AOS on every tab switch so cards animate fresh each time
                 setTimeout(() => { if (typeof AOS !== 'undefined') AOS.refresh(); }, 80);
@@ -6233,6 +6639,7 @@ Give a concise pre-mock briefing in this EXACT JSON (no markdown, no backticks):
         };
         (function bindDrawerItems(){
             var pairs=[['hmenu-history',function(){window.app.nav('history');}],
+                       ['hmenu-planner',function(){window.app.nav('planner');}],
                        ['hmenu-tools',  function(){window.app.nav('tools');}],
                        ['hmenu-switch', function(){window.showExamSelector();}],
                        ['hmenu-exams', function(){window.app.nav('tools');}],
@@ -6270,11 +6677,155 @@ Give a concise pre-mock briefing in this EXACT JSON (no markdown, no backticks):
         })();
 
         function syncMnavActive() {
-            const map = { home:'mnav-home', log:'mnav-log', history:'mnav-history', analysis:'mnav-analysis', tools:'mnav-tools' };
+            const map = { home:'mnav-home', log:'mnav-log', history:'mnav-history', analysis:'mnav-analysis', planner:'mnav-menu', tools:'mnav-tools' };
             document.querySelectorAll('.mnav-btn').forEach(b => b.classList.remove('mnav-active'));
             const id = map[TABS[currentTab]];
             if (id) { const b = document.getElementById(id); if (b) b.classList.add('mnav-active'); }
         }
+
+        (function initPlanner() {
+            loadPlannerTasks();
+            setupPlannerSubjectOptions();
+            resetPlannerForm();
+            renderPlannerTab();
+
+            // Firebase sync for Planner tasks (keeps localStorage as offline fallback)
+            if (auth) {
+                onAuthStateChanged(auth, (u) => {
+                    // If user is signed out (or demo mode is active), fallback to local tasks
+                    if (!u || state.isDemoMode) {
+                        plannerStopFirebaseSync();
+                        if (!state.isDemoMode) loadPlannerTasks();
+                        renderPlannerTab();
+                        return;
+                    }
+                    plannerStartFirebaseSyncForUid(u.uid);
+                    renderPlannerTab();
+                });
+            }
+
+            const form = el('planner-form');
+            form?.addEventListener('submit', function(e) {
+                e.preventDefault();
+                if (state.isDemoMode) { alert("Cannot add planner tasks in Demo Mode."); return; }
+                const title = (el('planner-title')?.value || '').trim();
+                const date  = el('planner-date')?.value || '';
+                const subject = el('planner-subject')?.value || '';
+                const priority = el('planner-priority')?.value || 'medium';
+                const notes = (el('planner-notes')?.value || '').trim();
+                if (!title || !date || !subject) return;
+                const nextOrder = plannerState.tasks.reduce((mx, t) => Math.max(mx, t.order || 0), 0) + 1;
+                const payload = { id: plannerState.editingId || ('pt_' + Date.now() + '_' + Math.random().toString(36).slice(2,7)), title, date, subject, priority, notes, done: false, order: nextOrder };
+                if (plannerState.editingId) {
+                    plannerState.tasks = plannerState.tasks.map(t => t.id === plannerState.editingId ? { ...t, ...payload, done: t.done } : t);
+                    const updatedTask = plannerState.tasks.find(t => t.id === plannerState.editingId);
+                    plannerFirebaseUpsertTask(updatedTask, state.user?.uid);
+                } else {
+                    plannerState.tasks.unshift(payload);
+                    plannerFirebaseUpsertTask(payload, state.user?.uid);
+                }
+                savePlannerTasks();
+                resetPlannerForm();
+                renderPlannerTab();
+            });
+
+            el('planner-cancel-btn')?.addEventListener('click', function() {
+                resetPlannerForm();
+                renderPlannerTab();
+            });
+
+            const onFilter = () => {
+                plannerState.filterSubject = el('planner-filter-subject')?.value || 'all';
+                plannerState.filterPriority = el('planner-filter-priority')?.value || 'all';
+                plannerState.filterWindow = el('planner-filter-window')?.value || 'all';
+                renderPlannerTab();
+            };
+            el('planner-filter-subject')?.addEventListener('change', onFilter);
+            el('planner-filter-priority')?.addEventListener('change', onFilter);
+            el('planner-filter-window')?.addEventListener('change', onFilter);
+        })();
+
+        window.togglePlannedTask = function(id) {
+            if (state.isDemoMode) { alert("Planner is disabled in Demo Mode."); return; }
+            plannerState.tasks = plannerState.tasks.map(t => t.id === id ? { ...t, done: !t.done } : t);
+            const updatedTask = plannerState.tasks.find(t => t.id === id);
+            savePlannerTasks();
+            renderPlannerTab();
+            plannerFirebaseUpsertTask(updatedTask, state.user?.uid);
+        };
+        window.duplicatePlannedTask = function(id) {
+            if (state.isDemoMode) { alert("Planner is disabled in Demo Mode."); return; }
+            const t = plannerState.tasks.find(x => x.id === id);
+            if (!t) return;
+            const dt = new Date(t.date + 'T00:00:00');
+            dt.setDate(dt.getDate() + 1);
+            const nextDate = dt.toISOString().slice(0,10);
+            const nextOrder = plannerState.tasks.reduce((mx, v) => Math.max(mx, v.order || 0), 0) + 1;
+            const newTask = {
+                ...t,
+                id: 'pt_' + Date.now() + '_' + Math.random().toString(36).slice(2,7),
+                date: nextDate,
+                done: false,
+                order: nextOrder
+            };
+            plannerState.tasks.push(newTask);
+            savePlannerTasks();
+            renderPlannerTab();
+            plannerFirebaseUpsertTask(newTask, state.user?.uid);
+        };
+        window.deletePlannedTask = function(id) {
+            if (state.isDemoMode) { alert("Planner is disabled in Demo Mode."); return; }
+            if (!confirm('Delete this planned task?')) return;
+            plannerState.tasks = plannerState.tasks.filter(t => t.id !== id);
+            savePlannerTasks();
+            plannerFirebaseDeleteTask(id, state.user?.uid);
+            if (plannerState.editingId === id) resetPlannerForm();
+            renderPlannerTab();
+        };
+        window.onPlannerDragStart = function(e, id) {
+            plannerState.dragId = id;
+            e.dataTransfer.effectAllowed = 'move';
+            try { e.dataTransfer.setData('text/plain', id); } catch(_) {}
+            e.currentTarget?.classList.add('planner-dragging');
+        };
+        window.onPlannerDragOver = function(e) {
+            e.preventDefault();
+            e.dataTransfer.dropEffect = 'move';
+        };
+        window.onPlannerDrop = function(e, targetId) {
+            if (state.isDemoMode) { return; }
+            e.preventDefault();
+            const srcId = plannerState.dragId || (() => { try { return e.dataTransfer.getData('text/plain'); } catch(_) { return null; } })();
+            if (!srcId || srcId === targetId) return;
+            const ordered = plannerState.tasks.slice().sort((a,b) => (a.order || 0) - (b.order || 0));
+            const from = ordered.findIndex(t => t.id === srcId);
+            const to = ordered.findIndex(t => t.id === targetId);
+            if (from < 0 || to < 0) return;
+            const [moved] = ordered.splice(from, 1);
+            ordered.splice(to, 0, moved);
+            plannerState.tasks = ordered.map((t, i) => ({ ...t, order: i + 1 }));
+            savePlannerTasks();
+            renderPlannerTab();
+            plannerScheduleOrderSync(state.user?.uid);
+        };
+        window.onPlannerDragEnd = function(e) {
+            plannerState.dragId = null;
+            e.currentTarget?.classList.remove('planner-dragging');
+        };
+        window.editPlannedTask = function(id) {
+            const t = plannerState.tasks.find(x => x.id === id);
+            if (!t) return;
+            plannerState.editingId = id;
+            if (el('planner-title')) el('planner-title').value = t.title || '';
+            if (el('planner-date')) el('planner-date').value = t.date || '';
+            if (el('planner-subject')) el('planner-subject').value = t.subject || getPlannerSubjects()[0];
+            if (el('planner-priority')) el('planner-priority').value = t.priority || 'medium';
+            if (el('planner-notes')) el('planner-notes').value = t.notes || '';
+            const saveBtn = el('planner-save-btn');
+            if (saveBtn) saveBtn.textContent = 'Update Task';
+            el('planner-cancel-btn')?.classList.remove('hidden');
+            window.app.nav('planner');
+        };
 
         // Patch window.app.nav to also sync mobile nav highlight
         const _baseNav = window.app.nav;
