@@ -1,5 +1,3 @@
-html
-
 <!DOCTYPE html>
 <html lang="en" class="light">
 <head>
@@ -281,6 +279,24 @@ html,body{overflow-x:hidden;max-width:100%;}
 .fc-mode-chip:hover:not(.active){background:rgba(99,102,241,.1);color:#6366f1;}
 .fc-sidebar{overflow-y:auto;max-height:calc(100vh - 130px);}
 #btn-fullscreen{width:36px;height:36px;}
+/* ── Revision Calendar ── */
+.rev-cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;}
+.cal-day{aspect-ratio:1;border-radius:7px;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:9px;font-weight:800;cursor:pointer;border:1.5px solid transparent;transition:all .15s;position:relative;}
+.cal-day:hover{transform:scale(1.12);z-index:2;}
+.cal-day.today{border-color:#6366f1!important;box-shadow:0 0 0 2px rgba(99,102,241,.25);}
+.cal-day.other-month{opacity:.3;}
+.cal-day-num{font-size:10px;font-weight:900;line-height:1;}
+.cal-day-dot{width:4px;height:4px;border-radius:50%;margin-top:1px;}
+.cal-day-popup{position:fixed;z-index:9000;background:rgba(255,255,255,.97);backdrop-filter:blur(20px);border:1px solid rgba(99,102,241,.2);border-radius:18px;padding:14px 16px;box-shadow:0 16px 48px rgba(0,0,0,.18);max-width:280px;width:90vw;}
+.dark .cal-day-popup{background:rgba(14,10,31,.97);border-color:rgba(139,92,246,.3);}
+/* ── Smart Queue ── */
+.sq-card{display:flex;align-items:center;gap-10px;padding:9px 12px;border-radius:12px;margin-bottom:5px;cursor:pointer;transition:all .15s;border:1px solid transparent;}
+.sq-card:hover{transform:translateX(3px);}
+.sq-priority-bar{width:3px;border-radius:3px;align-self:stretch;flex-shrink:0;margin-right:8px;}
+/* ── Forgetting Curve ── */
+.mem-bar-wrap{margin-top:6px;height:5px;border-radius:3px;overflow:hidden;background:rgba(99,102,241,.08);}
+.mem-bar-fill{height:100%;border-radius:3px;transition:width .6s ease;}
+.mem-strength-label{font-size:8px;font-weight:900;letter-spacing:.06em;text-transform:uppercase;}
   </style>
 </head>
 <body class="app-bg text-slate-800 dark:text-slate-100 min-h-screen transition-colors duration-500">
@@ -406,6 +422,45 @@ html,body{overflow-x:hidden;max-width:100%;}
           </div>
           <span class="text-[9px] text-slate-400">Today</span>
         </div>
+      </div>
+
+      <!-- ── Revision Calendar ── -->
+      <div class="glass-card rounded-[1.5rem] p-5">
+        <div class="flex items-center justify-between mb-3">
+          <div>
+            <p class="text-xs font-black text-slate-400 uppercase tracking-widest">📅 Revision Calendar</p>
+            <p class="text-xs text-slate-400 mt-0.5">Click any day to see what's due</p>
+          </div>
+          <div class="flex gap-1">
+            <button onclick="calNav(-1)" class="btn-glass w-7 h-7 rounded-lg flex items-center justify-center text-xs text-indigo-500">‹</button>
+            <button onclick="calNav(1)"  class="btn-glass w-7 h-7 rounded-lg flex items-center justify-center text-xs text-indigo-500">›</button>
+          </div>
+        </div>
+        <p class="text-xs font-black text-center text-slate-600 dark:text-slate-300 mb-3" id="cal-month-label">—</p>
+        <div class="grid grid-cols-7 gap-1 mb-1">
+          ${['Sun','Mon','Tue','Wed','Thu','Fri','Sat'].map(d=>`<div class="text-center text-[8px] font-black text-slate-400 uppercase">${d}</div>`).join('')}
+        </div>
+        <div id="rev-cal-grid" class="rev-cal-grid"></div>
+        <div class="flex flex-wrap gap-3 mt-3 justify-center">
+          <span class="flex items-center gap-1 text-[9px] font-black text-slate-400"><span class="w-2.5 h-2.5 rounded-full inline-block" style="background:rgba(239,68,68,.7);"></span> High load</span>
+          <span class="flex items-center gap-1 text-[9px] font-black text-slate-400"><span class="w-2.5 h-2.5 rounded-full inline-block" style="background:rgba(245,158,11,.7);"></span> Medium</span>
+          <span class="flex items-center gap-1 text-[9px] font-black text-slate-400"><span class="w-2.5 h-2.5 rounded-full inline-block" style="background:rgba(16,185,129,.7);"></span> Light</span>
+          <span class="flex items-center gap-1 text-[9px] font-black text-slate-400"><span class="w-2.5 h-2.5 rounded-full inline-block" style="background:rgba(148,163,184,.25);"></span> None</span>
+        </div>
+      </div>
+
+      <!-- ── Smart Queue ── -->
+      <div class="glass-card rounded-[1.5rem] p-5">
+        <div class="flex items-center justify-between mb-3">
+          <div>
+            <p class="text-xs font-black text-slate-400 uppercase tracking-widest">🧠 Smart Queue</p>
+            <p class="text-xs text-slate-400 mt-0.5">Priority: due + weakness combined</p>
+          </div>
+          <button onclick="startSmartQueue()" class="btn-gradient px-3 py-1.5 rounded-xl text-white text-xs font-black flex items-center gap-1.5">
+            <i class="fa-solid fa-play" style="font-size:9px;"></i> Start All
+          </button>
+        </div>
+        <div id="smart-queue-list"></div>
       </div>
     </div>
 
@@ -2482,7 +2537,7 @@ function renderHome(){
   if(el('streak-num'))el('streak-num').textContent=sd.current;
   if(el('streak-detail'))el('streak-detail').textContent=`Longest: ${sd.longest} day${sd.longest!==1?'s':''} · Reviewed ${sd.dates.length} total days`;
   const reviewBtn=el('today-review-btn');if(reviewBtn){reviewBtn.classList.toggle('hidden',due===0);reviewBtn.innerHTML=`<i class="fa-solid fa-bolt"></i> Today's Review (${due})`;}
-  renderHeatmap(sd.dates);renderWOD();
+  renderHeatmap(sd.dates);renderWOD();renderRevisionCalendar();renderSmartQueue();
 }
 
 function renderHeatmap(dates){
@@ -2505,6 +2560,194 @@ function renderWOD(){
 
 window.refreshWOD=()=>{const todayKey='lp_wod_'+new Date().toISOString().slice(0,10);localStorage.removeItem(todayKey);renderWOD();};
 window.startTodayReview=()=>{goTab('cards');setTimeout(()=>startMode('fc','due'),100);};
+
+/* ══════════════════════════════════════
+   FEATURE 2 — REVISION CALENDAR
+══════════════════════════════════════ */
+let calOffset=0; // months offset from current month
+
+function getDueCountForDate(targetDate){
+  // Count words whose next review falls on targetDate (calendar day)
+  const d=new Date(targetDate);d.setHours(0,0,0,0);
+  return vWords.filter(w=>{
+    const lvl=w.level??-1;
+    if(lvl===-1||lvl===5)return false;
+    if(!w.lastReviewed)return false;
+    const days=LVL_DAYS[lvl]??1;
+    const lr=w.lastReviewed.toDate?w.lastReviewed.toDate():new Date(w.lastReviewed);
+    const next=new Date(lr);next.setDate(next.getDate()+days);next.setHours(0,0,0,0);
+    return next.getTime()===d.getTime();
+  }).length;
+}
+
+function renderRevisionCalendar(){
+  const grid=el('rev-cal-grid');const label=el('cal-month-label');if(!grid)return;
+  const now=new Date();
+  const viewDate=new Date(now.getFullYear(),now.getMonth()+calOffset,1);
+  const year=viewDate.getFullYear(),month=viewDate.getMonth();
+  if(label)label.textContent=viewDate.toLocaleDateString('en-IN',{month:'long',year:'numeric'});
+
+  const today=new Date();today.setHours(0,0,0,0);
+  const firstDay=new Date(year,month,1).getDay();
+  const daysInMonth=new Date(year,month+1,0).getDate();
+  const daysInPrev=new Date(year,month,0).getDate();
+
+  // Build 42-cell grid (6 weeks)
+  const cells=[];
+  for(let i=0;i<firstDay;i++) cells.push({day:daysInPrev-firstDay+1+i,curr:false});
+  for(let i=1;i<=daysInMonth;i++) cells.push({day:i,curr:true});
+  while(cells.length<42) cells.push({day:cells.length-firstDay-daysInMonth+1,curr:false});
+
+  grid.innerHTML=cells.map(cell=>{
+    if(!cell.curr) return`<div class="cal-day other-month"><span class="cal-day-num">${cell.day}</span></div>`;
+    const cellDate=new Date(year,month,cell.day);cellDate.setHours(0,0,0,0);
+    const isToday=cellDate.getTime()===today.getTime();
+    const count=getDueCountForDate(cellDate);
+    const isPast=cellDate<today;
+    let bg='rgba(148,163,184,.1)',dotColor='transparent';
+    if(count>0){
+      if(count>=10){bg='rgba(239,68,68,.15)';dotColor='rgba(239,68,68,.8)';}
+      else if(count>=5){bg='rgba(245,158,11,.13)';dotColor='rgba(245,158,11,.8)';}
+      else{bg='rgba(16,185,129,.12)';dotColor='rgba(16,185,129,.8)';}
+    }
+    if(isPast&&!isToday)bg='rgba(148,163,184,.06)';
+    return`<div class="cal-day${isToday?' today':''}" style="background:${bg};" onclick="showCalDayPopup(${year},${month},${cell.day},event)" title="${count} word${count!==1?'s':''} due">
+      <span class="cal-day-num" style="color:${isToday?'#6366f1':count>0?'#1e293b':'#94a3b8'}">${cell.day}</span>
+      <span class="cal-day-dot" style="background:${dotColor};"></span>
+    </div>`;
+  }).join('');
+}
+
+window.calNav=function(dir){calOffset+=dir;renderRevisionCalendar();};
+
+window.showCalDayPopup=function(year,month,day,event){
+  document.querySelector('.cal-day-popup')?.remove();
+  const cellDate=new Date(year,month,day);cellDate.setHours(0,0,0,0);
+  const words=vWords.filter(w=>{
+    const lvl=w.level??-1;if(lvl===-1||lvl===5)return false;if(!w.lastReviewed)return false;
+    const days=LVL_DAYS[lvl]??1;
+    const lr=w.lastReviewed.toDate?w.lastReviewed.toDate():new Date(w.lastReviewed);
+    const next=new Date(lr);next.setDate(next.getDate()+days);next.setHours(0,0,0,0);
+    return next.getTime()===cellDate.getTime();
+  });
+  const popup=document.createElement('div');
+  popup.className='cal-day-popup';
+  const dateStr=cellDate.toLocaleDateString('en-IN',{weekday:'short',day:'numeric',month:'short'});
+  popup.innerHTML=`
+    <div class="flex items-center justify-between mb-3">
+      <p class="text-xs font-black text-slate-700 dark:text-slate-200">📅 ${dateStr}</p>
+      <button onclick="this.closest('.cal-day-popup').remove()" class="text-slate-400 hover:text-slate-600 text-sm font-black">✕</button>
+    </div>
+    ${words.length===0?`<p class="text-xs text-slate-400 text-center py-3">No words due this day</p>`:
+      `<p class="text-[10px] font-black text-slate-400 uppercase tracking-wider mb-2">${words.length} word${words.length!==1?'s':''} due</p>
+      <div class="space-y-1 max-h-48 overflow-y-auto">
+        ${words.map(w=>`<div class="flex items-center gap-2 py-1 border-b border-slate-100 dark:border-slate-800 last:border-0">
+          <span class="text-xs font-black text-slate-700 dark:text-slate-200 flex-1">${w.word}</span>
+          <span class="text-[9px] font-black px-1.5 py-0.5 rounded" style="background:${LVL_INFO[w.level??-1]?.cls?.includes('lvl-0')?'rgba(239,68,68,.1)':'rgba(99,102,241,.1)'};color:#6366f1;">${LVL_INFO[w.level??-1]?.icon} ${LVL_INFO[w.level??-1]?.label}</span>
+        </div>`).join('')}
+      </div>`}
+  `;
+  // Position near click
+  const rect=event.target.closest('.cal-day').getBoundingClientRect();
+  document.body.appendChild(popup);
+  const pw=popup.offsetWidth,ph=popup.offsetHeight;
+  let top=rect.bottom+8,left=rect.left;
+  if(left+pw>window.innerWidth-12)left=window.innerWidth-pw-12;
+  if(top+ph>window.innerHeight-12)top=rect.top-ph-8;
+  popup.style.top=top+'px';popup.style.left=left+'px';
+  setTimeout(()=>document.addEventListener('click',function h(e){if(!popup.contains(e.target)){popup.remove();document.removeEventListener('click',h);}},{once:false}),50);
+};
+
+/* ══════════════════════════════════════
+   FEATURE 3 — SMART QUEUE
+══════════════════════════════════════ */
+function computePriorityScore(w){
+  const lvl=w.level??-1;
+  // Base: lower level = higher urgency
+  const lvlScore=lvl===-1?100:(5-Math.max(0,lvl))*15;
+  // Weakness: % of last 8 ratings that were L0/L1
+  const ratings=(w.ratings||[]).slice(-8);
+  const weakPct=ratings.length?ratings.filter(r=>r<=1).length/ratings.length:0;
+  const weakScore=Math.round(weakPct*50);
+  // Overdue bonus
+  const overdueScore=isDue(w)?30:0;
+  // Days since last review bonus
+  let staleness=0;
+  if(w.lastReviewed){const lr=w.lastReviewed.toDate?w.lastReviewed.toDate():new Date(w.lastReviewed);const daysSince=Math.floor((Date.now()-lr.getTime())/86400000);staleness=Math.min(daysSince*2,20);}
+  return lvlScore+weakScore+overdueScore+staleness;
+}
+
+function renderSmartQueue(){
+  const list=el('smart-queue-list');if(!list)return;
+  if(!vWords.length){list.innerHTML='<p class="text-xs text-slate-400 text-center py-4">Add words to see your queue</p>';return;}
+  const scored=vWords
+    .map(w=>({...w,score:computePriorityScore(w)}))
+    .sort((a,b)=>b.score-a.score)
+    .slice(0,8);
+  const maxScore=scored[0]?.score||1;
+  list.innerHTML=scored.map((w,i)=>{
+    const pct=Math.round((w.score/maxScore)*100);
+    const barColor=pct>75?'#ef4444':pct>40?'#f97316':'#6366f1';
+    const lvlInfo=LVL_INFO[w.level??-1];
+    return`<div class="sq-card glass-card" style="background:rgba(255,255,255,.4);" onclick="editWord('${w.id}')">
+      <div class="sq-priority-bar" style="background:${barColor};min-height:32px;"></div>
+      <div class="flex-1 min-w-0">
+        <div class="flex items-center gap-2">
+          <span class="text-[10px] font-black text-slate-400">#${i+1}</span>
+          <span class="text-sm font-black text-slate-800 dark:text-white truncate">${w.word}</span>
+          <span class="ml-auto text-[9px] font-black flex-shrink-0">${lvlInfo.icon} ${lvlInfo.label}</span>
+        </div>
+        <div class="flex items-center gap-2 mt-1">
+          <div style="flex:1;height:4px;background:rgba(99,102,241,.1);border-radius:2px;overflow:hidden;">
+            <div style="height:100%;width:${pct}%;background:${barColor};border-radius:2px;transition:width .6s ease;"></div>
+          </div>
+          <span class="text-[8px] font-black text-slate-400 flex-shrink-0">${isDue(w)?'⏰ Due':'Upcoming'}</span>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+window.startSmartQueue=function(){
+  const scored=vWords.map(w=>({...w,score:computePriorityScore(w)})).sort((a,b)=>b.score-a.score).slice(0,20);
+  if(!scored.length)return toast('No words yet','err');
+  goTab('cards');
+  setTimeout(()=>startMode('fc','custom',scored),120);
+};
+
+/* ══════════════════════════════════════
+   FEATURE 4 — FORGETTING CURVE / MEMORY STRENGTH
+══════════════════════════════════════ */
+function memStrength(w){
+  // Returns 0–100. Starts at 100 when just reviewed, decays toward 0 as review day approaches/passes.
+  const lvl=w.level??-1;
+  if(lvl===-1)return 0;
+  if(lvl===5)return 100;
+  if(!w.lastReviewed)return 0;
+  const days=LVL_DAYS[lvl]??1;
+  const lr=w.lastReviewed.toDate?w.lastReviewed.toDate():new Date(w.lastReviewed);
+  const msSinceReview=Date.now()-lr.getTime();
+  const msInterval=days*86400000;
+  const ratio=Math.max(0,1-(msSinceReview/msInterval));
+  return Math.round(ratio*100);
+}
+
+function memStrengthBarHTML(w){
+  const lvl=w.level??-1;
+  if(lvl===-1)return''; // Not visited — no bar
+  const str=memStrength(w);
+  const barColor=str>65?'#10b981':str>35?'#f59e0b':'#ef4444';
+  const label=str>65?'Strong':str>35?'Fading':'Weak';
+  return`<div class="mb-2">
+    <div class="flex items-center justify-between mb-0.5">
+      <span class="mem-strength-label" style="color:${barColor};">🧠 Memory ${label}</span>
+      <span class="mem-strength-label text-slate-400">${str}%</span>
+    </div>
+    <div class="mem-bar-wrap">
+      <div class="mem-bar-fill" style="width:${str}%;background:${barColor};"></div>
+    </div>
+  </div>`;
+}
 
 /* ══ LIBRARY ══ */
 window.renderLibrary=()=>{
@@ -2534,6 +2777,8 @@ function wordCardHTML(w){
   const tags=(w.tags||[]).map(s=>`<span class="chip chip-tag">${s}</span>`).join('');
   const hasSA=(w.synonyms||[]).length||(w.antonyms||[]).length;
   const hasMT=w.mnemonics||w.trick;const isSel=vSelected.has(w.id);
+  // Memory strength bar
+  const memHTML=memStrengthBarHTML(w);
   return `<div class="glass-card wcard rounded-[1.5rem] ${isSel?'selected':''}" id="wcard-${w.id}">
     <div class="flex items-start gap-3">
       ${vBulkMode?`<div class="sel-checkbox ${isSel?'checked':''} mt-1" onclick="toggleSel('${w.id}')"></div>`:''}
@@ -2542,6 +2787,7 @@ function wordCardHTML(w){
           <div class="min-w-0"><div class="flex items-center gap-2 flex-wrap"><span class="wcard-title">${w.word}</span>${w.pos?`<span class="wcard-pos">(${w.pos})</span>`:''}</div><div class="flex items-center gap-2 mt-1.5 flex-wrap">${wTypeBadge(w.type||'word')}${lvlBadgeHTML(w)}</div></div>
           ${!vBulkMode?`<div class="flex gap-1.5 flex-shrink-0 wcard-actions"><button onclick="editWord('${w.id}')" class="btn-glass w-8 h-8 rounded-xl flex items-center justify-center text-xs text-indigo-500"><i class="fa-solid fa-pen"></i></button><button onclick="askDeleteOne('${w.id}')" class="w-8 h-8 rounded-xl flex items-center justify-center text-xs text-rose-500" style="background:rgba(239,68,68,.09);border:1px solid rgba(239,68,68,.2);"><i class="fa-solid fa-trash"></i></button></div>`:''}
         </div>
+        ${memHTML}
         <p class="wcard-meaning">${w.meaning}</p>
         ${w.example?`<p class="wcard-example mt-1">"${w.example}"</p>`:''}
         ${hasMT?`<hr class="wcard-divider"><div class="grid grid-cols-1 sm:grid-cols-2 gap-2">${w.mnemonics?`<div><div class="wcard-detail-lbl">🧠 Mnemonics</div><div class="wcard-detail-txt">${w.mnemonics}</div></div>`:''} ${w.trick?`<div><div class="wcard-detail-lbl">💡 Trick / Root</div><div class="wcard-detail-txt">${w.trick}</div></div>`:''}</div>`:''}
