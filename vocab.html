@@ -1,3 +1,5 @@
+html
+
 <!DOCTYPE html>
 <html lang="en" class="light">
 <head>
@@ -2625,7 +2627,19 @@ function renderLvlDist(){const dist=el('lvl-dist');if(!dist)return;const pool=ge
 function renderWeakWords(){const list=el('weak-list');if(!list)return;const pool=getStatPool();const weak=pool.filter(w=>(w.ratings||[]).length>=2).map(w=>({...w,weakScore:(w.ratings||[]).filter(r=>r<=1).length/(w.ratings||[]).length})).filter(w=>w.weakScore>0).sort((a,b)=>b.weakScore-a.weakScore).slice(0,10);if(!weak.length){list.innerHTML='<p class="text-xs text-slate-400 text-center py-6">No weak words yet. Rate words in flashcard mode.</p>';return;}list.innerHTML=weak.map(w=>{const bars=(w.ratings||[]).slice(-8).map(r=>{const cols=['#ef4444','#f97316','#ca8a04','#3b82f6','#6366f1','#10b981'];return`<div style="width:10px;height:${8+r*4}px;background:${cols[r]||'#94a3b8'};border-radius:2px;align-self:flex-end;"></div>`;}).join('');const pct=Math.round(w.weakScore*100);return`<div class="flex items-center gap-3 py-2.5 border-b border-white/20 dark:border-white/5 last:border-0"><div class="flex-1 min-w-0"><div class="flex items-center gap-2"><span class="text-sm font-black text-slate-700 dark:text-slate-200">${w.word}</span>${lvlBadgeHTML(w,true)}</div><p class="text-xs text-slate-400 truncate mt-0.5">${w.meaning?.substring(0,55)||''}…</p></div><div class="flex items-flex-end gap-0.5 flex-shrink-0" style="display:flex;align-items:flex-end;height:30px;">${bars}</div><span class="text-xs font-black text-rose-500 flex-shrink-0">${pct}% low</span></div>`;}).join('');}
 
 /* ══ FLASHCARDS ══ */
-function isDue(w){const lvl=w.level??-1;if(lvl===-1)return true;if(!w.lastReviewed)return true;const days=LVL_DAYS[lvl]??2;const lr=w.lastReviewed.toDate?w.lastReviewed.toDate():new Date(w.lastReviewed);const next=new Date(lr);next.setDate(next.getDate()+days);return new Date()>=next;}
+function isDue(w){
+  const lvl=w.level??-1;
+  if(lvl===-1)return true;
+  if(!w.lastReviewed)return true;
+  const days=LVL_DAYS[lvl]??1;
+  const lr=w.lastReviewed.toDate?w.lastReviewed.toDate():new Date(w.lastReviewed);
+  const nextDay=new Date(lr);
+  nextDay.setDate(nextDay.getDate()+days);
+  nextDay.setHours(0,0,0,0);
+  const today=new Date();
+  today.setHours(0,0,0,0);
+  return today>=nextDay;
+}
 function wTypeBadge(t){const c={word:'wtype-word',idiom:'wtype-idiom',phrase:'wtype-phrase'};const l={word:'Word',idiom:'Idiom',phrase:'Phrase'};return`<span class="wtype ${c[t]||'wtype-word'}">${l[t]||t}</span>`;}
 function lvlBadgeHTML(w,clickable=true){const lvl=w.level??-1;const info=LVL_INFO[lvl]||LVL_INFO[0];const due=isDue(w)&&lvl<5;const dueDot=due?'<span class="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse inline-block ml-1"></span>':'';return`<span class="lvlb ${info.cls}" id="lvlb-${w.id}" ${clickable?`onclick="openLvlModal('${w.id}')" title="Tap to rate"`:''}>${info.icon} ${info.label}${dueDot}</span>`;}
 
