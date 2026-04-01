@@ -1176,13 +1176,13 @@
         </div>
         <!-- Task Modal -->
         <div id="modal-task" class="glass-modal rounded-[2rem] p-8 w-full max-w-sm hidden shadow-2xl">
-            <h3 class="text-2xl font-extrabold mb-6 text-gradient text-center">Add Daily Task</h3>
+            <h3 class="text-2xl font-extrabold mb-6 text-gradient text-center">Add Mock Schedule</h3>
             <form id="form-task" class="space-y-4">
-                <input type="text" id="task-name-inp" placeholder="Task Name" required class="glass-input w-full p-4 rounded-2xl font-bold">
+                <input type="text" id="task-name-inp" placeholder="Mock Plan Name" required class="glass-input w-full p-4 rounded-2xl font-bold">
                 <div class="grid grid-cols-4 gap-2" id="task-days"></div>
                 <div class="flex gap-3 pt-4">
                     <button type="button" onclick="closeModal()" class="flex-1 py-4 btn-glass rounded-2xl font-bold">Cancel</button>
-                    <button type="submit" class="flex-1 py-4 rounded-2xl btn-gradient text-white font-black shadow-lg">Add Task</button>
+                    <button type="submit" class="flex-1 py-4 rounded-2xl btn-gradient text-white font-black shadow-lg">Save Schedule</button>
                 </div>
             </form>
         </div>
@@ -1491,19 +1491,19 @@
                 </div>
             </div>
 
-            <!-- Active Roadmap -->
+            <!-- Mock Planner -->
             <div class="glass-card p-7 rounded-[2rem]"
                  data-aos="fade-up" data-aos-duration="800" data-aos-delay="100">
                 <div class="flex justify-between items-center mb-6">
-                    <h3 class="text-lg font-extrabold text-slate-900 dark:text-white flex items-center gap-2">Active Roadmap <span class="demo-badge">demo</span></h3>
-                    <button onclick="openModal('modal-task')" class="btn-gradient text-white px-5 py-2 rounded-xl text-xs font-black shadow-lg hover:scale-105 transition">+ Create Task</button>
+                    <h3 class="text-lg font-extrabold text-slate-900 dark:text-white flex items-center gap-2">Mock Planner <span class="demo-badge">demo</span></h3>
+                    <button onclick="openModal('modal-task')" class="btn-gradient text-white px-5 py-2 rounded-xl text-xs font-black shadow-lg hover:scale-105 transition">+ Schedule Mock</button>
                 </div>
                 <div id="task-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
                 <div id="empty-tasks" class="hidden empty-state">
                     <div class="empty-icon">📋</div>
-                    <p class="font-black text-slate-600 dark:text-slate-300 text-lg">No tasks yet</p>
-                    <p class="text-sm text-slate-400 max-w-xs">Build a study routine — add daily tasks to stay on track</p>
-                    <button onclick="openModal('modal-task')" class="btn-gradient text-white px-5 py-2.5 rounded-xl font-black text-sm mt-1">+ Add First Task</button>
+                    <p class="font-black text-slate-600 dark:text-slate-300 text-lg">No mock schedules yet</p>
+                    <p class="text-sm text-slate-400 max-w-xs">Add repeat mock plans so your test routine stays consistent.</p>
+                    <button onclick="openModal('modal-task')" class="btn-gradient text-white px-5 py-2.5 rounded-xl font-black text-sm mt-1">+ Add First Mock Schedule</button>
                 </div>
             </div>
 
@@ -2005,9 +2005,16 @@
 
                 <div class="p-6">
                     <form id="planner-form" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-6 gap-3">
-                        <input id="planner-title" type="text" required placeholder="Task title (e.g., Geometry revision set)"
+                        <input id="planner-title" type="text" required placeholder="Mock task title (e.g., Calculation drill)"
                                class="glass-input xl:col-span-2 w-full px-4 py-3 rounded-2xl font-bold">
                         <input id="planner-date" type="date" required class="glass-input w-full px-4 py-3 rounded-2xl font-bold">
+                        <select id="planner-repeat-mode" class="glass-input w-full px-4 py-3 rounded-2xl font-bold">
+                            <option value="once" selected>One Time</option>
+                            <option value="daily">Every Day</option>
+                            <option value="weekdays">Every Day Except Sunday</option>
+                            <option value="weekly">Every Week (Same Day)</option>
+                            <option value="custom">Custom Days</option>
+                        </select>
                         <select id="planner-subject" class="glass-input w-full px-4 py-3 rounded-2xl font-bold"></select>
                         <select id="planner-priority" class="glass-input w-full px-4 py-3 rounded-2xl font-bold">
                             <option value="high">High Priority</option>
@@ -2017,6 +2024,10 @@
                         <div class="flex gap-2">
                             <button type="submit" id="planner-save-btn" class="btn-gradient w-full rounded-2xl px-4 py-3 text-white font-black text-sm">Add Task</button>
                             <button type="button" id="planner-cancel-btn" class="hidden rounded-2xl px-4 py-3 font-black text-xs border border-white/40 dark:border-white/10 text-slate-500 dark:text-slate-300">Cancel</button>
+                        </div>
+                        <div id="planner-custom-days-wrap" class="hidden xl:col-span-6">
+                            <p class="text-[11px] font-black uppercase tracking-widest text-slate-400 mb-2">Repeat On</p>
+                            <div class="grid grid-cols-7 gap-2" id="planner-custom-days"></div>
                         </div>
                         <textarea id="planner-notes" rows="2" placeholder="Optional notes..."
                                   class="glass-input xl:col-span-6 w-full px-4 py-3 rounded-2xl font-semibold resize-none"></textarea>
@@ -2840,6 +2851,46 @@
             return { label: `${Math.abs(diff)} day(s) overdue`, cls: 'text-rose-500' };
         }
 
+        function plannerWeekdayName(dayIdx) {
+            const names = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+            return names[dayIdx] || 'Day';
+        }
+
+        function plannerBuildRepeatLabel(mode, startDate, customDays) {
+            if (mode === 'daily') return 'Every day';
+            if (mode === 'weekdays') return 'Every day except Sunday';
+            if (mode === 'weekly') {
+                const d = new Date(startDate + 'T00:00:00');
+                return `Every ${plannerWeekdayName(d.getDay())}`;
+            }
+            if (mode === 'custom') {
+                const days = (customDays || []).slice().sort((a,b)=>a-b).map(plannerWeekdayName);
+                return days.length ? `Custom: ${days.join(', ')}` : 'Custom repeat';
+            }
+            return 'One time';
+        }
+
+        function plannerGenerateDates(startDate, mode, customDays) {
+            const out = [];
+            const base = new Date(startDate + 'T00:00:00');
+            if (!(base instanceof Date) || isNaN(base.getTime())) return out;
+            if (mode === 'once') return [startDate];
+
+            const horizon = 35; // next 5 weeks
+            const customSet = new Set((customDays || []).map(v => parseInt(v, 10)).filter(v => !isNaN(v)));
+            for (let i = 0; i <= horizon; i++) {
+                const d = new Date(base);
+                d.setDate(base.getDate() + i);
+                const dow = d.getDay();
+                const iso = d.toISOString().slice(0,10);
+                if (mode === 'daily') out.push(iso);
+                else if (mode === 'weekdays' && dow !== 0) out.push(iso);
+                else if (mode === 'weekly' && dow === base.getDay()) out.push(iso);
+                else if (mode === 'custom' && customSet.has(dow)) out.push(iso);
+            }
+            return out;
+        }
+
         function plannerPriorityWeight(priority) {
             return priority === 'high' ? 1 : priority === 'medium' ? 2 : 3;
         }
@@ -2905,6 +2956,9 @@
             const saveBtn = el('planner-save-btn');
             if (saveBtn) saveBtn.textContent = 'Add Task';
             el('planner-cancel-btn')?.classList.add('hidden');
+            const rpt = el('planner-repeat-mode');
+            if (rpt) rpt.value = 'once';
+            el('planner-custom-days-wrap')?.classList.add('hidden');
             setupPlannerSubjectOptions();
         }
 
@@ -2945,6 +2999,7 @@
                             <div class="mt-1 flex flex-wrap items-center gap-2 text-xs font-bold">
                                 <span class="px-2.5 py-1 rounded-full bg-brand-100 dark:bg-brand-900/30 text-brand-600 dark:text-brand-300">${t.subject}</span>
                                 <span class="planner-priority-chip ${pCls}">${t.priority}</span>
+                                ${t.repeatLabel ? `<span class="px-2.5 py-1 rounded-full bg-slate-100 dark:bg-slate-800/70 text-slate-500 dark:text-slate-300">${t.repeatLabel}</span>` : ''}
                                 <span class="${meta.cls}">${meta.label}</span>
                             </div>
                         </div>
@@ -6686,6 +6741,17 @@ Give a concise pre-mock briefing in this EXACT JSON (no markdown, no backticks):
         (function initPlanner() {
             loadPlannerTasks();
             setupPlannerSubjectOptions();
+            (function initPlannerCustomDays() {
+                const holder = el('planner-custom-days');
+                if (!holder) return;
+                const names = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+                holder.innerHTML = names.map((n, i) => `
+                    <label class="cursor-pointer">
+                        <input type="checkbox" value="${i}" class="peer hidden">
+                        <div class="text-[11px] font-black text-center py-2 rounded-xl border border-white/40 dark:border-white/10 text-slate-400 peer-checked:bg-brand-600 peer-checked:text-white transition uppercase">${n}</div>
+                    </label>
+                `).join('');
+            })();
             resetPlannerForm();
             renderPlannerTab();
 
@@ -6710,19 +6776,35 @@ Give a concise pre-mock briefing in this EXACT JSON (no markdown, no backticks):
                 if (state.isDemoMode) { alert("Cannot add planner tasks in Demo Mode."); return; }
                 const title = (el('planner-title')?.value || '').trim();
                 const date  = el('planner-date')?.value || '';
+                const repeatMode = el('planner-repeat-mode')?.value || 'once';
                 const subject = el('planner-subject')?.value || '';
                 const priority = el('planner-priority')?.value || 'medium';
                 const notes = (el('planner-notes')?.value || '').trim();
                 if (!title || !date || !subject) return;
+                const customDays = Array.from(document.querySelectorAll('#planner-custom-days input:checked')).map(n => parseInt(n.value, 10));
+                if (repeatMode === 'custom' && customDays.length === 0) {
+                    alert('Choose at least one day for custom repeat.');
+                    return;
+                }
+                const repeatLabel = plannerBuildRepeatLabel(repeatMode, date, customDays);
                 const nextOrder = plannerState.tasks.reduce((mx, t) => Math.max(mx, t.order || 0), 0) + 1;
-                const payload = { id: plannerState.editingId || ('pt_' + Date.now() + '_' + Math.random().toString(36).slice(2,7)), title, date, subject, priority, notes, done: false, order: nextOrder };
+                const payload = { id: plannerState.editingId || ('pt_' + Date.now() + '_' + Math.random().toString(36).slice(2,7)), title, date, subject, priority, notes, done: false, order: nextOrder, repeatMode, repeatDays: customDays, repeatLabel };
                 if (plannerState.editingId) {
                     plannerState.tasks = plannerState.tasks.map(t => t.id === plannerState.editingId ? { ...t, ...payload, done: t.done } : t);
                     const updatedTask = plannerState.tasks.find(t => t.id === plannerState.editingId);
                     plannerFirebaseUpsertTask(updatedTask, state.user?.uid);
                 } else {
-                    plannerState.tasks.unshift(payload);
-                    plannerFirebaseUpsertTask(payload, state.user?.uid);
+                    const dates = plannerGenerateDates(date, repeatMode, customDays);
+                    const pack = dates.length ? dates : [date];
+                    const newTasks = pack.map((dt, idx) => ({
+                        ...payload,
+                        id: 'pt_' + Date.now() + '_' + Math.random().toString(36).slice(2,7) + '_' + idx,
+                        date: dt,
+                        order: nextOrder + idx,
+                        done: false
+                    }));
+                    plannerState.tasks = newTasks.concat(plannerState.tasks);
+                    newTasks.forEach(t => plannerFirebaseUpsertTask(t, state.user?.uid));
                 }
                 savePlannerTasks();
                 resetPlannerForm();
@@ -6740,6 +6822,12 @@ Give a concise pre-mock briefing in this EXACT JSON (no markdown, no backticks):
                 plannerState.filterWindow = el('planner-filter-window')?.value || 'all';
                 renderPlannerTab();
             };
+            el('planner-repeat-mode')?.addEventListener('change', () => {
+                const mode = el('planner-repeat-mode')?.value || 'once';
+                const wrap = el('planner-custom-days-wrap');
+                if (mode === 'custom') wrap?.classList.remove('hidden');
+                else wrap?.classList.add('hidden');
+            });
             el('planner-filter-subject')?.addEventListener('change', onFilter);
             el('planner-filter-priority')?.addEventListener('change', onFilter);
             el('planner-filter-window')?.addEventListener('change', onFilter);
@@ -6818,6 +6906,13 @@ Give a concise pre-mock briefing in this EXACT JSON (no markdown, no backticks):
             plannerState.editingId = id;
             if (el('planner-title')) el('planner-title').value = t.title || '';
             if (el('planner-date')) el('planner-date').value = t.date || '';
+            if (el('planner-repeat-mode')) el('planner-repeat-mode').value = t.repeatMode || 'once';
+            const customWrap = el('planner-custom-days-wrap');
+            if ((t.repeatMode || 'once') === 'custom') customWrap?.classList.remove('hidden');
+            else customWrap?.classList.add('hidden');
+            document.querySelectorAll('#planner-custom-days input[type=checkbox]').forEach(cb => {
+                cb.checked = (t.repeatDays || []).includes(parseInt(cb.value, 10));
+            });
             if (el('planner-subject')) el('planner-subject').value = t.subject || getPlannerSubjects()[0];
             if (el('planner-priority')) el('planner-priority').value = t.priority || 'medium';
             if (el('planner-notes')) el('planner-notes').value = t.notes || '';
