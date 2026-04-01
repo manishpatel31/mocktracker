@@ -268,6 +268,23 @@
         .dark .planner-priority-low { background: rgba(16,185,129,0.24); color: #6ee7b7; }
         .planner-drag-handle { cursor: grab; }
         .planner-dragging { opacity: 0.55; transform: scale(0.99); }
+        .planner-subject-col {
+            border: 1px solid rgba(255,255,255,0.35);
+        }
+        .dark .planner-subject-col {
+            border: 1px solid rgba(255,255,255,0.08);
+        }
+        .planner-col-head {
+            border-bottom: 1px solid rgba(255,255,255,0.25);
+        }
+        .planner-subject-pill {
+            font-size: 10px;
+            font-weight: 900;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            padding: 5px 10px;
+            border-radius: 999px;
+        }
 
         /* ═══════════════════════════════════════
            TYPOGRAPHY HELPERS
@@ -1186,6 +1203,25 @@
                 </div>
             </form>
         </div>
+
+        <!-- Planner Repeat Manager Modal -->
+        <div id="modal-planner-repeat" class="glass-modal rounded-[2rem] p-7 w-full max-w-xl hidden shadow-2xl">
+            <div class="flex items-start justify-between gap-4 mb-4">
+                <div>
+                    <h3 class="text-xl font-extrabold text-slate-900 dark:text-white">Repetitive Schedules</h3>
+                    <p class="text-xs font-bold text-slate-400 mt-1">Edit, cancel, or skip specific dates. Occurrences auto-generate for the next 3 days.</p>
+                </div>
+                <button type="button" onclick="closeModal()" class="w-10 h-10 rounded-xl btn-glass font-black flex items-center justify-center" title="Close">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div id="planner-repeat-list" class="space-y-3"></div>
+            <div id="planner-repeat-empty" class="hidden text-center py-8">
+                <div class="text-3xl mb-2">🔁</div>
+                <p class="text-sm font-black text-slate-500 dark:text-slate-300">No repetitive schedules yet</p>
+                <p class="text-xs text-slate-400 mt-1">Create one by choosing a Repeat mode in the Planner tab.</p>
+            </div>
+        </div>
     </div>
 
     <!-- NAVBAR -->
@@ -1226,7 +1262,11 @@
             <button onclick="window.app.nav('log')"      id="nav-log"      class="nav-link px-5 py-2.5 rounded-xl transition-all duration-300">Log Score</button>
             <button onclick="window.app.nav('history')"  id="nav-history"  class="nav-link px-5 py-2.5 rounded-xl transition-all duration-300">Mock Vault</button>
             <button onclick="window.app.nav('analysis')" id="nav-analysis" class="nav-link px-5 py-2.5 rounded-xl transition-all duration-300">Deep Analysis</button>
-            <button onclick="window.app.nav('planner')"  id="nav-planner"  class="nav-link px-5 py-2.5 rounded-xl transition-all duration-300">Planner <span id="planner-nav-badge" class="hidden ml-1.5 px-1.5 py-0.5 rounded-full text-[9px] font-black bg-rose-500 text-white leading-none">0</span></button>
+            <button onclick="window.app.nav('planner')"  id="nav-planner"  class="nav-link px-5 py-2.5 rounded-xl transition-all duration-300">
+                Planner
+                <span id="planner-nav-repeat-btn" role="button" tabindex="0" onclick="window.openPlannerRepeatManager(event)" class="ml-1.5 px-1.5 py-0.5 rounded-full text-[9px] font-black bg-slate-200/70 dark:bg-slate-800/70 text-slate-600 dark:text-slate-300 leading-none" title="Manage repetitive schedules">🔁</span>
+                <span id="planner-nav-badge" class="hidden ml-1.5 px-1.5 py-0.5 rounded-full text-[9px] font-black bg-rose-500 text-white leading-none" title="Urgent planner tasks">0</span>
+            </button>
             <button onclick="window.app.nav('tools')"    id="nav-tools"    class="nav-link px-5 py-2.5 rounded-xl transition-all duration-300">Tools</button>
         </nav>
 
@@ -2369,6 +2409,8 @@
         const QUEUE_KEY  = 'mockpro_offline_queue';
         const PLANNER_KEY = 'mockpro_study_planner_v1';
         const PLANNER_FIRESTORE_COLLECTION = 'plannerTasks';
+        const PLANNER_RULES_KEY = 'mockpro_study_planner_rules_v1';
+        const PLANNER_RULES_FIRESTORE_COLLECTION = 'plannerRules';
         const TABS       = ['home','log','history','analysis','planner','tools'];
         let   currentTab = 0;
         // ── Planner Firebase Sync ──
@@ -2376,6 +2418,10 @@
         let plannerDidMergeLocal = false;
         let plannerLocalSnapshotForMerge = [];
         let plannerOrderSyncTimer = null;
+        let plannerRulesUnsub = null;
+        let plannerRulesDidMergeLocal = false;
+        let plannerRulesLocalSnapshotForMerge = [];
+        let plannerMidnightTimer = null;
 
         // Per-exam target score helpers
         function getTargetKey() { return 'mockpro_target_' + (state?.selectedExamGroup || 'default') + '_' + (state?.currentTier || 'tier1'); }
@@ -2695,6 +2741,10 @@
             filterWindow: 'all',
             dragId: null
         };
+        const plannerRulesState = {
+            rules: [],
+            editingRuleId: null
+        };
 
         const DEFAULT_PLANNER_SUBJECTS = [
             'General Intelligence',
@@ -2727,6 +2777,19 @@
 
         function savePlannerTasks() {
             localStorage.setItem(PLANNER_KEY, JSON.stringify(plannerState.tasks));
+        }
+
+        function loadPlannerRules() {
+            try {
+                const raw = JSON.parse(localStorage.getItem(PLANNER_RULES_KEY) || '[]');
+                plannerRulesState.rules = Array.isArray(raw) ? raw : [];
+            } catch (e) {
+                plannerRulesState.rules = [];
+            }
+        }
+
+        function savePlannerRules() {
+            localStorage.setItem(PLANNER_RULES_KEY, JSON.stringify(plannerRulesState.rules));
         }
 
         function plannerFirebaseCanSync(uid) {
@@ -2774,6 +2837,155 @@
             }, 650);
         }
 
+        async function plannerRulesFirebaseUpsertRule(rule, uid) {
+            if (!plannerFirebaseCanSync(uid)) return;
+            if (!rule || !rule.id) return;
+            try {
+                await setDoc(
+                    doc(db, 'artifacts', appId, 'users', uid, PLANNER_RULES_FIRESTORE_COLLECTION, rule.id),
+                    { ...rule, updatedAt: Timestamp.now() },
+                    { merge: true }
+                );
+            } catch (e) {
+                console.error('plannerRulesFirebaseUpsertRule:', e);
+            }
+        }
+
+        async function plannerRulesFirebaseDeleteRule(id, uid) {
+            if (!plannerFirebaseCanSync(uid)) return;
+            if (!id) return;
+            try {
+                await deleteDoc(
+                    doc(db, 'artifacts', appId, 'users', uid, PLANNER_RULES_FIRESTORE_COLLECTION, id)
+                );
+            } catch (e) {
+                console.error('plannerRulesFirebaseDeleteRule:', e);
+            }
+        }
+
+        function plannerStopRulesFirebaseSync() {
+            try {
+                if (plannerRulesUnsub) plannerRulesUnsub();
+            } catch (e) {}
+            plannerRulesUnsub = null;
+            plannerRulesDidMergeLocal = false;
+            plannerRulesLocalSnapshotForMerge = [];
+        }
+
+        function plannerStartRulesFirebaseSyncForUid(uid) {
+            if (!db || !uid || state.isDemoMode) return;
+            plannerStopRulesFirebaseSync();
+            plannerRulesLocalSnapshotForMerge = plannerRulesState.rules.slice();
+
+            const colRef = collection(db, 'artifacts', appId, 'users', uid, PLANNER_RULES_FIRESTORE_COLLECTION);
+            plannerRulesUnsub = onSnapshot(colRef, (s) => {
+                if (state.isDemoMode) return;
+                const remote = s.docs.map(d => ({ id: d.id, ...d.data() }));
+                const normalized = remote.map(r => ({
+                    ...r,
+                    active: (r.active !== false),
+                    skipDates: Array.isArray(r.skipDates) ? r.skipDates : []
+                }));
+
+                if (!plannerRulesDidMergeLocal) {
+                    const remoteIds = new Set(normalized.map(r => r.id));
+                    const toAdd = plannerRulesLocalSnapshotForMerge.filter(r => !remoteIds.has(r.id));
+                    plannerRulesDidMergeLocal = true;
+                    if (toAdd.length) {
+                        Promise.all(toAdd.map(r => plannerRulesFirebaseUpsertRule(r, uid))).catch(() => {});
+                    }
+                    plannerRulesState.rules = normalized.concat(toAdd);
+                } else {
+                    plannerRulesState.rules = normalized;
+                }
+
+                savePlannerRules();
+                ensurePlannerRecurringWindow();
+                renderPlannerRepeatManager();
+            });
+        }
+
+        function plannerGetWindowDates() {
+            const base = new Date();
+            const today = new Date(base.getFullYear(), base.getMonth(), base.getDate());
+            return [0,1,2].map(i => { const d = new Date(today); d.setDate(today.getDate()+i); return d.toISOString().slice(0,10); });
+        }
+
+        function plannerRuleMatchesDate(rule, isoDate) {
+            const dt = new Date(isoDate + 'T00:00:00');
+            if (isNaN(dt.getTime())) return false;
+            const start = rule.startDate ? new Date(rule.startDate + 'T00:00:00') : null;
+            if (start && !isNaN(start.getTime()) && dt < start) return false;
+
+            const dow = dt.getDay();
+            if (rule.mode === 'daily') return true;
+            if (rule.mode === 'weekdays') return dow !== 0;
+            if (rule.mode === 'weekly') {
+                const sd = rule.startDate ? new Date(rule.startDate + 'T00:00:00') : null;
+                if (!sd || isNaN(sd.getTime())) return false;
+                return dow === sd.getDay();
+            }
+            if (rule.mode === 'custom') {
+                const set = new Set((rule.days || []).map(n => parseInt(n,10)).filter(n => !isNaN(n)));
+                return set.has(dow);
+            }
+            return false;
+        }
+
+        function ensurePlannerRecurringWindow() {
+            const windowDates = plannerGetWindowDates();
+            const existingKey = new Set(plannerState.tasks.filter(t => t.recurringId).map(t => `${t.recurringId}__${t.date}`));
+            const uid = state.user?.uid;
+            const nextOrderBase = plannerState.tasks.reduce((mx, t) => Math.max(mx, t.order || 0), 0) + 1;
+            let order = nextOrderBase;
+            let added = [];
+
+            (plannerRulesState.rules || []).filter(r => r && r.active !== false).forEach(rule => {
+                const skip = new Set((rule.skipDates || []).map(String));
+                windowDates.forEach(iso => {
+                    if (skip.has(iso)) return;
+                    if (!plannerRuleMatchesDate(rule, iso)) return;
+                    const key = `${rule.id}__${iso}`;
+                    if (existingKey.has(key)) return;
+                    const occ = {
+                        id: 'pt_' + Date.now() + '_' + Math.random().toString(36).slice(2,7) + '_' + iso.replace(/-/g,''),
+                        title: rule.title,
+                        date: iso,
+                        subject: rule.subject,
+                        priority: rule.priority || 'medium',
+                        notes: rule.notes || '',
+                        done: false,
+                        order: order++,
+                        recurringId: rule.id,
+                        repeatLabel: rule.label || 'Repeat'
+                    };
+                    added.push(occ);
+                    existingKey.add(key);
+                });
+            });
+
+            if (added.length) {
+                plannerState.tasks = added.concat(plannerState.tasks);
+                savePlannerTasks();
+                renderPlannerTab();
+                added.forEach(t => plannerFirebaseUpsertTask(t, uid));
+            } else {
+                // Still refresh UI badges
+                try { updatePlannerReminderBadges(); } catch(e) {}
+            }
+        }
+
+        function schedulePlannerMidnightTick() {
+            if (plannerMidnightTimer) clearTimeout(plannerMidnightTimer);
+            const now = new Date();
+            const next = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1, 0, 0, 3);
+            const ms = Math.max(1500, next - now);
+            plannerMidnightTimer = setTimeout(() => {
+                ensurePlannerRecurringWindow();
+                schedulePlannerMidnightTick();
+            }, ms);
+        }
+
         function plannerStopFirebaseSync() {
             try {
                 if (plannerUnsub) plannerUnsub();
@@ -2784,6 +2996,10 @@
             if (plannerOrderSyncTimer) {
                 clearTimeout(plannerOrderSyncTimer);
                 plannerOrderSyncTimer = null;
+            }
+            if (plannerMidnightTimer) {
+                clearTimeout(plannerMidnightTimer);
+                plannerMidnightTimer = null;
             }
         }
 
@@ -2876,18 +3092,17 @@
             if (!(base instanceof Date) || isNaN(base.getTime())) return out;
             if (mode === 'once') return [startDate];
 
-            const horizon = 35; // next 5 weeks
+            // Only generate next 3 days (today + next 2)
+            const windowDates = plannerGetWindowDates();
             const customSet = new Set((customDays || []).map(v => parseInt(v, 10)).filter(v => !isNaN(v)));
-            for (let i = 0; i <= horizon; i++) {
-                const d = new Date(base);
-                d.setDate(base.getDate() + i);
+            windowDates.forEach(iso => {
+                const d = new Date(iso + 'T00:00:00');
                 const dow = d.getDay();
-                const iso = d.toISOString().slice(0,10);
                 if (mode === 'daily') out.push(iso);
                 else if (mode === 'weekdays' && dow !== 0) out.push(iso);
                 else if (mode === 'weekly' && dow === base.getDay()) out.push(iso);
                 else if (mode === 'custom' && customSet.has(dow)) out.push(iso);
-            }
+            });
             return out;
         }
 
@@ -2967,7 +3182,7 @@
             const list = el('planner-list');
             if (!list) return;
             const empty = el('planner-empty');
-            const all = plannerState.tasks.slice().sort((a,b) => (a.order || 0) - (b.order || 0));
+            const all = plannerState.tasks.slice();
             const filtered = all.filter(t => {
                 if (plannerState.filterSubject !== 'all' && t.subject !== plannerState.filterSubject) return false;
                 if (plannerState.filterPriority !== 'all' && t.priority !== plannerState.filterPriority) return false;
@@ -2988,34 +3203,65 @@
             }
             empty?.classList.add('hidden');
 
-            list.innerHTML = filtered.map(t => {
-                const meta = getPlannerDateMeta(t.date);
-                const pCls = t.priority === 'high' ? 'planner-priority-high' : t.priority === 'medium' ? 'planner-priority-medium' : 'planner-priority-low';
+            const subjects = getPlannerSubjects();
+            const colorMap = {
+                [subjects[0]]: { bg:'rgba(99,102,241,0.08)', br:'#6366f1' },
+                [subjects[1]]: { bg:'rgba(217,70,239,0.08)', br:'#d946ef' },
+                [subjects[2]]: { bg:'rgba(245,158,11,0.10)', br:'#f59e0b' },
+                [subjects[3]]: { bg:'rgba(16,185,129,0.10)', br:'#10b981' }
+            };
+
+            const grouped = {};
+            subjects.forEach(s => grouped[s] = []);
+            filtered.forEach(t => {
+                if (!grouped[t.subject]) grouped[t.subject] = [];
+                grouped[t.subject].push(t);
+            });
+            Object.keys(grouped).forEach(s => {
+                grouped[s] = grouped[s].slice().sort((a,b) => {
+                    if ((a.date||'') !== (b.date||'')) return (a.date||'').localeCompare(b.date||'');
+                    return plannerPriorityWeight(a.priority) - plannerPriorityWeight(b.priority);
+                });
+            });
+
+            list.className = 'grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4';
+            list.innerHTML = subjects.map(sub => {
+                const c = colorMap[sub] || { bg:'rgba(148,163,184,0.06)', br:'#94a3b8' };
+                const items = (grouped[sub] || []);
                 return `
-                <div draggable="true" ondragstart="window.onPlannerDragStart(event,'${t.id}')" ondragover="window.onPlannerDragOver(event)" ondrop="window.onPlannerDrop(event,'${t.id}')" ondragend="window.onPlannerDragEnd(event)" class="glass-card p-5 rounded-[1.6rem] border ${t.done ? 'border-emerald-300/40 dark:border-emerald-700/40' : 'border-white/40 dark:border-white/10'}">
-                    <div class="flex items-start justify-between gap-3">
-                        <div class="min-w-0">
-                            <h4 class="text-base font-black ${t.done ? 'line-through text-slate-400' : 'text-slate-900 dark:text-white'}">${t.title}</h4>
-                            <div class="mt-1 flex flex-wrap items-center gap-2 text-xs font-bold">
-                                <span class="px-2.5 py-1 rounded-full bg-brand-100 dark:bg-brand-900/30 text-brand-600 dark:text-brand-300">${t.subject}</span>
-                                <span class="planner-priority-chip ${pCls}">${t.priority}</span>
-                                ${t.repeatLabel ? `<span class="px-2.5 py-1 rounded-full bg-slate-100 dark:bg-slate-800/70 text-slate-500 dark:text-slate-300">${t.repeatLabel}</span>` : ''}
-                                <span class="${meta.cls}">${meta.label}</span>
-                            </div>
-                        </div>
-                        <div class="flex items-center gap-2">
-                            <span title="Drag to reorder" class="planner-drag-handle w-7 h-7 rounded-xl bg-slate-100 dark:bg-slate-800/60 text-slate-400 flex items-center justify-center"><i class="fa-solid fa-grip-vertical text-xs"></i></span>
-                            <input type="checkbox" ${t.done ? 'checked' : ''} onchange="window.togglePlannedTask('${t.id}')" class="w-5 h-5 rounded-lg accent-emerald-500 mt-1 cursor-pointer flex-shrink-0">
-                        </div>
+                <div class="planner-subject-col rounded-[1.6rem] overflow-hidden" style="background:${c.bg};border-top:4px solid ${c.br};">
+                    <div class="planner-col-head px-4 py-3 flex items-center justify-between gap-2" style="background:rgba(255,255,255,0.18);">
+                        <span class="planner-subject-pill" style="background:rgba(255,255,255,0.35);color:${c.br};">${sub}</span>
+                        <span class="text-xs font-black text-slate-400">${items.length}</span>
                     </div>
-                    ${t.notes ? `<p class="text-sm text-slate-500 dark:text-slate-300 mt-3 leading-relaxed">${t.notes}</p>` : ''}
-                    <div class="mt-4 flex items-center justify-between text-xs">
-                        <span class="font-black text-slate-400 uppercase tracking-wider">${t.date}</span>
-                        <div class="flex items-center gap-2">
-                            <button onclick="window.duplicatePlannedTask('${t.id}')" title="Duplicate to next day" class="w-8 h-8 rounded-xl bg-brand-100 dark:bg-brand-900/30 text-brand-600 flex items-center justify-center hover:scale-105 transition"><i class="fa-solid fa-copy text-xs"></i></button>
-                            <button onclick="window.editPlannedTask('${t.id}')" class="w-8 h-8 rounded-xl bg-amber-100 dark:bg-amber-900/30 text-amber-600 flex items-center justify-center hover:scale-105 transition"><i class="fa-solid fa-pen text-xs"></i></button>
-                            <button onclick="window.deletePlannedTask('${t.id}')" class="w-8 h-8 rounded-xl bg-rose-100 dark:bg-rose-900/30 text-rose-500 flex items-center justify-center hover:scale-105 transition"><i class="fa-solid fa-trash text-xs"></i></button>
-                        </div>
+                    <div class="p-3 space-y-3">
+                        ${items.length ? items.map(t => {
+                            const meta = getPlannerDateMeta(t.date);
+                            const pCls = t.priority === 'high' ? 'planner-priority-high' : t.priority === 'medium' ? 'planner-priority-medium' : 'planner-priority-low';
+                            return `
+                            <div class="glass-card p-4 rounded-[1.4rem] border ${t.done ? 'border-emerald-300/40 dark:border-emerald-700/40' : 'border-white/40 dark:border-white/10'}">
+                                <div class="flex items-start justify-between gap-3">
+                                    <div class="min-w-0">
+                                        <h4 class="text-sm font-black ${t.done ? 'line-through text-slate-400' : 'text-slate-900 dark:text-white'}">${t.title}</h4>
+                                        <div class="mt-1 flex flex-wrap items-center gap-2 text-[11px] font-bold">
+                                            <span class="planner-priority-chip ${pCls}">${t.priority}</span>
+                                            ${t.repeatLabel ? `<span class="px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800/70 text-slate-500 dark:text-slate-300">${t.repeatLabel}</span>` : ''}
+                                            <span class="${meta.cls}">${meta.label}</span>
+                                        </div>
+                                    </div>
+                                    <input type="checkbox" ${t.done ? 'checked' : ''} onchange="window.togglePlannedTask('${t.id}')" class="w-5 h-5 rounded-lg accent-emerald-500 mt-0.5 cursor-pointer flex-shrink-0">
+                                </div>
+                                ${t.notes ? `<p class="text-xs text-slate-500 dark:text-slate-300 mt-2 leading-relaxed">${t.notes}</p>` : ''}
+                                <div class="mt-3 flex items-center justify-between text-[11px]">
+                                    <span class="font-black text-slate-400 uppercase tracking-wider">${t.date}</span>
+                                    <div class="flex items-center gap-2">
+                                        <button onclick="window.duplicatePlannedTask('${t.id}')" title="Duplicate to next day" class="w-7 h-7 rounded-xl bg-brand-100 dark:bg-brand-900/30 text-brand-600 flex items-center justify-center hover:scale-105 transition"><i class="fa-solid fa-copy text-[10px]"></i></button>
+                                        <button onclick="window.editPlannedTask('${t.id}')" title="Edit" class="w-7 h-7 rounded-xl bg-amber-100 dark:bg-amber-900/30 text-amber-600 flex items-center justify-center hover:scale-105 transition"><i class="fa-solid fa-pen text-[10px]"></i></button>
+                                        <button onclick="window.deletePlannedTask('${t.id}')" title="Delete" class="w-7 h-7 rounded-xl bg-rose-100 dark:bg-rose-900/30 text-rose-500 flex items-center justify-center hover:scale-105 transition"><i class="fa-solid fa-trash text-[10px]"></i></button>
+                                    </div>
+                                </div>
+                            </div>`;
+                        }).join('') : `<div class="text-center py-6 text-xs font-bold text-slate-400">No tasks</div>`}
                     </div>
                 </div>`;
             }).join('');
@@ -3041,6 +3287,7 @@
             state.isDemoMode = true;
             // Planner: demo mode should not sync or save to cloud
             plannerStopFirebaseSync();
+            plannerStopRulesFirebaseSync();
             state.selectedExamGroup = 'SSC_CGL';
             state.currentTier = 'tier1';
             updateExamBadge();
@@ -3085,6 +3332,10 @@
             // Planner: reload from Firebase if user is signed in
             if (state.user) plannerStartFirebaseSyncForUid(state.user.uid);
             else loadPlannerTasks();
+            if (state.user) plannerStartRulesFirebaseSyncForUid(state.user.uid);
+            else loadPlannerRules();
+            ensurePlannerRecurringWindow();
+            schedulePlannerMidnightTick();
             renderPlannerTab();
             window.app.nav('home');
 
@@ -6740,6 +6991,7 @@ Give a concise pre-mock briefing in this EXACT JSON (no markdown, no backticks):
 
         (function initPlanner() {
             loadPlannerTasks();
+            loadPlannerRules();
             setupPlannerSubjectOptions();
             (function initPlannerCustomDays() {
                 const holder = el('planner-custom-days');
@@ -6754,6 +7006,8 @@ Give a concise pre-mock briefing in this EXACT JSON (no markdown, no backticks):
             })();
             resetPlannerForm();
             renderPlannerTab();
+            ensurePlannerRecurringWindow();
+            schedulePlannerMidnightTick();
 
             // Firebase sync for Planner tasks (keeps localStorage as offline fallback)
             if (auth) {
@@ -6761,11 +7015,18 @@ Give a concise pre-mock briefing in this EXACT JSON (no markdown, no backticks):
                     // If user is signed out (or demo mode is active), fallback to local tasks
                     if (!u || state.isDemoMode) {
                         plannerStopFirebaseSync();
+                        plannerStopRulesFirebaseSync();
                         if (!state.isDemoMode) loadPlannerTasks();
+                        if (!state.isDemoMode) loadPlannerRules();
+                        ensurePlannerRecurringWindow();
+                        schedulePlannerMidnightTick();
                         renderPlannerTab();
                         return;
                     }
                     plannerStartFirebaseSyncForUid(u.uid);
+                    plannerStartRulesFirebaseSyncForUid(u.uid);
+                    ensurePlannerRecurringWindow();
+                    schedulePlannerMidnightTick();
                     renderPlannerTab();
                 });
             }
@@ -6787,27 +7048,48 @@ Give a concise pre-mock briefing in this EXACT JSON (no markdown, no backticks):
                     return;
                 }
                 const repeatLabel = plannerBuildRepeatLabel(repeatMode, date, customDays);
-                const nextOrder = plannerState.tasks.reduce((mx, t) => Math.max(mx, t.order || 0), 0) + 1;
-                const payload = { id: plannerState.editingId || ('pt_' + Date.now() + '_' + Math.random().toString(36).slice(2,7)), title, date, subject, priority, notes, done: false, order: nextOrder, repeatMode, repeatDays: customDays, repeatLabel };
-                if (plannerState.editingId) {
-                    plannerState.tasks = plannerState.tasks.map(t => t.id === plannerState.editingId ? { ...t, ...payload, done: t.done } : t);
-                    const updatedTask = plannerState.tasks.find(t => t.id === plannerState.editingId);
-                    plannerFirebaseUpsertTask(updatedTask, state.user?.uid);
-                } else {
-                    const dates = plannerGenerateDates(date, repeatMode, customDays);
-                    const pack = dates.length ? dates : [date];
-                    const newTasks = pack.map((dt, idx) => ({
-                        ...payload,
-                        id: 'pt_' + Date.now() + '_' + Math.random().toString(36).slice(2,7) + '_' + idx,
-                        date: dt,
-                        order: nextOrder + idx,
-                        done: false
-                    }));
-                    plannerState.tasks = newTasks.concat(plannerState.tasks);
-                    newTasks.forEach(t => plannerFirebaseUpsertTask(t, state.user?.uid));
+                if (repeatMode === 'once') {
+                    const nextOrder = plannerState.tasks.reduce((mx, t) => Math.max(mx, t.order || 0), 0) + 1;
+                    const payload = { id: plannerState.editingId || ('pt_' + Date.now() + '_' + Math.random().toString(36).slice(2,7)), title, date, subject, priority, notes, done: false, order: nextOrder };
+                    if (plannerState.editingId) {
+                        plannerState.tasks = plannerState.tasks.map(t => t.id === plannerState.editingId ? { ...t, ...payload, done: t.done } : t);
+                        const updatedTask = plannerState.tasks.find(t => t.id === plannerState.editingId);
+                        plannerFirebaseUpsertTask(updatedTask, state.user?.uid);
+                    } else {
+                        plannerState.tasks.unshift(payload);
+                        plannerFirebaseUpsertTask(payload, state.user?.uid);
+                    }
+                    savePlannerTasks();
+                    resetPlannerForm();
+                    renderPlannerTab();
+                    return;
                 }
-                savePlannerTasks();
+
+                // Repeat schedule => create/update a recurring rule (occurrences auto-generated for next 3 days)
+                const ruleId = plannerRulesState.editingRuleId || ('pr_' + Date.now() + '_' + Math.random().toString(36).slice(2,7));
+                const rule = {
+                    id: ruleId,
+                    title,
+                    subject,
+                    priority,
+                    notes,
+                    mode: repeatMode,
+                    days: customDays,
+                    startDate: date,
+                    label: repeatLabel,
+                    active: true,
+                    skipDates: (plannerRulesState.rules.find(r => r.id === ruleId)?.skipDates) || []
+                };
+                const exists = plannerRulesState.rules.some(r => r.id === ruleId);
+                plannerRulesState.rules = exists
+                    ? plannerRulesState.rules.map(r => r.id === ruleId ? { ...r, ...rule } : r)
+                    : [rule, ...plannerRulesState.rules];
+                savePlannerRules();
+                plannerRulesFirebaseUpsertRule(rule, state.user?.uid);
+                plannerRulesState.editingRuleId = null;
                 resetPlannerForm();
+                ensurePlannerRecurringWindow();
+                renderPlannerRepeatManager();
                 renderPlannerTab();
             });
 
@@ -6864,6 +7146,20 @@ Give a concise pre-mock briefing in this EXACT JSON (no markdown, no backticks):
         window.deletePlannedTask = function(id) {
             if (state.isDemoMode) { alert("Planner is disabled in Demo Mode."); return; }
             if (!confirm('Delete this planned task?')) return;
+            const victim = plannerState.tasks.find(t => t.id === id);
+            // If this is an occurrence from a recurring rule, treat delete as "skip this date"
+            if (victim?.recurringId) {
+                const rid = victim.recurringId;
+                const rule = plannerRulesState.rules.find(r => r.id === rid);
+                if (rule) {
+                    const skip = new Set((rule.skipDates || []).map(String));
+                    skip.add(String(victim.date));
+                    const updated = { ...rule, skipDates: Array.from(skip) };
+                    plannerRulesState.rules = plannerRulesState.rules.map(r => r.id === rid ? updated : r);
+                    savePlannerRules();
+                    plannerRulesFirebaseUpsertRule(updated, state.user?.uid);
+                }
+            }
             plannerState.tasks = plannerState.tasks.filter(t => t.id !== id);
             savePlannerTasks();
             plannerFirebaseDeleteTask(id, state.user?.uid);
@@ -6900,9 +7196,138 @@ Give a concise pre-mock briefing in this EXACT JSON (no markdown, no backticks):
             plannerState.dragId = null;
             e.currentTarget?.classList.remove('planner-dragging');
         };
+
+        window.openPlannerRepeatManager = function(e) {
+            if (e) { e.preventDefault?.(); e.stopPropagation?.(); }
+            if (state.isDemoMode) { alert("Repeat manager is disabled in Demo Mode."); return; }
+            renderPlannerRepeatManager();
+            openModal('modal-planner-repeat');
+        };
+
+        function renderPlannerRepeatManager() {
+            const wrap = el('planner-repeat-list');
+            const empty = el('planner-repeat-empty');
+            if (!wrap) return;
+            const rules = (plannerRulesState.rules || []).slice().sort((a,b) => (b.updatedAt?.seconds||0) - (a.updatedAt?.seconds||0));
+            if (!rules.length) {
+                wrap.innerHTML = '';
+                empty?.classList.remove('hidden');
+                return;
+            }
+            empty?.classList.add('hidden');
+            const todayIso = getTodayIso();
+            wrap.innerHTML = rules.map(r => {
+                const active = r.active !== false;
+                const badge = active ? '<span class="px-2 py-0.5 rounded-full text-[10px] font-black bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600">Active</span>'
+                                    : '<span class="px-2 py-0.5 rounded-full text-[10px] font-black bg-slate-100 dark:bg-slate-800/60 text-slate-500">Paused</span>';
+                return `
+                <div class="glass-card p-5 rounded-[1.6rem] border border-white/40 dark:border-white/10">
+                    <div class="flex items-start justify-between gap-3">
+                        <div class="min-w-0">
+                            <div class="flex items-center gap-2 flex-wrap">
+                                <h4 class="text-base font-black text-slate-900 dark:text-white">${r.title}</h4>
+                                ${badge}
+                            </div>
+                            <div class="mt-1 flex flex-wrap items-center gap-2 text-[11px] font-bold">
+                                <span class="px-2.5 py-1 rounded-full bg-brand-100 dark:bg-brand-900/30 text-brand-600 dark:text-brand-300">${r.subject}</span>
+                                <span class="planner-priority-chip ${r.priority==='high'?'planner-priority-high':r.priority==='low'?'planner-priority-low':'planner-priority-medium'}">${r.priority||'medium'}</span>
+                                <span class="px-2.5 py-1 rounded-full bg-slate-100 dark:bg-slate-800/70 text-slate-600 dark:text-slate-300">${r.label||'Repeat'}</span>
+                                <span class="text-slate-400">Start: ${r.startDate||'-'}</span>
+                            </div>
+                            ${r.notes ? `<p class="text-xs text-slate-500 dark:text-slate-300 mt-2">${r.notes}</p>` : ''}
+                        </div>
+                    </div>
+                    <div class="mt-4 grid grid-cols-1 md:grid-cols-3 gap-2">
+                        <button onclick="window.editPlannerRule('${r.id}')" class="px-3 py-2 rounded-xl text-xs font-black text-white" style="background:linear-gradient(135deg,#6366f1,#a855f7);">Edit</button>
+                        <button onclick="window.togglePlannerRuleActive('${r.id}')" class="px-3 py-2 rounded-xl text-xs font-black ${active?'text-white':'text-slate-700 dark:text-slate-200'}" style="background:${active?'linear-gradient(135deg,#ef4444,#f59e0b)':'rgba(148,163,184,0.18)'};">${active?'Cancel':'Resume'}</button>
+                        <button onclick="window.deletePlannerRuleUpcoming('${r.id}')" class="px-3 py-2 rounded-xl text-xs font-black text-rose-500 bg-rose-100 dark:bg-rose-900/30">Delete Upcoming</button>
+                    </div>
+                    <div class="mt-3 flex items-center gap-2 flex-wrap">
+                        <input type="date" id="skipdate-${r.id}" class="glass-input px-3 py-2 rounded-xl font-bold text-xs" value="${todayIso}">
+                        <button onclick="window.skipPlannerRuleDate('${r.id}')" class="px-3 py-2 rounded-xl text-xs font-black btn-glass">Delete For Date</button>
+                    </div>
+                </div>`;
+            }).join('');
+        }
+
+        window.editPlannerRule = function(ruleId) {
+            const r = plannerRulesState.rules.find(x => x.id === ruleId);
+            if (!r) return;
+            plannerRulesState.editingRuleId = ruleId;
+            plannerState.editingId = null;
+            if (el('planner-title')) el('planner-title').value = r.title || '';
+            if (el('planner-date')) el('planner-date').value = r.startDate || getTodayIso();
+            if (el('planner-repeat-mode')) el('planner-repeat-mode').value = r.mode || 'daily';
+            const customWrap = el('planner-custom-days-wrap');
+            if ((r.mode || '') === 'custom') customWrap?.classList.remove('hidden');
+            else customWrap?.classList.add('hidden');
+            document.querySelectorAll('#planner-custom-days input[type=checkbox]').forEach(cb => {
+                cb.checked = (r.days || []).includes(parseInt(cb.value, 10));
+            });
+            if (el('planner-subject')) el('planner-subject').value = r.subject || getPlannerSubjects()[0];
+            if (el('planner-priority')) el('planner-priority').value = r.priority || 'medium';
+            if (el('planner-notes')) el('planner-notes').value = r.notes || '';
+            const saveBtn = el('planner-save-btn');
+            if (saveBtn) saveBtn.textContent = 'Update Repeat';
+            el('planner-cancel-btn')?.classList.remove('hidden');
+            closeModal();
+            window.app.nav('planner');
+        };
+
+        window.togglePlannerRuleActive = function(ruleId) {
+            const r = plannerRulesState.rules.find(x => x.id === ruleId);
+            if (!r) return;
+            const updated = { ...r, active: !(r.active !== false) };
+            plannerRulesState.rules = plannerRulesState.rules.map(x => x.id === ruleId ? updated : x);
+            savePlannerRules();
+            plannerRulesFirebaseUpsertRule(updated, state.user?.uid);
+            ensurePlannerRecurringWindow();
+            renderPlannerRepeatManager();
+            renderPlannerTab();
+        };
+
+        window.deletePlannerRuleUpcoming = function(ruleId) {
+            if (!confirm('Delete all upcoming occurrences for this repetitive schedule?')) return;
+            const todayIso = getTodayIso();
+            const toDelete = plannerState.tasks.filter(t => t.recurringId === ruleId && (t.date || '') >= todayIso);
+            plannerState.tasks = plannerState.tasks.filter(t => !(t.recurringId === ruleId && (t.date || '') >= todayIso));
+            savePlannerTasks();
+            toDelete.forEach(t => plannerFirebaseDeleteTask(t.id, state.user?.uid));
+            renderPlannerTab();
+            renderPlannerRepeatManager();
+        };
+
+        window.skipPlannerRuleDate = function(ruleId) {
+            const inp = el(`skipdate-${ruleId}`);
+            const iso = inp?.value;
+            if (!iso) return;
+            const r = plannerRulesState.rules.find(x => x.id === ruleId);
+            if (!r) return;
+            const skip = new Set((r.skipDates || []).map(String));
+            skip.add(String(iso));
+            const updated = { ...r, skipDates: Array.from(skip) };
+            plannerRulesState.rules = plannerRulesState.rules.map(x => x.id === ruleId ? updated : x);
+            savePlannerRules();
+            plannerRulesFirebaseUpsertRule(updated, state.user?.uid);
+            // delete occurrence if already present
+            const occ = plannerState.tasks.find(t => t.recurringId === ruleId && t.date === iso);
+            if (occ) {
+                plannerState.tasks = plannerState.tasks.filter(t => t.id !== occ.id);
+                savePlannerTasks();
+                plannerFirebaseDeleteTask(occ.id, state.user?.uid);
+            }
+            renderPlannerRepeatManager();
+            renderPlannerTab();
+        };
         window.editPlannedTask = function(id) {
             const t = plannerState.tasks.find(x => x.id === id);
             if (!t) return;
+            if (t.recurringId) {
+                // Recurring occurrences are managed via Repeat Manager (edit the rule)
+                plannerRulesState.editingRuleId = t.recurringId;
+                window.openPlannerRepeatManager();
+                return;
+            }
             plannerState.editingId = id;
             if (el('planner-title')) el('planner-title').value = t.title || '';
             if (el('planner-date')) el('planner-date').value = t.date || '';
