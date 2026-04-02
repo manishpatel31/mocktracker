@@ -315,9 +315,31 @@ html,body{overflow-x:hidden;max-width:100%;}
 .fsize-btn{padding:4px 10px;border-radius:8px;font-size:10px;font-weight:800;cursor:pointer;border:1.5px solid rgba(99,102,241,.2);background:rgba(255,255,255,.4);color:#64748b;transition:all .15s;font-family:inherit;}
 .dark .fsize-btn{background:rgba(255,255,255,.06);color:#94a3b8;}
 .fsize-btn.active{background:rgba(99,102,241,.15);border-color:#6366f1;color:#6366f1;}
-/* Mini heatmap — last 35 days only */
-#heatmap-grid{grid-template-columns:repeat(35,1fr)!important;}
-@media(max-width:500px){#heatmap-grid{grid-template-columns:repeat(21,1fr)!important;}}
+/* ── Home two-column panel ── */
+.home-split{display:grid;grid-template-columns:1fr 1fr;gap:0;border-radius:20px;overflow:hidden;border:1.5px solid rgba(99,102,241,.18);}
+.home-split-l{padding:14px 14px;border-right:1.5px solid rgba(99,102,241,.12);}
+.home-split-r{padding:14px 14px;}
+@media(max-width:500px){.home-split{grid-template-columns:1fr;}.home-split-l{border-right:none;border-bottom:1.5px solid rgba(99,102,241,.12);}}
+/* 30-day streak grid */
+.streak-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:3px;margin-top:6px;}
+.streak-cell{aspect-ratio:1;border-radius:5px;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:7px;font-weight:900;color:#94a3b8;line-height:1.1;cursor:default;transition:transform .15s;}
+.streak-cell:hover{transform:scale(1.2);z-index:2;position:relative;}
+.streak-cell.reviewed{color:white;}
+.streak-cell.today-cell{outline:2px solid #6366f1;outline-offset:1px;}
+/* Upcoming due list */
+.due-day-row{display:flex;align-items:center;gap-8px;padding:4px 0;border-bottom:1px solid rgba(99,102,241,.07);cursor:pointer;transition:background .15s;border-radius:6px;padding:4px 6px;margin:0 -6px;}
+.due-day-row:last-child{border-bottom:none;}
+.due-day-row:hover{background:rgba(99,102,241,.06);}
+/* Stat pills - vibrant */
+.home-stat{border-radius:16px;padding:10px 8px;text-align:center;position:relative;overflow:hidden;border:1.5px solid transparent;}
+/* Smart Queue */
+.sq-card{display:flex;align-items:center;padding:7px 9px;border-radius:10px;margin-bottom:3px;cursor:pointer;transition:all .15s;border:1px solid rgba(99,102,241,.1);}
+.sq-card:hover{transform:translateX(3px);background:rgba(99,102,241,.06)!important;}
+.sq-priority-bar{width:3px;min-height:24px;border-radius:3px;flex-shrink:0;margin-right:8px;align-self:stretch;}
+/* WOD card - more vibrant */
+.wod-card{background:linear-gradient(135deg,rgba(99,102,241,.12),rgba(217,70,239,.08));border:1.5px solid rgba(99,102,241,.25);border-radius:20px;padding:14px 16px;}
+.dark .wod-card{background:linear-gradient(135deg,rgba(99,102,241,.2),rgba(217,70,239,.12));border-color:rgba(99,102,241,.35);}
+/* Mini heatmap override - no longer used, keep blank */ 
   </style>
 </head>
 <body class="app-bg text-slate-800 dark:text-slate-100 min-h-screen transition-colors duration-500">
@@ -394,6 +416,7 @@ html,body{overflow-x:hidden;max-width:100%;}
 
     <!-- ══ HOME ══ -->
     <div class="vpane active" id="vpane-home">
+
       <!-- Greeting row -->
       <div class="anim-1 flex items-center justify-between mb-3 flex-wrap gap-2">
         <div>
@@ -405,50 +428,74 @@ html,body{overflow-x:hidden;max-width:100%;}
         </button>
       </div>
 
-      <!-- Stat pills row -->
+      <!-- Stat pills — 5 vibrant tiles -->
       <div class="anim-2 grid grid-cols-5 gap-2 mb-3">
-        <div class="glass-card rounded-2xl p-3 text-center"><div class="text-lg font-black text-gradient leading-none" id="hs-total">0</div><div class="text-[9px] font-black text-slate-400 uppercase tracking-wide mt-1">Total</div></div>
-        <div class="glass-card rounded-2xl p-3 text-center"><div class="text-lg font-black leading-none" style="color:#f97316" id="hs-due">0</div><div class="text-[9px] font-black text-slate-400 uppercase tracking-wide mt-1">Due</div></div>
-        <div class="glass-card rounded-2xl p-3 text-center"><div class="text-lg font-black leading-none" style="color:#94a3b8" id="hs-unvisited">0</div><div class="text-[9px] font-black text-slate-400 uppercase tracking-wide mt-1">New</div></div>
-        <div class="glass-card rounded-2xl p-3 text-center"><div class="text-lg font-black leading-none" style="color:#10b981" id="hs-mastered">0</div><div class="text-[9px] font-black text-slate-400 uppercase tracking-wide mt-1">L5</div></div>
-        <div class="glass-card rounded-2xl p-3 text-center"><div class="text-lg font-black leading-none" style="color:#f59e0b" id="hs-streak">0</div><div class="text-[9px] font-black text-slate-400 uppercase tracking-wide mt-1">🔥 Days</div></div>
+        <div class="home-stat" style="background:linear-gradient(135deg,rgba(99,102,241,.15),rgba(139,92,246,.1));border-color:rgba(99,102,241,.3);">
+          <div class="text-lg font-black text-gradient leading-none" id="hs-total">0</div>
+          <div class="text-[9px] font-black text-slate-500 uppercase tracking-wide mt-1">Total</div>
+        </div>
+        <div class="home-stat" style="background:linear-gradient(135deg,rgba(249,115,22,.14),rgba(251,146,60,.08));border-color:rgba(249,115,22,.35);">
+          <div class="text-lg font-black leading-none" style="color:#f97316" id="hs-due">0</div>
+          <div class="text-[9px] font-black text-slate-500 uppercase tracking-wide mt-1">Due</div>
+        </div>
+        <div class="home-stat" style="background:linear-gradient(135deg,rgba(148,163,184,.12),rgba(100,116,139,.06));border-color:rgba(148,163,184,.3);">
+          <div class="text-lg font-black leading-none" style="color:#64748b" id="hs-unvisited">0</div>
+          <div class="text-[9px] font-black text-slate-500 uppercase tracking-wide mt-1">New</div>
+        </div>
+        <div class="home-stat" style="background:linear-gradient(135deg,rgba(16,185,129,.14),rgba(5,150,105,.08));border-color:rgba(16,185,129,.35);">
+          <div class="text-lg font-black leading-none" style="color:#10b981" id="hs-mastered">0</div>
+          <div class="text-[9px] font-black text-slate-500 uppercase tracking-wide mt-1">L5</div>
+        </div>
+        <div class="home-stat" style="background:linear-gradient(135deg,rgba(245,158,11,.14),rgba(252,211,77,.08));border-color:rgba(245,158,11,.35);">
+          <div class="text-lg font-black leading-none" style="color:#f59e0b" id="hs-streak">0</div>
+          <div class="text-[9px] font-black text-slate-500 uppercase tracking-wide mt-1">🔥 Streak</div>
+        </div>
       </div>
 
-      <!-- Streak + heatmap compact -->
-      <div class="anim-3 glass-card rounded-2xl px-4 py-3 mb-3">
-        <div class="flex items-center justify-between mb-2">
-          <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">📈 Streak</p>
-          <p class="text-[10px] text-slate-400" id="streak-detail">—</p>
-        </div>
-        <div id="heatmap-grid" class="grid gap-0.5"></div>
-        <div class="flex justify-between mt-1.5">
-          <span class="text-[8px] text-slate-400">5 wks ago</span>
-          <span class="text-[8px] text-slate-400">Today</span>
+      <!-- Streak (left) + Upcoming Due (right) — split panel -->
+      <div class="anim-3 mb-3" style="background:rgba(255,255,255,.55);backdrop-filter:blur(20px);border:1.5px solid rgba(99,102,241,.2);border-radius:20px;box-shadow:0 4px 24px rgba(99,102,241,.08);">
+        <div class="dark:bg-transparent" style="display:grid;grid-template-columns:1fr 1fr;">
+          <!-- LEFT: 30-day streak -->
+          <div style="padding:14px 12px 14px 14px;border-right:1.5px solid rgba(99,102,241,.12);">
+            <div class="flex items-center justify-between mb-1">
+              <p class="text-[10px] font-black uppercase tracking-widest" style="color:#6366f1;">📈 30-Day Streak</p>
+              <span class="text-[9px] font-black px-1.5 py-0.5 rounded-md" style="background:rgba(245,158,11,.15);color:#d97706;" id="streak-detail-badge">0 days</span>
+            </div>
+            <p class="text-[8px] text-slate-400 mb-2" id="streak-detail">—</p>
+            <div class="streak-grid" id="streak-grid-30"></div>
+            <div class="flex justify-between mt-1.5">
+              <span class="text-[7px] text-slate-400">30 days ago</span>
+              <span class="text-[7px] text-slate-400">Today</span>
+            </div>
+          </div>
+          <!-- RIGHT: Upcoming due (next 7 days) -->
+          <div style="padding:14px 14px 14px 12px;">
+            <p class="text-[10px] font-black uppercase tracking-widest mb-2" style="color:#f97316;">⏰ Upcoming Due</p>
+            <div id="upcoming-due-list"></div>
+          </div>
         </div>
       </div>
 
-      <!-- Word of the Day compact -->
+      <!-- Word of the Day -->
       <div class="anim-3 wod-card mb-3" id="wod-card">
         <div class="flex items-center gap-2 mb-2">
           <span class="text-[11px] font-black text-gradient uppercase tracking-widest">📅 Word of the Day</span>
-          <button onclick="refreshWOD()" class="ml-auto btn-glass px-2 py-1 rounded-lg text-xs font-black flex items-center gap-1"><i class="fa-solid fa-shuffle text-indigo-500" style="font-size:9px;"></i></button>
+          <button onclick="refreshWOD()" class="ml-auto btn-glass px-2 py-1 rounded-lg text-xs font-black"><i class="fa-solid fa-shuffle text-indigo-500" style="font-size:9px;"></i></button>
         </div>
         <div id="wod-content"><p class="text-xs text-slate-400 text-center py-3">Loading…</p></div>
       </div>
 
-      <!-- Revision Calendar — 7-day strip + expandable full month -->
-      <div class="anim-4 glass-card rounded-2xl p-4 mb-3">
+      <!-- Calendar strip + expand (compact, no big box) -->
+      <div class="anim-4 mb-3" style="background:rgba(255,255,255,.55);backdrop-filter:blur(18px);border:1.5px solid rgba(99,102,241,.18);border-radius:18px;padding:12px 14px;box-shadow:0 2px 16px rgba(99,102,241,.06);">
         <div class="flex items-center justify-between mb-2">
-          <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">📅 Upcoming Due</p>
+          <p class="text-[10px] font-black text-slate-500 uppercase tracking-widest">📅 Next 14 Days</p>
           <button onclick="toggleCalFull()" id="cal-toggle-btn" class="text-[10px] font-black text-indigo-500 flex items-center gap-1">
-            Full Calendar <i class="fa-solid fa-chevron-down chevron-icon" id="cal-chevron" style="font-size:9px;"></i>
+            Month View <i class="fa-solid fa-chevron-down chevron-icon" id="cal-chevron" style="font-size:9px;"></i>
           </button>
         </div>
-        <!-- 7-day strip (always visible) -->
         <div class="flex gap-1" id="cal-week-strip"></div>
-        <!-- Full month calendar (collapsible) -->
         <div class="collapsible-body collapsed" id="cal-full-body" style="max-height:0;">
-          <div class="mt-3 pt-3 border-t border-white/20 dark:border-white/5">
+          <div class="mt-3 pt-3" style="border-top:1px solid rgba(99,102,241,.1);">
             <div class="flex items-center justify-between mb-2">
               <p class="text-xs font-black text-slate-600 dark:text-slate-300" id="cal-month-label">—</p>
               <div class="flex gap-1">
@@ -460,21 +507,21 @@ html,body{overflow-x:hidden;max-width:100%;}
               ${['S','M','T','W','T','F','S'].map(d=>`<div class="text-center text-[8px] font-black text-slate-400">${d}</div>`).join('')}
             </div>
             <div id="rev-cal-grid" class="rev-cal-grid"></div>
-            <div class="flex gap-3 mt-2 justify-center flex-wrap">
-              <span class="flex items-center gap-1 text-[8px] font-black text-slate-400"><span class="w-2 h-2 rounded-full" style="background:#ef4444;display:inline-block;"></span>10+</span>
-              <span class="flex items-center gap-1 text-[8px] font-black text-slate-400"><span class="w-2 h-2 rounded-full" style="background:#f59e0b;display:inline-block;"></span>5–9</span>
-              <span class="flex items-center gap-1 text-[8px] font-black text-slate-400"><span class="w-2 h-2 rounded-full" style="background:#10b981;display:inline-block;"></span>1–4</span>
+            <div class="flex gap-3 mt-2 justify-center">
+              <span class="flex items-center gap-1 text-[8px] font-black text-slate-400"><span style="width:7px;height:7px;border-radius:50%;background:#ef4444;display:inline-block;"></span>10+</span>
+              <span class="flex items-center gap-1 text-[8px] font-black text-slate-400"><span style="width:7px;height:7px;border-radius:50%;background:#f59e0b;display:inline-block;"></span>5–9</span>
+              <span class="flex items-center gap-1 text-[8px] font-black text-slate-400"><span style="width:7px;height:7px;border-radius:50%;background:#10b981;display:inline-block;"></span>1–4</span>
             </div>
           </div>
         </div>
       </div>
 
       <!-- Smart Queue — collapsible -->
-      <div class="anim-4 glass-card rounded-2xl p-4 mb-3">
+      <div class="anim-4 mb-3" style="background:rgba(255,255,255,.55);backdrop-filter:blur(18px);border:1.5px solid rgba(99,102,241,.18);border-radius:18px;padding:12px 14px;box-shadow:0 2px 16px rgba(99,102,241,.06);">
         <div class="flex items-center justify-between">
           <div class="flex items-center gap-2">
-            <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">🧠 Smart Queue</p>
-            <span class="text-[9px] font-black px-2 py-0.5 rounded-lg" style="background:rgba(99,102,241,.1);color:#6366f1;" id="sq-count-badge">—</span>
+            <p class="text-[10px] font-black text-slate-500 uppercase tracking-widest">🧠 Smart Queue</p>
+            <span class="text-[9px] font-black px-2 py-0.5 rounded-lg" style="background:rgba(99,102,241,.12);color:#6366f1;" id="sq-count-badge">—</span>
           </div>
           <div class="flex items-center gap-2">
             <button onclick="startSmartQueue()" class="btn-gradient px-3 py-1.5 rounded-xl text-white text-[10px] font-black flex items-center gap-1">
@@ -486,7 +533,7 @@ html,body{overflow-x:hidden;max-width:100%;}
           </div>
         </div>
         <div class="collapsible-body collapsed mt-0" id="sq-body" style="max-height:0;">
-          <div class="mt-3 pt-2 border-t border-white/20 dark:border-white/5" id="smart-queue-list"></div>
+          <div class="mt-3 pt-2" style="border-top:1px solid rgba(99,102,241,.1);" id="smart-queue-list"></div>
         </div>
       </div>
 
@@ -2581,22 +2628,65 @@ function renderHome(){
   if(el('hs-mastered'))el('hs-mastered').textContent=mastered;
   const sd=getStreakData();
   if(el('hs-streak'))el('hs-streak').textContent=sd.current;
-  if(el('streak-detail'))el('streak-detail').textContent=`🔥 ${sd.current} day streak · Best: ${sd.longest}`;
+  if(el('streak-detail'))el('streak-detail').textContent=`Best: ${sd.longest} days`;
+  if(el('streak-detail-badge'))el('streak-detail-badge').textContent=`🔥 ${sd.current} days`;
   const reviewBtn=el('today-review-btn');
-  if(reviewBtn){reviewBtn.classList.toggle('hidden',due===0);const lbl=el('today-review-label');if(lbl)lbl.textContent=`Today's Review (${due})`;}
-  renderHeatmap(sd.dates);renderWOD();renderWeekStrip();renderRevisionCalendar();renderSmartQueue();
+  if(reviewBtn){reviewBtn.classList.toggle('hidden',due===0);const lbl=el('today-review-label');if(lbl)lbl.textContent=`Review (${due})`;}
+  render30DayStreak(sd.dates);renderUpcomingDue();renderWeekStrip();renderRevisionCalendar();renderSmartQueue();renderWOD();
 }
 
-function renderHeatmap(dates){
-  const grid=el('heatmap-grid');if(!grid)return;
+function render30DayStreak(dates){
+  const grid=el('streak-grid-30');if(!grid)return;
   const dateSet=new Set(dates);
   const today=new Date();today.setHours(0,0,0,0);
-  const cells=[];
-  for(let i=34;i>=0;i--){const d=new Date(today);d.setDate(d.getDate()-i);cells.push(d.toISOString().slice(0,10));}
-  grid.style.gridTemplateColumns=`repeat(${cells.length},1fr)`;
-  grid.innerHTML=cells.map(dateStr=>{
-    const has=dateSet.has(dateStr);
-    return`<div class="heat-cell" title="${dateStr}" style="background:rgba(99,102,241,${has?'.85':'.08'});border:1px solid ${has?'rgba(99,102,241,.5)':'transparent'};aspect-ratio:1;border-radius:3px;"></div>`;
+  grid.innerHTML='';
+  for(let i=29;i>=0;i--){
+    const d=new Date(today);d.setDate(d.getDate()-i);
+    const ds=d.toISOString().slice(0,10);
+    const reviewed=dateSet.has(ds);
+    const isToday=i===0;
+    const cell=document.createElement('div');
+    cell.className='streak-cell'+(reviewed?' reviewed':'')+(isToday?' today-cell':'');
+    const dayNum=d.getDate();
+    const bg=reviewed
+      ?isToday?'linear-gradient(135deg,#6366f1,#d946ef)':'rgba(99,102,241,.75)'
+      :isToday?'rgba(99,102,241,.15)':'rgba(148,163,184,.1)';
+    cell.style.background=bg;
+    cell.title=`${ds}${reviewed?' — reviewed':''}`;
+    cell.innerHTML=`<span style="font-size:7px;font-weight:900;line-height:1;">${dayNum}</span>`;
+    grid.appendChild(cell);
+  }
+}
+
+function renderUpcomingDue(){
+  const list=el('upcoming-due-list');if(!list)return;
+  const today=new Date();today.setHours(0,0,0,0);
+  const rows=[];
+  for(let i=0;i<7;i++){
+    const d=new Date(today);d.setDate(d.getDate()+i);
+    const count=getDueCountForDate(d);
+    rows.push({d,count,i});
+  }
+  // Also include today's already-due words
+  const todayDue=vWords.filter(w=>isDue(w)&&(w.level??-1)<5).length;
+  const dayNames=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+  const monthNames=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  list.innerHTML=rows.map(({d,count,i})=>{
+    const isToday=i===0;
+    const total=isToday?todayDue:count;
+    const dotColor=total>=10?'#ef4444':total>=5?'#f59e0b':total>=1?'#10b981':'rgba(148,163,184,.3)';
+    const textColor=isToday?'#6366f1':'#64748b';
+    return`<div class="due-day-row" onclick="showCalDayPopup(${d.getFullYear()},${d.getMonth()},${d.getDate()},{target:document.getElementById('upcoming-due-list')})">
+      <div style="width:28px;flex-shrink:0;text-align:center;">
+        <div style="font-size:8px;font-weight:900;color:${textColor};text-transform:uppercase;">${isToday?'Today':dayNames[d.getDay()]}</div>
+        <div style="font-size:13px;font-weight:900;color:${textColor};line-height:1.2;">${d.getDate()}</div>
+        <div style="font-size:7px;font-weight:700;color:#94a3b8;">${monthNames[d.getMonth()]}</div>
+      </div>
+      <div style="flex:1;height:4px;background:rgba(148,163,184,.12);border-radius:2px;margin:0 8px;">
+        ${total>0?`<div style="height:100%;width:${Math.min(100,total*8)}%;background:${dotColor};border-radius:2px;"></div>`:''}
+      </div>
+      <span style="font-size:11px;font-weight:900;color:${total>0?dotColor:'#cbd5e1'};min-width:18px;text-align:right;">${total>0?total:'·'}</span>
+    </div>`;
   }).join('');
 }
 
@@ -2614,23 +2704,24 @@ function renderWOD(){
 window.refreshWOD=()=>{const todayKey='lp_wod_'+new Date().toISOString().slice(0,10);localStorage.removeItem(todayKey);renderWOD();};
 window.startTodayReview=()=>{goTab('cards');setTimeout(()=>startMode('fc','due'),100);};
 
-/* ── 7-day upcoming strip ── */
+/* ── 14-day calendar strip ── */
 function renderWeekStrip(){
   const strip=el('cal-week-strip');if(!strip)return;
   const today=new Date();today.setHours(0,0,0,0);
   const days=['Su','Mo','Tu','We','Th','Fr','Sa'];
   strip.innerHTML='';
-  for(let i=0;i<7;i++){
+  for(let i=0;i<14;i++){
     const d=new Date(today);d.setDate(d.getDate()+i);
     const count=getDueCountForDate(d);
     const isToday=i===0;
     const dotColor=count>=10?'#ef4444':count>=5?'#f59e0b':count>=1?'#10b981':'transparent';
     const pill=document.createElement('div');
     pill.className='day-pill'+(isToday?' is-today':'');
-    pill.innerHTML=`<span style="font-size:8px;font-weight:900;color:${isToday?'#6366f1':'#94a3b8'}">${days[d.getDay()]}</span>
-      <span style="font-size:12px;font-weight:900;color:${isToday?'#6366f1':'#1e293b'}" class="dark:text-slate-200">${d.getDate()}</span>
-      <span style="width:6px;height:6px;border-radius:50%;background:${dotColor};display:inline-block;min-height:6px;"></span>
-      ${count>0?`<span style="font-size:8px;font-weight:900;color:${dotColor};">${count}</span>`:'<span style="font-size:8px;color:transparent;">0</span>'}`;
+    pill.style.flex='1';
+    pill.innerHTML=`<span style="font-size:7px;font-weight:900;color:${isToday?'#6366f1':'#94a3b8'}">${days[d.getDay()]}</span>
+      <span style="font-size:11px;font-weight:900;color:${isToday?'#6366f1':'inherit'}">${d.getDate()}</span>
+      <span style="width:5px;height:5px;border-radius:50%;background:${dotColor};display:inline-block;"></span>
+      <span style="font-size:7px;font-weight:900;color:${dotColor};min-height:9px;">${count>0?count:''}</span>`;
     pill.onclick=()=>showCalDayPopup(d.getFullYear(),d.getMonth(),d.getDate(),{target:pill});
     strip.appendChild(pill);
   }
@@ -2659,15 +2750,15 @@ window.toggleSmartQueue=function(){
 };
 
 /* ── Font Size Control ── */
-let fcFontSize=localStorage.getItem('lp_fcfont')||'s';
-const FC_FONT_MAP={s:'28px',m:'38px',l:'52px'};
+let fcFontSize=localStorage.getItem('lp_fcfont')||'m';
+const FC_FONT_MAP={s:'28px',m:'40px',l:'56px'};
 function applyFCFontSize(){
-  document.querySelectorAll('.fc-word').forEach(el2=>el2.style.fontSize=FC_FONT_MAP[fcFontSize]);
+  let styleTag=document.getElementById('fc-font-style');
+  if(!styleTag){styleTag=document.createElement('style');styleTag.id='fc-font-style';document.head.appendChild(styleTag);}
+  styleTag.textContent=`.fc-word{font-size:${FC_FONT_MAP[fcFontSize]}!important;}`;
   ['s','m','l'].forEach(sz=>{const b=el('fsz-'+sz);if(b)b.classList.toggle('active',sz===fcFontSize);});
 }
-window.setFCFontSize=function(sz){
-  fcFontSize=sz;localStorage.setItem('lp_fcfont',sz);applyFCFontSize();
-};
+window.setFCFontSize=function(sz){fcFontSize=sz;localStorage.setItem('lp_fcfont',sz);applyFCFontSize();};
 
 /* ══════════════════════════════════════
    FEATURE 8 — STUBBORN WORD DETECTION
