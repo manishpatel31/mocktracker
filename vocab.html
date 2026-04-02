@@ -1,5 +1,3 @@
-html
-
 <!DOCTYPE html>
 <html lang="en" class="light">
 <head>
@@ -454,19 +452,27 @@ html,body{overflow-x:hidden;max-width:100%;}
         </div>
       </div>
 
-      <!-- Streak — full width -->
-      <div class="anim-3 mb-3" style="background:rgba(255,255,255,.55);backdrop-filter:blur(20px);border:1.5px solid rgba(99,102,241,.2);border-radius:20px;box-shadow:0 4px 24px rgba(99,102,241,.08);padding:14px 16px;">
-        <div class="flex items-center justify-between mb-2">
-          <p class="text-[10px] font-black uppercase tracking-widest" style="color:#6366f1;">📈 30-Day Streak</p>
-          <div class="flex items-center gap-2">
-            <span class="text-[9px] font-black px-1.5 py-0.5 rounded-md" style="background:rgba(245,158,11,.15);color:#d97706;" id="streak-detail-badge">0 days</span>
-            <span class="text-[8px] text-slate-400" id="streak-detail">—</span>
+      <!-- Streak (left) + Upcoming Due (right) — split panel -->
+      <div class="anim-3 mb-3" style="background:rgba(255,255,255,.55);backdrop-filter:blur(20px);border:1.5px solid rgba(99,102,241,.2);border-radius:20px;box-shadow:0 4px 24px rgba(99,102,241,.08);">
+        <div class="dark:bg-transparent" style="display:grid;grid-template-columns:1fr 1fr;">
+          <!-- LEFT: 30-day streak -->
+          <div style="padding:14px 12px 14px 14px;border-right:1.5px solid rgba(99,102,241,.12);">
+            <div class="flex items-center justify-between mb-1">
+              <p class="text-[10px] font-black uppercase tracking-widest" style="color:#6366f1;">📈 30-Day Streak</p>
+              <span class="text-[9px] font-black px-1.5 py-0.5 rounded-md" style="background:rgba(245,158,11,.15);color:#d97706;" id="streak-detail-badge">0 days</span>
+            </div>
+            <p class="text-[8px] text-slate-400 mb-2" id="streak-detail">—</p>
+            <div class="streak-grid" id="streak-grid-30"></div>
+            <div class="flex justify-between mt-1.5">
+              <span class="text-[7px] text-slate-400">30 days ago</span>
+              <span class="text-[7px] text-slate-400">Today</span>
+            </div>
           </div>
-        </div>
-        <div class="streak-grid" id="streak-grid-30"></div>
-        <div class="flex justify-between mt-1.5">
-          <span class="text-[7px] text-slate-400">30 days ago</span>
-          <span class="text-[7px] text-slate-400">Today</span>
+          <!-- RIGHT: Upcoming due (next 7 days) -->
+          <div style="padding:14px 14px 14px 12px;">
+            <p class="text-[10px] font-black uppercase tracking-widest mb-2" style="color:#f97316;">⏰ Upcoming Due</p>
+            <div id="upcoming-due-list"></div>
+          </div>
         </div>
       </div>
 
@@ -479,22 +485,15 @@ html,body{overflow-x:hidden;max-width:100%;}
         <div id="wod-content"><p class="text-xs text-slate-400 text-center py-3">Loading…</p></div>
       </div>
 
-      <!-- 30-day timeline -->
-      <div class="anim-4 mb-3" style="background:rgba(255,255,255,.55);backdrop-filter:blur(20px);border:1.5px solid rgba(99,102,241,.2);border-radius:20px;box-shadow:0 4px 24px rgba(99,102,241,.08);padding:14px 16px;">
-        <div class="flex items-center justify-between mb-1">
-          <p class="text-[10px] font-black uppercase tracking-widest" style="color:#6366f1;">📅 30-Day Timeline</p>
-          <div class="flex gap-2 text-[8px] font-black" style="color:#94a3b8;">
-            <span>✅ clear</span><span>❌ missed</span><span>⚡ today</span><span>📚 coming</span>
-          </div>
-        </div>
-        <p class="text-[8px] text-slate-400 mb-2">Past 15 · Today · Next 15 — tap any day for details</p>
-        <div id="timeline-30" style="display:flex;gap:4px;overflow-x:auto;padding-bottom:4px;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;scrollbar-width:none;"></div>
-        <style>#timeline-30::-webkit-scrollbar{display:none;}</style>
-        <div class="flex items-center justify-end mt-3 pt-2" style="border-top:1px solid rgba(99,102,241,.08);">
+      <!-- Calendar strip + expand (compact, no big box) -->
+      <div class="anim-4 mb-3" style="background:rgba(255,255,255,.55);backdrop-filter:blur(18px);border:1.5px solid rgba(99,102,241,.18);border-radius:18px;padding:12px 14px;box-shadow:0 2px 16px rgba(99,102,241,.06);">
+        <div class="flex items-center justify-between mb-2">
+          <p class="text-[10px] font-black text-slate-500 uppercase tracking-widest">📅 Next 14 Days</p>
           <button onclick="toggleCalFull()" id="cal-toggle-btn" class="text-[10px] font-black text-indigo-500 flex items-center gap-1">
-            Full Month View <i class="fa-solid fa-chevron-down chevron-icon" id="cal-chevron" style="font-size:9px;"></i>
+            Month View <i class="fa-solid fa-chevron-down chevron-icon" id="cal-chevron" style="font-size:9px;"></i>
           </button>
         </div>
+        <div class="flex gap-1" id="cal-week-strip"></div>
         <div class="collapsible-body collapsed" id="cal-full-body" style="max-height:0;">
           <div class="mt-3 pt-3" style="border-top:1px solid rgba(99,102,241,.1);">
             <div class="flex items-center justify-between mb-2">
@@ -2633,7 +2632,7 @@ function renderHome(){
   if(el('streak-detail-badge'))el('streak-detail-badge').textContent=`🔥 ${sd.current} days`;
   const reviewBtn=el('today-review-btn');
   if(reviewBtn){reviewBtn.classList.toggle('hidden',due===0);const lbl=el('today-review-label');if(lbl)lbl.textContent=`Review (${due})`;}
-  render30DayStreak(sd.dates);render30DayTimeline();renderRevisionCalendar();renderSmartQueue();renderWOD();
+  render30DayStreak(sd.dates);renderUpcomingDue();renderWeekStrip();renderRevisionCalendar();renderSmartQueue();renderWOD();
 }
 
 function render30DayStreak(dates){
@@ -2659,93 +2658,39 @@ function render30DayStreak(dates){
   }
 }
 
-/* ── 30-day timeline (−15 to +15) ── */
-function render30DayTimeline(){
-  const wrap=el('timeline-30');if(!wrap)return;
+function renderUpcomingDue(){
+  const list=el('upcoming-due-list');if(!list)return;
   const today=new Date();today.setHours(0,0,0,0);
-  const dayNames=['Su','Mo','Tu','We','Th','Fr','Sa'];
+  const rows=[];
+  for(let i=0;i<7;i++){
+    const d=new Date(today);d.setDate(d.getDate()+i);
+    const count=getDueCountForDate(d);
+    rows.push({d,count,i});
+  }
+  // Also include today's already-due words
+  const todayDue=vWords.filter(w=>isDue(w)&&(w.level??-1)<5).length;
+  const dayNames=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
   const monthNames=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-
-  wrap.innerHTML='';
-  let todayPill=null;
-
-  for(let offset=-15;offset<=15;offset++){
-    const d=new Date(today);d.setDate(d.getDate()+offset);
-    const isToday=offset===0;
-    const isPast=offset<0;
-    const isFuture=offset>0;
-
-    // Compute what's happening on this day
-    const scheduledCount=getDueCountForDate(d); // words whose next review = this exact day
-
-    let emoji='',countLabel='',bg='',border='',textColor='#64748b',subColor='#94a3b8';
-
-    if(isToday){
-      // Today: show actual due (overdue + due today)
-      const todayDueCount=vWords.filter(w=>isDue(w)&&(w.level??-1)<5).length;
-      if(todayDueCount===0){
-        emoji='✅';countLabel='';
-        bg='linear-gradient(135deg,rgba(16,185,129,.18),rgba(5,150,105,.1))';
-        border='rgba(16,185,129,.5)';textColor='#10b981';
-      } else {
-        emoji='⚡';countLabel=String(todayDueCount);
-        bg='linear-gradient(135deg,rgba(99,102,241,.25),rgba(217,70,239,.15))';
-        border='#6366f1';textColor='#6366f1';
-      }
-    } else if(isPast){
-      // Past: scheduledCount > 0 means words were due on that day and STILL haven't been reviewed (missed)
-      if(scheduledCount>0){
-        emoji='❌';countLabel=String(scheduledCount);
-        bg='linear-gradient(135deg,rgba(239,68,68,.15),rgba(220,38,38,.08))';
-        border='rgba(239,68,68,.45)';textColor='#ef4444';
-      } else {
-        emoji='✅';countLabel='';
-        bg='rgba(16,185,129,.08)';
-        border='rgba(16,185,129,.2)';textColor='#10b981';subColor='#10b981';
-      }
-    } else {
-      // Future: upcoming due words
-      if(scheduledCount===0){
-        emoji='💤';countLabel='';
-        bg='rgba(148,163,184,.07)';
-        border='rgba(148,163,184,.18)';
-      } else if(scheduledCount>=10){
-        emoji='📚';countLabel=String(scheduledCount);
-        bg='rgba(239,68,68,.1)';border='rgba(239,68,68,.3)';textColor='#ef4444';
-      } else if(scheduledCount>=5){
-        emoji='📚';countLabel=String(scheduledCount);
-        bg='rgba(245,158,11,.1)';border='rgba(245,158,11,.3)';textColor='#d97706';
-      } else {
-        emoji='📖';countLabel=String(scheduledCount);
-        bg='rgba(99,102,241,.1)';border='rgba(99,102,241,.28)';textColor='#6366f1';
-      }
-    }
-
-    const pill=document.createElement('div');
-    pill.style.cssText=`flex-shrink:0;width:42px;border-radius:12px;padding:6px 4px 5px;display:flex;flex-direction:column;align-items:center;gap:1px;cursor:pointer;border:1.5px solid ${border};background:${bg};scroll-snap-align:center;transition:transform .15s;`;
-    pill.title=`${d.toDateString()}${scheduledCount>0?' — '+scheduledCount+' words':''}`;
-    pill.innerHTML=`
-      <span style="font-size:7px;font-weight:900;color:${subColor};text-transform:uppercase;">${dayNames[d.getDay()]}</span>
-      <span style="font-size:13px;font-weight:900;color:${textColor};line-height:1.1;">${d.getDate()}</span>
-      <span style="font-size:7px;color:${subColor};font-weight:700;">${monthNames[d.getMonth()]}</span>
-      <span style="font-size:14px;line-height:1;">${emoji}</span>
-      <span style="font-size:9px;font-weight:900;color:${textColor};min-height:12px;">${countLabel}</span>
-    `;
-    pill.onmouseenter=()=>pill.style.transform='scale(1.08)';
-    pill.onmouseleave=()=>pill.style.transform='scale(1)';
-    pill.onclick=()=>showCalDayPopup(d.getFullYear(),d.getMonth(),d.getDate(),{target:pill});
-    wrap.appendChild(pill);
-    if(isToday)todayPill=pill;
-  }
-
-  // Auto-scroll so today is visible (roughly centered)
-  if(todayPill){
-    requestAnimationFrame(()=>{
-      const pillW=todayPill.offsetWidth+4;
-      wrap.scrollLeft=todayPill.offsetLeft - wrap.offsetWidth/2 + pillW/2;
-    });
-  }
+  list.innerHTML=rows.map(({d,count,i})=>{
+    const isToday=i===0;
+    const total=isToday?todayDue:count;
+    const dotColor=total>=10?'#ef4444':total>=5?'#f59e0b':total>=1?'#10b981':'rgba(148,163,184,.3)';
+    const textColor=isToday?'#6366f1':'#64748b';
+    return`<div class="due-day-row" onclick="showCalDayPopup(${d.getFullYear()},${d.getMonth()},${d.getDate()},{target:document.getElementById('upcoming-due-list')})">
+      <div style="width:28px;flex-shrink:0;text-align:center;">
+        <div style="font-size:8px;font-weight:900;color:${textColor};text-transform:uppercase;">${isToday?'Today':dayNames[d.getDay()]}</div>
+        <div style="font-size:13px;font-weight:900;color:${textColor};line-height:1.2;">${d.getDate()}</div>
+        <div style="font-size:7px;font-weight:700;color:#94a3b8;">${monthNames[d.getMonth()]}</div>
+      </div>
+      <div style="flex:1;height:4px;background:rgba(148,163,184,.12);border-radius:2px;margin:0 8px;">
+        ${total>0?`<div style="height:100%;width:${Math.min(100,total*8)}%;background:${dotColor};border-radius:2px;"></div>`:''}
+      </div>
+      <span style="font-size:11px;font-weight:900;color:${total>0?dotColor:'#cbd5e1'};min-width:18px;text-align:right;">${total>0?total:'·'}</span>
+    </div>`;
+  }).join('');
 }
+
+function renderWOD(){
   const todayKey='lp_wod_'+new Date().toISOString().slice(0,10);let wordId=localStorage.getItem(todayKey);
   let word=wordId?vWords.find(w=>w.id===wordId):null;
   if(!word&&vWords.length){const pool=vWords.filter(w=>(w.level??-1)===-1).length?vWords.filter(w=>(w.level??-1)===-1):vWords.filter(w=>(w.level??-1)<=1).length?vWords.filter(w=>(w.level??-1)<=1):vWords;word=pool[Math.floor(Math.random()*pool.length)];if(word)localStorage.setItem(todayKey,word.id);}
@@ -2758,6 +2703,29 @@ function render30DayTimeline(){
 
 window.refreshWOD=()=>{const todayKey='lp_wod_'+new Date().toISOString().slice(0,10);localStorage.removeItem(todayKey);renderWOD();};
 window.startTodayReview=()=>{goTab('cards');setTimeout(()=>startMode('fc','due'),100);};
+
+/* ── 14-day calendar strip ── */
+function renderWeekStrip(){
+  const strip=el('cal-week-strip');if(!strip)return;
+  const today=new Date();today.setHours(0,0,0,0);
+  const days=['Su','Mo','Tu','We','Th','Fr','Sa'];
+  strip.innerHTML='';
+  for(let i=0;i<14;i++){
+    const d=new Date(today);d.setDate(d.getDate()+i);
+    const count=getDueCountForDate(d);
+    const isToday=i===0;
+    const dotColor=count>=10?'#ef4444':count>=5?'#f59e0b':count>=1?'#10b981':'transparent';
+    const pill=document.createElement('div');
+    pill.className='day-pill'+(isToday?' is-today':'');
+    pill.style.flex='1';
+    pill.innerHTML=`<span style="font-size:7px;font-weight:900;color:${isToday?'#6366f1':'#94a3b8'}">${days[d.getDay()]}</span>
+      <span style="font-size:11px;font-weight:900;color:${isToday?'#6366f1':'inherit'}">${d.getDate()}</span>
+      <span style="width:5px;height:5px;border-radius:50%;background:${dotColor};display:inline-block;"></span>
+      <span style="font-size:7px;font-weight:900;color:${dotColor};min-height:9px;">${count>0?count:''}</span>`;
+    pill.onclick=()=>showCalDayPopup(d.getFullYear(),d.getMonth(),d.getDate(),{target:pill});
+    strip.appendChild(pill);
+  }
+}
 
 /* ── Calendar collapsible ── */
 let calFullOpen=false;
