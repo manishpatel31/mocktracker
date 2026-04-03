@@ -339,7 +339,25 @@ html,body{overflow-x:hidden;max-width:100%;}
 /* WOD card - more vibrant */
 .wod-card{background:linear-gradient(135deg,rgba(99,102,241,.12),rgba(217,70,239,.08));border:1.5px solid rgba(99,102,241,.25);border-radius:20px;padding:14px 16px;}
 .dark .wod-card{background:linear-gradient(135deg,rgba(99,102,241,.2),rgba(217,70,239,.12));border-color:rgba(99,102,241,.35);}
-/* Mini heatmap override - no longer used, keep blank */ 
+/* ── Overdue banner ── */
+.overdue-banner{display:flex;align-items:center;gap:12px;padding:12px 16px;border-radius:16px;margin-bottom:12px;background:linear-gradient(135deg,rgba(239,68,68,.15),rgba(220,38,38,.08));border:1.5px solid rgba(239,68,68,.35);animation:fadeUp .4s ease both;}
+.overdue-banner .ob-icon{font-size:22px;flex-shrink:0;}
+.overdue-banner .ob-btn{flex-shrink:0;padding:6px 14px;border-radius:10px;font-size:11px;font-weight:900;color:white;background:linear-gradient(135deg,#ef4444,#dc2626);border:none;cursor:pointer;white-space:nowrap;}
+/* ── AI generate buttons on word card ── */
+.ai-gen-btn{display:inline-flex;align-items:center;gap:4px;padding:3px 8px;border-radius:7px;font-size:10px;font-weight:800;cursor:pointer;border:1px solid rgba(217,70,239,.3);background:rgba(217,70,239,.08);color:#d946ef;transition:all .15s;font-family:inherit;}
+.ai-gen-btn:hover{background:rgba(217,70,239,.16);transform:scale(1.04);}
+.ai-gen-btn:disabled{opacity:.5;cursor:wait;}
+.ai-gen-result{margin-top:6px;padding:8px 10px;border-radius:10px;font-size:12px;color:#475569;line-height:1.6;border:1px solid rgba(99,102,241,.12);background:rgba(99,102,241,.04);animation:slideDown .25s ease;}
+.dark .ai-gen-result{color:#94a3b8;background:rgba(99,102,241,.08);}
+/* ── Quick note on flashcard ── */
+.fc-quick-note{width:100%;padding:7px 10px;border-radius:10px;font-size:12px;font-family:inherit;resize:none;border:1.5px solid rgba(99,102,241,.2);background:rgba(255,255,255,.5);color:#1e293b;transition:border-color .2s;margin-top:8px;}
+.dark .fc-quick-note{background:rgba(255,255,255,.06);color:#f1f5f9;border-color:rgba(139,92,246,.25);}
+.fc-quick-note:focus{outline:none;border-color:#6366f1;box-shadow:0 0 0 2px rgba(99,102,241,.12);}
+/* ── Tag/Source analytics ── */
+.analytics-row{display:flex;align-items:center;gap-8px;padding:7px 0;border-bottom:1px solid rgba(99,102,241,.06);}
+.analytics-row:last-child{border:none;}
+.analytics-bar-track{flex:1;height:5px;background:rgba(99,102,241,.08);border-radius:3px;overflow:hidden;margin:0 8px;}
+.analytics-bar-fill{height:100%;border-radius:3px;transition:width .6s ease;}
   </style>
 </head>
 <body class="app-bg text-slate-800 dark:text-slate-100 min-h-screen transition-colors duration-500">
@@ -451,6 +469,9 @@ html,body{overflow-x:hidden;max-width:100%;}
           <div class="text-[9px] font-black text-slate-500 uppercase tracking-wide mt-1">🔥 Streak</div>
         </div>
       </div>
+
+      <!-- Overdue penalty banner (rendered by JS) -->
+      <div id="overdue-banner-wrap"></div>
 
       <!-- Streak — full width -->
       <div class="anim-3 mb-3" style="background:rgba(255,255,255,.55);backdrop-filter:blur(20px);border:1.5px solid rgba(99,102,241,.2);border-radius:20px;box-shadow:0 4px 24px rgba(99,102,241,.08);padding:14px 16px;">
@@ -937,6 +958,18 @@ html,body{overflow-x:hidden;max-width:100%;}
           <span class="text-[10px] text-slate-400">(most L0/L1 ratings)</span>
         </div>
         <div id="weak-list"></div>
+      </div>
+
+      <!-- Tag Analytics -->
+      <div class="glass-card rounded-[1.8rem] p-5 anim-3 mt-4">
+        <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4">🏷️ Tag Breakdown</p>
+        <div id="tag-analytics-list"><p class="text-xs text-slate-400 text-center py-4">No tags yet</p></div>
+      </div>
+
+      <!-- Source Analytics -->
+      <div class="glass-card rounded-[1.8rem] p-5 anim-3 mt-4">
+        <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4">📁 Source Breakdown</p>
+        <div id="source-analytics-list"><p class="text-xs text-slate-400 text-center py-4">No sources yet</p></div>
       </div>
     </div>
 
@@ -2637,7 +2670,7 @@ function renderHome(){
   if(el('streak-detail-badge'))el('streak-detail-badge').textContent=`🔥 ${sd.current} days`;
   const reviewBtn=el('today-review-btn');
   if(reviewBtn){reviewBtn.classList.toggle('hidden',due===0);const lbl=el('today-review-label');if(lbl)lbl.textContent=`Review (${due})`;}
-  render30DayStreak(sd.dates);render30DayTimeline();renderRevisionCalendar();renderSmartQueue();renderWOD();
+  render30DayStreak(sd.dates);render30DayTimeline();renderRevisionCalendar();renderSmartQueue();renderWOD();renderOverdueBanner();
 }
 
 function render30DayStreak(dates){
@@ -3025,6 +3058,11 @@ function wordCardHTML(w){
         </div>
         ${memHTML}
         <p class="wcard-meaning">${w.meaning}</p>
+        <div class="flex gap-1.5 mt-1 flex-wrap">
+          <button class="ai-gen-btn" onclick="aiGenSentence('${w.id}',this)" title="Generate 3 exam-style sentences with Groq AI"><i class="fa-solid fa-wand-magic-sparkles" style="font-size:8px;"></i> Sentences</button>
+          <button class="ai-gen-btn" onclick="aiGenMeaning('${w.id}',this)" title="Rewrite meaning in simpler language with Groq AI"><i class="fa-solid fa-lightbulb" style="font-size:8px;"></i> Simplify Meaning</button>
+        </div>
+        <div id="aigen-${w.id}" class="hidden"></div>
         ${w.example?`<p class="wcard-example mt-1">"${w.example}"</p>`:''}
         ${hasMT?`<hr class="wcard-divider"><div class="grid grid-cols-1 sm:grid-cols-2 gap-2">${w.mnemonics?`<div><div class="wcard-detail-lbl">🧠 Mnemonics</div><div class="wcard-detail-txt">${w.mnemonics}</div></div>`:''} ${w.trick?`<div><div class="wcard-detail-lbl">💡 Trick / Root</div><div class="wcard-detail-txt">${w.trick}</div></div>`:''}</div>`:''}
         ${w.origin?`<div class="mt-2 p-3 rounded-xl" style="background:rgba(167,139,250,.08);border:1px solid rgba(167,139,250,.2);"><div class="wcard-detail-lbl" style="color:#a78bfa;">📜 Origin Story</div><div class="wcard-detail-txt">${w.origin}</div></div>`:''}
@@ -3087,7 +3125,180 @@ function getStatPool(){
   if(currentStatType==='all') return vWords;
   return vWords.filter(w=>(w.type||'word')===currentStatType);
 }
-function renderStats(){renderStatsSummary();renderLvlDist();renderWeakWords();}
+function renderStats(){renderStatsSummary();renderLvlDist();renderWeakWords();renderTagAnalytics();renderSourceAnalytics();}
+
+/* ══ FEATURE 4 — OVERDUE PENALTY BANNER ══ */
+function renderOverdueBanner(){
+  const wrap=el('overdue-banner-wrap');if(!wrap)return;
+  const today=new Date();today.setHours(0,0,0,0);
+  // Words overdue by 3+ days
+  const badlyOverdue=vWords.filter(w=>{
+    const lvl=w.level??-1;if(lvl<0||lvl>=5)return false;
+    if(!w.lastReviewed)return false;
+    const lr=w.lastReviewed.toDate?w.lastReviewed.toDate():new Date(w.lastReviewed);
+    const days=LVL_DAYS[lvl]??1;
+    const due=new Date(lr);due.setDate(due.getDate()+days);due.setHours(0,0,0,0);
+    const daysLate=Math.floor((today-due)/86400000);
+    return daysLate>=3;
+  });
+  if(!badlyOverdue.length){wrap.innerHTML='';return;}
+  const n=badlyOverdue.length;
+  const maxLate=Math.max(...badlyOverdue.map(w=>{
+    const lr=w.lastReviewed.toDate?w.lastReviewed.toDate():new Date(w.lastReviewed);
+    const days=LVL_DAYS[w.level??0]??1;
+    const due=new Date(lr);due.setDate(due.getDate()+days);due.setHours(0,0,0,0);
+    return Math.floor((today-due)/86400000);
+  }));
+  wrap.innerHTML=`<div class="overdue-banner">
+    <span class="ob-icon">⚠️</span>
+    <div class="flex-1 min-w-0">
+      <p class="text-sm font-black text-red-600 dark:text-red-400">${n} word${n!==1?'s are':' is'} badly overdue!</p>
+      <p class="text-xs text-red-500 opacity-80 mt-0.5">Up to ${maxLate} day${maxLate!==1?'s':''} late — memory fading fast. Review now.</p>
+    </div>
+    <button class="ob-btn" onclick="startOverdueSession()">⚡ Review Now</button>
+  </div>`;
+}
+window.startOverdueSession=function(){
+  const today=new Date();today.setHours(0,0,0,0);
+  const pool=vWords.filter(w=>{
+    const lvl=w.level??-1;if(lvl<0||lvl>=5)return false;
+    if(!w.lastReviewed)return false;
+    const lr=w.lastReviewed.toDate?w.lastReviewed.toDate():new Date(w.lastReviewed);
+    const days=LVL_DAYS[lvl]??1;
+    const due=new Date(lr);due.setDate(due.getDate()+days);due.setHours(0,0,0,0);
+    return Math.floor((today-due)/86400000)>=3;
+  });
+  if(!pool.length)return;
+  goTab('cards');setTimeout(()=>startMode('fc','custom',pool),120);
+};
+
+/* ══ FEATURE 5 — AI SENTENCE & MEANING GENERATOR ══ */
+window.aiGenSentence=async function(wordId,btn){
+  const w=vWords.find(x=>x.id===wordId);if(!w)return;
+  const key=getAIKey();
+  if(!key)return toast('Set your Groq key in AI Practice tab first','err');
+  const out=el('aigen-'+wordId);if(!out)return;
+  btn.disabled=true;btn.innerHTML='<i class="fa-solid fa-spinner fa-spin" style="font-size:8px;"></i> Generating…';
+  out.className='ai-gen-result';out.innerHTML='<span class="text-indigo-400 text-xs">✨ Generating exam-style sentences…</span>';
+  try{
+    const prompt=`You are an SSC CGL vocabulary expert. Generate exactly 3 exam-style sentences for the word "${w.word}" (${w.pos||w.type||'word'}).
+Meaning: ${w.meaning}
+Rules:
+- Each sentence must be formal, newspaper/editorial quality
+- The meaning of the word must be OBVIOUS from the surrounding context — a reader who doesn't know the word should be able to guess it
+- Vary the context: governance, society, science or environment
+- Number them 1. 2. 3.
+- No extra commentary, just the 3 sentences`;
+    const resp=await fetch('https://api.groq.com/openai/v1/chat/completions',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+key},body:JSON.stringify({model:'llama-3.3-70b-versatile',messages:[{role:'user',content:prompt}],temperature:0.7,max_tokens:300})});
+    const data=await resp.json();
+    const text=data?.choices?.[0]?.message?.content?.trim()||'';
+    out.innerHTML=`<p class="text-[10px] font-black text-indigo-500 uppercase tracking-widest mb-1">✍️ AI Sentences</p>`+
+      text.split('\n').filter(l=>l.trim()).map(l=>`<p class="text-xs text-slate-600 dark:text-slate-300 mb-1 leading-relaxed">${l}</p>`).join('');
+  }catch(e){out.innerHTML=`<p class="text-xs text-rose-500">${e.message==='NO_KEY'?'Set Groq key first':'Error: '+e.message}</p>`;}
+  finally{btn.disabled=false;btn.innerHTML='<i class="fa-solid fa-wand-magic-sparkles" style="font-size:8px;"></i> Sentences';}
+};
+
+window.aiGenMeaning=async function(wordId,btn){
+  const w=vWords.find(x=>x.id===wordId);if(!w)return;
+  const key=getAIKey();
+  if(!key)return toast('Set your Groq key in AI Practice tab first','err');
+  const out=el('aigen-'+wordId);if(!out)return;
+  btn.disabled=true;btn.innerHTML='<i class="fa-solid fa-spinner fa-spin" style="font-size:8px;"></i> Simplifying…';
+  out.className='ai-gen-result';out.innerHTML='<span class="text-indigo-400 text-xs">✨ Rewriting meaning…</span>';
+  try{
+    const prompt=`You are an SSC vocabulary tutor for Indian students. Rewrite this meaning in 2 very simple sentences that an average 10th-class student can instantly understand. Use a real-world Indian analogy if helpful. DO NOT use the word itself. DO NOT just say "it means X".
+
+Word: "${w.word}"
+Current meaning: "${w.meaning}"
+
+Respond with ONLY the simplified meaning. No labels, no preamble.`;
+    const resp=await fetch('https://api.groq.com/openai/v1/chat/completions',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+key},body:JSON.stringify({model:'llama-3.3-70b-versatile',messages:[{role:'user',content:prompt}],temperature:0.65,max_tokens:150})});
+    const data=await resp.json();
+    const text=data?.choices?.[0]?.message?.content?.trim()||'';
+    out.innerHTML=`<p class="text-[10px] font-black text-fuchsia-500 uppercase tracking-widest mb-1">💡 Simplified</p><p class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">${text}</p>
+      <button class="ai-gen-btn mt-2" onclick="saveSimpMeaning('${wordId}',this)"><i class="fa-solid fa-floppy-disk" style="font-size:8px;"></i> Save as Meaning</button>`;
+  }catch(e){out.innerHTML=`<p class="text-xs text-rose-500">Error: ${e.message}</p>`;}
+  finally{btn.disabled=false;btn.innerHTML='<i class="fa-solid fa-lightbulb" style="font-size:8px;"></i> Simplify Meaning';}
+};
+
+window.saveSimpMeaning=async function(wordId,btn){
+  const out=el('aigen-'+wordId);if(!out)return;
+  const p=out.querySelector('p.text-xs');if(!p)return;
+  const newMeaning=p.textContent.trim();if(!newMeaning)return;
+  btn.disabled=true;
+  try{
+    await updateDoc(doc(db,'artifacts',APP_ID,'users',currentUser.uid,'vocab',wordId),{meaning:newMeaning,updatedAt:Timestamp.now()});
+    const w=vWords.find(x=>x.id===wordId);if(w)w.meaning=newMeaning;
+    toast('✅ Meaning updated!','ok');out.innerHTML='';renderLibrary();
+  }catch(e){toast('Save failed','err');}
+};
+
+/* ══ FEATURE 7 — QUICK NOTE ON FLASHCARD ══ */
+window.saveFCQuickNote=async function(wordId,val){
+  try{
+    await updateDoc(doc(db,'artifacts',APP_ID,'users',currentUser.uid,'vocab',wordId),{notes:val,updatedAt:Timestamp.now()});
+    const w=vWords.find(x=>x.id===wordId);if(w)w.notes=val;
+  }catch(e){toast('Note save failed','err');}
+};
+
+/* ══ FEATURE 10 — TAG & SOURCE ANALYTICS ══ */
+function renderTagAnalytics(){
+  const list=el('tag-analytics-list');if(!list)return;
+  const pool=getStatPool();
+  const allTags=[...new Set(pool.flatMap(w=>w.tags||[]))].sort();
+  if(!allTags.length){list.innerHTML='<p class="text-xs text-slate-400 text-center py-3">No tags yet — add tags when importing or editing words</p>';return;}
+  const rows=allTags.map(tag=>{
+    const words=pool.filter(w=>(w.tags||[]).includes(tag));
+    const total=words.length;
+    const mastered=words.filter(w=>(w.level??-1)===5).length;
+    const stubborn=words.filter(w=>isStubborn(w)).length;
+    const weak=words.filter(w=>(w.level??-1)<=1&&(w.level??-1)>=0).length;
+    const mastPct=total?Math.round((mastered/total)*100):0;
+    return{tag,total,mastered,weak,stubborn,mastPct};
+  }).sort((a,b)=>b.total-a.total);
+  const maxTotal=rows[0]?.total||1;
+  list.innerHTML=rows.map(r=>`<div class="analytics-row">
+    <span class="chip chip-tag flex-shrink-0" style="max-width:110px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${r.tag}</span>
+    <div class="analytics-bar-track">
+      <div class="analytics-bar-fill" style="width:${Math.round(r.total/maxTotal*100)}%;background:linear-gradient(90deg,#6366f1,#a855f7);"></div>
+    </div>
+    <div class="flex items-center gap-2 flex-shrink-0 text-[9px] font-black">
+      <span style="color:#64748b;">${r.total} words</span>
+      <span style="color:#10b981;">✅${r.mastered}</span>
+      <span style="color:#ef4444;">🔥${r.weak}</span>
+      ${r.stubborn?`<span style="color:#f97316;" title="Stubborn">💀${r.stubborn}</span>`:''}
+    </div>
+  </div>`).join('');
+}
+
+function renderSourceAnalytics(){
+  const list=el('source-analytics-list');if(!list)return;
+  const pool=getStatPool();
+  const allSources=[...new Set(pool.map(w=>w.source||'').filter(Boolean))].sort();
+  if(!allSources.length){list.innerHTML='<p class="text-xs text-slate-400 text-center py-3">No sources yet — add a source when importing or editing words</p>';return;}
+  const rows=allSources.map(src=>{
+    const words=pool.filter(w=>(w.source||'')===src);
+    const total=words.length;
+    const mastered=words.filter(w=>(w.level??-1)===5).length;
+    const weak=words.filter(w=>(w.level??-1)<=1&&(w.level??-1)>=0).length;
+    const stubborn=words.filter(w=>isStubborn(w)).length;
+    const mastPct=total?Math.round((mastered/total)*100):0;
+    return{src,total,mastered,weak,stubborn,mastPct};
+  }).sort((a,b)=>b.total-a.total);
+  const maxTotal=rows[0]?.total||1;
+  list.innerHTML=rows.map(r=>`<div class="analytics-row">
+    <span class="source-badge flex-shrink-0" style="max-width:110px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"><i class="fa-solid fa-folder-open" style="font-size:7px;"></i> ${r.src}</span>
+    <div class="analytics-bar-track">
+      <div class="analytics-bar-fill" style="width:${Math.round(r.total/maxTotal*100)}%;background:linear-gradient(90deg,#0d9488,#06b6d4);"></div>
+    </div>
+    <div class="flex items-center gap-2 flex-shrink-0 text-[9px] font-black">
+      <span style="color:#64748b;">${r.total} words</span>
+      <span style="color:#10b981;">✅${r.mastered}</span>
+      <span style="color:#ef4444;">🔥${r.weak}</span>
+      ${r.stubborn?`<span style="color:#f97316;">💀${r.stubborn}</span>`:''}
+    </div>
+  </div>`).join('');
+}
 function renderStatsSummary(){
   const el2=el('stats-summary');if(!el2)return;
   const typeLabel=el('stats-type-label');
@@ -3220,7 +3431,23 @@ window.startMode=(mode,deck,customPool=null)=>{
 function updateFCProgress(){const prog=el('fc-sidebar-progress');if(prog)prog.classList.remove('hidden');const lbl=el('fc-prog-label'),k=el('fc-prog-known'),u=el('fc-prog-unknown'),bar=el('fc-prog-bar');if(lbl)lbl.textContent=`${fcIdx} / ${fcDeck.length}`;if(k)k.textContent=`✓ ${fcKnown}`;if(u)u.textContent=`↺ ${fcUnknown}`;if(bar)bar.style.width=fcDeck.length?(fcIdx/fcDeck.length*100)+'%':'0%';}
 function updateSidebarRating(wordId){const btns=el('fc-rating-btns');if(!btns)return;const RATES=[{lvl:5,cls:'rs5',icon:'✅',lbl:'L5 Perfect',sub:'15 days'},{lvl:4,cls:'rs4',icon:'🟣',lbl:'L4 Strong',sub:'12 days'},{lvl:3,cls:'rs3',icon:'🔵',lbl:'L3 Good',sub:'8 days'},{lvl:2,cls:'rs2',icon:'🟡',lbl:'L2 Okay',sub:'5 days'},{lvl:1,cls:'rs1',icon:'🟠',lbl:'L1 Fuzzy',sub:'2 days'},{lvl:0,cls:'rs0',icon:'🔴',lbl:'L0 Nope',sub:'Daily'}];btns.innerHTML=RATES.map(r=>`<button onclick="rateFC(${r.lvl},'${wordId}')" class="rate-side-btn ${r.cls}"><span class="ri">${r.icon}</span><span class="rtxt"><span class="rl">${r.lbl}</span><span class="rs">${r.sub}</span></span></button>`).join('');}
 function renderFC(){const area=el('fc-area');if(!area)return;if(fcIdx>=fcDeck.length){renderFCResult();return;}const w=fcDeck[fcIdx];updateFCProgress();updateSidebarRating(w.id);const syns=(w.synonyms||[]).slice(0,4).map(s=>`<span class="chip chip-syn">${s}</span>`).join('');const ants=(w.antonyms||[]).slice(0,4).map(s=>`<span class="chip chip-ant">${s}</span>`).join('');const frontContent=currentMode==='fill'?renderFillFront(w):`<div class="fc-hint mb-3">Tap to reveal</div><div class="fc-word">${w.word}</div>${w.pos?`<div class="text-sm text-slate-400 font-bold mt-2">(${w.pos})</div>`:''}`;area.innerHTML=`<div class="fc-scene" onclick="flipFC()"><div class="fc-wrap" id="fc-inner" style="min-height:${currentMode==='fill'?'200px':'300px'};"><div class="fc-face fc-front" style="min-height:${currentMode==='fill'?'200px':'300px'};">${frontContent}</div><div class="fc-face fc-back" style="min-height:${currentMode==='fill'?'200px':'300px'};">${renderBackContent(w,syns,ants)}</div></div></div>${currentMode==='fill'?renderFillCheck(w):''}<div class="md:hidden mt-4"><p class="text-center text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3">How well did you know this?</p><div class="rate-grid"><button onclick="rateFC(5,'${w.id}')" class="rate-btn r5"><span class="rate-icon">✅</span><span class="rate-lbl">L5 Perfect</span><span class="rate-sub">15d</span></button><button onclick="rateFC(4,'${w.id}')" class="rate-btn r4"><span class="rate-icon">🟣</span><span class="rate-lbl">L4 Strong</span><span class="rate-sub">12d</span></button><button onclick="rateFC(3,'${w.id}')" class="rate-btn r3"><span class="rate-icon">🔵</span><span class="rate-lbl">L3 Good</span><span class="rate-sub">8d</span></button><button onclick="rateFC(2,'${w.id}')" class="rate-btn r2"><span class="rate-icon">🟡</span><span class="rate-lbl">L2 Okay</span><span class="rate-sub">5d</span></button><button onclick="rateFC(1,'${w.id}')" class="rate-btn r1"><span class="rate-icon">🟠</span><span class="rate-lbl">L1 Fuzzy</span><span class="rate-sub">2d</span></button><button onclick="rateFC(0,'${w.id}')" class="rate-btn r0"><span class="rate-icon">🔴</span><span class="rate-lbl">L0 Nope</span><span class="rate-sub">Daily</span></button></div></div>`;}
-function renderBackContent(w,syns,ants){const tags=(w.tags||[]).map(t=>`<span class="chip chip-tag">${t}</span>`).join('');return`<div class="flex flex-wrap gap-1.5 mb-3 pb-3" style="border-bottom:1px solid rgba(99,102,241,.1);">${wTypeBadge(w.type||'word')}${lvlBadgeHTML(w,false)}${tags}</div><div class="fc-back-row"><div class="fc-back-lbl">📖 Meaning</div><div class="fc-back-val">${w.meaning}</div></div>${w.example?`<div class="fc-back-row"><div class="fc-back-lbl">✍️ Example</div><div class="fc-back-val italic">"${w.example}"</div></div>`:''} ${w.mnemonics?`<div class="fc-back-row"><div class="fc-back-lbl">🧠 Mnemonics</div><div class="fc-back-val">${w.mnemonics}</div></div>`:''} ${w.trick?`<div class="fc-back-row"><div class="fc-back-lbl">💡 Trick / Root</div><div class="fc-back-val">${w.trick}</div></div>`:''} ${w.origin?`<div class="fc-back-row"><div class="fc-back-lbl" style="color:#a78bfa;">📜 Origin Story</div><div class="fc-back-val">${w.origin}</div></div>`:''} ${w.notes?`<div class="fc-back-row"><div class="fc-back-lbl">📝 My Notes</div><div class="fc-back-val">${w.notes}</div></div>`:''} ${syns?`<div class="fc-back-row"><div class="fc-back-lbl">Synonyms</div><div class="flex flex-wrap gap-1.5 mt-1">${syns}</div></div>`:''} ${ants?`<div class="fc-back-row"><div class="fc-back-lbl">Antonyms</div><div class="flex flex-wrap gap-1.5 mt-1">${ants}</div></div>`:''}`;} 
+function renderBackContent(w,syns,ants){
+  const tags=(w.tags||[]).map(t=>`<span class="chip chip-tag">${t}</span>`).join('');
+  return`<div class="flex flex-wrap gap-1.5 mb-3 pb-3" style="border-bottom:1px solid rgba(99,102,241,.1);">${wTypeBadge(w.type||'word')}${lvlBadgeHTML(w,false)}${tags}</div>
+<div class="fc-back-row"><div class="fc-back-lbl">📖 Meaning</div><div class="fc-back-val">${w.meaning}</div></div>
+${w.example?`<div class="fc-back-row"><div class="fc-back-lbl">✍️ Example</div><div class="fc-back-val italic">"${w.example}"</div></div>`:''}
+${w.mnemonics?`<div class="fc-back-row"><div class="fc-back-lbl">🧠 Mnemonics</div><div class="fc-back-val">${w.mnemonics}</div></div>`:''}
+${w.trick?`<div class="fc-back-row"><div class="fc-back-lbl">💡 Trick / Root</div><div class="fc-back-val">${w.trick}</div></div>`:''}
+${w.origin?`<div class="fc-back-row"><div class="fc-back-lbl" style="color:#a78bfa;">📜 Origin Story</div><div class="fc-back-val">${w.origin}</div></div>`:''}
+${w.notes?`<div class="fc-back-row"><div class="fc-back-lbl">📝 My Notes</div><div class="fc-back-val">${w.notes}</div></div>`:''}
+${syns?`<div class="fc-back-row"><div class="fc-back-lbl">Synonyms</div><div class="flex flex-wrap gap-1.5 mt-1">${syns}</div></div>`:''}
+${ants?`<div class="fc-back-row"><div class="fc-back-lbl">Antonyms</div><div class="flex flex-wrap gap-1.5 mt-1">${ants}</div></div>`:''}
+<div class="fc-back-row" style="border-bottom:none;padding-bottom:0;">
+  <div class="fc-back-lbl mb-1">📝 Quick Note</div>
+  <textarea class="fc-quick-note" rows="2" placeholder="Jot something about this word…" id="fc-qnote-${w.id}" onchange="saveFCQuickNote('${w.id}',this.value)">${w.notes||''}</textarea>
+  <p class="text-[9px] text-slate-400 mt-1">Saves to Notes field · won't clear your session</p>
+</div>`;
+}
 function renderFillFront(w){const ex=w.example||'';const pattern=new RegExp(w.word.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'),'i');const blanked=ex&&pattern.test(ex)?ex.replace(pattern,'_____'):`The word is: _____`;return`<div class="fc-hint mb-3">Fill in the blank</div><p class="text-base font-semibold text-slate-700 dark:text-slate-200 text-center mb-4">"${blanked}"</p>`;}
 function renderFillCheck(w){return`<div class="mt-3 flex gap-2 items-center justify-center" id="fill-check-row"><input id="fill-inp" class="blank-input" placeholder="Type the word…" onkeydown="if(event.key==='Enter')checkFill('${w.word}','${w.id}')"><button onclick="checkFill('${w.word}','${w.id}')" class="btn-gradient px-4 py-2.5 rounded-xl text-sm font-black">Check</button></div><div id="fill-result" class="text-center mt-2 text-sm font-black hidden"></div>`;}
 window.checkFill=(correct,id)=>{const inp=el('fill-inp');if(!inp)return;const val=inp.value.trim().toLowerCase();const ok=val===correct.toLowerCase();inp.classList.add(ok?'correct':'wrong');const res=el('fill-result');if(res){res.textContent=ok?'✅ Correct!':'❌ Answer: '+correct;res.style.color=ok?'#10b981':'#ef4444';res.classList.remove('hidden');}};
