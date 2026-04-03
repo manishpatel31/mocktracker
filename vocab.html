@@ -3238,7 +3238,73 @@ window.saveFCQuickNote=async function(wordId,val){
   try{
     await updateDoc(doc(db,'artifacts',APP_ID,'users',currentUser.uid,'vocab',wordId),{notes:val,updatedAt:Timestamp.now()});
     const w=vWords.find(x=>x.id===wordId);if(w)w.notes=val;
+    toast('📝 Note saved','ok');
   }catch(e){toast('Note save failed','err');}
+};
+
+/* ── Flashcard AI generators (output goes below card, not inside card) ── */
+async function _fcAiCall(wordId,prompt,maxTok,btnId,outId,loadMsg){
+  const key=getAIKey();
+  if(!key)return toast('Set your Groq key in AI Practice tab first','err');
+  const btn=el(btnId),out=el(outId);
+  if(!btn||!out)return;
+  const orig=btn.innerHTML;
+  btn.disabled=true;btn.innerHTML=`<i class="fa-solid fa-spinner fa-spin" style="font-size:8px;"></i> ${loadMsg}`;
+  out.className='ai-gen-result';out.innerHTML=`<span class="text-indigo-400 text-xs">✨ ${loadMsg}…</span>`;
+  try{
+    const resp=await fetch('https://api.groq.com/openai/v1/chat/completions',{
+      method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+key},
+      body:JSON.stringify({model:'llama-3.3-70b-versatile',messages:[{role:'user',content:prompt}],temperature:0.7,max_tokens:maxTok})
+    });
+    const data=await resp.json();
+    return data?.choices?.[0]?.message?.content?.trim()||'';
+  }catch(e){
+    out.innerHTML=`<p class="text-xs text-rose-500">Error: ${e.message}</p>`;
+    return null;
+  }finally{btn.disabled=false;btn.innerHTML=orig;}
+}
+
+window.fcAiGenSentence=async function(wordId,btn){
+  const w=vWords.find(x=>x.id===wordId);if(!w)return;
+  const out=el('fc-aigen-'+wordId);if(!out)return;
+  const prompt=`You are an SSC CGL vocabulary expert. Generate exactly 3 exam-style sentences for the word "${w.word}" (${w.pos||w.type||'word'}).
+Meaning: ${w.meaning}
+Rules:
+- Each sentence must be formal, newspaper/editorial quality
+- The meaning of the word must be OBVIOUS from context so a reader can guess it without knowing the word
+- Vary contexts: governance, society, environment
+- Number them 1. 2. 3.
+- No extra commentary, just the 3 sentences`;
+  const text=await _fcAiCall(wordId,prompt,300,'fc-btn-sent-'+wordId,'fc-aigen-'+wordId,'Generating');
+  if(!text)return;
+  out.innerHTML=`<p class="text-[10px] font-black text-indigo-500 uppercase tracking-widest mb-1.5">✍️ AI Sentences</p>`+
+    text.split('\n').filter(l=>l.trim()).map(l=>`<p class="text-xs text-slate-600 dark:text-slate-300 mb-1.5 leading-relaxed">${l}</p>`).join('');
+};
+
+window.fcAiGenMeaning=async function(wordId,btn){
+  const w=vWords.find(x=>x.id===wordId);if(!w)return;
+  const out=el('fc-aigen-'+wordId);if(!out)return;
+  const prompt=`You are an SSC vocabulary tutor for Indian students. Rewrite this meaning in 2 very simple sentences that a 10th-class student can instantly understand. Use a real-world Indian analogy if helpful. DO NOT use the word itself. DO NOT say "it means X".
+Word: "${w.word}"
+Current meaning: "${w.meaning}"
+Respond with ONLY the simplified meaning. No labels, no preamble.`;
+  const text=await _fcAiCall(wordId,prompt,150,'fc-btn-mean-'+wordId,'fc-aigen-'+wordId,'Simplifying');
+  if(!text)return;
+  out.innerHTML=`<p class="text-[10px] font-black text-fuchsia-500 uppercase tracking-widest mb-1.5">💡 Simplified</p>
+    <p class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed mb-2">${text}</p>
+    <button class="ai-gen-btn" onclick="event.stopPropagation();fcSaveSimpMeaning('${wordId}',this)"><i class="fa-solid fa-floppy-disk" style="font-size:8px;"></i> Save as Meaning</button>`;
+};
+
+window.fcSaveSimpMeaning=async function(wordId,btn){
+  const out=el('fc-aigen-'+wordId);if(!out)return;
+  const p=out.querySelector('p.text-xs');if(!p)return;
+  const newMeaning=p.textContent.trim();if(!newMeaning)return;
+  btn.disabled=true;
+  try{
+    await updateDoc(doc(db,'artifacts',APP_ID,'users',currentUser.uid,'vocab',wordId),{meaning:newMeaning,updatedAt:Timestamp.now()});
+    const w=vWords.find(x=>x.id===wordId);if(w)w.meaning=newMeaning;
+    toast('✅ Meaning updated!','ok');out.innerHTML='';
+  }catch(e){toast('Save failed','err');}
 };
 
 /* ══ FEATURE 10 — TAG & SOURCE ANALYTICS ══ */
@@ -3430,7 +3496,76 @@ window.startMode=(mode,deck,customPool=null)=>{
 };
 function updateFCProgress(){const prog=el('fc-sidebar-progress');if(prog)prog.classList.remove('hidden');const lbl=el('fc-prog-label'),k=el('fc-prog-known'),u=el('fc-prog-unknown'),bar=el('fc-prog-bar');if(lbl)lbl.textContent=`${fcIdx} / ${fcDeck.length}`;if(k)k.textContent=`✓ ${fcKnown}`;if(u)u.textContent=`↺ ${fcUnknown}`;if(bar)bar.style.width=fcDeck.length?(fcIdx/fcDeck.length*100)+'%':'0%';}
 function updateSidebarRating(wordId){const btns=el('fc-rating-btns');if(!btns)return;const RATES=[{lvl:5,cls:'rs5',icon:'✅',lbl:'L5 Perfect',sub:'15 days'},{lvl:4,cls:'rs4',icon:'🟣',lbl:'L4 Strong',sub:'12 days'},{lvl:3,cls:'rs3',icon:'🔵',lbl:'L3 Good',sub:'8 days'},{lvl:2,cls:'rs2',icon:'🟡',lbl:'L2 Okay',sub:'5 days'},{lvl:1,cls:'rs1',icon:'🟠',lbl:'L1 Fuzzy',sub:'2 days'},{lvl:0,cls:'rs0',icon:'🔴',lbl:'L0 Nope',sub:'Daily'}];btns.innerHTML=RATES.map(r=>`<button onclick="rateFC(${r.lvl},'${wordId}')" class="rate-side-btn ${r.cls}"><span class="ri">${r.icon}</span><span class="rtxt"><span class="rl">${r.lbl}</span><span class="rs">${r.sub}</span></span></button>`).join('');}
-function renderFC(){const area=el('fc-area');if(!area)return;if(fcIdx>=fcDeck.length){renderFCResult();return;}const w=fcDeck[fcIdx];updateFCProgress();updateSidebarRating(w.id);const syns=(w.synonyms||[]).slice(0,4).map(s=>`<span class="chip chip-syn">${s}</span>`).join('');const ants=(w.antonyms||[]).slice(0,4).map(s=>`<span class="chip chip-ant">${s}</span>`).join('');const frontContent=currentMode==='fill'?renderFillFront(w):`<div class="fc-hint mb-3">Tap to reveal</div><div class="fc-word">${w.word}</div>${w.pos?`<div class="text-sm text-slate-400 font-bold mt-2">(${w.pos})</div>`:''}`;area.innerHTML=`<div class="fc-scene" onclick="flipFC()"><div class="fc-wrap" id="fc-inner" style="min-height:${currentMode==='fill'?'200px':'300px'};"><div class="fc-face fc-front" style="min-height:${currentMode==='fill'?'200px':'300px'};">${frontContent}</div><div class="fc-face fc-back" style="min-height:${currentMode==='fill'?'200px':'300px'};">${renderBackContent(w,syns,ants)}</div></div></div>${currentMode==='fill'?renderFillCheck(w):''}<div class="md:hidden mt-4"><p class="text-center text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3">How well did you know this?</p><div class="rate-grid"><button onclick="rateFC(5,'${w.id}')" class="rate-btn r5"><span class="rate-icon">✅</span><span class="rate-lbl">L5 Perfect</span><span class="rate-sub">15d</span></button><button onclick="rateFC(4,'${w.id}')" class="rate-btn r4"><span class="rate-icon">🟣</span><span class="rate-lbl">L4 Strong</span><span class="rate-sub">12d</span></button><button onclick="rateFC(3,'${w.id}')" class="rate-btn r3"><span class="rate-icon">🔵</span><span class="rate-lbl">L3 Good</span><span class="rate-sub">8d</span></button><button onclick="rateFC(2,'${w.id}')" class="rate-btn r2"><span class="rate-icon">🟡</span><span class="rate-lbl">L2 Okay</span><span class="rate-sub">5d</span></button><button onclick="rateFC(1,'${w.id}')" class="rate-btn r1"><span class="rate-icon">🟠</span><span class="rate-lbl">L1 Fuzzy</span><span class="rate-sub">2d</span></button><button onclick="rateFC(0,'${w.id}')" class="rate-btn r0"><span class="rate-icon">🔴</span><span class="rate-lbl">L0 Nope</span><span class="rate-sub">Daily</span></button></div></div>`;}
+function renderFC(){
+  const area=el('fc-area');if(!area)return;
+  if(fcIdx>=fcDeck.length){renderFCResult();return;}
+  const w=fcDeck[fcIdx];
+  updateFCProgress();
+  updateSidebarRating(w.id);
+  const syns=(w.synonyms||[]).slice(0,4).map(s=>`<span class="chip chip-syn">${s}</span>`).join('');
+  const ants=(w.antonyms||[]).slice(0,4).map(s=>`<span class="chip chip-ant">${s}</span>`).join('');
+  const frontContent=currentMode==='fill'
+    ?renderFillFront(w)
+    :`<div class="fc-hint mb-3">Tap to reveal</div><div class="fc-word">${w.word}</div>${w.pos?`<div class="text-sm text-slate-400 font-bold mt-2">(${w.pos})</div>`:''}`;
+
+  const minH=currentMode==='fill'?'200px':'300px';
+
+  area.innerHTML=`
+    <!-- Flashcard — tap to flip -->
+    <div class="fc-scene" onclick="flipFC()">
+      <div class="fc-wrap" id="fc-inner" style="min-height:${minH};">
+        <div class="fc-face fc-front" style="min-height:${minH};">${frontContent}</div>
+        <div class="fc-face fc-back"  style="min-height:${minH};">${renderBackContent(w,syns,ants)}</div>
+      </div>
+    </div>
+
+    ${currentMode==='fill'?renderFillCheck(w):''}
+
+    <!-- ── Below-card panel (outside fc-scene so no flip on click) ── -->
+    <div class="mt-3 glass-card rounded-2xl p-4 space-y-3" onclick="event.stopPropagation()">
+
+      <!-- Quick Note -->
+      <div>
+        <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5">📝 Quick Note</p>
+        <textarea
+          class="fc-quick-note"
+          rows="2"
+          placeholder="Jot a memory trick, exam context, or anything about this word…"
+          id="fc-qnote-${w.id}"
+          onclick="event.stopPropagation()"
+          onchange="saveFCQuickNote('${w.id}',this.value)"
+        >${w.notes||''}</textarea>
+        <p class="text-[8px] text-slate-400 mt-0.5">Auto-saves to Notes · session continues normally</p>
+      </div>
+
+      <!-- AI Generators -->
+      <div style="border-top:1px solid rgba(99,102,241,.08);padding-top:10px;">
+        <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5">✨ AI Generate <span class="text-[8px] font-normal normal-case">(needs Groq key)</span></p>
+        <div class="flex gap-2 flex-wrap">
+          <button class="ai-gen-btn" id="fc-btn-sent-${w.id}" onclick="event.stopPropagation();fcAiGenSentence('${w.id}',this)">
+            <i class="fa-solid fa-wand-magic-sparkles" style="font-size:8px;"></i> 3 Sentences
+          </button>
+          <button class="ai-gen-btn" id="fc-btn-mean-${w.id}" onclick="event.stopPropagation();fcAiGenMeaning('${w.id}',this)">
+            <i class="fa-solid fa-lightbulb" style="font-size:8px;"></i> Simplify Meaning
+          </button>
+        </div>
+        <div id="fc-aigen-${w.id}" class="hidden mt-2"></div>
+      </div>
+    </div>
+
+    <!-- Mobile rate buttons -->
+    <div class="md:hidden mt-3">
+      <p class="text-center text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3">How well did you know this?</p>
+      <div class="rate-grid">
+        <button onclick="rateFC(5,'${w.id}')" class="rate-btn r5"><span class="rate-icon">✅</span><span class="rate-lbl">L5 Perfect</span><span class="rate-sub">15d</span></button>
+        <button onclick="rateFC(4,'${w.id}')" class="rate-btn r4"><span class="rate-icon">🟣</span><span class="rate-lbl">L4 Strong</span><span class="rate-sub">12d</span></button>
+        <button onclick="rateFC(3,'${w.id}')" class="rate-btn r3"><span class="rate-icon">🔵</span><span class="rate-lbl">L3 Good</span><span class="rate-sub">8d</span></button>
+        <button onclick="rateFC(2,'${w.id}')" class="rate-btn r2"><span class="rate-icon">🟡</span><span class="rate-lbl">L2 Okay</span><span class="rate-sub">5d</span></button>
+        <button onclick="rateFC(1,'${w.id}')" class="rate-btn r1"><span class="rate-icon">🟠</span><span class="rate-lbl">L1 Fuzzy</span><span class="rate-sub">2d</span></button>
+        <button onclick="rateFC(0,'${w.id}')" class="rate-btn r0"><span class="rate-icon">🔴</span><span class="rate-lbl">L0 Nope</span><span class="rate-sub">Daily</span></button>
+      </div>
+    </div>`;
+}
 function renderBackContent(w,syns,ants){
   const tags=(w.tags||[]).map(t=>`<span class="chip chip-tag">${t}</span>`).join('');
   return`<div class="flex flex-wrap gap-1.5 mb-3 pb-3" style="border-bottom:1px solid rgba(99,102,241,.1);">${wTypeBadge(w.type||'word')}${lvlBadgeHTML(w,false)}${tags}</div>
@@ -3439,14 +3574,9 @@ ${w.example?`<div class="fc-back-row"><div class="fc-back-lbl">✍️ Example</d
 ${w.mnemonics?`<div class="fc-back-row"><div class="fc-back-lbl">🧠 Mnemonics</div><div class="fc-back-val">${w.mnemonics}</div></div>`:''}
 ${w.trick?`<div class="fc-back-row"><div class="fc-back-lbl">💡 Trick / Root</div><div class="fc-back-val">${w.trick}</div></div>`:''}
 ${w.origin?`<div class="fc-back-row"><div class="fc-back-lbl" style="color:#a78bfa;">📜 Origin Story</div><div class="fc-back-val">${w.origin}</div></div>`:''}
-${w.notes?`<div class="fc-back-row"><div class="fc-back-lbl">📝 My Notes</div><div class="fc-back-val">${w.notes}</div></div>`:''}
+${w.notes?`<div class="fc-back-row"><div class="fc-back-lbl">📝 Notes</div><div class="fc-back-val">${w.notes}</div></div>`:''}
 ${syns?`<div class="fc-back-row"><div class="fc-back-lbl">Synonyms</div><div class="flex flex-wrap gap-1.5 mt-1">${syns}</div></div>`:''}
-${ants?`<div class="fc-back-row"><div class="fc-back-lbl">Antonyms</div><div class="flex flex-wrap gap-1.5 mt-1">${ants}</div></div>`:''}
-<div class="fc-back-row" style="border-bottom:none;padding-bottom:0;">
-  <div class="fc-back-lbl mb-1">📝 Quick Note</div>
-  <textarea class="fc-quick-note" rows="2" placeholder="Jot something about this word…" id="fc-qnote-${w.id}" onchange="saveFCQuickNote('${w.id}',this.value)">${w.notes||''}</textarea>
-  <p class="text-[9px] text-slate-400 mt-1">Saves to Notes field · won't clear your session</p>
-</div>`;
+${ants?`<div class="fc-back-row"><div class="fc-back-lbl">Antonyms</div><div class="flex flex-wrap gap-1.5 mt-1">${ants}</div></div>`:''}`;
 }
 function renderFillFront(w){const ex=w.example||'';const pattern=new RegExp(w.word.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'),'i');const blanked=ex&&pattern.test(ex)?ex.replace(pattern,'_____'):`The word is: _____`;return`<div class="fc-hint mb-3">Fill in the blank</div><p class="text-base font-semibold text-slate-700 dark:text-slate-200 text-center mb-4">"${blanked}"</p>`;}
 function renderFillCheck(w){return`<div class="mt-3 flex gap-2 items-center justify-center" id="fill-check-row"><input id="fill-inp" class="blank-input" placeholder="Type the word…" onkeydown="if(event.key==='Enter')checkFill('${w.word}','${w.id}')"><button onclick="checkFill('${w.word}','${w.id}')" class="btn-gradient px-4 py-2.5 rounded-xl text-sm font-black">Check</button></div><div id="fill-result" class="text-center mt-2 text-sm font-black hidden"></div>`;}
